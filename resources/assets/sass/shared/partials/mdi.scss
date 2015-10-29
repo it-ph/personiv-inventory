@@ -1,0 +1,13 @@
+.mdi{
+	color: $text-on-primary;
+	font-size: 24px;
+	vertical-align: sub;
+}
+
+.md-mini .mdi{
+	font-size: 21px;
+}
+
+.mdi.grey{
+	color: $secondary-text;
+}

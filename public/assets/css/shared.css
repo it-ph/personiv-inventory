@@ -1,0 +1,149 @@
+/* Material Design Color : Blue - Light Blue Theme */
+/* Primary Pallete */
+/* Accent Pallete */
+/* Text Colors */
+/* Animation duration */
+/* mixin to call specific animation */
+body {
+  font-family: 'Roboto', sans-serif; }
+
+.mdi {
+  color: #FFFFFF;
+  font-size: 24px;
+  vertical-align: sub; }
+
+.md-mini .mdi {
+  font-size: 21px; }
+
+.mdi.grey {
+  color: #727272; }
+
+/* Text Colors Classes */
+.primary-text {
+  /* Blue */
+  color: #2196F3; }
+
+.accent-text {
+  /* Light Blue */
+  color: #03A9F4; }
+
+.white-text {
+  /* White */
+  color: #fff; }
+
+.main-text {
+  /* Dark Text */
+  color: #212121; }
+
+.secondary-text {
+  /* Grey Text */
+  color: #727272; }
+
+/* Text Alignments */
+.left-text {
+  text-align: left; }
+
+.center-text {
+  text-align: center; }
+
+.right-text {
+  text-align: right; }
+
+/* Font Weights*/
+.weight-300 {
+  font-weight: 300; }
+
+.weight-200 {
+  font-weight: 200; }
+
+.weight-100 {
+  font-weight: 100; }
+
+.main-view {
+  /* main ui-router view */
+  min-height: 100vh;
+  position: relative;
+  overflow: auto; }
+
+/* Stretch to full height */
+.full-height-min {
+  min-height: 100vh; }
+
+/* Max height 100% of viewport*/
+.full-height-max {
+  max-height: 100vh; }
+
+.full-width-min {
+  min-width: 100%; }
+
+/* Toolbar Background */
+md-toolbar.no-background-toolbar {
+  background-color: white; }
+
+.site-logo img {
+  max-width: 60%;
+  max-height: 100%; }
+
+.personiv-logo {
+  height: 110px; }
+
+.hidden {
+  opacity: 0; }
+
+#main {
+  background: url("/assets/img/EASNZXBH4G.jpg");
+  background-size: cover;
+  transition: all 1s; }
+
+.main-content {
+  background: rgba(33, 33, 33, 0.3); }
+
+/* Background colors */
+md-content.dirty-white {
+  background: #eeeeee; }
+
+md-content.blue-bg {
+  background: #2196F3; }
+
+.copyrights {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  text-align: center;
+  color: #727272;
+  padding: 15px 0px; }
+
+.left-border {
+  border-left: 1px solid rgba(0, 0, 0, 0.12); }
+
+.form {
+  width: 300px; }
+
+/* transition duration */
+.transition, .fade-transition, .main-view {
+  transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2); }
+
+.fade-transition, #content, #toolbar, #sidenav {
+  -webkit-animation-duration: 0.3s;
+  animation-duration: 0.3s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both; }
+
+/* animations for ng-repeat and ng-if */
+.fade-transition.ng-enter {
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn; }
+
+.fade-transition.ng-leave {
+  -webkit-animation-name: fadeOut;
+  animation-name: fadeOut; }
+
+/* animations for state transitions */
+.main-view.ng-enter #content, .main-view.ng-enter #toolbar, .main-view.ng-enter #sidenav {
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn; }
+
+.main-view.ng-leave #content, .main-view.ng-leave #toolbar, .main-view.ng-leave #sidenav {
+  -webkit-animation-name: fadeOut;
+  animation-name: fadeOut; }
+
+/*# sourceMappingURL=shared.css.map */
