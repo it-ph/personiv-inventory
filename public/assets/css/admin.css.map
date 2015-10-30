@@ -1,0 +1,1 @@
+{"version":3,"sources":["partials/main.scss"],"names":[],"mappings":"AAAA;EACC,eAAa;EACb,oBAAmB,EACnB;;AAED;EACC,gBAAe,EACf","file":"admin.css","sourceRoot":"/source/","sourcesContent":[".pages{\r\n\tdisplay:none;\r\n\ttransition: all 1s;\r\n}\r\n\r\n.active .pages{\r\n\tdisplay: block;\r\n}"]}

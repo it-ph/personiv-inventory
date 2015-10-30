@@ -5,7 +5,11 @@
 /* Animation duration */
 /* mixin to call specific animation */
 body {
-  font-family: 'Roboto', sans-serif; }
+  font-family: 'Roboto', sans-serif;
+  overflow: hidden; }
+
+ul {
+  padding: 0px; }
 
 .mdi {
   color: #FFFFFF;
@@ -107,7 +111,6 @@ md-content.blue-bg {
 
 .copyrights {
   width: 100%;
-  background: rgba(0, 0, 0, 0.1);
   text-align: center;
   color: #727272;
   padding: 15px 0px; }
@@ -122,7 +125,7 @@ md-content.blue-bg {
 .transition, .fade-transition, .main-view {
   transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2); }
 
-.fade-transition, #content, #toolbar, #sidenav {
+.fade-transition, #content, #toolbar, #left-sidenav, #right-sidenav {
   -webkit-animation-duration: 0.3s;
   animation-duration: 0.3s;
   -webkit-animation-fill-mode: both;
@@ -138,11 +141,11 @@ md-content.blue-bg {
   animation-name: fadeOut; }
 
 /* animations for state transitions */
-.main-view.ng-enter #content, .main-view.ng-enter #toolbar, .main-view.ng-enter #sidenav {
+.main-view.ng-enter #content, .main-view.ng-enter #toolbar, .main-view.ng-enter #left-sidenav, .main-view.ng-enter #right-sidenav {
   -webkit-animation-name: fadeIn;
   animation-name: fadeIn; }
 
-.main-view.ng-leave #content, .main-view.ng-leave #toolbar, .main-view.ng-leave #sidenav {
+.main-view.ng-leave #content, .main-view.ng-leave #toolbar, .main-view.ng-leave #left-sidenav, .main-view.ng-leave #right-sidenav {
   -webkit-animation-name: fadeOut;
   animation-name: fadeOut; }
 

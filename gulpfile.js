@@ -19,9 +19,15 @@ elixir(function(mix) {
     	/* Shared SCSS */
     	.sass('shared/shared.scss', 'public/assets/css/shared.css')
 
+        /* Admin SCSS */
+        .sass('components/admin/admin.scss', 'public/assets/css/admin.css')
+
     	/* Vendor JS */
     	.scriptsIn('public/assets/libs', 'public/assets/js/vendor.js')
 
     	/* Shared Scripts */
     	.scriptsIn('public/app/shared', 'public/assets/js/shared.js')
+
+    	/* Admin Scripts */
+    	.scriptsIn('public/app/components/admin', 'public/assets/js/admin.js')
 });

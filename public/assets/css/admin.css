@@ -1,0 +1,8 @@
+.pages {
+  display: none;
+  transition: all 1s; }
+
+.active .pages {
+  display: block; }
+
+/*# sourceMappingURL=admin.css.map */
