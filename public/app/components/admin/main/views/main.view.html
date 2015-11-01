@@ -5,15 +5,35 @@
 				<img src="/assets/img/Personiv-Final_white_transparent.png" alt="Personiv Logo" class="site-logo">
 			</a>
 		</md-toolbar>
+		<!-- Avatar Section -->
+		<div class="avatar-container" layout="column" layout-align="end start" layout-padding>
+			<img src="/assets/img/profilepic.jpg" alt="avatar">
+			<br>
+			<span class="md-body-2 white-text">{{ user.first_name }}</span>
+			<span class="md-body-1 white-text">{{ user.email }}</span>
+		</div>
 		<md-content layout="column" layout-align="space-between center" class="blue-bg" flex>
 			<!-- Sidenav -->
 			<div class="full-width-min" ui-view="left-sidenav" flex id="left-sidenav"></div>
-			<div layout="column" class="copyrights">
-			    <p class="md-caption white-text">© Designed and Built by <br>Mcoy - IT Programmer <br>marco.paco@personiv.com <br>Personiv</p>
-			</div>
 		</md-content>
+		<!-- Copyrights -->
+		<div layout="column" class="copyrights blue-bg">
+		    <p class="md-caption white-text">© Designed and Built by <br>Mcoy - IT Programmer <br>marco.paco@personiv.com <br>Personiv</p>
+		</div>
 	</md-sidenav>
-	<md-content layout="row" class="full-width-min full-width-max">
-		<p></p>
+	<md-content flex>
+		<md-toolbar class="white-toolbar md-whiteframe-2dp">
+			<div ui-view="toolbar" layout="row" layout-align="space-between center" flex></div>
+		</md-toolbar>
+		<md-content layout="row" layout-padding>
+			<md-content flex>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati maxime vel consequuntur. Quae aliquam tempora dolores nihil obcaecati, repudiandae aperiam minus voluptas praesentium. Alias, nam cumque obcaecati culpa esse placeat.</p>
+			</md-content>
+			<md-sidenav class="md-sidenav-right" md-component-id="right" md-is-locked-open="$mdMedia('gt-md')">
+				<md-content layout="column" layout-align="space-between center" flex>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestiae nobis, necessitatibus vero dolor. Eius, odio ab! Error quia suscipit delectus voluptas mollitia perferendis, odit nesciunt amet voluptate tenetur labore hic?</p>
+				</md-content>
+			</md-sidenav>
+		</md-content>
 	</md-content>
 </section>

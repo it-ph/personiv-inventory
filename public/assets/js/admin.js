@@ -1,4 +1,5 @@
 var accountModule = angular.module('accountModule', []);
+var departmentModule = angular.module('departmentModule', []);
 var assetsModule = angular.module('assetsModule', []);
 var dashboardModule = angular.module('dashboardModule', []);
 // dashboardModule
@@ -17,7 +18,6 @@ var dashboardModule = angular.module('dashboardModule', []);
 // 				},
 // 			})
 // 	}]);
-var departmentModule = angular.module('departmentModule', []);
 var adminModule = angular.module('adminModule', [
 	/* Shared Module */
 	'sharedModule',
@@ -35,43 +35,32 @@ adminModule
 				views: {
 					'': {
 						templateUrl: '/app/components/admin/main/views/main.view.html',
+						controller: 'mainViewController',
 					},
 					'left-sidenav@main': {
-						templateUrl: '/app/components/admin/main/templates/sidenav/left.sidenav.html',
-						controller: 'leftSidenavController'
+						templateUrl: '/app/components/admin/main/templates/sidenavs/left.sidenav.html',
+						controller: 'leftSidenavController',
 					},
+					'toolbar@main': {
+						templateUrl: '/app/components/admin/main/templates/toolbar.template.html',
+						controller: 'toolbarController',
+					}
 				},
-			})
-			.state('main.dashboard', {
-
-			})
-			.state('main.assets', {
-				
-			})
-			.state('main.department', {
-				
 			})
 	}]);
 adminModule
-	.controller('leftSidenavController', ['$scope', function($scope){
+	.controller('leftSidenavController', ['$scope', 'Department', function($scope, Department){
 		$scope.menu = {};
 
 		$scope.menu.section = [
 			{
 				'name':'Dashboard',
-				'state':'main.dashboard',
 			},
 			{
 				'name':'Assets',
-				'state':'main.assets',
 			},
 			{
 				'name':'Department',
-				'state':'main.department',
-			},
-			{
-				'name':'Account',
-				'state':'main.account',
 			},
 		];
 
@@ -80,63 +69,84 @@ adminModule
 			[
 				{
 					'name':'Analysis',
-					'state':'dashboard.analysis',
+					'state':'main.analysis',
 				},
 				{
 					'name':'Floor Plan',
-					'state':'dashboard.floor-plan',
+					'state':'main.floor-plan',
 				},
 			],
 			/* 1 */
 			[
 				{
 					'name': 'Hard Disk',
-					'state':'assets.hard-disk',
+					'state':'main.hard-disk',
 				},
 				{
 					'name': 'Headset',
-					'state':'assets.headset',
+					'state':'main.headset',
 				},
 				{
 					'name': 'Keyboard',
-					'state':'assets.keyboard',
+					'state':'main.keyboard',
 				},
 				{
 					'name': 'Memory',
-					'state':'assets.memory',
+					'state':'main.memory',
 				},
 				{
 					'name': 'Monitor',
-					'state':'assets.monitor',
+					'state':'main.monitor',
 				},
 				{
 					'name': 'Mouse',
-					'state':'assets.mouse',
+					'state':'main.mouse',
 				},
 				{
 					'name': 'Printer',
-					'state':'assets.printer',
+					'state':'main.printer',
 				},
 				{
 					'name': 'Scanner',
-					'state':'assets.scanner',
+					'state':'main.scanner',
 				},
 				{
 					'name': 'Software',
-					'state':'assets.software',
+					'state':'main.software',
 				},
 				{
 					'name': 'Video Card',
-					'state':'assets.video-card',
+					'state':'main.video-card',
 				},
 				{
 					'name': 'Other Components',
-					'state':'assets.other-components',
+					'state':'main.other-components',
 				},
 			],
 		];
 
 		/* AJAX Request Department */
 		$scope.menu.department = [];
+
+		// set section as active
+		$scope.setActive = function(index){
+		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').toggleClass('active'));
+		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').siblings().removeClass('active'));
+		};
+	}]);
+adminModule
+	.controller('mainViewController', ['$scope', 'User', function($scope, User){
+		/**
+		 * Fetch authenticated user information
+		 *
+		*/
+		User.index()
+			.success(function(data){
+				$scope.user = data;
+			});
+	}]);
+adminModule
+	.controller('toolbarController', ['$scope', function($scope){
+		
 	}]);
 //# sourceMappingURL=admin.js.map

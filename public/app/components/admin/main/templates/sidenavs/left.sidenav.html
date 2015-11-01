@@ -1,0 +1,29 @@
+<ul>
+	<li flex class="blur-white" layout="row">
+		<span flex="5"></span>
+		<h2 class="md-title white-text">Inventory System</h2>
+	</li>
+	<li ng-repeat="section in menu.section" class="section" flex>
+		<div layout="row" class="section-button-container">
+			<md-button flex ng-click="setActive($index)" aria-label="section-{{ $index }}">
+				<div layout="row" flex>
+					<span class="white-text">{{ section.name }}</span>
+					<span flex></span>
+					<md-icon class="mdi mdi-chevron-down rotate-icon"></md-icon>
+				</div>
+			</md-button>
+		</div>
+		<!-- Child -->
+		<ul class="pages">
+			<li layout="row" ng-repeat="page in menu.pages[$index]" ui-sref-active="active">
+				<md-button flex ui-sref="{{ page.state }}">
+					<div layout="row" flex>
+						<span flex="5"></span>
+						<span class="white-text">{{ page.name }}</span>
+						<span flex></span>
+					</div>
+				</md-button>
+			</li>
+		</ul>
+	</li>
+</ul>

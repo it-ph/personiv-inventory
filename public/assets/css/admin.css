@@ -1,8 +1,219 @@
-.pages {
-  display: none;
+/* Material Design Color : Blue - Light Blue Theme */
+/* Primary Pallete */
+/* Accent Pallete */
+/* Text Colors */
+/* Animation duration */
+/* mixin to call specific animation */
+body {
+  font-family: 'Roboto', sans-serif;
+  overflow: hidden; }
+
+ul {
+  padding: 0px; }
+
+::-webkit-scrollbar {
+  width: 6px; }
+
+::-webkit-scrollbar-track {
+  /*background: rgba(0,0,0,0.1); */
+  border-radius: 10px;
+  /*border:1px gray solid;*/ }
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.1);
+  /*&:not(:active){
+        background: none;
+        border:0px solid rgba(0,0,0,0.5);
+    }*/ }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.5); }
+  ::-webkit-scrollbar-thumb:active {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.5); }
+
+.mdi {
+  color: #FFFFFF;
+  font-size: 24px;
+  vertical-align: sub; }
+
+.md-mini .mdi {
+  font-size: 21px; }
+
+.mdi.grey {
+  color: #727272; }
+
+/* Text Colors Classes */
+.primary-text {
+  /* Blue */
+  color: #2196F3; }
+
+.accent-text {
+  /* Light Blue */
+  color: #03A9F4; }
+
+.white-text {
+  /* White */
+  color: #fff; }
+
+.main-text {
+  /* Dark Text */
+  color: #212121; }
+
+.secondary-text {
+  /* Grey Text */
+  color: #727272; }
+
+/* Text Alignments */
+.left-text {
+  text-align: left; }
+
+.center-text {
+  text-align: center; }
+
+.right-text {
+  text-align: right; }
+
+/* Font Weights*/
+.weight-300 {
+  font-weight: 300; }
+
+.weight-200 {
+  font-weight: 200; }
+
+.weight-100 {
+  font-weight: 100; }
+
+.main-view {
+  /* main ui-router view */
+  min-height: 100vh;
+  position: relative;
+  overflow: auto; }
+
+/* Stretch to full height */
+.full-height-min {
+  min-height: 100vh; }
+
+/* Max height 100% of viewport*/
+.full-height-max {
+  max-height: 100vh; }
+
+.full-width-min {
+  min-width: 100%; }
+
+/* Toolbar Background */
+md-toolbar.white-toolbar {
+  background-color: white; }
+
+.site-logo img {
+  max-width: 60%;
+  max-height: 100%; }
+
+.personiv-logo {
+  height: 110px; }
+
+.hidden-custom {
+  opacity: 0; }
+
+#main {
+  background: url("/assets/img/EASNZXBH4G.jpg");
+  background-size: cover;
   transition: all 1s; }
 
+.main-content {
+  background: rgba(33, 33, 33, 0.3); }
+
+/* Background colors */
+md-content.dirty-white {
+  background: #eeeeee; }
+
+md-content.blue-bg {
+  background: #2196F3; }
+
+.blue-bg {
+  background: #2196F3; }
+
+.blur-white {
+  background: rgba(255, 255, 255, 0.1); }
+
+.copyrights {
+  min-height: 110px;
+  width: 100%;
+  text-align: center;
+  color: #727272;
+  padding: 15px 0px; }
+
+.left-border {
+  border-left: 1px solid rgba(0, 0, 0, 0.12); }
+
+.form {
+  width: 300px; }
+
+/* transition duration */
+.transition, .fade-transition, .main-view {
+  transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2); }
+
+.fade-transition, #content, #toolbar, #left-sidenav, #right-sidenav {
+  -webkit-animation-duration: 0.5s;
+  animation-duration: 0.5s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both; }
+
+/* animations for ng-repeat and ng-if */
+.fade-transition.ng-enter {
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn; }
+
+.fade-transition.ng-leave {
+  -webkit-animation-name: fadeOut;
+  animation-name: fadeOut; }
+
+/* animations for state transitions */
+.main-view.ng-enter #content, .main-view.ng-enter #toolbar, .main-view.ng-enter #left-sidenav, .main-view.ng-enter #right-sidenav {
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn; }
+
+.main-view.ng-leave #content, .main-view.ng-leave #toolbar, .main-view.ng-leave #left-sidenav, .main-view.ng-leave #right-sidenav {
+  -webkit-animation-name: fadeOut;
+  animation-name: fadeOut; }
+
+.pages {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.75s cubic-bezier(0.35, 0, 0.25, 1); }
+  .pages .active {
+    background: rgba(255, 255, 255, 0.1); }
+
+.rotate-icon {
+  transition: -webkit-transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out; }
+
+.active .section-button-container {
+  background: rgba(255, 255, 255, 0.1); }
+
 .active .pages {
-  display: block; }
+  height: auto;
+  max-height: 1000px;
+  overflow: hidden;
+  transition: max-height 0.75s cubic-bezier(0.35, 0, 0.25, 1); }
+
+.active .rotate-icon {
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+  transition: -webkit-transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out; }
+
+.avatar-container {
+  min-height: 180px;
+  background: url("/assets/img/Android-Lollipop-wallpapers-Download.jpg");
+  background-size: cover;
+  background-position: center center; }
+  .avatar-container img {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%; }
+  .avatar-container .shade {
+    background: rgba(0, 0, 0, 0.3); }
 
 /*# sourceMappingURL=admin.css.map */

@@ -32,3 +32,6 @@ Route::post('auth/register', 'Auth\AuthController@postRegister');
 Route::get('/home', ['middleware' => 'auth', function(){
 	return view('admin.home');
 }]);
+
+// Route Resource APIs
+Route::resource('user', 'UserController');

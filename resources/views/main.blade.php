@@ -11,11 +11,11 @@
 	<!-- Vendor CSS -->
 	<link rel="stylesheet" href="/assets/css/vendor.css">
 	<!-- Shared CSS -->
-	<link rel="stylesheet" href="/assets/css/shared.css">
+	<link rel="stylesheet" href="/assets/css/admin.css">
 </head>
 <body>
 	<!-- Main View -->
-	<div class="main-view hidden" ng-controller="homePageController" ng-init="show()" id="main">
+	<div class="main-view hidden-custom" ng-controller="homePageController" ng-init="show()" id="main">
 		<md-content flex layout="column" layout-align="center center" class="full-height-min main-content">
 			<a href="/">
 				<img show-gt-md hide-md hide-sm src="/assets/img/Personiv-Final_white_transparent.png" alt="Personiv Logo" class="personiv-logo">

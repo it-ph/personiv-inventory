@@ -11,6 +11,7 @@ sharedModule
 		$mdThemingProvider.theme('default')
 			.primaryPalette('blue')
 			.accentPalette('light-blue');
+		
 		/* Dark Theme - Blue */
 		$mdThemingProvider.theme('dark', 'default')
 	      	.primaryPalette('blue')
@@ -30,7 +31,37 @@ sharedModule
 sharedModule
 	.controller('homePageController', ['$scope', function($scope){
 		$scope.show = function(){
-			angular.element(document.querySelector('.main-view')).removeClass('hidden');
+			angular.element(document.querySelector('.main-view')).removeClass('hidden-custom');
+		};
+	}]);
+sharedModule
+	.factory('Department', ['$http', function($http){
+		var urlBase = '/department';
+
+		return {
+			/**
+			 * Fetch the authenticated user info.
+			 *
+			 * @return: Object
+			 */
+			index: function(){
+				return $http.get(urlBase);
+			},
+		};
+	}]);
+sharedModule
+	.factory('User', ['$http', function($http){
+		var urlBase = '/user';
+
+		return {
+			/**
+			 * Fetch the authenticated user info.
+			 *
+			 * @return: Object
+			 */
+			index: function(){
+				return $http.get(urlBase);
+			},
 		};
 	}]);
 //# sourceMappingURL=shared.js.map

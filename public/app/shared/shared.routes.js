@@ -4,6 +4,7 @@ sharedModule
 		$mdThemingProvider.theme('default')
 			.primaryPalette('blue')
 			.accentPalette('light-blue');
+		
 		/* Dark Theme - Blue */
 		$mdThemingProvider.theme('dark', 'default')
 	      	.primaryPalette('blue')

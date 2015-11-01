@@ -1,23 +1,16 @@
 adminModule
-	.controller('leftSidenavController', ['$scope', function($scope){
+	.controller('leftSidenavController', ['$scope', 'Department', function($scope, Department){
 		$scope.menu = {};
 
 		$scope.menu.section = [
 			{
 				'name':'Dashboard',
-				'state':'main.dashboard',
 			},
 			{
 				'name':'Assets',
-				'state':'main.assets',
 			},
 			{
 				'name':'Department',
-				'state':'main.department',
-			},
-			{
-				'name':'Account',
-				'state':'main.account',
 			},
 		];
 
@@ -26,62 +19,68 @@ adminModule
 			[
 				{
 					'name':'Analysis',
-					'state':'dashboard.analysis',
+					'state':'main.analysis',
 				},
 				{
 					'name':'Floor Plan',
-					'state':'dashboard.floor-plan',
+					'state':'main.floor-plan',
 				},
 			],
 			/* 1 */
 			[
 				{
 					'name': 'Hard Disk',
-					'state':'assets.hard-disk',
+					'state':'main.hard-disk',
 				},
 				{
 					'name': 'Headset',
-					'state':'assets.headset',
+					'state':'main.headset',
 				},
 				{
 					'name': 'Keyboard',
-					'state':'assets.keyboard',
+					'state':'main.keyboard',
 				},
 				{
 					'name': 'Memory',
-					'state':'assets.memory',
+					'state':'main.memory',
 				},
 				{
 					'name': 'Monitor',
-					'state':'assets.monitor',
+					'state':'main.monitor',
 				},
 				{
 					'name': 'Mouse',
-					'state':'assets.mouse',
+					'state':'main.mouse',
 				},
 				{
 					'name': 'Printer',
-					'state':'assets.printer',
+					'state':'main.printer',
 				},
 				{
 					'name': 'Scanner',
-					'state':'assets.scanner',
+					'state':'main.scanner',
 				},
 				{
 					'name': 'Software',
-					'state':'assets.software',
+					'state':'main.software',
 				},
 				{
 					'name': 'Video Card',
-					'state':'assets.video-card',
+					'state':'main.video-card',
 				},
 				{
 					'name': 'Other Components',
-					'state':'assets.other-components',
+					'state':'main.other-components',
 				},
 			],
 		];
 
 		/* AJAX Request Department */
 		$scope.menu.department = [];
+
+		// set section as active
+		$scope.setActive = function(index){
+		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').toggleClass('active'));
+		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').siblings().removeClass('active'));
+		};
 	}]);

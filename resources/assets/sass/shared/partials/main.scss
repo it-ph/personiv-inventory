@@ -71,7 +71,7 @@
 }
 
 /* Toolbar Background */
-md-toolbar.no-background-toolbar {
+md-toolbar.white-toolbar {
 	background-color: white;
 }
 
@@ -86,7 +86,7 @@ md-toolbar.no-background-toolbar {
 	height:110px;
 }
 
-.hidden{
+.hidden-custom{
 	opacity: 0;
 }
 
@@ -109,8 +109,17 @@ md-content.blue-bg{
 	background: $primary500;
 }
 
+.blue-bg{
+	background: $primary500;
+}
+
+.blur-white{
+	background: rgba(white,0.1);
+}
+
 
 .copyrights{
+	min-height: 110px;
 	width:100%;
 	text-align: center;
 	color: $secondary-text;

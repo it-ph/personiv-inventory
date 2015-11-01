@@ -11,6 +11,28 @@ body {
 ul {
   padding: 0px; }
 
+::-webkit-scrollbar {
+  width: 6px; }
+
+::-webkit-scrollbar-track {
+  /*background: rgba(0,0,0,0.1); */
+  border-radius: 10px;
+  /*border:1px gray solid;*/ }
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.1);
+  /*&:not(:active){
+        background: none;
+        border:0px solid rgba(0,0,0,0.5);
+    }*/ }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.5); }
+  ::-webkit-scrollbar-thumb:active {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.5); }
+
 .mdi {
   color: #FFFFFF;
   font-size: 24px;
@@ -81,7 +103,7 @@ ul {
   min-width: 100%; }
 
 /* Toolbar Background */
-md-toolbar.no-background-toolbar {
+md-toolbar.white-toolbar {
   background-color: white; }
 
 .site-logo img {
@@ -91,7 +113,7 @@ md-toolbar.no-background-toolbar {
 .personiv-logo {
   height: 110px; }
 
-.hidden {
+.hidden-custom {
   opacity: 0; }
 
 #main {
@@ -109,7 +131,14 @@ md-content.dirty-white {
 md-content.blue-bg {
   background: #2196F3; }
 
+.blue-bg {
+  background: #2196F3; }
+
+.blur-white {
+  background: rgba(255, 255, 255, 0.1); }
+
 .copyrights {
+  min-height: 110px;
   width: 100%;
   text-align: center;
   color: #727272;
@@ -126,8 +155,8 @@ md-content.blue-bg {
   transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2); }
 
 .fade-transition, #content, #toolbar, #left-sidenav, #right-sidenav {
-  -webkit-animation-duration: 0.3s;
-  animation-duration: 0.3s;
+  -webkit-animation-duration: 0.5s;
+  animation-duration: 0.5s;
   -webkit-animation-fill-mode: both;
   animation-fill-mode: both; }
 
