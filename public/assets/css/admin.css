@@ -36,7 +36,7 @@ ul {
 .mdi {
   color: #FFFFFF;
   font-size: 24px;
-  vertical-align: sub; }
+  vertical-align: middle; }
 
 .md-mini .mdi {
   font-size: 21px; }
@@ -205,7 +205,7 @@ md-content.blue-bg {
   transition: transform 0.3s ease-in-out; }
 
 .avatar-container {
-  min-height: 180px;
+  min-height: 150px;
   background: url("/assets/img/Android-Lollipop-wallpapers-Download.jpg");
   background-size: cover;
   background-position: center center; }

@@ -1,0 +1,34 @@
+<div layout="row" layout-align="start center" flex>
+	<div layout="row" ng-if="!searchBar" layout-align="start center">
+		<!-- Toggle Left Sidenav Button -->
+		<md-button class="md-icon-button" ng-click="toggleSidenav('left')" hide-gt-md>
+			<md-icon class="mdi mdi-menu grey" aria-label="Toogle Sidenav"></md-icon>
+		</md-button>
+		<span class="md-headline main-text">{{ toolbar.parentState }}
+			<md-icon class="mdi mdi-chevron-right grey" aria-label="chevron right" ng-if="toolbar.childState"></md-icon>
+			<span ng-if="toolbar.childState">{{ toolbar.childState }}</span>
+		</span>
+	</div>
+	<!-- Search Bar -->
+	<div layout="row" ng-if="searchBar" flex layout-align="center center">
+		<md-button class="md-icon-button" ng-click="hideSearchBar()">
+			<md-icon class="mdi mdi-arrow-left grey" aria-label="Hide Search Bar"></md-icon>
+		</md-button>
+		<md-input-container flex>
+			<label>Search</label>
+			<input type="text" ng-model="userInput">
+		</md-input-container>
+		<md-button class="md-icon-button" ng-click="searchUserInput()">
+			<md-icon class="mdi mdi-magnify grey" aria-label="Search"></md-icon>
+		</md-button>
+	</div>
+</div>
+<div flex layout="row" layout-align="end center" ng-if="!searchBar">
+	<md-button class="md-icon-button" ng-click="showSearchBar()">
+		<md-icon class="mdi mdi-magnify grey" aria-label="Search"></md-icon>
+	</md-button>
+	<md-button class="md-icon-button">
+		<md-icon class="mdi mdi-bell grey" aria-label="Notifications"></md-icon>
+	</md-button>
+	<span flex="5"></span>
+</div>

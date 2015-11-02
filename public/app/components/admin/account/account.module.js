@@ -1,1 +1,0 @@
-var accountModule = angular.module('accountModule', []);

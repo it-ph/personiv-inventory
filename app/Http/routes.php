@@ -35,3 +35,4 @@ Route::get('/home', ['middleware' => 'auth', function(){
 
 // Route Resource APIs
 Route::resource('user', 'UserController');
+Route::resource('department', 'DepartmentController');

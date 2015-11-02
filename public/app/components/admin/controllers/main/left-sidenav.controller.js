@@ -10,7 +10,7 @@ adminModule
 				'name':'Assets',
 			},
 			{
-				'name':'Department',
+				'name':'Departments',
 			},
 		];
 
@@ -28,6 +28,10 @@ adminModule
 			],
 			/* 1 */
 			[
+				{
+					'name': 'CPU',
+					'state':'main.cpu',
+				},
 				{
 					'name': 'Hard Disk',
 					'state':'main.hard-disk',
@@ -65,6 +69,10 @@ adminModule
 					'state':'main.software',
 				},
 				{
+					'name': 'UPS',
+					'state':'main.ups',
+				},
+				{
 					'name': 'Video Card',
 					'state':'main.video-card',
 				},
@@ -76,7 +84,10 @@ adminModule
 		];
 
 		/* AJAX Request Department */
-		$scope.menu.department = [];
+		Department.index()
+			.success(function(data){
+				$scope.menu.pages.push(data);
+			});
 
 		// set section as active
 		$scope.setActive = function(index){

@@ -1,7 +1,7 @@
 <section layout="row" flex class="full-height-min">
-	<md-sidenav class="md-sidenav-left full-height-max" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+	<md-sidenav class="md-sidenav-left full-height-max" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')" layout="column" flex>
 		<md-toolbar class="site-logo" layout="row" layout-align="center center">
-			<a href="/" layout="row" layout-align="center center">
+			<a ui-sref="main" layout="row" layout-align="center center">
 				<img src="/assets/img/Personiv-Final_white_transparent.png" alt="Personiv Logo" class="site-logo">
 			</a>
 		</md-toolbar>
@@ -21,19 +21,16 @@
 		    <p class="md-caption white-text">© Designed and Built by <br>Mcoy - IT Programmer <br>marco.paco@personiv.com <br>Personiv</p>
 		</div>
 	</md-sidenav>
-	<md-content flex>
+	<md-content flex layout="column" class="full-height-max">
 		<md-toolbar class="white-toolbar md-whiteframe-2dp">
-			<div ui-view="toolbar" layout="row" layout-align="space-between center" flex></div>
+			<!-- Toolbar -->
+			<div ui-view="toolbar" layout="row" layout-padding layout-margin flex class="md-toolbar-tools"></div>
 		</md-toolbar>
-		<md-content layout="row" layout-padding>
-			<md-content flex>
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati maxime vel consequuntur. Quae aliquam tempora dolores nihil obcaecati, repudiandae aperiam minus voluptas praesentium. Alias, nam cumque obcaecati culpa esse placeat.</p>
-			</md-content>
-			<md-sidenav class="md-sidenav-right" md-component-id="right" md-is-locked-open="$mdMedia('gt-md')">
-				<md-content layout="column" layout-align="space-between center" flex>
-					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestiae nobis, necessitatibus vero dolor. Eius, odio ab! Error quia suscipit delectus voluptas mollitia perferendis, odit nesciunt amet voluptate tenetur labore hic?</p>
-				</md-content>
-			</md-sidenav>
+		<md-content layout="row" layout-padding layout-margin>
+			<!-- Content -->
+			<md-content flex layout="column" ui-view="content"></md-content>
+			<!-- Right Sidenav -->
+			<md-sidenav class="md-sidenav-right" md-component-id="right" md-is-locked-open="$mdMedia('gt-md')" layout-padding ui-view="right-sidenav"></md-sidenav>
 		</md-content>
 	</md-content>
 </section>

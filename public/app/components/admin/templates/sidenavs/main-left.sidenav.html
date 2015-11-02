@@ -1,5 +1,5 @@
 <ul>
-	<li flex class="blur-white" layout="row">
+	<li flex class="blur-white" layout="row" layout-align="start center">
 		<span flex="5"></span>
 		<h2 class="md-title white-text">Inventory System</h2>
 	</li>
@@ -15,8 +15,17 @@
 		</div>
 		<!-- Child -->
 		<ul class="pages">
-			<li layout="row" ng-repeat="page in menu.pages[$index]" ui-sref-active="active">
+			<li layout="row" ng-repeat="page in menu.pages[$index]" ui-sref-active="active" ng-if="page.state">
 				<md-button flex ui-sref="{{ page.state }}">
+					<div layout="row" flex>
+						<span flex="5"></span>
+						<span class="white-text">{{ page.name }}</span>
+						<span flex></span>
+					</div>
+				</md-button>
+			</li>
+			<li layout="row" ui-sref-active="active" ng-if="!page.state" ng-repeat="page in menu.pages[$index]">
+				<md-button flex ui-sref="main.department({'departmentID': {{ page.id }} })">
 					<div layout="row" flex>
 						<span flex="5"></span>
 						<span class="white-text">{{ page.name }}</span>

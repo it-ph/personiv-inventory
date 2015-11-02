@@ -36,7 +36,7 @@ ul {
 .mdi {
   color: #FFFFFF;
   font-size: 24px;
-  vertical-align: sub; }
+  vertical-align: middle; }
 
 .md-mini .mdi {
   font-size: 21px; }
