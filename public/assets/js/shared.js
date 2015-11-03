@@ -57,6 +57,248 @@ sharedModule
 		};
 	}]);
 sharedModule
+	.factory('Desktop', ['$http', function($http){
+		var urlBase = '/desktop';
+
+		return {
+			/**
+			 * Fetch all departments.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific department.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			}
+		};
+	}]);
+sharedModule
+	.factory('HardDisk', ['$http', function($http){
+		var urlBase = '/hard-disk';
+
+		return {
+			/**
+			 * Fetch all departments.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific department.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			}
+		};
+	}]);
+sharedModule
+	.factory('Headset', ['$http', function($http){
+		var urlBase = '/headset';
+
+		return {
+			/**
+			 * Fetch all departments.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific department.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			}
+		};
+	}]);
+sharedModule
+	.factory('Keyboard', ['$http', function($http){
+		var urlBase = '/keyboard';
+
+		return {
+			/**
+			 * Fetch all departments.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific department.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			}
+		};
+	}]);
+sharedModule
+	.factory('Memory', ['$http', function($http){
+		var urlBase = '/memory';
+
+		return {
+			/**
+			 * Fetch all departments.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific department.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			}
+		};
+	}]);
+sharedModule
+	.factory('Monitor', ['$http', function($http){
+		var urlBase = '/monitor';
+
+		return {
+			/**
+			 * Fetch all.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			}
+		};
+	}]);
+sharedModule
+	.factory('Mouse', ['$http', function($http){
+		var urlBase = '/mouse';
+
+		return {
+			/**
+			 * Fetch all.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			}
+		};
+	}]);
+sharedModule
+	.factory('OtherComponent', ['$http', function($http){
+		var urlBase = '/other-component';
+
+		return {
+			/**
+			 * Fetch all.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			}
+		};
+	}]);
+sharedModule
+	.factory('Scanner', ['$http', function($http){
+		var urlBase = '/scanner';
+
+		return {
+			/**
+			 * Fetch all.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			}
+		};
+	}]);
+sharedModule
+	.factory('Software', ['$http', function($http){
+		var urlBase = '/software';
+
+		return {
+			/**
+			 * Fetch all.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			}
+		};
+	}]);
+sharedModule
+	.factory('ups', ['$http', function($http){
+		var urlBase = '/ups';
+
+		return {
+			/**
+			 * Fetch all.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			}
+		};
+	}]);
+sharedModule
 	.factory('User', ['$http', function($http){
 		var urlBase = '/user';
 

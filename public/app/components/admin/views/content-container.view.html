@@ -1,0 +1,8 @@
+<!-- Content -->
+<md-content flex layout="column" ui-view="content"></md-content>
+<!-- Right Sidenav -->
+<md-sidenav class="md-sidenav-right" md-component-id="right" md-is-locked-open="$mdMedia('gt-md')" layout-padding ui-view="right-sidenav"></md-sidenav>
+<!-- Add FAB -->
+<md-button class="md-fab md-primary md-fab-bottom-right z-index-100" ng-click="fab.action()">
+	<md-icon class="mdi {{ fab.icon }}" aria-label="{{ fab.label }}"></md-icon>
+</md-button>

@@ -1,5 +1,5 @@
 adminModule
-	.controller('departmentToolbarController', ['$scope', '$stateParams', 'Department', function($scope, $stateParams, Department){
+	.controller('departmentToolbarController', ['$scope', '$stateParams', 'Department', 'departmentService', function($scope, $stateParams, Department, departmentService){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -10,13 +10,17 @@ adminModule
 		 * Properties and method of toolbar.
 		 *
 		*/
-		$scope.toolbar.parentState = 'Departments';
-		
-		Department.show($stateParams.departmentID)
-			.success(function(data){
-				$scope.toolbar.childState = data.name;
-			});
 
+		/**
+		 * Fetch the department data stored at deparments servce.
+		 *
+		*/
+		var departments = departmentService.get();
+		var index = $stateParams.departmentID - 1;
+
+		$scope.toolbar.parentState = 'Departments';
+		$scope.toolbar.childState = departments[index].name;
+		
 		/**
 		 * Search database and look for user input depending on state.
 		 *

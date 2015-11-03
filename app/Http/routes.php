@@ -36,3 +36,15 @@ Route::get('/home', ['middleware' => 'auth', function(){
 // Route Resource APIs
 Route::resource('user', 'UserController');
 Route::resource('department', 'DepartmentController');
+Route::resource('desktop', 'DesktopController');
+Route::resource('hard-disk', 'HardDiskController');
+Route::resource('headset', 'HeadsetController');
+Route::resource('keyboard', 'KeyboardController');
+Route::resource('memory', 'MemoryController');
+Route::resource('mouse', 'MouseController');
+Route::resource('printer', 'PrinterController');
+Route::resource('scanner', 'ScannerController');
+Route::resource('software', 'SoftwareController');
+Route::resource('ups', 'UninterruptiblePowerSupplyController');
+Route::resource('video-card', 'VideoCardController');
+Route::resource('other-component', 'OtherComponentController');

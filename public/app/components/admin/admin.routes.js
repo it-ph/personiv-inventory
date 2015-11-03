@@ -21,6 +21,10 @@ adminModule
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
 						controller: 'mainToolbarController',
 					},
+					'content-container@main': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'mainContentContainerController',
+					},
 					'content@main': {
 						templateUrl: '/app/components/admin/templates/content/main.content.template.html',
 						controller: 'mainContentController',	
@@ -82,50 +86,52 @@ adminModule
 			 * Assets Routes
 			 *
 			*/
-			.state('main.asset', {
-				url: 'assets'
-			})
-
-			.state('main.hard-disk', {
-				url: 'assets/hard-disk',
+			.state('main.assets', {
+				url: 'assets/{assetID}',
+				params: {'assetID':null},
 				views: {
 					'toolbar': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controller: 'hardDiskToolbarController',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.toolbarController(index);
+						}]
 					},
-					'content': {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.contentContainerController(index);
+						}]
+					},
+					'content@main.assets': {
 						templateUrl: '/app/components/admin/templates/content/assets.content.template.html',
-						controller: 'hardDiskContentController',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.contentController(index);
+						}]
 					},
-					'right-sidenav': {
-						templateUrl: '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
-						controller: 'hardDiskRightSidenavController',
-					}
-				}
-			})
-			.state('main.headset', {
-				url: 'assets/hard-disk',
-				views: {
-					'toolbar': {
-						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						// controller: 'headsetToolbarController',
+					'right-sidenav@main.assets': {
+						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.rightSidenavController(index);
+						}]
 					},
-				}
+				},
 			})
-
 			/**
 			 * Department Routes
 			 *
 			*/
 			.state('main.department', {
 				url: 'department/{departmentID}',
-				params: {'departmentID':null},
+				params: {'name':null},
 				views: {
 					'toolbar': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
 						controller: 'departmentToolbarController',
 					},
-					''
 				}
 			})
 	}]);

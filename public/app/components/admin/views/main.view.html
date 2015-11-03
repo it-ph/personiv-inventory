@@ -26,11 +26,7 @@
 			<!-- Toolbar -->
 			<div ui-view="toolbar" layout="row" layout-padding layout-margin flex class="md-toolbar-tools"></div>
 		</md-toolbar>
-		<md-content layout="row" layout-padding layout-margin>
-			<!-- Content -->
-			<md-content flex layout="column" ui-view="content"></md-content>
-			<!-- Right Sidenav -->
-			<md-sidenav class="md-sidenav-right" md-component-id="right" md-is-locked-open="$mdMedia('gt-md')" layout-padding ui-view="right-sidenav"></md-sidenav>
-		</md-content>
+		<!-- Content -->
+		<md-content layout="row" layout-padding layout-margin flex ui-view="content-container"></md-content>
 	</md-content>
 </section>

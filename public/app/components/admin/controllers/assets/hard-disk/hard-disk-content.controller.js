@@ -1,7 +1,7 @@
 adminModule
-	.controller('hardDiskContentController', ['$scope', function($scope){
+	.controller('hardDiskContentController', ['$scope', 'HardDisk', function($scope, HardDisk){
 		/**
-		 *  Object for toolbar view.
+		 * Object for content view
 		 *
 		*/
 		$scope.content = {};

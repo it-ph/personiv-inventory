@@ -1,10 +1,10 @@
 adminModule
-	.controller('hardDiskRightSidenavController', ['$scope', function($scope){
+	.controller('hardDiskRightSidenavController', ['$scope', 'HardDisk', function($scope, HardDisk){
 		/**
-		 *  Object for toolbar view.
+		 * Object for content view
 		 *
 		*/
 		$scope.sidenav = {};
 
-		$scope.sidenav.title = 'Hard Disk Right Sidenav Initialized';
+		$scope.sidenav.title = 'Hard Disk Content Initialized';
 	}]);

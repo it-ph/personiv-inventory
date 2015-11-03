@@ -133,3 +133,11 @@ md-content.blue-bg{
 .form{
 	width: 300px;
 }
+
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important;
+}
+
+.md-button.md-fab.z-index-100{
+	z-index: 100;
+}

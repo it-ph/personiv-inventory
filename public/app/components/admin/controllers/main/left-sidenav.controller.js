@@ -1,5 +1,5 @@
 adminModule
-	.controller('leftSidenavController', ['$scope', 'Department', function($scope, Department){
+	.controller('leftSidenavController', ['$scope', 'Department', 'departmentService', function($scope, Department, departmentService){
 		$scope.menu = {};
 
 		$scope.menu.section = [
@@ -30,55 +30,68 @@ adminModule
 			[
 				{
 					'name': 'CPU',
-					'state':'main.cpu',
+					'state':'main.assets',
+					'id': 1
 				},
 				{
 					'name': 'Hard Disk',
-					'state':'main.hard-disk',
+					'state':'main.assets',
+					'id': 2
 				},
 				{
 					'name': 'Headset',
-					'state':'main.headset',
+					'state':'main.assets',
+					'id': 3
 				},
 				{
 					'name': 'Keyboard',
-					'state':'main.keyboard',
+					'state':'main.assets',
+					'id': 4
 				},
 				{
 					'name': 'Memory',
-					'state':'main.memory',
+					'state':'main.assets',
+					'id': 5
 				},
 				{
 					'name': 'Monitor',
-					'state':'main.monitor',
+					'state':'main.assets',
+					'id': 6
 				},
 				{
 					'name': 'Mouse',
-					'state':'main.mouse',
+					'state':'main.assets',
+					'id': 7
 				},
 				{
 					'name': 'Printer',
-					'state':'main.printer',
+					'state':'main.assets',
+					'id': 8
 				},
 				{
 					'name': 'Scanner',
-					'state':'main.scanner',
+					'state':'main.assets',
+					'id': 9
 				},
 				{
 					'name': 'Software',
-					'state':'main.software',
+					'state':'main.assets',
+					'id': 10
 				},
 				{
 					'name': 'UPS',
-					'state':'main.ups',
+					'state':'main.assets',
+					'id': 11
 				},
 				{
 					'name': 'Video Card',
-					'state':'main.video-card',
+					'state':'main.assets',
+					'id': 12
 				},
 				{
 					'name': 'Other Components',
-					'state':'main.other-components',
+					'state':'main.assets',
+					'id': 13
 				},
 			],
 		];
@@ -87,6 +100,9 @@ adminModule
 		Department.index()
 			.success(function(data){
 				$scope.menu.pages.push(data);
+				this.index = $scope.menu.pages.length - 1;
+				/* Save the department on service for future use */
+				departmentService.set($scope.menu.pages[this.index]);
 			});
 
 		// set section as active

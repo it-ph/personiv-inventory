@@ -15,7 +15,8 @@
 		</div>
 		<!-- Child -->
 		<ul class="pages">
-			<li layout="row" ng-repeat="page in menu.pages[$index]" ui-sref-active="active" ng-if="page.state">
+			<!-- Dashboard -->
+			<li layout="row" ng-repeat="page in menu.pages[$index]" ui-sref-active="active" ng-if="section.name == 'Dashboard'">
 				<md-button flex ui-sref="{{ page.state }}">
 					<div layout="row" flex>
 						<span flex="5"></span>
@@ -24,7 +25,18 @@
 					</div>
 				</md-button>
 			</li>
-			<li layout="row" ui-sref-active="active" ng-if="!page.state" ng-repeat="page in menu.pages[$index]">
+			<!-- Assets -->
+			<li layout="row" ui-sref-active="active" ng-if="section.name == 'Assets'" ng-repeat="page in menu.pages[$index]">
+				<md-button flex ui-sref="main.assets({'assetID': {{ page.id }} })">
+					<div layout="row" flex>
+						<span flex="5"></span>
+						<span class="white-text">{{ page.name }}</span>
+						<span flex></span>
+					</div>
+				</md-button>
+			</li>
+			<!-- Departments -->
+			<li layout="row" ui-sref-active="active" ng-if="section.name == 'Departments'" ng-repeat="page in menu.pages[$index]">
 				<md-button flex ui-sref="main.department({'departmentID': {{ page.id }} })">
 					<div layout="row" flex>
 						<span flex="5"></span>

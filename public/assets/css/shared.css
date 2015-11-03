@@ -150,6 +150,12 @@ md-content.blue-bg {
 .form {
   width: 300px; }
 
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important; }
+
+.md-button.md-fab.z-index-100 {
+  z-index: 100; }
+
 /* transition duration */
 .transition, .fade-transition, .main-view {
   transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2); }

@@ -1,5 +1,5 @@
 adminModule
-	.controller('hardDiskToolbarController', ['$scope', 'HardDisk', function($scope, HardDisk){
+	.controller('keyboardToolbarController', ['$scope', '$stateParams', 'Keyboard', function($scope, $stateParams, Desktop){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -11,7 +11,7 @@ adminModule
 		 *
 		*/
 		$scope.toolbar.parentState = 'Assets';
-		$scope.toolbar.childState = 'Hard Disk';
+		$scope.toolbar.childState = 'Keyboard';
 
 		/**
 		 * Search database and look for user input depending on state.

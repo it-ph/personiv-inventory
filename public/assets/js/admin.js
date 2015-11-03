@@ -25,6 +25,10 @@ adminModule
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
 						controller: 'mainToolbarController',
 					},
+					'content-container@main': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'mainContentContainerController',
+					},
 					'content@main': {
 						templateUrl: '/app/components/admin/templates/content/main.content.template.html',
 						controller: 'mainContentController',	
@@ -86,53 +90,130 @@ adminModule
 			 * Assets Routes
 			 *
 			*/
-			.state('main.asset', {
-				url: 'assets'
-			})
-
-			.state('main.hard-disk', {
-				url: 'assets/hard-disk',
+			.state('main.assets', {
+				url: 'assets/{assetID}',
+				params: {'assetID':null},
 				views: {
 					'toolbar': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controller: 'hardDiskToolbarController',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.toolbarController(index);
+						}]
 					},
-					'content': {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.contentContainerController(index);
+						}]
+					},
+					'content@main.assets': {
 						templateUrl: '/app/components/admin/templates/content/assets.content.template.html',
-						controller: 'hardDiskContentController',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.contentController(index);
+						}]
 					},
-					'right-sidenav': {
-						templateUrl: '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
-						controller: 'hardDiskRightSidenavController',
-					}
-				}
-			})
-			.state('main.headset', {
-				url: 'assets/hard-disk',
-				views: {
-					'toolbar': {
-						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						// controller: 'headsetToolbarController',
+					'right-sidenav@main.assets': {
+						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.rightSidenavController(index);
+						}]
 					},
-				}
+				},
 			})
-
 			/**
 			 * Department Routes
 			 *
 			*/
 			.state('main.department', {
 				url: 'department/{departmentID}',
-				params: {'departmentID':null},
+				params: {'name':null},
 				views: {
 					'toolbar': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
 						controller: 'departmentToolbarController',
 					},
-					''
 				}
 			})
 	}]);
+adminModule
+	.service('assetService', ['$http', function($http){
+		var assets = [
+			{
+				'controller' : 'cpu',
+			},
+			{
+				'controller' : 'hardDisk',
+			},
+			{
+				'controller' : 'headset',
+			},
+			{
+				'controller' : 'keyboard'
+			},
+			{
+				'controller' : 'memory',
+			},
+			{
+				'controller' : 'monitor',
+			},
+			{
+				'controller' : 'mouse',
+			},
+			{
+				'controller' : 'printer',
+			},
+			{
+				'controller' : 'scanner',
+			},
+			{
+				'controller' : 'software',
+			},
+			{
+				'controller' : 'ups',
+			},
+			{
+				'controller' : 'videoCard',
+			},
+			{
+				'controller' : 'otherComponent',
+			},
+		];
+
+		return{
+			get: function(){
+				return assets;
+			},
+			toolbarController: function(id){
+				return assets[id].controller  + 'ToolbarController';
+			},
+			contentContainerController: function(id){
+				return assets[id].controller  + 'ContentContainerController';
+			},
+			contentController: function(id){
+				return assets[id].controller  + 'ContentController';
+			},
+			rightSidenavController: function(id){
+				return assets[id].controller  + 'RightSidenavController';
+			},
+		};
+	}]);
+adminModule
+	.service('departmentService', function(){
+		var departments = [];
+
+		return {
+			set: function(data){
+				departments = data;
+			},
+			get: function(){
+				return departments;
+			},
+		};
+	});
 adminModule
 	.controller('analysisContentController', ['$scope', function($scope){
 		/**
@@ -220,7 +301,7 @@ adminModule
 		};
 	}]);
 adminModule
-	.controller('departmentToolbarController', ['$scope', '$stateParams', 'Department', function($scope, $stateParams, Department){
+	.controller('departmentToolbarController', ['$scope', '$stateParams', 'Department', 'departmentService', function($scope, $stateParams, Department, departmentService){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -231,13 +312,17 @@ adminModule
 		 * Properties and method of toolbar.
 		 *
 		*/
-		$scope.toolbar.parentState = 'Departments';
-		
-		Department.show($stateParams.departmentID)
-			.success(function(data){
-				$scope.toolbar.childState = data.name;
-			});
 
+		/**
+		 * Fetch the department data stored at deparments servce.
+		 *
+		*/
+		var departments = departmentService.get();
+		var index = $stateParams.departmentID - 1;
+
+		$scope.toolbar.parentState = 'Departments';
+		$scope.toolbar.childState = departments[index].name;
+		
 		/**
 		 * Search database and look for user input depending on state.
 		 *
@@ -248,7 +333,7 @@ adminModule
 
 	}]);
 adminModule
-	.controller('leftSidenavController', ['$scope', 'Department', function($scope, Department){
+	.controller('leftSidenavController', ['$scope', 'Department', 'departmentService', function($scope, Department, departmentService){
 		$scope.menu = {};
 
 		$scope.menu.section = [
@@ -279,55 +364,68 @@ adminModule
 			[
 				{
 					'name': 'CPU',
-					'state':'main.cpu',
+					'state':'main.assets',
+					'id': 1
 				},
 				{
 					'name': 'Hard Disk',
-					'state':'main.hard-disk',
+					'state':'main.assets',
+					'id': 2
 				},
 				{
 					'name': 'Headset',
-					'state':'main.headset',
+					'state':'main.assets',
+					'id': 3
 				},
 				{
 					'name': 'Keyboard',
-					'state':'main.keyboard',
+					'state':'main.assets',
+					'id': 4
 				},
 				{
 					'name': 'Memory',
-					'state':'main.memory',
+					'state':'main.assets',
+					'id': 5
 				},
 				{
 					'name': 'Monitor',
-					'state':'main.monitor',
+					'state':'main.assets',
+					'id': 6
 				},
 				{
 					'name': 'Mouse',
-					'state':'main.mouse',
+					'state':'main.assets',
+					'id': 7
 				},
 				{
 					'name': 'Printer',
-					'state':'main.printer',
+					'state':'main.assets',
+					'id': 8
 				},
 				{
 					'name': 'Scanner',
-					'state':'main.scanner',
+					'state':'main.assets',
+					'id': 9
 				},
 				{
 					'name': 'Software',
-					'state':'main.software',
+					'state':'main.assets',
+					'id': 10
 				},
 				{
 					'name': 'UPS',
-					'state':'main.ups',
+					'state':'main.assets',
+					'id': 11
 				},
 				{
 					'name': 'Video Card',
-					'state':'main.video-card',
+					'state':'main.assets',
+					'id': 12
 				},
 				{
 					'name': 'Other Components',
-					'state':'main.other-components',
+					'state':'main.assets',
+					'id': 13
 				},
 			],
 		];
@@ -336,12 +434,30 @@ adminModule
 		Department.index()
 			.success(function(data){
 				$scope.menu.pages.push(data);
+				this.index = $scope.menu.pages.length - 1;
+				/* Save the department on service for future use */
+				departmentService.set($scope.menu.pages[this.index]);
 			});
 
 		// set section as active
 		$scope.setActive = function(index){
 		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').toggleClass('active'));
 		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').siblings().removeClass('active'));
+		};
+	}]);
+adminModule
+	.controller('mainContentContainerController', ['$scope', function($scope){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+
+		$scope.fab.action = function(){
+			return;
 		};
 	}]);
 adminModule
@@ -426,9 +542,86 @@ adminModule
 		$scope.toolbar.parentState = 'Home';
 	}]);
 adminModule
-	.controller('hardDiskContentController', ['$scope', function($scope){
+	.controller('cpuContentContainerController', ['$scope', 'Desktop', function($scope, Desktop){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+
+		$scope.fab.action = function(){
+			return;
+		};
+		console.log('ok')
+	}]);
+adminModule
+	.controller('cpuContentController', ['$scope', 'Desktop', function($scope, Desktop){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.content = {};
+
+		$scope.content.title = 'CPU Content Initialized';
+
+		console.log('ok');
+	}]);
+adminModule
+	.controller('cpuRightSidenavController', ['$scope', 'Desktop', function($scope, Desktop){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.sidenav = {};
+
+		$scope.sidenav.title = 'CPU Content Initialized';
+	}]);
+adminModule
+	.controller('cpuToolbarController', ['$scope', 'Desktop', function($scope, Desktop){
 		/**
 		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'CPU';
+
+		/**
+		 * Search database and look for user input depending on state.
+		 *
+		*/
+		$scope.searchUserInput = function(){
+			return;
+		};
+	}]);
+adminModule
+	.controller('hardDiskContentContainerController', ['$scope', 'Desktop', function($scope, Desktop){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+
+		$scope.fab.action = function(){
+			return;
+		};
+		console.log('ok')
+	}]);
+adminModule
+	.controller('hardDiskContentController', ['$scope', 'HardDisk', function($scope, HardDisk){
+		/**
+		 * Object for content view
 		 *
 		*/
 		$scope.content = {};
@@ -436,29 +629,115 @@ adminModule
 		$scope.content.title = 'Hard Disk Content Initialized';
 	}]);
 adminModule
-	.controller('hardDiskRightSidenavController', ['$scope', function($scope){
+	.controller('hardDiskRightSidenavController', ['$scope', 'HardDisk', function($scope, HardDisk){
 		/**
-		 *  Object for toolbar view.
+		 * Object for content view
 		 *
 		*/
 		$scope.sidenav = {};
 
-		$scope.sidenav.title = 'Hard Disk Right Sidenav Initialized';
+		$scope.sidenav.title = 'Hard Disk Content Initialized';
 	}]);
 adminModule
-	.controller('hardDiskToolbarController', ['$scope', '$state', function($scope, $state){
+	.controller('hardDiskToolbarController', ['$scope', 'HardDisk', function($scope, HardDisk){
 		/**
 		 *  Object for toolbar view.
 		 *
 		*/
 		$scope.toolbar = {};
-
+		
 		/**
-		 * Properties and method of toolbar.
+		 * Properties of toolbar.
 		 *
 		*/
 		$scope.toolbar.parentState = 'Assets';
 		$scope.toolbar.childState = 'Hard Disk';
+
+		/**
+		 * Search database and look for user input depending on state.
+		 *
+		*/
+		$scope.searchUserInput = function(){
+			return;
+		};
+	}]);
+adminModule
+	.controller('headsetContentController', ['$scope', 'Headset', function($scope, Headset){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.content = {};
+
+		$scope.content.title = 'Headset Content Initialized';
+	}]);
+adminModule
+	.controller('headsetRightSidenavController', ['$scope', 'Headset', function($scope, Headset){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.sidenav = {};
+
+		$scope.sidenav.title = 'Headset Content Initialized';
+	}]);
+adminModule
+	.controller('headsetToolbarController', ['$scope', 'Headset', function($scope, Headset){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'Headset';
+
+		/**
+		 * Search database and look for user input depending on state.
+		 *
+		*/
+		$scope.searchUserInput = function(){
+			return;
+		};
+	}]);
+adminModule
+	.controller('keyboardContentController', ['$scope', 'Keyboard', function($scope, Keyboard){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.content = {};
+
+		$scope.content.title = 'Keyboard Content Initialized';
+	}]);
+adminModule
+	.controller('keyboardRightSidenavController', ['$scope', 'Keyboard', function($scope, Keyboard){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.sidenav = {};
+
+		$scope.sidenav.title = 'Keyboard Content Initialized';
+	}]);
+adminModule
+	.controller('keyboardToolbarController', ['$scope', '$stateParams', 'Keyboard', function($scope, $stateParams, Desktop){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'Keyboard';
 
 		/**
 		 * Search database and look for user input depending on state.
