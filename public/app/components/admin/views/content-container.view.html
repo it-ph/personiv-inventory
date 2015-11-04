@@ -1,8 +1,18 @@
+<md-toolbar class="white-toolbar md-whiteframe-2dp">
+	<!-- Toolbar -->
+	<div ui-view="toolbar" layout="row" flex class="md-toolbar-tools"></div>
+</md-toolbar>
+<!-- Subheader -->
+<md-subheader class="md-primary">
+	<div ng-if="subheader.state == 'assets'" ng-include="'/app/components/admin/templates/subheaders/assets-subheader.template.html'"></div>
+</md-subheader>
 <!-- Content -->
-<md-content flex layout="column" ui-view="content"></md-content>
-<!-- Right Sidenav -->
-<md-sidenav class="md-sidenav-right" md-component-id="right" md-is-locked-open="$mdMedia('gt-md')" layout-padding ui-view="right-sidenav"></md-sidenav>
-<!-- Add FAB -->
-<md-button class="md-fab md-primary md-fab-bottom-right z-index-100" ng-click="fab.action()">
-	<md-icon class="mdi {{ fab.icon }}" aria-label="{{ fab.label }}"></md-icon>
-</md-button>
+<md-content layout="row" flex>
+	<md-content flex layout="column" ui-view="content"></md-content>
+	<!-- Right Sidenav -->
+	<md-sidenav ng-if="rightSidenav.show" class="md-sidenav-right" md-component-id="right" layout-margin md-is-locked-open="$mdMedia('gt-md')" layout-padding ui-view="right-sidenav"></md-sidenav>
+	<!-- Add FAB -->
+	<md-button class="md-fab md-primary md-fab-bottom-right z-index-75 " ng-if="fab.show" ng-click="fab.action()" aria-label="FAB">
+		<md-icon class="mdi {{ fab.icon }}" aria-label="{{ fab.label }}"></md-icon>
+	</md-button>
+</md-content>

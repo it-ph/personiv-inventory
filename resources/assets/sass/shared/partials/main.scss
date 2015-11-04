@@ -138,6 +138,10 @@ md-content.blue-bg{
   display: none !important;
 }
 
-.md-button.md-fab.z-index-100{
-	z-index: 100;
+.md-button.md-fab.z-index-75{
+	z-index: 75;
+}
+
+.blue-border-left{
+	border-left: 2px solid $primary500;
 }

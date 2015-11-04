@@ -33,7 +33,14 @@ adminModule
 						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
 						controller: 'mainRightSidenavController',
 					},
-				}
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
 			})
 			/**
 			 * Dashboard Routes
@@ -59,7 +66,14 @@ adminModule
 						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
 						controller: 'analysisRightSidenavController',
 					},
-				}
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
 			})
 			/**
 			 * Displays floor plan of the building
@@ -80,7 +94,14 @@ adminModule
 						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
 						controller: 'floorPlanRightSidenavController',
 					},
-				}
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
 			})
 			/**
 			 * Assets Routes
@@ -90,18 +111,18 @@ adminModule
 				url: 'assets/{assetID}',
 				params: {'assetID':null},
 				views: {
-					'toolbar': {
-						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
-							var index = $stateParams.assetID - 1;
-							return assetService.toolbarController(index);
-						}]
-					},
 					'content-container': {
 						templateUrl: '/app/components/admin/views/content-container.view.html',
 						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
 							var index = $stateParams.assetID - 1;
 							return assetService.contentContainerController(index);
+						}]
+					},
+					'toolbar@main.assets': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.toolbarController(index);
 						}]
 					},
 					'content@main.assets': {
@@ -119,6 +140,13 @@ adminModule
 						}]
 					},
 				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
 			})
 			/**
 			 * Department Routes
@@ -132,6 +160,13 @@ adminModule
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
 						controller: 'departmentToolbarController',
 					},
-				}
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
 			})
 	}]);

@@ -1,5 +1,5 @@
 adminModule
-	.controller('leftSidenavController', ['$scope', 'Department', 'departmentService', function($scope, Department, departmentService){
+	.controller('leftSidenavController', ['$scope', '$mdSidenav', 'Department', 'departmentService', function($scope, $mdSidenav, Department, departmentService){
 		$scope.menu = {};
 
 		$scope.menu.section = [

@@ -37,7 +37,14 @@ adminModule
 						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
 						controller: 'mainRightSidenavController',
 					},
-				}
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
 			})
 			/**
 			 * Dashboard Routes
@@ -63,7 +70,14 @@ adminModule
 						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
 						controller: 'analysisRightSidenavController',
 					},
-				}
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
 			})
 			/**
 			 * Displays floor plan of the building
@@ -84,7 +98,14 @@ adminModule
 						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
 						controller: 'floorPlanRightSidenavController',
 					},
-				}
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
 			})
 			/**
 			 * Assets Routes
@@ -94,18 +115,18 @@ adminModule
 				url: 'assets/{assetID}',
 				params: {'assetID':null},
 				views: {
-					'toolbar': {
-						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
-							var index = $stateParams.assetID - 1;
-							return assetService.toolbarController(index);
-						}]
-					},
 					'content-container': {
 						templateUrl: '/app/components/admin/views/content-container.view.html',
 						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
 							var index = $stateParams.assetID - 1;
 							return assetService.contentContainerController(index);
+						}]
+					},
+					'toolbar@main.assets': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.toolbarController(index);
 						}]
 					},
 					'content@main.assets': {
@@ -123,6 +144,13 @@ adminModule
 						}]
 					},
 				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
 			})
 			/**
 			 * Department Routes
@@ -136,7 +164,14 @@ adminModule
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
 						controller: 'departmentToolbarController',
 					},
-				}
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
 			})
 	}]);
 adminModule
@@ -188,15 +223,19 @@ adminModule
 				return assets;
 			},
 			toolbarController: function(id){
+				// returns assetNameToolbarController
 				return assets[id].controller  + 'ToolbarController';
 			},
 			contentContainerController: function(id){
+				// returns assetNameContentContainerController
 				return assets[id].controller  + 'ContentContainerController';
 			},
 			contentController: function(id){
+				// returns assetNameContentController
 				return assets[id].controller  + 'ContentController';
 			},
 			rightSidenavController: function(id){
+				// returns assetNameRightSidenavController
 				return assets[id].controller  + 'RightSidenavController';
 			},
 		};
@@ -333,7 +372,7 @@ adminModule
 
 	}]);
 adminModule
-	.controller('leftSidenavController', ['$scope', 'Department', 'departmentService', function($scope, Department, departmentService){
+	.controller('leftSidenavController', ['$scope', '$mdSidenav', 'Department', 'departmentService', function($scope, $mdSidenav, Department, departmentService){
 		$scope.menu = {};
 
 		$scope.menu.section = [
@@ -453,12 +492,14 @@ adminModule
 		*/
 		$scope.fab = {};
 
-		$scope.fab.icon = 'mdi-plus';
-		$scope.fab.label = 'Add';
+		// $scope.fab.icon = 'mdi-plus';
+		// $scope.fab.label = 'Add';
+		
+		$scope.fab.show = false;
 
-		$scope.fab.action = function(){
-			return;
-		};
+		// $scope.fab.action = function(){
+		// 	return;
+		// };
 	}]);
 adminModule
 	.controller('mainContentController', ['$scope', function($scope){
@@ -492,7 +533,7 @@ adminModule
 		 * Properties and method of toolbar.
 		 *
 		*/
-		$scope.toolbar.parentState = 'Home';
+		$scope.toolbar.childState = 'Home';
 	}]);
 adminModule
 	.controller('mainViewController', ['$scope', '$mdSidenav', 'User', function($scope, $mdSidenav, User){
@@ -542,20 +583,86 @@ adminModule
 		$scope.toolbar.parentState = 'Home';
 	}]);
 adminModule
-	.controller('cpuContentContainerController', ['$scope', 'Desktop', function($scope, Desktop){
+	.controller('addDesktopDialogController', ['$scope', '$mdDialog', 'Desktop', function($scope, $mdDialog, Desktop){
+		$scope.cpu = {};
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+	}]);
+adminModule
+	.controller('cpuContentContainerController', ['$scope', '$mdDialog', 'Desktop', function($scope, $mdDialog, Desktop){
 		/**
-		 * Object for content view
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'assets';
+		$scope.subheader.showButton = 'Show All';
+		$scope.subheader.showButtonClass = 'md-primary';
+		$scope.subheader.orderClass = 'mdi-chevron-up';
+		$scope.subheader.order = 'Ascending';
+
+		$scope.subheader.refresh = function(){
+			console.log('refresh list');
+		};
+
+		$scope.subheader.orderBy = function(){
+			if($scope.subheader.orderClass == 'mdi-chevron-up'){
+				// change the content list to all inside array.
+				$scope.subheader.orderClass = 'mdi-chevron-down';
+				$scope.subheader.order = 'Descending';
+			}
+			else{
+				// return the content list to paginated list inside array.
+				$scope.subheader.orderClass = 'mdi-chevron-up';
+				$scope.subheader.order = 'Ascending';
+			}
+		}
+
+		/**
+		 * Object for toggleList
+		 *
+		*/
+		$scope.subheader.toggleList = function(){
+			console.log('toogle list');
+			if($scope.subheader.showButton == 'Show All'){
+				// change the content list to all inside array.
+				$scope.subheader.showButtonClass = 'md-warn';
+				$scope.subheader.showButton = 'Show Less';
+			}
+			else{
+				// return the content list to paginated list inside array.
+				$scope.subheader.showButtonClass = 'md-primary';
+				$scope.subheader.showButton = 'Show All';
+			}
+		}
+
+		/**
+		 * Object for fab
 		 *
 		*/
 		$scope.fab = {};
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
-			return;
+		    $mdDialog.show({
+		      	controller: 'addDesktopDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-cpu-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    });
 		};
-		console.log('ok')
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
 	}]);
 adminModule
 	.controller('cpuContentController', ['$scope', 'Desktop', function($scope, Desktop){
@@ -566,8 +673,6 @@ adminModule
 		$scope.content = {};
 
 		$scope.content.title = 'CPU Content Initialized';
-
-		console.log('ok');
 	}]);
 adminModule
 	.controller('cpuRightSidenavController', ['$scope', 'Desktop', function($scope, Desktop){
@@ -616,7 +721,6 @@ adminModule
 		$scope.fab.action = function(){
 			return;
 		};
-		console.log('ok')
 	}]);
 adminModule
 	.controller('hardDiskContentController', ['$scope', 'HardDisk', function($scope, HardDisk){

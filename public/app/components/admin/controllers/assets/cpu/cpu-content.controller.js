@@ -7,6 +7,4 @@ adminModule
 		$scope.content = {};
 
 		$scope.content.title = 'CPU Content Initialized';
-
-		console.log('ok');
 	}]);

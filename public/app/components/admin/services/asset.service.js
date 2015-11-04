@@ -47,15 +47,19 @@ adminModule
 				return assets;
 			},
 			toolbarController: function(id){
+				// returns assetNameToolbarController
 				return assets[id].controller  + 'ToolbarController';
 			},
 			contentContainerController: function(id){
+				// returns assetNameContentContainerController
 				return assets[id].controller  + 'ContentContainerController';
 			},
 			contentController: function(id){
+				// returns assetNameContentController
 				return assets[id].controller  + 'ContentController';
 			},
 			rightSidenavController: function(id){
+				// returns assetNameRightSidenavController
 				return assets[id].controller  + 'RightSidenavController';
 			},
 		};

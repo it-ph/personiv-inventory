@@ -10,5 +10,5 @@ adminModule
 		 * Properties and method of toolbar.
 		 *
 		*/
-		$scope.toolbar.parentState = 'Home';
+		$scope.toolbar.childState = 'Home';
 	}]);
