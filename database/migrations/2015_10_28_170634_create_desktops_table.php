@@ -17,9 +17,7 @@ class CreateDesktopsTable extends Migration
             $table->string('brand');
             $table->string('model');
             $table->boolean('dvd');
-            $table->integer('processor_id');
-            $table->integer('hard_disk_id');
-            $table->integer('video_card_id');
+            $table->string('processor');
             $table->timestamps();
             $table->softDeletes();
         });

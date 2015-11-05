@@ -62,7 +62,15 @@ sharedModule
 
 		return {
 			/**
-			 * Fetch all departments.
+			 * Paginated load of resource for infinite scrolling.
+			 * @return: Object
+			*/
+			paginate: function(page){
+				return $http.get(urlBase + '-paginate?page=' + page);
+			},
+
+			/**
+			 * Fetch all.
 			 * @return: Array of Objects
 			*/
 			index: function(){
@@ -70,12 +78,21 @@ sharedModule
 			},
 
 			/**
-			 * Fetch specific department.
+			 * Fetch specific.
 			 * @return: Object
 			*/
 			show: function(id){
 				return $http.get(urlBase +  '/' + id);
-			}
+			},
+			
+			/**
+			 * Store single record and returns the input data for updating record.
+			 * @return object
+			 *
+			*/
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
 		};
 	}]);
 sharedModule
@@ -310,6 +327,34 @@ sharedModule
 			 */
 			index: function(){
 				return $http.get(urlBase);
+			},
+		};
+	}]);
+sharedModule
+	.service('Preloader', ['$mdDialog', function($mdDialog){
+		return {
+			/* Starts the preloader */
+			preload: function(){
+				return $mdDialog.show({
+					templateUrl: '/app/shared/templates/preloader.html',
+				    parent: angular.element(document.body),
+				});
+			},
+			/* Stops the preloader */
+			stop: function(){
+				return $mdDialog.hide();
+			},
+			/* Shows error message if AJAX failed */
+			error: function(){
+				return $mdDialog.show(
+			    	$mdDialog.alert()
+				        .parent(angular.element($('body')))
+				        .clickOutsideToClose(true)
+				        .title('Oops! Something went wrong!')
+				        .content('An error occured. Please contact Mcoy for assistance. You can also email Mcoy at marco.paco@personiv.com.')
+				        .ariaLabel('Error Message')
+				        .ok('Got it!')
+				);
 			},
 		};
 	}]);

@@ -48,3 +48,17 @@ Route::resource('software', 'SoftwareController');
 Route::resource('ups', 'UninterruptiblePowerSupplyController');
 Route::resource('video-card', 'VideoCardController');
 Route::resource('other-component', 'OtherComponentController');
+
+// Route Resource Paginations
+Route::get('desktop-paginate', 'DesktopController@paginate');
+Route::get('hard-disk-paginate', 'HardDiskController@paginate');
+Route::get('headset-paginate', 'HeadsetController@paginate');
+Route::get('keyboard-paginate', 'KeyboardController@paginate');
+Route::get('memory-paginate', 'MemoryController@paginate');
+Route::get('mouse-paginate', 'MouseController@paginate');
+Route::get('printer-paginate', 'PrinterController@paginate');
+Route::get('scanner-paginate', 'ScannerController@paginate');
+Route::get('software-paginate', 'SoftwareController@paginate');
+Route::get('ups-paginate', 'UninterruptiblePowerSupplyController@paginate');
+Route::get('video-card-paginate', 'VideoCardController@paginate');
+Route::get('other-component-paginate', 'OtherComponentController@paginate');

@@ -10,30 +10,42 @@
 		</div>
 	</md-toolbar>
 		<md-dialog-content flex layout-padding>
-			<!-- Brand -->
-			<md-input-container>
-				<label>Brand</label>
-				<input name="Brand" type="text" required ng-model="cpu.brand">
-				<div ng-messages="addDesktopForm.Brand.$error" ng-if="addDesktopForm.Brand.$touched">
-					<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+			<div layout="column" flex>
+				<div layout="row" flex>
+					<!-- Brand -->
+					<md-input-container flex>
+						<label>Brand</label>
+						<input name="Brand" type="text" required ng-model="cpu.brand">
+						<div ng-messages="addDesktopForm.Brand.$error" ng-if="addDesktopForm.Brand.$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+					<!-- Model -->
+					<md-input-container flex>
+						<label>Model</label>
+						<input name="Model" type="text" required ng-model="cpu.model">
+						<div ng-messages="addDesktopForm.Model.$error" ng-if="addDesktopForm.Model.$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
 				</div>
-			</md-input-container>
-			<!-- Model -->
-			<md-input-container>
-				<label>Model</label>
-				<input name="Model" type="text" required ng-model="cpu.model">
-				<div ng-messages="addDesktopForm.Model.$error" ng-if="addDesktopForm.Model.$touched">
-					<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-				</div>
-			</md-input-container>
-			<!-- DVD -->
-			<md-checkbox class="md-primary" ng-model="cpu.dvd">
-				DVD Drive
-			</md-checkbox>
+				<!-- Processor -->
+				<md-input-container>
+					<label>Processor</label>
+					<input name="Processor" type="text" required ng-model="cpu.processor">
+					<div ng-messages="addDesktopForm.Processor.$error" ng-if="addDesktopForm.Processor.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+				<!-- DVD -->
+				<md-checkbox class="md-primary" ng-model="cpu.dvd">
+					DVD Drive
+				</md-checkbox>
+			</div>
 		</md-dialog-content>
 	</form>
 	<div layout="row" layout-align="end center">		
-		<md-button class="md-fab md-primary" ng-disabled="addDesktopForm.$invalid">
+		<md-button class="md-fab md-primary" ng-disabled="addDesktopForm.$invalid" aria-label="Submit" ng-click="submit()">
 			<md-icon class="mdi mdi-check"></md-icon>
 		</md-button>
 	</div>

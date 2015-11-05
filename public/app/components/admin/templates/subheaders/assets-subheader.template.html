@@ -4,20 +4,4 @@
 		<md-icon class="mdi mdi-refresh grey" aria-label="refresh"></md-icon>
 		<md-tooltip>Refresh</md-tooltip>
 	</md-button>
-	<!-- Show All Button -->
-	<md-button class="{{ subheader.showButtonClass }}" ng-click="subheader.toggleList()">
-		<span>{{ subheader.showButton }}</span>
-	</md-button>
-	<!-- Filter -->
-	<md-input-container>
-		<label>Filter</label>
-		<md-select ng-model="subheader.filter">
-			<md-option ng-repeat="option in subheader.options" value="{{ option.name }}">{{ option.name }}</md-option>
-		</md-select>
-	</md-input-container>
-	<!-- Order By -->
-	<md-button class="md-icon-button" ng-click="subheader.orderBy()">
-		<md-icon class="mdi {{ subheader.orderClass }} grey" aria-label="order"></md-icon>
-		<md-tooltip>{{ subheader.order }}</md-tooltip>
-	</md-button>
 </div>

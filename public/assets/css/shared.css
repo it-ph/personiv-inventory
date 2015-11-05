@@ -159,6 +159,10 @@ md-content.blue-bg {
 .blue-border-left {
   border-left: 2px solid #2196F3; }
 
+.progress-dialog {
+  background: transparent;
+  box-shadow: none; }
+
 /* transition duration */
 .transition, .fade-transition, .main-view {
   transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2); }
