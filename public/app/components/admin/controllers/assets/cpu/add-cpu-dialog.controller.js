@@ -15,11 +15,7 @@ adminModule
 			Desktop.store($scope.cpu)
 				.then(function(data){
 					// Stops Preloader 
-					Preloader.stop();
-					$state.go($state.current, {}, {reload: true});
-				}, function(){
-					// Shows Error Message
-					Preloader.error();
+					Preloader.stop(data.data);
 				});
 		}
 

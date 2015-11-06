@@ -1,5 +1,6 @@
 sharedModule
 	.service('Preloader', ['$mdDialog', function($mdDialog){
+		var dataHolder = null;
 		return {
 			/* Starts the preloader */
 			preload: function(){
@@ -9,8 +10,8 @@ sharedModule
 				});
 			},
 			/* Stops the preloader */
-			stop: function(){
-				return $mdDialog.hide();
+			stop: function(data){
+				$mdDialog.hide(data);
 			},
 			/* Shows error message if AJAX failed */
 			error: function(){
@@ -19,10 +20,18 @@ sharedModule
 				        .parent(angular.element($('body')))
 				        .clickOutsideToClose(true)
 				        .title('Oops! Something went wrong!')
-				        .content('An error occured. Please contact Mcoy for assistance. You can also email Mcoy at marco.paco@personiv.com.')
+				        .content('An error occured. Please contact administrator for assistance.')
 				        .ariaLabel('Error Message')
 				        .ok('Got it!')
 				);
 			},
+			/* Send temporary data for retrival */
+			set: function(data){
+				returdataHolder = data;
+			},
+			/* Retrieves data */
+			get: function(){
+				return dataHolder;
+			}
 		};
 	}]);

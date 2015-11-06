@@ -17,7 +17,4 @@ adminModule
 		 * Search database and look for user input depending on state.
 		 *
 		*/
-		$scope.searchUserInput = function(){
-			return;
-		};
 	}]);

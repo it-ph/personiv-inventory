@@ -35,5 +35,13 @@ sharedModule
 			store: function(data){
 				return $http.post(urlBase, data);
 			},
+
+			/**
+			 * Search database tables for data
+			 *
+			*/
+			search: function(data){
+				return $http.post(urlBase + '-search', data);
+			}
 		};
 	}]);

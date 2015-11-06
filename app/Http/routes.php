@@ -62,3 +62,17 @@ Route::get('software-paginate', 'SoftwareController@paginate');
 Route::get('ups-paginate', 'UninterruptiblePowerSupplyController@paginate');
 Route::get('video-card-paginate', 'VideoCardController@paginate');
 Route::get('other-component-paginate', 'OtherComponentController@paginate');
+
+// Route Resource Search
+Route::post('desktop-search', 'DesktopController@search');
+Route::post('hard-disk-search', 'HardDiskController@search');
+Route::post('headset-search', 'HeadsetController@search');
+Route::post('keyboard-search', 'KeyboardController@search');
+Route::post('memory-search', 'MemoryController@search');
+Route::post('mouse-search', 'MouseController@search');
+Route::post('printer-search', 'PrinterController@search');
+Route::post('scanner-search', 'ScannerController@search');
+Route::post('software-search', 'SoftwareController@search');
+Route::post('ups-search', 'UninterruptiblePowerSupplyController@search');
+Route::post('video-card-search', 'VideoCardController@search');
+Route::post('other-component-search', 'OtherComponentController@search');

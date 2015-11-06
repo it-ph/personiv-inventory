@@ -7,9 +7,22 @@ adminModule
 		$scope.subheader = {};
 		$scope.subheader.state = 'assets';
 
-
+		/* Refreshes the list */
 		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.desktop.paginated = {};
+			$scope.desktop.page = 2;
 			Desktop.paginate()
+				.then(function(data){
+					$scope.desktop.paginated = data.data;
+					$scope.desktop.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
 		};
 
 		/**
@@ -26,7 +39,11 @@ adminModule
 		    $mdDialog.show({
 		      	controller: 'addDesktopDialogController',
 			    templateUrl: '/app/components/admin/templates/dialogs/add-cpu-dialog.template.html',
-		      	parent: angular.element($('body')),
+		      	parent: angular.element($('.content-container')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
 		    });
 		};
 
@@ -45,10 +62,12 @@ adminModule
 		$scope.desktop = {};
 		// 2 is default so the next page to be loaded will be page 2 
 		$scope.desktop.page = 2;
+		//
 
 		Desktop.paginate()
 			.then(function(data){
 				$scope.desktop.paginated = data.data;
+				$scope.desktop.paginated.show = true;
 
 				$scope.desktop.paginateLoad = function(){
 					// kills the function if ajax is busy or pagination reaches last page
@@ -69,14 +88,51 @@ adminModule
 							$scope.desktop.page++;
 
 							// iterate over each data then splice it to the data array
-							angular.forEach(data.data, function(item, key){
-								$scope.desktop.paginated.data.splice(key, 0, item);
+							angular.forEach(data.data.data, function(item, key){
+								$scope.desktop.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
 							$scope.desktop.busy = false;
-							console.log('loaded');
 						});
 				}
 			});
+
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.desktop.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.desktop.paginated.show = false;
+			Preloader.preload()
+			Desktop.search($scope.desktop)
+				.success(function(data){
+					$scope.desktop.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+
 	}]);
