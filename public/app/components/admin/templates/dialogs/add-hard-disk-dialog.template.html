@@ -1,8 +1,8 @@
-<md-dialog layout="column" flex="50"  aria-label="Add CPU" ng-cloak>
-	<form name="addDesktopForm" novalidate>
+<md-dialog layout="column" flex="50"  aria-label="Add Hard Disk" ng-cloak>
+	<form name="addHardDiskForm" novalidate>
 		<md-toolbar>
 			<div class="md-toolbar-tools">
-				<h2>Add CPU</h2>
+				<h2>Add Hard Disk</h2>
 				<span flex></span>
 				<md-button class="md-icon-button" ng-click="cancel()">
 					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
@@ -15,37 +15,37 @@
 					<!-- Brand -->
 					<md-input-container flex>
 						<label>Brand</label>
-						<input name="Brand" type="text" required ng-model="cpu.brand">
-						<div ng-messages="addDesktopForm.Brand.$error" ng-if="addDesktopForm.Brand.$touched">
+						<input name="Brand" type="text" required ng-model="hardDisk.brand">
+						<div ng-messages="addHardDiskForm.Brand.$error" ng-if="addHardDiskForm.Brand.$touched">
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>
 					</md-input-container>
 					<!-- Model -->
 					<md-input-container flex>
 						<label>Model</label>
-						<input name="Model" type="text" required ng-model="cpu.model">
-						<div ng-messages="addDesktopForm.Model.$error" ng-if="addDesktopForm.Model.$touched">
+						<input name="Model" type="text" required ng-model="hardDisk.model">
+						<div ng-messages="addHardDiskForm.Model.$error" ng-if="addHardDiskForm.Model.$touched">
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>
 					</md-input-container>
 				</div>
-				<!-- Processor -->
+				<!-- Capacity -->
 				<md-input-container>
-					<label>Processor</label>
-					<input name="Processor" type="text" required ng-model="cpu.processor">
-					<div ng-messages="addDesktopForm.Processor.$error" ng-if="addDesktopForm.Processor.$touched">
+					<label>Capacity</label>
+					<md-select name="Capacity" required ng-model="hardDisk.capacity">
+						<md-option ng-repeat="capacity in hardDisk.capacities" value="{{ capacity.capacity }}">
+							{{ capacity.capacity }}
+						</md-option>
+					</md-select>
+					<div ng-messages="addHardDiskForm.Capacity.$error" ng-if="addHardDiskForm.Capacity.$touched">
 						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 					</div>
 				</md-input-container>
-				<!-- DVD -->
-				<md-checkbox class="md-primary" ng-model="cpu.dvd">
-					DVD Drive
-				</md-checkbox>
 			</div>
 		</md-dialog-content>
 	</form>
 	<div layout="row" layout-align="end center">		
-		<md-button class="md-fab md-primary" ng-disabled="addDesktopForm.$invalid" aria-label="Submit" ng-click="submit()">
+		<md-button class="md-fab md-primary" ng-disabled="addHardDiskForm.$invalid" aria-label="Submit" ng-click="submit()">
 			<md-icon class="mdi mdi-check"></md-icon>
 		</md-button>
 	</div>

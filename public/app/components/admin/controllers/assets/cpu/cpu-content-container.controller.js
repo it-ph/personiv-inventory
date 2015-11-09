@@ -39,7 +39,7 @@ adminModule
 		    $mdDialog.show({
 		      	controller: 'addDesktopDialogController',
 			    templateUrl: '/app/components/admin/templates/dialogs/add-cpu-dialog.template.html',
-		      	parent: angular.element($('.content-container')),
+		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
 		    	/* Refreshes the list */
@@ -96,6 +96,8 @@ adminModule
 							$scope.desktop.busy = false;
 						});
 				}
+			}, function(){
+				Preloader.error();
 			});
 
 		/**

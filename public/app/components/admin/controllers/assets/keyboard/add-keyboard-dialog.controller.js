@@ -1,6 +1,6 @@
 adminModule
-	.controller('addDesktopDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Desktop', function($scope, $state, $mdDialog, Preloader, Desktop){
-		$scope.cpu = {};
+	.controller('addKeyboardDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Keyboard', function($scope, $state, $mdDialog, Preloader, Keyboard){
+		$scope.keyboard = {};
 
 		$scope.cancel = function(){
 			$mdDialog.cancel();
@@ -12,7 +12,7 @@ adminModule
 			/**
 			 * Stores Single Record
 			*/
-			Desktop.store($scope.cpu)
+			Keyboard.store($scope.keyboard)
 				.then(function(){
 					// Stops Preloader 
 					Preloader.stop();
@@ -20,5 +20,4 @@ adminModule
 					Preloader.error();
 				});
 		}
-
 	}]);

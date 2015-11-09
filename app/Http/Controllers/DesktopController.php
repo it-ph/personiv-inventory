@@ -82,9 +82,6 @@ class DesktopController extends Controller
 
         // save to database
         $desktop->save();
-
-        // return inserted data
-        // return $query = DB::table('desktops')->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->where('id', $desktop->id)->first();
     }
 
     /**

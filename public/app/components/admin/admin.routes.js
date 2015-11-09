@@ -1,5 +1,5 @@
 adminModule
-	.config(['$stateProvider', function($stateProvider){
+	.config(['$stateProvider',  function($stateProvider, assetService){
 		$stateProvider
 			/**
 			 * Home Route

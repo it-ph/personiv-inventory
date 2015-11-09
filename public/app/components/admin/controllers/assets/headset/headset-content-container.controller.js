@@ -1,5 +1,5 @@
 adminModule
-	.controller('hardDiskContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'HardDisk', function($scope, $mdDialog, Preloader, HardDisk){
+	.controller('headsetContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Headset', function($scope, $mdDialog, Preloader, Headset){
 		/**
 		 * Object for subheader
 		 *
@@ -12,12 +12,12 @@ adminModule
 			// start preloader
 			Preloader.preload();
 			// clear desktop
-			$scope.hardDisk.paginated = {};
-			$scope.hardDisk.page = 2;
-			HardDisk.paginate()
+			$scope.headset.paginated = {};
+			$scope.headset.page = 2;
+			Headset.paginate()
 				.then(function(data){
-					$scope.hardDisk.paginated = data.data;
-					$scope.hardDisk.paginated.show = true;
+					$scope.headset.paginated = data.data;
+					$scope.headset.paginated.show = true;
 					// stop preload
 					Preloader.stop();
 				}, function(){
@@ -37,8 +37,8 @@ adminModule
 
 		$scope.fab.action = function(){
 		    $mdDialog.show({
-		      	controller: 'addHardDiskDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-hard-disk-dialog.template.html',
+		      	controller: 'addHeadsetDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-headset-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
@@ -56,21 +56,21 @@ adminModule
 		$scope.rightSidenav.show = false;
 
 		/**
-		 * Object for Hard Disk
+		 * Object for Headset
 		 *
 		*/
-		$scope.hardDisk = {};
+		$scope.headset = {};
 		// 2 is default so the next page to be loaded will be page 2 
-		$scope.hardDisk.page = 2;
+		$scope.headset.page = 2;
 
-		HardDisk.paginate()
+		Headset.paginate()
 			.then(function(data){
-				$scope.hardDisk.paginated = data.data;
-				$scope.hardDisk.paginated.show = true;
+				$scope.headset.paginated = data.data;
+				$scope.headset.paginated.show = true;
 
-				$scope.hardDisk.paginateLoad = function(){
+				$scope.headset.paginateLoad = function(){
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.hardDisk.busy || ($scope.hardDisk.page > $scope.hardDisk.paginated.last_page)){
+					if($scope.headset.busy || ($scope.headset.page > $scope.headset.paginated.last_page)){
 						return;
 					}
 					/**
@@ -78,27 +78,27 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.hardDisk.busy = true;
+					$scope.headset.busy = true;
 
 					// Calls the next page of pagination.
-					HardDisk.paginate($scope.hardDisk.page)
+					Headset.paginate($scope.headset.page)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.hardDisk.page++;
+							$scope.headset.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.hardDisk.paginated.data.push(item);
+								$scope.headset.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.hardDisk.busy = false;
+							$scope.headset.busy = false;
 						});
 				}
 			}, function(){
 				Preloader.error();
 			});
-
+		
 		/**
 		 * Status of search bar.
 		 *
@@ -118,17 +118,17 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.hardDisk.userInput = '';
+			$scope.headset.userInput = '';
 			$scope.searchBar = false;
 		};
 		
 		
 		$scope.searchUserInput = function(){
-			$scope.hardDisk.paginated.show = false;
+			$scope.headset.paginated.show = false;
 			Preloader.preload();
-			HardDisk.search($scope.hardDisk)
+			Headset.search($scope.headset)
 				.success(function(data){
-					$scope.hardDisk.results = data;
+					$scope.headset.results = data;
 					Preloader.stop();
 				})
 				.error(function(data){

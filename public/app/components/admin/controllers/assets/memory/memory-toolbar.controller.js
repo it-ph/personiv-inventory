@@ -1,5 +1,5 @@
 adminModule
-	.controller('hardDiskToolbarController', ['$scope', 'HardDisk', function($scope, HardDisk){
+	.controller('memoryToolbarController', ['$scope', '$stateParams', 'Memory', function($scope, $stateParams, Memory){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -11,5 +11,5 @@ adminModule
 		 *
 		*/
 		$scope.toolbar.parentState = 'Assets';
-		$scope.toolbar.childState = 'Hard Disk';
+		$scope.toolbar.childState = 'Memory';
 	}]);

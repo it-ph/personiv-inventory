@@ -1,5 +1,5 @@
 adminModule
-	.controller('hardDiskContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'HardDisk', function($scope, $mdDialog, Preloader, HardDisk){
+	.controller('memoryContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Memory', function($scope, $mdDialog, Preloader, Memory){
 		/**
 		 * Object for subheader
 		 *
@@ -12,12 +12,12 @@ adminModule
 			// start preloader
 			Preloader.preload();
 			// clear desktop
-			$scope.hardDisk.paginated = {};
-			$scope.hardDisk.page = 2;
-			HardDisk.paginate()
+			$scope.memory.paginated = {};
+			$scope.memory.page = 2;
+			Memory.paginate()
 				.then(function(data){
-					$scope.hardDisk.paginated = data.data;
-					$scope.hardDisk.paginated.show = true;
+					$scope.memory.paginated = data.data;
+					$scope.memory.paginated.show = true;
 					// stop preload
 					Preloader.stop();
 				}, function(){
@@ -37,8 +37,8 @@ adminModule
 
 		$scope.fab.action = function(){
 		    $mdDialog.show({
-		      	controller: 'addHardDiskDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-hard-disk-dialog.template.html',
+		      	controller: 'addMemoryDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-memory-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
@@ -56,21 +56,21 @@ adminModule
 		$scope.rightSidenav.show = false;
 
 		/**
-		 * Object for Hard Disk
+		 * Object for Headset
 		 *
 		*/
-		$scope.hardDisk = {};
+		$scope.memory = {};
 		// 2 is default so the next page to be loaded will be page 2 
-		$scope.hardDisk.page = 2;
+		$scope.memory.page = 2;
 
-		HardDisk.paginate()
+		Memory.paginate()
 			.then(function(data){
-				$scope.hardDisk.paginated = data.data;
-				$scope.hardDisk.paginated.show = true;
+				$scope.memory.paginated = data.data;
+				$scope.memory.paginated.show = true;
 
-				$scope.hardDisk.paginateLoad = function(){
+				$scope.memory.paginateLoad = function(){
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.hardDisk.busy || ($scope.hardDisk.page > $scope.hardDisk.paginated.last_page)){
+					if($scope.memory.busy || ($scope.memory.page > $scope.memory.paginated.last_page)){
 						return;
 					}
 					/**
@@ -78,27 +78,27 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.hardDisk.busy = true;
+					$scope.memory.busy = true;
 
 					// Calls the next page of pagination.
-					HardDisk.paginate($scope.hardDisk.page)
+					Memory.paginate($scope.memory.page)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.hardDisk.page++;
+							$scope.memory.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.hardDisk.paginated.data.push(item);
+								$scope.memory.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.hardDisk.busy = false;
+							$scope.memory.busy = false;
 						});
 				}
 			}, function(){
 				Preloader.error();
 			});
-
+		
 		/**
 		 * Status of search bar.
 		 *
@@ -118,17 +118,17 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.hardDisk.userInput = '';
+			$scope.memory.userInput = '';
 			$scope.searchBar = false;
 		};
 		
 		
 		$scope.searchUserInput = function(){
-			$scope.hardDisk.paginated.show = false;
+			$scope.memory.paginated.show = false;
 			Preloader.preload();
-			HardDisk.search($scope.hardDisk)
+			Memory.search($scope.memory)
 				.success(function(data){
-					$scope.hardDisk.results = data;
+					$scope.memory.results = data;
 					Preloader.stop();
 				})
 				.error(function(data){

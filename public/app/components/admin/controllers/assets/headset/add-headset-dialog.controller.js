@@ -1,6 +1,6 @@
 adminModule
-	.controller('addDesktopDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Desktop', function($scope, $state, $mdDialog, Preloader, Desktop){
-		$scope.cpu = {};
+	.controller('addHeadsetDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Headset', function($scope, $state, $mdDialog, Preloader, Headset){
+		$scope.headset = {};
 
 		$scope.cancel = function(){
 			$mdDialog.cancel();
@@ -12,7 +12,7 @@ adminModule
 			/**
 			 * Stores Single Record
 			*/
-			Desktop.store($scope.cpu)
+			Headset.store($scope.headset)
 				.then(function(){
 					// Stops Preloader 
 					Preloader.stop();

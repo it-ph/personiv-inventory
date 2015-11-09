@@ -1,6 +1,6 @@
 adminModule
-	.controller('addDesktopDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Desktop', function($scope, $state, $mdDialog, Preloader, Desktop){
-		$scope.cpu = {};
+	.controller('addMemoryDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Memory', function($scope, $state, $mdDialog, Preloader, Memory){
+		$scope.memory = {};
 
 		$scope.cancel = function(){
 			$mdDialog.cancel();
@@ -12,7 +12,7 @@ adminModule
 			/**
 			 * Stores Single Record
 			*/
-			Desktop.store($scope.cpu)
+			Memory.store($scope.memory)
 				.then(function(){
 					// Stops Preloader 
 					Preloader.stop();
@@ -20,5 +20,4 @@ adminModule
 					Preloader.error();
 				});
 		}
-
 	}]);
