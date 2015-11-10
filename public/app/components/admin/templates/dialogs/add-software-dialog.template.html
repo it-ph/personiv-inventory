@@ -1,0 +1,48 @@
+<md-dialog layout="column" flex="50"  aria-label="Add Software" ng-cloak>
+	<form name="addSoftwareForm" novalidate>
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Add Software</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content flex layout-padding>
+			<div layout="column" flex>
+				<div layout="row" flex>
+					<!-- Name -->
+					<md-input-container flex>
+						<label>Name</label>
+						<input name="Name" type="text" required ng-model="software.name">
+						<div ng-messages="addSoftwareForm.Name.$error" ng-if="addSoftwareForm.Name.$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+					<!-- Version -->
+					<md-input-container flex>
+						<label>Version</label>
+						<input name="Version" type="text" required ng-model="software.version">
+						<div ng-messages="addSoftwareForm.Version.$error" ng-if="addSoftwareForm.Version.$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+				</div>
+				<!-- Maker -->
+				<md-input-container flex>
+					<label>Maker</label>
+					<input name="Maker" type="text" required ng-model="software.maker">
+					<div ng-messages="addSoftwareForm.Maker.$error" ng-if="addSoftwareForm.Maker.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-fab md-primary" ng-disabled="addSoftwareForm.$invalid" aria-label="Submit" ng-click="submit()">
+			<md-icon class="mdi mdi-check"></md-icon>
+		</md-button>
+	</div>
+</md-dialog>

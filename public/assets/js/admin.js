@@ -1320,6 +1320,18 @@ adminModule
 	.controller('addMemoryDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Memory', function($scope, $state, $mdDialog, Preloader, Memory){
 		$scope.memory = {};
 
+		$scope.memory.sizes = [
+			{'size': '1GB'},
+			{'size': '2GB'},
+			{'size': '4GB'},
+			{'size': '8GB'},
+		];
+
+		$scope.memory.speeds = [
+			{'speed':'1333MHz'},
+			{'speed':'1600MHz'},
+		];
+
 		$scope.cancel = function(){
 			$mdDialog.cancel();
 		}
@@ -1499,5 +1511,1126 @@ adminModule
 		*/
 		$scope.toolbar.parentState = 'Assets';
 		$scope.toolbar.childState = 'Memory';
+	}]);
+adminModule
+	.controller('addMonitorDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Monitor', function($scope, $state, $mdDialog, Preloader, Monitor){
+		$scope.monitor = {};
+
+		$scope.monitor.sizes = [
+			{'size':'16"'},
+			{'size':'16.5"'},
+			{'size':'17"'},
+			{'size':'17.5"'},
+			{'size':'18"'},
+			{'size':'18.5"'},
+			{'size':'19"'},
+			{'size':'19.5"'},
+			{'size':'20"'},
+		];
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			Monitor.store($scope.monitor)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		}
+	}]);
+adminModule
+	.controller('monitorContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Monitor', function($scope, $mdDialog, Preloader, Monitor){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'assets';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.monitor.paginated = {};
+			$scope.monitor.page = 2;
+			Monitor.paginate()
+				.then(function(data){
+					$scope.monitor.paginated = data.data;
+					$scope.monitor.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addMonitorDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-monitor-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
+
+		/**
+		 * Object for Headset
+		 *
+		*/
+		$scope.monitor = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.monitor.page = 2;
+
+		Monitor.paginate()
+			.then(function(data){
+				$scope.monitor.paginated = data.data;
+				$scope.monitor.paginated.show = true;
+
+				$scope.monitor.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.monitor.busy || ($scope.monitor.page > $scope.monitor.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.monitor.busy = true;
+
+					// Calls the next page of pagination.
+					Monitor.paginate($scope.monitor.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.monitor.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.monitor.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.monitor.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+		
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.monitor.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.monitor.paginated.show = false;
+			Preloader.preload();
+			Monitor.search($scope.monitor)
+				.success(function(data){
+					$scope.monitor.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+	}]);
+adminModule
+	.controller('monitorContentController', ['$scope', function($scope){
+		
+	}])
+adminModule
+	.controller('monitorRightSidenavController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('monitorToolbarController', ['$scope', '$stateParams', 'Monitor', function($scope, $stateParams, Monitor){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'Monitor';
+	}]);
+adminModule
+	.controller('addMouseDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Mouse', function($scope, $state, $mdDialog, Preloader, Mouse){
+		$scope.mouse = {};
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			Mouse.store($scope.mouse)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		}
+	}]);
+adminModule
+	.controller('mouseContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Mouse', function($scope, $mdDialog, Preloader, Mouse){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'assets';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.mouse.paginated = {};
+			$scope.mouse.page = 2;
+			Mouse.paginate()
+				.then(function(data){
+					$scope.mouse.paginated = data.data;
+					$scope.mouse.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addMouseDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-mouse-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
+
+		/**
+		 * Object for Headset
+		 *
+		*/
+		$scope.mouse = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.mouse.page = 2;
+
+		Mouse.paginate()
+			.then(function(data){
+				$scope.mouse.paginated = data.data;
+				$scope.mouse.paginated.show = true;
+
+				$scope.mouse.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.mouse.busy || ($scope.mouse.page > $scope.mouse.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.mouse.busy = true;
+
+					// Calls the next page of pagination.
+					Mouse.paginate($scope.mouse.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.mouse.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.mouse.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.mouse.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+		
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.mouse.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.mouse.paginated.show = false;
+			Preloader.preload();
+			Mouse.search($scope.mouse)
+				.success(function(data){
+					$scope.mouse.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+	}]);
+adminModule
+	.controller('mouseContentController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('mouseRightSidenavController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('mouseToolbarController', ['$scope', '$stateParams', 'Mouse', function($scope, $stateParams, Mouse){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'Mouse';
+	}]);
+adminModule
+	.controller('addPrinterDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Printer', function($scope, $state, $mdDialog, Preloader, Printer){
+		$scope.printer = {};
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			Memory.store($scope.memory)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		}
+	}]);
+adminModule
+	.controller('printerContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Printer', function($scope, $mdDialog, Preloader, Printer){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'assets';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.printer.paginated = {};
+			$scope.printer.page = 2;
+			Printer.paginate()
+				.then(function(data){
+					$scope.printer.paginated = data.data;
+					$scope.printer.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addPrinterDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-printer-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
+
+		/**
+		 * Object for Headset
+		 *
+		*/
+		$scope.printer = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.printer.page = 2;
+
+		Printer.paginate()
+			.then(function(data){
+				$scope.printer.paginated = data.data;
+				$scope.printer.paginated.show = true;
+
+				$scope.printer.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.printer.busy || ($scope.printer.page > $scope.printer.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.printer.busy = true;
+
+					// Calls the next page of pagination.
+					Printer.paginate($scope.printer.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.printer.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.printer.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.printer.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+		
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.printer.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.printer.paginated.show = false;
+			Preloader.preload();
+			Printer.search($scope.printer)
+				.success(function(data){
+					$scope.printer.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+	}]);
+adminModule
+	.controller('printerContentController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('printerRightSidenavController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('printerToolbarController', ['$scope', '$stateParams', 'Printer', function($scope, $stateParams, Printer){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'Printer';
+	}]);
+adminModule
+	.controller('addScannerDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Scanner', function($scope, $state, $mdDialog, Preloader, Scanner){
+		$scope.scanner = {};
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			Scanner.store($scope.scanner)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		}
+	}]);
+adminModule
+	.controller('scannerContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Scanner', function($scope, $mdDialog, Preloader, Scanner){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'assets';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.scanner.paginated = {};
+			$scope.scanner.page = 2;
+			Scanner.paginate()
+				.then(function(data){
+					$scope.scanner.paginated = data.data;
+					$scope.scanner.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addScannerDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-scanner-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
+
+		/**
+		 * Object for Scanner
+		 *
+		*/
+		$scope.scanner = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.scanner.page = 2;
+
+		Scanner.paginate()
+			.then(function(data){
+				$scope.scanner.paginated = data.data;
+				$scope.scanner.paginated.show = true;
+
+				$scope.scanner.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.scanner.busy || ($scope.scanner.page > $scope.scanner.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.scanner.busy = true;
+
+					// Calls the next page of pagination.
+					Scanner.paginate($scope.scanner.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.scanner.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.scanner.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.scanner.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+		
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.scanner.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.scanner.paginated.show = false;
+			Preloader.preload();
+			Scanner.search($scope.scanner)
+				.success(function(data){
+					$scope.scanner.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+	}]);
+adminModule
+	.controller('scannerContentController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('scannerRightSidenavController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('scannerToolbarController', ['$scope', '$stateParams', 'Scanner', function($scope, $stateParams, Scanner){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'Scanner';
+	}]);
+adminModule
+	.controller('addSoftwareDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Software', function($scope, $state, $mdDialog, Preloader, Software){
+		$scope.software = {};
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			Software.store($scope.software)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		}
+	}]);
+adminModule
+	.controller('softwareContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Software', function($scope, $mdDialog, Preloader, Software){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'assets';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.software.paginated = {};
+			$scope.software.page = 2;
+			Software.paginate()
+				.then(function(data){
+					$scope.software.paginated = data.data;
+					$scope.software.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addSoftwareDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-software-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
+
+		/**
+		 * Object for software
+		 *
+		*/
+		$scope.software = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.software.page = 2;
+
+		Software.paginate()
+			.then(function(data){
+				$scope.software.paginated = data.data;
+				$scope.software.paginated.show = true;
+
+				$scope.software.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.software.busy || ($scope.software.page > $scope.software.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.software.busy = true;
+
+					// Calls the next page of pagination.
+					Software.paginate($scope.software.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.software.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.software.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.software.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+		
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.software.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.software.paginated.show = false;
+			Preloader.preload();
+			Software.search($scope.software)
+				.success(function(data){
+					$scope.software.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+	}]);
+adminModule
+	.controller('softwareContentController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('softwareRightSidenavController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('softwareToolbarController', ['$scope', '$stateParams', 'Software', function($scope, $stateParams, Software){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'Software';
+	}]);
+adminModule
+	.controller('addUpsDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'UPS', function($scope, $state, $mdDialog, Preloader, UPS){
+		$scope.ups = {};
+
+		$scope.ups.wattages = [
+			{'wattage':'550W'},
+			{'wattage':'650W'},
+		];
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			UPS.store($scope.ups)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		}
+	}]);
+adminModule
+	.controller('upsContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'UPS', function($scope, $mdDialog, Preloader, UPS){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'assets';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.ups.paginated = {};
+			$scope.ups.page = 2;
+			UPS.paginate()
+				.then(function(data){
+					$scope.ups.paginated = data.data;
+					$scope.ups.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addUpsDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-ups-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
+
+		/**
+		 * Object for ups
+		 *
+		*/
+		$scope.ups = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.ups.page = 2;
+
+		UPS.paginate()
+			.then(function(data){
+				$scope.ups.paginated = data.data;
+				$scope.ups.paginated.show = true;
+
+				$scope.ups.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.ups.busy || ($scope.ups.page > $scope.ups.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.ups.busy = true;
+
+					// Calls the next page of pagination.
+					UPS.paginate($scope.ups.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.ups.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.ups.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.ups.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+		
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.ups.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.ups.paginated.show = false;
+			Preloader.preload();
+			UPS.search($scope.ups)
+				.success(function(data){
+					$scope.ups.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+	}]);
+adminModule
+	.controller('upsContentController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('upsRightSidenavController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('upsToolbarController', ['$scope', '$stateParams', 'UPS', function($scope, $stateParams, UPS){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'UPS';
 	}]);
 //# sourceMappingURL=admin.js.map

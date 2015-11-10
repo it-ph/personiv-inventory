@@ -1,5 +1,5 @@
 sharedModule
-	.factory('ups', ['$http', function($http){
+	.factory('UPS', ['$http', function($http){
 		var urlBase = '/ups';
 
 		return {

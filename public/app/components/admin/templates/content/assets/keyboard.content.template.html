@@ -14,6 +14,9 @@
 					<p flex class="text-right secondary-text md-caption">{{ keyboard.created_at }}</p>
 				</md-list-item>
 			</md-list>
+			<md-card-content ng-if="!keyboard.results.length">
+				<p class="secondary-text">No results found.</p>
+			</md-card-content>
 		</md-card>
 	</div>
 </div>
@@ -35,6 +38,9 @@
 						<p flex class="text-right secondary-text md-caption">{{ keyboard.created_at }}</p>
 					</md-list-item>
 				</md-list>
+				<md-card-content ng-if="!keyboard.paginated.data.length">
+					<p class="secondary-text">No records yet.</p>
+				</md-card-content>
 			</md-card>
 		</div>
 	</div>

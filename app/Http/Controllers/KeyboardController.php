@@ -25,7 +25,6 @@ class KeyboardController extends Controller
             ->get();
     }
 
-
     /**
      * Paginate listing of the resource.
      * 

@@ -29,9 +29,9 @@
 						</div>
 					</md-input-container>
 				</div>
-				<div layout="row">
+				<div layout="row" flex>
 					<!-- Size -->
-					<md-input-container>
+					<md-input-container flex>
 						<label>Size</label>
 						<md-select name="Size" required ng-model="memory.size">
 							<md-option ng-repeat="size in memory.sizes" value="{{ size.size }}">
@@ -43,11 +43,11 @@
 						</div>
 					</md-input-container>
 					<!-- Speed -->
-					<md-input-container>
+					<md-input-container flex>
 						<label>Speed</label>
 						<md-select name="Speed" required ng-model="memory.speed">
-							<md-option ng-repeat="size in memory.speeds" value="{{ size.size }}">
-								{{ size.size }}
+							<md-option ng-repeat="speed in memory.speeds" value="{{ speed.speed }}">
+								{{ speed.speed }}
 							</md-option>
 						</md-select>
 						<div ng-messages="addMemoryForm.Speed.$error" ng-if="addMemoryForm.Speed.$touched">

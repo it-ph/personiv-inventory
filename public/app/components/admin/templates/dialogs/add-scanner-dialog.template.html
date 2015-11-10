@@ -1,0 +1,40 @@
+<md-dialog layout="column" flex="50"  aria-label="Add Scanner" ng-cloak>
+	<form name="addScannerForm" novalidate>
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Add Scanner</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content flex layout-padding>
+			<div layout="column" flex>
+				<div layout="row" flex>
+					<!-- Brand -->
+					<md-input-container flex>
+						<label>Brand</label>
+						<input name="Brand" type="text" required ng-model="scanner.brand">
+						<div ng-messages="addScannerForm.Brand.$error" ng-if="addScannerForm.Brand.$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+					<!-- Model -->
+					<md-input-container flex>
+						<label>Model</label>
+						<input name="Model" type="text" required ng-model="scanner.model">
+						<div ng-messages="addScannerForm.Model.$error" ng-if="addScannerForm.Model.$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+				</div>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-fab md-primary" ng-disabled="addScannerForm.$invalid" aria-label="Submit" ng-click="submit()">
+			<md-icon class="mdi mdi-check"></md-icon>
+		</md-button>
+	</div>
+</md-dialog>

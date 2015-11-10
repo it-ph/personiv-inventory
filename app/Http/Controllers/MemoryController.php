@@ -65,7 +65,25 @@ class MemoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // validate request input
+        $this->validate($request, [
+            'brand' => 'required|string',
+            'model' => 'required|string',
+            'size' => 'required|string',
+            'speed' => 'required|string',
+        ]);
+
+        // create a new instance of desktop
+        $memory = new Memory;
+
+        // assign its properties
+        $memory->brand = $request->brand;
+        $memory->model = $request->model;
+        $memory->size = $request->size;
+        $memory->speed = $request->speed;
+
+        // save to database
+        $memory->save();
     }
 
     /**
