@@ -20,8 +20,10 @@ class HeadsetController extends Controller
             ->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
             ->where('brand', 'like', '%'. $request->userInput .'%')
             ->orWhere('model', 'like', '%'. $request->userInput .'%')
+            ->whereNull('deleted_at')
             ->groupBy('id')
             ->orderBy('updated_at', 'desc')
+            ->whereNull('deleted_at')
             ->get();
     }
 
@@ -33,7 +35,7 @@ class HeadsetController extends Controller
     */
     public function paginate()
     {
-        return DB::table('headsets')->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->orderBy('updated_at', 'desc')->paginate(25);
+        return DB::table('headsets')->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
     }
 
     /**

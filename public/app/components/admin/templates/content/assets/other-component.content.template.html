@@ -1,0 +1,49 @@
+<!-- Search Results -->
+<div class="fade-transition" layout="column" flex flex-gt-sm="70" ng-if="otherComponent.results && !otherComponent.paginated.show">
+	<div layout-margin layout-padding>
+		<md-card>
+			<md-list>
+				<md-list-item class="md-2-line" ng-click="show()" layout="row" ng-repeat="otherComponent in otherComponent.results | filter:otherComponent.userInput">
+					<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+						<span class="weight-200 white-text">{{ otherComponent.first_letter }}</span>
+					</h2>
+					<div class="md-list-item-text" layout="column" flex>
+						<h3>{{ otherComponent.brand }}</h3>
+						<h4>{{ otherComponent.model }}</h4>
+						<p>{{ otherComponent.type }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption">{{ otherComponent.created_at }}</p>
+				</md-list-item>
+			</md-list>
+			<md-card-content ng-if="!otherComponent.results.length">
+				<p class="secondary-text">No results found.</p>
+			</md-card-content>
+		</md-card>
+	</div>
+</div>
+
+<!-- Paginated Data -->
+<div class="fade-transition" ng-if="otherComponent.paginated.show" flex infinite-scroll='otherComponent.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="otherComponent.busy" infinite-scroll-parent>
+	<div layout="column" flex flex-gt-sm="70">
+		<div layout-margin layout-padding>
+			<md-card>
+				<md-list>
+					<md-list-item class="md-2-line" ng-click="show()" layout="row" ng-repeat="otherComponent in otherComponent.paginated.data | filter:otherComponent.userInput">
+						<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+							<span class="weight-200 white-text">{{ otherComponent.first_letter }}</span>
+						</h2>
+						<div class="md-list-item-text" layout="column" flex>
+							<h3>{{ otherComponent.brand }}</h3>
+							<h4>{{ otherComponent.model }}</h4>
+							<p>{{ otherComponent.type }}</p>
+						</div>
+						<p flex class="text-right secondary-text md-caption">{{ otherComponent.created_at }}</p>
+					</md-list-item>
+				</md-list>
+				<md-card-content ng-if="!otherComponent.paginated.data.length">
+					<p class="secondary-text">No records yet.</p>
+				</md-card-content>
+			</md-card>
+		</div>
+	</div>
+</div>

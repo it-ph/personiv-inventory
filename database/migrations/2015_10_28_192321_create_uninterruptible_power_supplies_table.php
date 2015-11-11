@@ -12,7 +12,7 @@ class CreateUninterruptiblePowerSuppliesTable extends Migration
      */
     public function up()
     {
-        Schema::create('uniterruptible_power_supplies', function (Blueprint $table) {
+        Schema::create('uninterruptible_power_supplies', function (Blueprint $table) {
             $table->increments('id');
             $table->string('brand');
             $table->string('model');
@@ -29,6 +29,6 @@ class CreateUninterruptiblePowerSuppliesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('uniterruptible_power_supplies');
+        Schema::drop('uninterruptible_power_supplies');
     }
 }

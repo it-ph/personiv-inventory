@@ -5,7 +5,8 @@
 <md-content layout="column" flex>
 	<!-- Toogle on scroll Toolbar -->
 	<md-toolbar class="white-toolbar" md-scroll-shrink>
-		<div class="md-toolbar-tools" ng-if="subheader.state == 'assets'" ng-include="'/app/components/admin/templates/subheaders/assets-subheader.template.html'"></div>
+		<!-- Subheader for Assets -->
+		<div class="md-toolbar-tools" ng-if="subheader.state != 'dashboard'" ng-include="'/app/components/admin/templates/subheaders/assets-subheader.template.html'"></div>
 	</md-toolbar>
 	<!-- Content -->
 	<md-content flex layout="column" ui-view="content"></md-content>

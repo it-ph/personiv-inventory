@@ -15,7 +15,7 @@
 					<p flex class="text-right secondary-text md-caption">{{ desktop.created_at }}</p>
 				</md-list-item>
 			</md-list>
-			<md-card-content ng-if="!desktop.results.data.length">
+			<md-card-content ng-if="!desktop.results.length">
 				<p class="secondary-text">No results found.</p>
 			</md-card-content>
 		</md-card>
@@ -35,7 +35,7 @@
 						<div class="md-list-item-text" layout="column" flex>
 							<h3>{{ desktop.brand }}</h3>
 							<h4>{{ desktop.model }}</h4>
-							<p>{{ desktop.processor }} <span ng-if="desktop.dvd">w/0DVD</span></p>
+							<p>{{ desktop.processor }} /<span ng-if="desktop.dvd">w/ DVD</span></p>
 						</div>
 						<p flex class="text-right secondary-text md-caption">{{ desktop.created_at }}</p>
 					</md-list-item>

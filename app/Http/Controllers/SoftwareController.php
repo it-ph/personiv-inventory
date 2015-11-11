@@ -21,6 +21,7 @@ class SoftwareController extends Controller
             ->where('name', 'like', '%'. $request->userInput .'%')
             ->orWhere('version', 'like', '%'. $request->userInput .'%')
             ->orWhere('maker', 'like', '%'. $request->userInput .'%')
+            ->whereNull('deleted_at')
             ->groupBy('id')
             ->orderBy('updated_at', 'desc')
             ->get();
@@ -33,7 +34,7 @@ class SoftwareController extends Controller
     */
     public function paginate()
     {
-        return DB::table('softwares')->select('*', DB::raw('LEFT(maker, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->orderBy('updated_at', 'desc')->paginate(25);
+        return DB::table('softwares')->select('*', DB::raw('LEFT(maker, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
     }
 
     /**

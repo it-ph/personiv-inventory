@@ -15,18 +15,21 @@ adminModule
 		 * Fetch the department data stored at deparments servce.
 		 *
 		*/
-		var departments = departmentService.get();
 		var index = $stateParams.departmentID - 1;
-
 		$scope.toolbar.parentState = 'Departments';
-		$scope.toolbar.childState = departments[index].name;
-		
-		/**
-		 * Search database and look for user input depending on state.
-		 *
-		*/
-		$scope.searchUserInput = function(){
-			return;
-		};
 
+		var departments = departmentService.get();
+		if(!departments.length){
+			Department.index()
+				.success(function(data){
+					departments = data;
+					$scope.toolbar.childState = departments[index].name;
+				})
+				.error(function(data){
+					Preload.error();
+				});
+		}
+		else{
+			$scope.toolbar.childState = departments[index].name;
+		}
 	}]);

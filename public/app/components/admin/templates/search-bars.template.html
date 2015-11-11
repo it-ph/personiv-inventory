@@ -71,7 +71,13 @@
 </md-input-container>
 
 <!-- Other Components -->
-<md-input-container flex ng-if="others">
+<md-input-container flex ng-if="otherComponent">
 	<label>Search</label>
-	<input type="text" ng-model="others.userInput">
+	<input type="text" ng-model="otherComponent.userInput">
+</md-input-container>
+
+<!-- Employee -->
+<md-input-container flex ng-if="employee">
+	<label>Search</label>
+	<input type="text" ng-model="employee.userInput">
 </md-input-container>

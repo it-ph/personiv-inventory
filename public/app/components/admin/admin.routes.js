@@ -132,13 +132,13 @@ adminModule
 							return assetService.contentController(index);
 						}]
 					},
-					'right-sidenav@main.assets': {
-						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
-						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
-							var index = $stateParams.assetID - 1;
-							return assetService.rightSidenavController(index);
-						}]
-					},
+					// 'right-sidenav@main.assets': {
+					// 	templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
+					// 	controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+					// 		var index = $stateParams.assetID - 1;
+					// 		return assetService.rightSidenavController(index);
+					// 	}]
+					// },
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
 					var leftSidenav = $('[md-component-id="left"]');
@@ -156,9 +156,16 @@ adminModule
 				url: 'department/{departmentID}',
 				params: {'name':null},
 				views: {
-					'toolbar': {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'departmentContentContainerController',
+					},
+					'toolbar@main.department': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
 						controller: 'departmentToolbarController',
+					},
+					'content@main.department': {
+						templateUrl: '/app/components/admin/templates/content/department.content.template.html',
 					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
