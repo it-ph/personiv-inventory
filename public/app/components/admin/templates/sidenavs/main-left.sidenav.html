@@ -17,13 +17,21 @@
 		<ul class="pages">
 			<!-- Dashboard -->
 			<li layout="row" ng-repeat="page in menu.pages[$index]" ui-sref-active="active" ng-if="section.name == 'Dashboard'">
-				<md-button flex ui-sref="{{ page.state }}">
+				<md-button flex ng-if="page.name != 'Floor Plan'" ui-sref="{{ page.state }}">
 					<div layout="row" flex>
 						<span flex="5"></span>
 						<span class="white-text">{{ page.name }}</span>
 						<span flex></span>
 					</div>
 				</md-button>
+				<md-button flex ng-if="page.name == 'Floor Plan'" ui-sref="main.floor-plan({'departmentID': 1})">
+					<div layout="row" flex>
+						<span flex="5"></span>
+						<span class="white-text">{{ page.name }}</span>
+						<span flex></span>
+					</div>
+				</md-button>
+				
 			</li>
 			<!-- Assets -->
 			<li layout="row" ui-sref-active="active" ng-if="section.name == 'Assets'" ng-repeat="page in menu.pages[$index]">

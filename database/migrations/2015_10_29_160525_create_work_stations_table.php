@@ -14,7 +14,8 @@ class CreateWorkStationsTable extends Migration
     {
         Schema::create('work_stations', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name')->unique();
+            $table->string('type');
             $table->integer('department_id');
             $table->timestamps();
             $table->softDeletes();

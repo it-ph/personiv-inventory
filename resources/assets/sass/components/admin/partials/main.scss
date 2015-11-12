@@ -54,3 +54,12 @@
 		background: rgba(black,0.3);
 	}
 }
+
+.departments{
+	.active{
+		background: $primary500;
+		.primary-text{
+			color: white;
+		}
+	}
+}

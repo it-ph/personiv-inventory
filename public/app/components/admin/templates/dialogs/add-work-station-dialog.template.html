@@ -1,0 +1,43 @@
+<md-dialog layout="column" flex="50"  aria-label="Add {{ department.name }} Work Station" ng-cloak>
+	<form name="addWorkStationForm" novalidate>
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Add {{ department.name }} Work Station</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content flex layout-padding>
+			<div layout="column" flex>
+				<!-- Station Name -->
+				<md-input-container flex>
+					<label>Station Name</label>
+					<md-select name="Name" required ng-model="workStation.name">
+						<md-option ng-repeat="pattern in patterns" value="{{ pattern.value }}">
+							<span class="primary-text">{{ pattern.pattern }}</span>
+							<span class="md-caption secondary-text">({{ pattern.meaning }})</span>
+						</md-option>
+					</md-select>
+					<div ng-messages="addWorkStationForm.Name.$error" ng-if="addWorkStationForm.Name.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+				<!-- Quantity -->
+				<md-input-container flex>
+					<label>Quantity</label>
+					<input type="number" name="Quantity" required ng-model="workStation.quantity" min="1" max="999">
+					<div ng-messages="addWorkStationForm.Quantity.$error" ng-if="addWorkStationForm.Quantity.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-fab md-primary" ng-disabled="addWorkStationForm.$invalid" aria-label="Submit" ng-click="submit()">
+			<md-icon class="mdi mdi-check"></md-icon>
+		</md-button>
+	</div>
+</md-dialog>

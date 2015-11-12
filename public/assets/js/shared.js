@@ -35,43 +35,6 @@ sharedModule
 		};
 	}]);
 sharedModule
-	.service('Preloader', ['$mdDialog', function($mdDialog){
-		var dataHolder = null;
-		return {
-			/* Starts the preloader */
-			preload: function(){
-				return $mdDialog.show({
-					templateUrl: '/app/shared/templates/preloader.html',
-				    parent: angular.element(document.body),
-				});
-			},
-			/* Stops the preloader */
-			stop: function(data){
-				$mdDialog.hide(data);
-			},
-			/* Shows error message if AJAX failed */
-			error: function(){
-				return $mdDialog.show(
-			    	$mdDialog.alert()
-				        .parent(angular.element($('body')))
-				        .clickOutsideToClose(true)
-				        .title('Oops! Something went wrong!')
-				        .content('An error occured. Please contact administrator for assistance.')
-				        .ariaLabel('Error Message')
-				        .ok('Got it!')
-				);
-			},
-			/* Send temporary data for retrival */
-			set: function(data){
-				returdataHolder = data;
-			},
-			/* Retrieves data */
-			get: function(){
-				return dataHolder;
-			}
-		};
-	}]);
-sharedModule
 	.factory('Department', ['$http', function($http){
 		var urlBase = '/department';
 
@@ -763,6 +726,89 @@ sharedModule
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
 			},
+		};
+	}]);
+sharedModule
+	.factory('WorkStation', ['$http', function($http){
+		var urlBase = '/work-station';
+
+		return {
+			/**
+			 * Paginated load of resource for infinite scrolling.
+			 * @return: Object
+			*/
+			paginate: function(id, page){
+				return $http.get(urlBase + '-paginate/' + id + '?page=' + page);
+			},
+			/**
+			 * Fetch all.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			},
+			
+			/**
+			 * Store single record and returns the input data for updating record.
+			 * @return object
+			 *
+			*/
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+
+			/**
+			 * Search database tables for data
+			 *
+			*/
+			search: function(id, data){
+				return $http.post(urlBase + '-search/' + id, data);
+			}
+		};
+	}])
+sharedModule
+	.service('Preloader', ['$mdDialog', function($mdDialog){
+		var dataHolder = null;
+		return {
+			/* Starts the preloader */
+			preload: function(){
+				return $mdDialog.show({
+					templateUrl: '/app/shared/templates/preloader.html',
+				    parent: angular.element(document.body),
+				});
+			},
+			/* Stops the preloader */
+			stop: function(data){
+				$mdDialog.hide(data);
+			},
+			/* Shows error message if AJAX failed */
+			error: function(){
+				return $mdDialog.show(
+			    	$mdDialog.alert()
+				        .parent(angular.element($('body')))
+				        .clickOutsideToClose(true)
+				        .title('Oops! Something went wrong!')
+				        .content('An error occured. Please contact administrator for assistance.')
+				        .ariaLabel('Error Message')
+				        .ok('Got it!')
+				);
+			},
+			/* Send temporary data for retrival */
+			set: function(data){
+				returdataHolder = data;
+			},
+			/* Retrieves data */
+			get: function(){
+				return dataHolder;
+			}
 		};
 	}]);
 //# sourceMappingURL=shared.js.map

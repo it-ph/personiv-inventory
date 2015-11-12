@@ -50,6 +50,7 @@ Route::resource('ups', 'UninterruptiblePowerSupplyController');
 Route::resource('video-card', 'VideoCardController');
 Route::resource('other-component', 'OtherComponentController');
 Route::resource('employee', 'EmployeeController');
+Route::resource('work-station', 'WorkStationController');
 
 // Route Resource Paginations
 Route::get('desktop-paginate', 'DesktopController@paginate');
@@ -66,6 +67,7 @@ Route::get('ups-paginate', 'UninterruptiblePowerSupplyController@paginate');
 Route::get('video-card-paginate', 'VideoCardController@paginate');
 Route::get('other-component-paginate', 'OtherComponentController@paginate');
 Route::get('employee-paginate/{departmentID}', 'EmployeeController@paginate');
+Route::get('work-station-paginate/{departmentID}', 'WorkStationController@paginate');
 
 // Route Resource Search
 Route::post('desktop-search', 'DesktopController@search');
@@ -82,4 +84,5 @@ Route::post('ups-search', 'UninterruptiblePowerSupplyController@search');
 Route::post('video-card-search', 'VideoCardController@search');
 Route::post('other-component-search', 'OtherComponentController@search');
 Route::post('employee-search/{departmentID}', 'EmployeeController@search');
+Route::post('work-station-search/{departmentID}', 'WorkStationController@search');
 

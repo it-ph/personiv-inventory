@@ -77,6 +77,7 @@ class EmployeeController extends Controller
         // assign its properties
         $employee->employee_id = $request->employee_id;
         $employee->full_name = $request->full_name;
+        $employee->department_id = $request->department_id;
 
         // save to database
         $employee->save();

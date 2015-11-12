@@ -80,17 +80,22 @@ adminModule
 			 * 
 			*/
 			.state('main.floor-plan', {
-				url: 'dashboard/floor-plan',
+				url: 'dashboard/floor-plan/{departmentID}',
+				params: {'departmentID': null},
 				views: {
-					'toolbar': {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'floorPlanContentContainerController',
+					},
+					'toolbar@main.floor-plan': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
 						controller: 'floorPlanToolbarController',
 					},
-					'content': {
+					'content@main.floor-plan': {
 						templateUrl: '/app/components/admin/templates/content/floor-plan.content.template.html',
 						controller: 'floorPlanContentController',
 					},
-					'right-sidenav': {
+					'right-sidenav@main.floor-plan': {
 						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
 						controller: 'floorPlanRightSidenavController',
 					},

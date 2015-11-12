@@ -1,13 +1,41 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\WorkStation;
+use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 class WorkStationController extends Controller
 {
+    /**
+     * Search database for records
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function search($departmentID, Request $request)
+    {
+        return DB::table('work_stations')
+            ->select('*', DB::raw('SUBSTRING(name, 6, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->where('department_id', $departmentID)
+            ->where('name', 'like', '%'. $request->userInput .'%')
+            ->whereNull('deleted_at')
+            ->groupBy('id')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+    }
+
+    /**
+     * Paginate listing of the resource.
+     * 
+     * @return  \Illuminate\Http\Response
+    */
+    public function paginate($departmentID)
+    {
+        return DB::table('work_stations')->select('*', DB::raw('SUBSTRING(name, 6, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->where('department_id', $departmentID)->whereNull('deleted_at')->orderBy('name')->paginate(25);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -36,7 +64,55 @@ class WorkStationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required|string',
+            'department_id' => 'required|numeric',
+            'quantity' =>'required|numeric',
+        ]);
+
+        $type = substr($request->name, -1, 3) == 'P' ? 'production' : 'admin';
+
+        // gets the last station
+        $last_station =  Workstation::where('type', $type)->orderBy('created_at', 'id', 'desc')->first();
+
+        if($last_station){
+            $last_station_name = $last_station->name;
+        }
+        else{
+            $last_station_name = null;
+        }
+
+        // if it exists get the last 3 character to gets its number otherwise default is 000;
+        $last_station_number = $last_station_name ? (int)substr($last_station_name, -3): 0;
+
+        // Generate Workstation records until it meets number of quantity
+        for ($i=0; $i < $request->quantity; $i++) { 
+            // increment last station number
+            $last_station_number++;
+
+            // if last station number is less that 10 concat 2 leading zeroes
+            if($last_station_number < 10){
+                $concat_station_number = '00'. $last_station_number;
+            }
+            // else if last station number is less that 99 concat 2 leading zeroes
+            else if($last_station_number < 100){
+                $concat_station_number = '0'. $last_station_number;
+            }
+            // else use the last station number as is
+            else{
+                $concat_station_number = $last_station_number;
+            }
+
+
+            // create a new instance of Workstation
+            $work_station = new Workstation;
+            // concat the station number
+            $work_station->name = $request->name . $concat_station_number;
+            $work_station->department_id = $request->department_id;
+            $work_station->type = $type;
+
+            $work_station->save();
+        }
     }
 
     /**

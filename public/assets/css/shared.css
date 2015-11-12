@@ -142,7 +142,8 @@ md-content.blue-bg {
   width: 100%;
   text-align: center;
   color: #727272;
-  padding: 15px 0px; }
+  padding: 15px 0px;
+  border-top: 1px solid #eee; }
 
 .left-border {
   border-left: 1px solid rgba(0, 0, 0, 0.12); }
