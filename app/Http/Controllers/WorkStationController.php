@@ -10,6 +10,17 @@ use App\Http\Controllers\Controller;
 class WorkStationController extends Controller
 {
     /**
+     * Search for workstation according to department id except the exisiting workstation
+     *
+     * @return \Illuminate\Http\Response
+    */
+
+    public function department($departmentID, $workstationID)
+    {
+        return Workstation::where('department_id', $departmentID)->whereNotIn('id', [$workstationID])->get();
+    }
+
+    /**
      * Search database for records
      *
      * @return \Illuminate\Http\Response
@@ -70,10 +81,13 @@ class WorkStationController extends Controller
             'quantity' =>'required|numeric',
         ]);
 
-        $type = substr($request->name, -1, 3) == 'P' ? 'production' : 'admin';
+        // determine the type of department if production or admin
+        $type = substr($request->name, 5, 1) == 'P' ? 'production' : 'admin';
+        // determine where in the building are they
+        $division = substr($request->name, 3, 1);
 
         // gets the last station
-        $last_station =  Workstation::where('type', $type)->orderBy('created_at', 'id', 'desc')->first();
+        $last_station =  Workstation::where('type', $type)->where('division', $division)->orderBy('id', 'desc')->first();
 
         if($last_station){
             $last_station_name = $last_station->name;
@@ -82,7 +96,7 @@ class WorkStationController extends Controller
             $last_station_name = null;
         }
 
-        // if it exists get the last 3 character to gets its number otherwise default is 000;
+        // if it exists get the last 3 character to gets its number otherwise default is 0;
         $last_station_number = $last_station_name ? (int)substr($last_station_name, -3): 0;
 
         // Generate Workstation records until it meets number of quantity
@@ -110,6 +124,7 @@ class WorkStationController extends Controller
             $work_station->name = $request->name . $concat_station_number;
             $work_station->department_id = $request->department_id;
             $work_station->type = $type;
+            $work_station->division = $division;
 
             $work_station->save();
         }
@@ -123,7 +138,7 @@ class WorkStationController extends Controller
      */
     public function show($id)
     {
-        //
+        return Workstation::where('id', $id)->first();
     }
 
     /**

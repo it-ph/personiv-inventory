@@ -129,7 +129,7 @@ adminModule
 		$scope.searchUserInput = function(){
 			$scope.workStation.paginated.show = false;
 			Preloader.preload()
-			WorkStation.search($scope.workStation)
+			WorkStation.search(departmentID, $scope.workStation)
 				.success(function(data){
 					$scope.workStation.results = data;
 					Preloader.stop();

@@ -1,0 +1,19 @@
+<md-content layout="column" layout-align="space-between center" flex md-theme="dark">
+	<div class="full-width-min">
+		<ul class="right-sidenav-list">
+			<li flex layout="row" layout-align="start center" class="blue-bg">
+				<span flex="5"></span>
+				<h2 class="md-title white-text">Other Work Stations</h2>
+			</li>
+			<li layout="row" ui-sref-active="active" ng-repeat="workStation in rightSidenav.workStations">
+				<md-button flex ng-click="rightSidenav.show(workStation.id)">
+					<div layout="row" flex>
+						<span flex="5"></span>
+						<span class="white-text">{{ workStation.name }}</span>
+						<span flex></span>
+					</div>
+				</md-button>
+			</li>
+		</ul>
+	</div>
+</md-content>

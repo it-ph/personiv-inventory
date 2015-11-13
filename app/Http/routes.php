@@ -86,3 +86,9 @@ Route::post('other-component-search', 'OtherComponentController@search');
 Route::post('employee-search/{departmentID}', 'EmployeeController@search');
 Route::post('work-station-search/{departmentID}', 'WorkStationController@search');
 
+/**
+ * Workstation fetch by department except the existing
+ * used at work-station-toolbar controller
+*/
+
+Route::get('/work-station-department/{departmentID}/station/{workStationID}', 'WorkStationController@department');

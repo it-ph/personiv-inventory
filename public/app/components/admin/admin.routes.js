@@ -109,6 +109,40 @@ adminModule
 				}],
 			})
 			/**
+			 * Display Work Station
+			 *
+			*/
+			.state('main.work-station', {
+				url: 'dashboard/floor-plan/{departmentID}/work-station/{workStationID}',
+				params: {'departmentID':null, 'workStationID': null},
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'workStationContentContainerController',
+					},
+					'toolbar@main.work-station': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+						controller: 'workStationToolbarController',
+					},
+					'content@main.work-station': {
+						templateUrl: '/app/components/admin/templates/content/work-station.content.template.html',
+						controller: 'workStationContentController',
+					},
+					'right-sidenav@main.work-station': {
+						templateUrl : '/app/components/admin/templates/sidenavs/work-station-right.sidenav.html',
+						controller: 'workStationRightSidenavController',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+
+			/**
 			 * Assets Routes
 			 *
 			*/

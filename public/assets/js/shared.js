@@ -771,7 +771,15 @@ sharedModule
 			*/
 			search: function(id, data){
 				return $http.post(urlBase + '-search/' + id, data);
-			}
+			},
+
+			/**
+		     * Search for workstation according to department id except the exisiting workstation
+		     *
+		    */
+			department: function(departmentID, workstationID){
+				return $http.get(urlBase + '-department/' + departmentID + '/station/' + workstationID);
+			},
 		};
 	}])
 sharedModule

@@ -113,6 +113,40 @@ adminModule
 				}],
 			})
 			/**
+			 * Display Work Station
+			 *
+			*/
+			.state('main.work-station', {
+				url: 'dashboard/floor-plan/{departmentID}/work-station/{workStationID}',
+				params: {'departmentID':null, 'workStationID': null},
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'workStationContentContainerController',
+					},
+					'toolbar@main.work-station': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+						controller: 'workStationToolbarController',
+					},
+					'content@main.work-station': {
+						templateUrl: '/app/components/admin/templates/content/work-station.content.template.html',
+						controller: 'workStationContentController',
+					},
+					'right-sidenav@main.work-station': {
+						templateUrl : '/app/components/admin/templates/sidenavs/work-station-right.sidenav.html',
+						controller: 'workStationRightSidenavController',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+
+			/**
 			 * Assets Routes
 			 *
 			*/
@@ -3345,7 +3379,7 @@ adminModule
 		$scope.searchUserInput = function(){
 			$scope.workStation.paginated.show = false;
 			Preloader.preload()
-			WorkStation.search($scope.workStation)
+			WorkStation.search(departmentID, $scope.workStation)
 				.success(function(data){
 					$scope.workStation.results = data;
 					Preloader.stop();
@@ -3358,14 +3392,11 @@ adminModule
 	}]);
 
 adminModule
-	.controller('floorPlanContentController', ['$scope', function($scope){
-		/**
-		 * Object for content view
-		 *
-		*/
-		$scope.content = {};
-
-		$scope.content.title = 'Floor Plan Content Initialized';
+	.controller('floorPlanContentController', ['$scope', '$state', '$stateParams', function($scope, $state, $stateParams){
+		// onclick of 
+		$scope.show = function(id){
+			$state.go('main.work-station', {'departmentID':$stateParams.departmentID, 'workStationID': id});
+		};
 	}]);
 adminModule
 	.controller('floorPlanRightSidenavController', ['$scope', '$state', '$stateParams', 'departmentService', 'Department',  function($scope, $state, $stateParams, departmentService, Department){
@@ -3422,5 +3453,178 @@ adminModule
 		else{
 			$scope.toolbar.childState = departments[index].name;
 		}
+	}]);
+adminModule
+	.controller('addAssetDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Desktop', function($scope, $state, $mdDialog, Preloader, Desktop){
+		$scope.cpu = {};
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			Desktop.store($scope.cpu)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+	}]);
+adminModule
+	.controller('workStationContentContainerController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		var departmentID = $stateParams.departmentID;
+
+		$scope.subheader = {};
+		$scope.subheader.state = 'floor-plan';
+
+		/**
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addWorkStationDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-work-station-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = true;
+
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.workStation.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			// $scope.workStation.paginated.show = false;
+			// Preloader.preload()
+			// WorkStation.search(departmentID, $scope.workStation)
+			// 	.success(function(data){
+			// 		$scope.workStation.results = data;
+			// 		Preloader.stop();
+			// 	})
+			// 	.error(function(data){
+			// 		Preloader.error();
+			// 	});
+		};
+
+	}]);
+
+adminModule
+	.controller('workStationContentController', ['$scope', '$stateParams', 'WorkStation', function($scope, $stateParams, WorkStation){
+		
+	}]);
+adminModule
+	.controller('workStationRightSidenavController', ['$scope', '$state', '$stateParams', 'Preloader', 'WorkStation', 'Department', function($scope, $state, $stateParams, Preloader, WorkStation, Department){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.rightSidenav = {};
+
+		var departmentID = $stateParams.departmentID;
+
+		WorkStation.department(departmentID, $stateParams.workStationID)
+			.success(function(data){
+				$scope.rightSidenav.workStations = data;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		$scope.rightSidenav.show = function(workStationID){
+			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID': workStationID});
+		};
+	}]);
+adminModule
+	.controller('workStationToolbarController', ['$scope', '$state', '$stateParams', 'departmentService', 'Department', 'WorkStation', function($scope, $state, $stateParams, departmentService, Department, WorkStation){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+
+		/**
+		 * Properties and method of toolbar.
+		 *
+		*/
+		var departmentID = $stateParams.departmentID;
+		var index = departmentID - 1;
+
+		$scope.toolbar.showBack = true;
+
+		$scope.toolbar.back = function(){
+			$state.go('main.floor-plan', {'departmentID': departmentID});
+		};
+
+		var departments = departmentService.get();
+		if(!departments.length){
+			Department.index()
+				.success(function(data){
+					departments = data;
+					$scope.toolbar.parentState = departments[index].name;
+				})
+				.error(function(){
+					Preload.error();
+				});
+		}
+		else{
+			$scope.toolbar.parentState = departments[index].name;
+		}
+
+		WorkStation.show($stateParams.workStationID)
+			.success(function(data){
+				$scope.toolbar.childState = data.name;
+			})
+			.error(function(){
+				Preload.error();
+			});
 	}]);
 //# sourceMappingURL=admin.js.map

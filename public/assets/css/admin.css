@@ -230,9 +230,9 @@ md-content.blue-bg {
   .avatar-container .shade {
     background: rgba(0, 0, 0, 0.3); }
 
-.departments .active {
+.right-sidenav-list .active {
   background: #2196F3; }
-  .departments .active .primary-text {
+  .right-sidenav-list .active .primary-text {
     color: white; }
 
 /*# sourceMappingURL=admin.css.map */
