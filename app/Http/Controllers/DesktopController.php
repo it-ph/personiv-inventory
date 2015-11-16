@@ -10,6 +10,17 @@ use App\Http\Controllers\Controller;
 class DesktopController extends Controller
 {
     /**
+     * Fetch distinct table columns
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function distinct(Request $request)
+    {
+        return DB::table('desktops')
+            ->select(DB::raw("DISTINCT ". $request->search))
+            ->get();
+    }
+    /**
      * Search database for records
      *
      * @return \Illuminate\Http\Response
@@ -43,7 +54,8 @@ class DesktopController extends Controller
      */
     public function index()
     {
-        //
+        return Desktop::get();
+        // return DB::table('desktops')->select(DB::raw("DISTINCT ". $search))->get();
     }
 
     /**

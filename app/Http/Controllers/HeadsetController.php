@@ -10,6 +10,18 @@ use App\Http\Controllers\Controller;
 class HeadsetController extends Controller
 {
     /**
+     * Fetch distinct table columns
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function distinct(Request $request)
+    {
+        return DB::table('headsets')
+            ->select(DB::raw("DISTINCT ". $request->search))
+            ->get();
+    }
+
+    /**
      * Search database for records
      *
      * @return \Illuminate\Http\Response
@@ -45,7 +57,7 @@ class HeadsetController extends Controller
      */
     public function index()
     {
-        //
+        return Headset::get();
     }
 
     /**

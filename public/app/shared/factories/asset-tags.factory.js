@@ -1,25 +1,8 @@
 sharedModule
-	.factory('OtherComponent', ['$http', function($http){
-		var urlBase = '/other-component';
+	.factory('AssetTag', ['$http', function($http){
+		var urlBase = '/asset-tag';
 
 		return {
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
 			/**
 			 * Fetch all departments.
 			 * @return: Array of Objects

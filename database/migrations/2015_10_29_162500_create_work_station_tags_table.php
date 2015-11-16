@@ -15,7 +15,7 @@ class CreateWorkStationTagsTable extends Migration
         Schema::create('work_station_tags', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('employee_id');
-            $table->integer('station_id');
+            $table->integer('work_station_id');
             $table->timestamps();
             $table->softDeletes();
         });

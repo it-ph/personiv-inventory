@@ -1,0 +1,52 @@
+<md-dialog layout="column" flex="50"  aria-label="Add {{ workStation.name }} Asset" ng-cloak>
+	<form name="addWorkStationForm" novalidate>
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>{{ workStation.name }}'s Asset</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content layout="column" flex layout-padding>
+			<div flex ng-repeat="asset in assets">
+				<!-- Components -->
+				<md-subheader class="md-no-sticky">
+					<md-checkbox ng-model="assets[$index].hasComponent">
+						{{ asset.name }}
+					</md-checkbox>
+				</md-subheader>
+				<div layout="row" ng-if="assets[$index].hasComponent">
+					<md-input-container flex>
+						<label>Brand</label>
+						<md-select name="Brand{{$index}}" ng-change="assets[$index].brandChange(asset.brand)" required ng-model="asset.brand">
+							<md-option ng-repeat="asset in asset.brands" value="{{ asset.brand }}">
+								<span>{{ asset.brand }}</span>
+							</md-option>
+						</md-select>
+						<div ng-messages="addWorkStationForm['Brand' + $index].$error" ng-if="addWorkStationForm['Brand' + $index].$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+					<md-input-container flex>
+						<label>Model</label>
+						<md-select name="Model{{$index}}" ng-change="assets[$index].modelChange(asset.brand)" required ng-model="asset.model">
+							<md-option ng-repeat="asset in asset.models" value="{{ asset.model }}">
+								<span>{{ asset.model }}</span>
+							</md-option>
+						</md-select>
+						<div ng-messages="addWorkStationForm['Model' + $index].$error" ng-if="addWorkStationForm['Model' + $index].$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+				</div>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-fab md-primary" ng-disabled="addWorkStationForm.$invalid" aria-label="Submit" ng-click="submit()">
+			<md-icon class="mdi mdi-check"></md-icon>
+		</md-button>
+	</div>
+</md-dialog>

@@ -51,6 +51,7 @@ Route::resource('video-card', 'VideoCardController');
 Route::resource('other-component', 'OtherComponentController');
 Route::resource('employee', 'EmployeeController');
 Route::resource('work-station', 'WorkStationController');
+Route::resource('asset-tag', 'AssetTagController');
 
 // Route Resource Paginations
 Route::get('desktop-paginate', 'DesktopController@paginate');
@@ -85,6 +86,21 @@ Route::post('video-card-search', 'VideoCardController@search');
 Route::post('other-component-search', 'OtherComponentController@search');
 Route::post('employee-search/{departmentID}', 'EmployeeController@search');
 Route::post('work-station-search/{departmentID}', 'WorkStationController@search');
+
+// Route Resource Distinct column
+Route::post('desktop-distinct', 'DesktopController@distinct');
+Route::post('hard-disk-distinct', 'HardDiskController@distinct');
+Route::post('headset-distinct', 'HeadsetController@distinct');
+Route::post('keyboard-distinct', 'KeyboardController@distinct');
+Route::post('memory-distinct', 'MemoryController@distinct');
+Route::post('monitor-distinct', 'MonitorController@distinct');
+Route::post('mouse-distinct', 'MouseController@distinct');
+Route::post('printer-distinct', 'PrinterController@distinct');
+Route::post('scanner-distinct', 'ScannerController@distinct');
+Route::post('software-distinct', 'SoftwareController@distinct');
+Route::post('ups-distinct', 'UninterruptiblePowerSupplyController@distinct');
+Route::post('other-component-distinct', 'OtherComponentController@distinct');
+Route::post('video-card-distinct', 'OtherComponentController@distinct');
 
 /**
  * Workstation fetch by department except the existing

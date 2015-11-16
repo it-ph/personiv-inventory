@@ -10,6 +10,17 @@ use App\Http\Controllers\Controller;
 class SoftwareController extends Controller
 {
     /**
+     * Fetch distinct table columns
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function distinct(Request $request)
+    {
+        return DB::table('softwares')
+            ->select(DB::raw("DISTINCT ". $request->search))
+            ->get();
+    }
+    /**
      * Search database for records
      *
      * @return \Illuminate\Http\Response
@@ -44,7 +55,7 @@ class SoftwareController extends Controller
      */
     public function index()
     {
-        //
+        return Software::get();
     }
 
     /**

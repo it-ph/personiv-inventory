@@ -5,7 +5,17 @@
 				<span flex="5"></span>
 				<h2 class="md-title white-text">Other Work Stations</h2>
 			</li>
-			<li layout="row" ui-sref-active="active" ng-repeat="workStation in rightSidenav.workStations">
+			<!-- if no records yet -->
+			<li layout="row" ng-if="!rightSidenav.workStations.length">
+				<md-button flex>
+					<div layout="row" flex>
+						<span flex="5"></span>
+						<span class="white-text">No other work stations</span>
+						<span flex></span>
+					</div>
+				</md-button>
+			</li>
+			<li layout="row" ui-sref-active="active" class="fade-transition" ng-repeat="workStation in rightSidenav.workStations">
 				<md-button flex ng-click="rightSidenav.show(workStation.id)">
 					<div layout="row" flex>
 						<span flex="5"></span>

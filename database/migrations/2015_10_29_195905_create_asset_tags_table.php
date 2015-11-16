@@ -16,6 +16,7 @@ class CreateAssetTagsTable extends Migration
             $table->increments('id');
             $table->string('component_type');
             $table->integer('component_id');
+            $table->integer('work_station_id');
             $table->string('serial');
             $table->timestamps();
         });

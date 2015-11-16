@@ -10,6 +10,18 @@ use App\Http\Controllers\Controller;
 class VideoCardController extends Controller
 {
     /**
+     * Fetch distinct table columns
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function distinct(Request $request)
+    {
+        return DB::table('video_cards')
+            ->select(DB::raw("DISTINCT ". $request->search))
+            ->get();
+    }
+
+    /**
      * Search database for records
      *
      * @return \Illuminate\Http\Response
@@ -44,7 +56,7 @@ class VideoCardController extends Controller
      */
     public function index()
     {
-        //
+        return VideoCard::get();
     }
 
     /**

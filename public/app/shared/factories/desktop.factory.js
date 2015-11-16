@@ -4,6 +4,14 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
 			*/

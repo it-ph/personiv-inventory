@@ -21,8 +21,8 @@ adminModule
 
 		$scope.fab.action = function(){
 		    $mdDialog.show({
-		      	controller: 'addWorkStationDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-work-station-dialog.template.html',
+		      	controller: 'addAssetDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-asset-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){

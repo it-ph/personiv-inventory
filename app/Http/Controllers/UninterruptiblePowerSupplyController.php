@@ -10,6 +10,17 @@ use App\Http\Controllers\Controller;
 class UninterruptiblePowerSupplyController extends Controller
 {
     /**
+     * Fetch distinct table columns
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function distinct(Request $request)
+    {
+        return DB::table('uninterruptible_power_supplies')
+            ->select(DB::raw("DISTINCT ". $request->search))
+            ->get();
+    }
+    /**
      * Search database for records
      *
      * @return \Illuminate\Http\Response
@@ -44,7 +55,7 @@ class UninterruptiblePowerSupplyController extends Controller
      */
     public function index()
     {
-        //
+        return UninterruptiblePowerSupply::get();
     }
 
     /**

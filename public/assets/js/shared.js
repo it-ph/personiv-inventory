@@ -35,6 +35,45 @@ sharedModule
 		};
 	}]);
 sharedModule
+	.factory('AssetTag', ['$http', function($http){
+		var urlBase = '/asset-tag';
+
+		return {
+			/**
+			 * Fetch all departments.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific department.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			},
+
+			/**
+			 * Store single record and returns the input data for updating record.
+			 * @return object
+			 *
+			*/
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+
+			/**
+			 * Search database tables for data
+			 *
+			*/
+			search: function(data){
+				return $http.post(urlBase + '-search', data);
+			},
+		};
+	}]);
+sharedModule
 	.factory('Department', ['$http', function($http){
 		var urlBase = '/department';
 
@@ -61,6 +100,14 @@ sharedModule
 		var urlBase = '/desktop';
 
 		return {
+			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
 			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
@@ -155,6 +202,15 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+		    
+			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
 			*/
@@ -201,6 +257,15 @@ sharedModule
 		var urlBase = '/headset';
 
 		return {
+			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+		    
 			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
@@ -249,6 +314,15 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+		    
+			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
 			*/
@@ -295,6 +369,15 @@ sharedModule
 		var urlBase = '/memory';
 
 		return {
+			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+		    
 			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
@@ -343,6 +426,15 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+		    
+			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
 			*/
@@ -389,6 +481,15 @@ sharedModule
 		var urlBase = '/mouse';
 
 		return {
+			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+		    
 			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
@@ -437,6 +538,15 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+		    
+			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
 			*/
@@ -483,6 +593,15 @@ sharedModule
 		var urlBase = '/printer';
 
 		return {
+			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+		    
 			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
@@ -531,6 +650,15 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+		    
+			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
 			*/
@@ -578,6 +706,15 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+		    
+			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
 			*/
@@ -624,6 +761,15 @@ sharedModule
 		var urlBase = '/ups';
 
 		return {
+			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+		    
 			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
@@ -686,6 +832,15 @@ sharedModule
 		var urlBase = '/video-card';
 
 		return {
+			/**
+		     * Fetch distinct table columns
+		     *
+		     * @return Array of Objects
+		    */
+		    distinct: function(data){
+		    	return $http.post(urlBase + '-distinct', data);
+		    },
+		    
 			/**
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
