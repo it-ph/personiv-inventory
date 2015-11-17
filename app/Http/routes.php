@@ -102,6 +102,15 @@ Route::post('ups-distinct', 'UninterruptiblePowerSupplyController@distinct');
 Route::post('other-component-distinct', 'OtherComponentController@distinct');
 Route::post('video-card-distinct', 'OtherComponentController@distinct');
 
+// Route resource models
+Route::post('/desktop-model', 'DesktopController@model');
+Route::post('/hard-disk-model', 'HardDiskController@model');
+Route::post('/headset-model', 'HeadsetController@model');
+Route::post('/keyboard-model', 'KeyboardController@model');
+Route::post('/monitor-model', 'MonitorController@model');
+Route::post('/mouse-model', 'MouseController@model');
+Route::post('/ups-model', 'UninterruptiblePowerSupplyController@model');
+
 /**
  * Workstation fetch by department except the existing
  * used at work-station-toolbar controller

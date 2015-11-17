@@ -20,11 +20,15 @@
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>
 					</md-input-container>
-					<!-- Model -->
+					<!-- Type -->
 					<md-input-container flex>
-						<label>Model</label>
-						<input name="Model" type="text" required ng-model="memory.model">
-						<div ng-messages="addMemoryForm.Model.$error" ng-if="addMemoryForm.Model.$touched">
+						<label>Type</label>
+						<md-select name="Type" required ng-model="memory.type">
+							<md-option ng-repeat="type in memory.types" value="{{ type.type }}">
+								{{ type.type }}
+							</md-option>
+						</md-select>
+						<div ng-messages="addMemoryForm.Type.$error" ng-if="addMemoryForm.Type.$touched">
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>
 					</md-input-container>
@@ -46,7 +50,10 @@
 					<md-input-container flex>
 						<label>Speed</label>
 						<md-select name="Speed" required ng-model="memory.speed">
-							<md-option ng-repeat="speed in memory.speeds" value="{{ speed.speed }}">
+							<md-option ng-if="memory.type == 'DDR2 / DIMM' || memory.type =='DDR2 / SO-DIMM'" ng-repeat="speed in memory.DDR2_speeds" value="{{ speed.speed }}">
+								{{ speed.speed }}
+							</md-option>
+							<md-option ng-if="memory.type == 'DDR3 / DIMM' || memory.type =='DDR3 / SO-DIMM'" ng-repeat="speed in memory.DDR3_speeds" value="{{ speed.speed }}">
 								{{ speed.speed }}
 							</md-option>
 						</md-select>

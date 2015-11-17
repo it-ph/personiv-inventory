@@ -15,7 +15,7 @@ class CreateMemoriesTable extends Migration
         Schema::create('memories', function (Blueprint $table) {
             $table->increments('id');
             $table->string('brand');
-            $table->string('model');
+            $table->string('type');
             $table->string('size');
             $table->string('speed');
             $table->timestamps();

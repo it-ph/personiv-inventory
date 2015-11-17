@@ -29,7 +29,7 @@ class MemoryController extends Controller
     public function search(Request $request)
     {
         return DB::table('memories')
-            ->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->select('*', DB::raw('LEFT(brand, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
             ->where('brand', 'like', '%'. $request->userInput .'%')
             ->orWhere('model', 'like', '%'. $request->userInput .'%')
             ->orWhere('size', 'like', '%'. $request->userInput .'%')
@@ -47,7 +47,7 @@ class MemoryController extends Controller
     */
     public function paginate()
     {
-        return DB::table('memories')->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
+        return DB::table('memories')->select('*', DB::raw('LEFT(brand, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
     }
 
     /**
@@ -81,7 +81,7 @@ class MemoryController extends Controller
         // validate request input
         $this->validate($request, [
             'brand' => 'required|string',
-            'model' => 'required|string',
+            'type' => 'required|string',
             'size' => 'required|string',
             'speed' => 'required|string',
         ]);
@@ -91,7 +91,7 @@ class MemoryController extends Controller
 
         // assign its properties
         $memory->brand = $request->brand;
-        $memory->model = $request->model;
+        $memory->type = $request->type;
         $memory->size = $request->size;
         $memory->speed = $request->speed;
 
@@ -107,7 +107,7 @@ class MemoryController extends Controller
      */
     public function show($id)
     {
-        //
+        return Memory::where('id', $id)->first();
     }
 
     /**

@@ -16,7 +16,7 @@ class MouseController extends Controller
     */
     public function distinct(Request $request)
     {
-        return DB::table('desktops')
+        return DB::table('mice')
             ->select(DB::raw("DISTINCT ". $request->search))
             ->get();
     }

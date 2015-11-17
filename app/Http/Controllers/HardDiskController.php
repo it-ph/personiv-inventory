@@ -10,12 +10,28 @@ use App\Http\Controllers\Controller;
 class HardDiskController extends Controller
 {
     /**
+     * Fetch models by brand
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function model(Request $request)
+    {
+        return DB::table('desktops')->select('*')->where('brand', '=', $request->brand)->get();
+    }
+    /**
      * Fetch distinct table columns
      *
      * @return \Illuminate\Http\Response
     */
     public function distinct(Request $request)
     {
+        if($request->brand){
+            return DB::table('hard_disks')
+            ->select(DB::raw("DISTINCT ". $request->search))
+            ->where('brand', $request->brand)
+            ->get();
+        }
+
         return DB::table('hard_disks')
             ->select(DB::raw("DISTINCT ". $request->search))
             ->get();

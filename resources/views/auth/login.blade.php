@@ -13,7 +13,7 @@
 				<!-- Password -->
 				<md-input-container>
 					<label>Password</label>
-					<input type="password" name="password" value="{{ old('email') }}">
+					<input type="password" name="password">
 				</md-input-container>
 				<div class="md-actions" layout="row" layout-align="space-between center">
 					<!-- Remember Me -->

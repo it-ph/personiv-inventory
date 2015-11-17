@@ -1456,6 +1456,13 @@ adminModule
 	.controller('addMemoryDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Memory', function($scope, $state, $mdDialog, Preloader, Memory){
 		$scope.memory = {};
 
+		$scope.memory.types = [
+			{'type': 'DDR2 / DIMM'},
+			{'type': 'DDR2 / SO-DIMM'},
+			{'type': 'DDR3 / DIMM'},
+			{'type': 'DDR3 / SO-DIMM'},
+		];
+
 		$scope.memory.sizes = [
 			{'size': '1GB'},
 			{'size': '2GB'},
@@ -1463,9 +1470,21 @@ adminModule
 			{'size': '8GB'},
 		];
 
-		$scope.memory.speeds = [
+		$scope.memory.DDR2_speeds = [
+			{'speed':'400MHz'},
+			{'speed':'533MHz'},
+			{'speed':'667MHz'},
+			{'speed':'800MHz'},
+			{'speed':'1066MHz'},
+		];
+
+		$scope.memory.DDR3_speeds = [
+			{'speed':'800MHz'},
+			{'speed':'1066MHz'},
 			{'speed':'1333MHz'},
 			{'speed':'1600MHz'},
+			{'speed':'1866MHz'},
+			{'speed':'2133MHz'},
 		];
 
 		$scope.cancel = function(){
@@ -3463,49 +3482,51 @@ adminModule
 
 		$scope.assets = [
 			{
-				'name': 'Desktop',
-				'type':'desktop',
-
+				'type': 'Desktop',
+				// when user changes brand fetch all model with that brand
+				brandChange: function(){
+					Desktop.model($scope.assets[0])
+						.success(function(data){
+							$scope.assets[0].models = data;
+						});
+				},
 			},
 			{
-				'name':'Hard Disk',
-				'type':'hard_disk',
+				'type':'Hard Disk',
+				brandChange: function(){
+					var query = {'search':'capacity', 'brand': $scope.assets[1].brand };
+					HardDisk.distinct(query)
+						.success(function(data){
+							$scope.assets[1].capacities = data;
+						});
+				},
 			},
 			{
-				'name':'Headset',
-				'type':'headset',
+				'type':'Headset',
 			},
 			{
-				'name':'Keyboard',
-				'type':'keyboard',
+				'type':'Keyboard',
 			},
 			{
-				'name':'Memory',
-				'type':'memory',
+				'type':'Memory',
 			},
 			{
-				'name':'Monitor',
-				'type':'monitor',
+				'type':'Monitor',
 			},
 			{
-				'name':'Mouse',
-				'type':'mouse',
+				'type':'Mouse',
 			},
 			{
-				'name':'Software',
-				'type':'software',
+				'type':'Software',
 			},
 			{
-				'name':'Uninterruptible Power Supply',
-				'type':'ups',
+				'type':'Uninterruptible Power Supply',
 			},
 			{
-				'name':'Video Card',
-				'type':'video_card',
+				'type':'Video Card',
 			},
 			{
-				'name':'Other Components',
-				'type':'others',
+				'type':'Other Components',
 			},
 		];
 
@@ -3529,7 +3550,7 @@ adminModule
 		};
 
 		var brand = {'search':'brand'};
-		var name = {'search':'name'};
+		var maker = {'search':'maker'};
 
 		// fetch all distinct components data
 		Desktop.distinct(brand)
@@ -3567,9 +3588,9 @@ adminModule
 				$scope.assets[6].brands = data;
 			});
 
-		Software.distinct(name)
+		Software.distinct(maker)
 			.success(function(data){
-				$scope.assets[7].brands = data;
+				$scope.assets[7].makers = data;
 			});
 
 		UPS.distinct(brand)
