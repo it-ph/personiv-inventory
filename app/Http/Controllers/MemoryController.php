@@ -16,6 +16,31 @@ class MemoryController extends Controller
     */
     public function distinct(Request $request)
     {
+        if($request->search == 'type')
+        {
+            return DB::table('memories')
+            ->select(DB::raw("DISTINCT ". $request->search))
+            ->where('brand', $request->brand)
+            ->get();
+        }
+        else if($request->search == 'speed')
+        {
+            return DB::table('memories')
+            ->select(DB::raw("DISTINCT ". $request->search))
+            ->where('brand', $request->brand)
+            ->where('type', $request->type)
+            ->get();
+        }
+        else if($request->search == 'size')
+        {
+            return DB::table('memories')
+            ->select('*')
+            ->where('brand', $request->brand)
+            ->where('type', $request->type)
+            ->where('speed', $request->speed)
+            ->get();   
+        }
+
         return DB::table('memories')
             ->select(DB::raw("DISTINCT ". $request->search))
             ->get();

@@ -10,6 +10,16 @@ use App\Http\Controllers\Controller;
 class UninterruptiblePowerSupplyController extends Controller
 {
     /**
+     * Fetch models by brand
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function model(Request $request)
+    {
+        return DB::table('uninterruptible_power_supplies')->select('*')->where('brand', '=', $request->brand)->get();
+    }
+
+    /**
      * Fetch distinct table columns
      *
      * @return \Illuminate\Http\Response

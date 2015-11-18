@@ -65,6 +65,15 @@ sharedModule
 			},
 
 			/**
+			 * Store single record and returns the input data for updating record.
+			 * @return object
+			 *
+			*/
+			storeMultiple: function(data){
+				return $http.post(urlBase + '-multiple', data);
+			},
+
+			/**
 			 * Search database tables for data
 			 *
 			*/
@@ -210,6 +219,14 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch models with specific brand.
+		     *
+		     * @return Array of Objects
+		    */
+			model: function(data){
+				return $http.post(urlBase + '-model', data);
+			},
+			/**
 		     * Fetch distinct table columns
 		     *
 		     * @return Array of Objects
@@ -266,6 +283,14 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch models with specific brand.
+		     *
+		     * @return Array of Objects
+		    */
+			model: function(data){
+				return $http.post(urlBase + '-model', data);
+			},
+			/**
 		     * Fetch distinct table columns
 		     *
 		     * @return Array of Objects
@@ -321,6 +346,14 @@ sharedModule
 		var urlBase = '/keyboard';
 
 		return {
+			/**
+		     * Fetch models with specific brand.
+		     *
+		     * @return Array of Objects
+		    */
+			model: function(data){
+				return $http.post(urlBase + '-model', data);
+			},
 			/**
 		     * Fetch distinct table columns
 		     *
@@ -434,6 +467,14 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch models with specific brand.
+		     *
+		     * @return Array of Objects
+		    */
+			model: function(data){
+				return $http.post(urlBase + '-model', data);
+			},
+			/**
 		     * Fetch distinct table columns
 		     *
 		     * @return Array of Objects
@@ -490,6 +531,14 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch models with specific brand.
+		     *
+		     * @return Array of Objects
+		    */
+			model: function(data){
+				return $http.post(urlBase + '-model', data);
+			},
+			/**
 		     * Fetch distinct table columns
 		     *
 		     * @return Array of Objects
@@ -545,6 +594,14 @@ sharedModule
 		var urlBase = '/other-component';
 
 		return {
+			/**
+		     * Fetch models with specific brand.
+		     *
+		     * @return Array of Objects
+		    */
+			model: function(data){
+				return $http.post(urlBase + '-model', data);
+			},
 			/**
 		     * Fetch distinct table columns
 		     *
@@ -770,6 +827,14 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch models with specific brand.
+		     *
+		     * @return Array of Objects
+		    */
+			model: function(data){
+				return $http.post(urlBase + '-model', data);
+			},
+			/**
 		     * Fetch distinct table columns
 		     *
 		     * @return Array of Objects
@@ -840,6 +905,14 @@ sharedModule
 		var urlBase = '/video-card';
 
 		return {
+			/**
+		     * Fetch models with specific brand.
+		     *
+		     * @return Array of Objects
+		    */
+			model: function(data){
+				return $http.post(urlBase + '-model', data);
+			},
 			/**
 		     * Fetch distinct table columns
 		     *

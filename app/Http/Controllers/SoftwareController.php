@@ -16,6 +16,22 @@ class SoftwareController extends Controller
     */
     public function distinct(Request $request)
     {
+        if($request->search == 'name')
+        {
+            return DB::table('softwares')
+            ->select(DB::raw("DISTINCT ". $request->search))
+            ->where('maker', $request->maker)
+            ->get();
+        }
+        else if($request->search == 'version')
+        {
+            return DB::table('softwares')
+            ->select('*')
+            ->where('maker', $request->maker)
+            ->where('name', $request->name)
+            ->get();
+        }
+
         return DB::table('softwares')
             ->select(DB::raw("DISTINCT ". $request->search))
             ->get();

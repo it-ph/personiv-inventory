@@ -29,6 +29,15 @@ sharedModule
 			},
 
 			/**
+			 * Store single record and returns the input data for updating record.
+			 * @return object
+			 *
+			*/
+			storeMultiple: function(data){
+				return $http.post(urlBase + '-multiple', data);
+			},
+
+			/**
 			 * Search database tables for data
 			 *
 			*/

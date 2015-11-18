@@ -100,7 +100,7 @@ Route::post('scanner-distinct', 'ScannerController@distinct');
 Route::post('software-distinct', 'SoftwareController@distinct');
 Route::post('ups-distinct', 'UninterruptiblePowerSupplyController@distinct');
 Route::post('other-component-distinct', 'OtherComponentController@distinct');
-Route::post('video-card-distinct', 'OtherComponentController@distinct');
+Route::post('video-card-distinct', 'VideoCardController@distinct');
 
 // Route resource models
 Route::post('/desktop-model', 'DesktopController@model');
@@ -110,6 +110,7 @@ Route::post('/keyboard-model', 'KeyboardController@model');
 Route::post('/monitor-model', 'MonitorController@model');
 Route::post('/mouse-model', 'MouseController@model');
 Route::post('/ups-model', 'UninterruptiblePowerSupplyController@model');
+Route::post('/other-component-model', 'OtherComponentController@model');
 
 /**
  * Workstation fetch by department except the existing
@@ -117,3 +118,6 @@ Route::post('/ups-model', 'UninterruptiblePowerSupplyController@model');
 */
 
 Route::get('/work-station-department/{departmentID}/station/{workStationID}', 'WorkStationController@department');
+
+// Route resource store multiple
+Route::post('/asset-tag-multiple', 'AssetTagController@storeMultiple');

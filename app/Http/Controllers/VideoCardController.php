@@ -16,6 +16,22 @@ class VideoCardController extends Controller
     */
     public function distinct(Request $request)
     {
+        if($request->search == 'size')
+        {
+            return DB::table('video_cards')
+            ->select(DB::raw("DISTINCT ". $request->search))
+            ->where('brand', $request->brand)
+            ->get();
+        }
+        else if($request->search == 'model')
+        {
+            return DB::table('video_cards')
+            ->select('*')
+            ->where('brand', $request->brand)
+            ->where('size', $request->size)
+            ->get();
+        }
+
         return DB::table('video_cards')
             ->select(DB::raw("DISTINCT ". $request->search))
             ->get();

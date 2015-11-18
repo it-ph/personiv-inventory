@@ -10,6 +10,15 @@ use App\Http\Controllers\Controller;
 class MouseController extends Controller
 {
     /**
+     * Fetch models by brand
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function model(Request $request)
+    {
+        return DB::table('mice')->select('*')->where('brand', '=', $request->brand)->get();
+    }
+    /**
      * Fetch distinct table columns
      *
      * @return \Illuminate\Http\Response

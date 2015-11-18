@@ -1,17 +1,229 @@
 <md-content layout="column" layout-padding layout-margin>
 	<md-card flex>
 		<md-card-content>
+			<!-- CPU -->
 			<md-list>
 				<md-subheader class="md-no-sticky md-primary" flex>CPU</md-subheader>
-				<md-list-item class="md-3-line" layout="row">
+				<p class="md-caption secondary-text" ng-if="!cpus.length">No records yet.</p>
+				<md-list-item class="md-3-line" layout="row" ng-repeat="cpu in asset.cpus">
 					<div class="md-list-item-text" layout="column">
-						<h3>Brand / Maker </h3>
-						<h4>Model / Processor / Capacity / GPU / Size / Name/ Version/ Wattage/</h4>
-						<p>Serial</p>
+						<h3>{{ cpu.brand }}</h3>
+						<h4>{{ cpu.model }} / {{ cpu.proccessor }}</h4>
+						<p>Serial: {{ cpu.serial }}</p>
 					</div>
 					<p flex class="text-right secondary-text md-caption" layout="column">
-						<span>Date Purchased</span>
-						<span>Supplier</span>
+						<span>{{ cpu.date_purchase }}</span>
+						<span>{{ cpu.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+		</md-card-content>
+	</md-card>
+
+	<md-card flex>
+		<md-card-content>
+			<!-- Hard Disk -->
+			<md-list>
+				<md-subheader class="md-no-sticky md-primary" flex>Hard Disk</md-subheader>
+				<p class="md-caption secondary-text" ng-if="!hardDisks.length">No records yet.</p>
+				<md-list-item class="md-3-line" layout="row" ng-repeat="hardDisk in asset.hardDisks">
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ hardDisk.brand }}</h3>
+						<h4>{{ hardDisk.model }} / {{ hardDisk.capacity }}</h4>
+						<p>Serial: {{ hardDisk.serial }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>{{ hardDisk.date_purchase }}</span>
+						<span>{{ hardDisk.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+		</md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-content>
+			<!-- Headset -->
+			<md-list>
+				<md-subheader class="md-no-sticky md-primary" flex>Headset</md-subheader>
+				<p class="md-caption secondary-text" ng-if="!headsets.length">No records yet.</p>
+				<md-list-item class="md-3-line" layout="row" ng-repeat="headset in asset.headsets">
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ headset.brand }}</h3>
+						<h4>{{ headset.model }}</h4>
+						<p>Serial: {{ headset.serial }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>{{ headset.date_purchase }}</span>
+						<span>{{ headset.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+		</md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-content>
+			<!-- Keyboard -->
+			<md-list>
+				<md-subheader class="md-no-sticky md-primary" flex>Keyboard</md-subheader>
+				<p class="md-caption secondary-text" ng-if="!keyboards.length">No records yet.</p>
+				<md-list-item class="md-3-line" layout="row" ng-repeat="keyboard in asset.keyboards">
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ keyboard.brand }}</h3>
+						<h4>{{ keyboard.model }}</h4>
+						<p>Serial: {{ keyboard.serial }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>{{ keyboard.date_purchase }}</span>
+						<span>{{ keyboard.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+		</md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-content>
+			<!-- Memory -->
+			<md-list>
+				<md-subheader class="md-no-sticky md-primary" flex>Memory</md-subheader>
+				<p class="md-caption secondary-text" ng-if="!memories.length">No records yet.</p>
+				<md-list-item class="md-3-line" layout="row"ng-repeat="memory in asset.memories">
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ memory.brand }}</h3>
+						<h4>{{ memory.type }} / {{ memory.size }} / {{ memory.speed }}</h4>
+						<p>Serial: {{ memory.serial }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>{{ memory.date_purchase }}</span>
+						<span>{{ memory.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+		</md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-content>
+			<!-- Monitor -->
+			<md-list>
+				<md-subheader class="md-no-sticky md-primary" flex>Monitor</md-subheader>
+				<p class="md-caption secondary-text" ng-if="!monitors.length">No records yet.</p>
+				<md-list-item class="md-3-line" layout="row"ng-repeat="monitor in asset.monitors">
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ monitor.brand }}</h3>
+						<h4>{{ monitor.model }}</h4>
+						<p>Serial: {{ monitor.serial }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>{{ monitor.date_purchase }}</span>
+						<span>{{ monitor.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+		</md-card-content>
+	</md-card>
+	
+	<md-card>
+		<md-card-content>
+			<!-- Mouse -->
+			<md-list>
+				<md-subheader class="md-no-sticky md-primary" flex>Mouse</md-subheader>
+				<p class="md-caption secondary-text" ng-if="!mice.length">No records yet.</p>
+				<md-list-item class="md-3-line" layout="row"ng-repeat="mouse in asset.mice">
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ mouse.brand }}</h3>
+						<h4>{{ mouse.model }}</h4>
+						<p>Serial: {{ mouse.serial }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>{{ mouse.date_purchase }}</span>
+						<span>{{ mouse.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+		</md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-content>
+			<!-- Softwares -->
+			<md-list>
+				<md-subheader class="md-no-sticky md-primary" flex>Softwares</md-subheader>
+				<p class="md-caption secondary-text" ng-if="!softwares.length">No records yet.</p>
+				<md-list-item class="md-3-line" layout="row"ng-repeat="software in asset.softwares">
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ software.maker }}</h3>
+						<h4>{{ software.name }} {{ software.version }}</h4>
+						<p>Serial: {{ software.serial }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>{{ software.date_purchase }}</span>
+						<span>{{ software.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+		</md-card-content>
+	</md-card>
+
+	<md-card>
+		<md-card-content>
+			<!-- UPS -->
+			<md-list>
+				<md-subheader class="md-no-sticky md-primary" flex>UPS</md-subheader>
+				<p class="md-caption secondary-text" ng-if="!ups.length">No records yet.</p>
+				<md-list-item class="md-3-line" layout="row"ng-repeat="item in asset.ups">
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ item.brand }}</h3>
+						<h4>{{ item.model }}</h4>
+						<p>Serial: {{ item.serial }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>{{ item.date_purchase }}</span>
+						<span>{{ item.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+		</md-card-content>
+	</md-card>
+			
+	<md-card>
+		<md-card-content>
+			<!-- Video Card -->
+			<md-list>
+				<md-subheader class="md-no-sticky md-primary" flex>Video Card</md-subheader>
+				<p class="md-caption secondary-text" ng-if="!videoCard.length">No records yet.</p>
+				<md-list-item class="md-3-line" layout="row"ng-repeat="videoCard in asset.videoCards">
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ videoCard.brand }}</h3>
+						<h4>{{ videoCard.model }}</h4>
+						<p>Serial: {{ videoCard.serial }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>{{ videoCard.date_purchase }}</span>
+						<span>{{ videoCard.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+		</md-card-content>
+	</md-card>
+	
+	<md-card>
+		<md-card-content>
+			<!-- Other Components -->
+			<md-list>
+				<md-subheader class="md-no-sticky md-primary" flex>Other Components</md-subheader>
+				<p class="md-caption secondary-text" ng-if="!otherComponents.length">No records yet.</p>
+				<md-list-item class="md-3-line" layout="row"ng-repeat="otherComponent in asset.otherComponents">
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ otherComponent.brand }}</h3>
+						<h4>{{ otherComponent.model }}</h4>
+						<p>Serial: {{ otherComponent.serial }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>{{ otherComponent.date_purchase }}</span>
+						<span>{{ otherComponent.supplier }}</span>
 					</p>
 				</md-list-item>
 			</md-list>

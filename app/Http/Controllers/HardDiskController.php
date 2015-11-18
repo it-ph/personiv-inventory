@@ -16,7 +16,7 @@ class HardDiskController extends Controller
     */
     public function model(Request $request)
     {
-        return DB::table('desktops')->select('*')->where('brand', '=', $request->brand)->get();
+        return DB::table('hard_disks')->select('*')->where('brand', '=', $request->brand)->where('capacity', '=', $request->capacity)->get();
     }
     /**
      * Fetch distinct table columns

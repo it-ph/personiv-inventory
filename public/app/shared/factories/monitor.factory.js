@@ -4,6 +4,14 @@ sharedModule
 
 		return {
 			/**
+		     * Fetch models with specific brand.
+		     *
+		     * @return Array of Objects
+		    */
+			model: function(data){
+				return $http.post(urlBase + '-model', data);
+			},
+			/**
 		     * Fetch distinct table columns
 		     *
 		     * @return Array of Objects

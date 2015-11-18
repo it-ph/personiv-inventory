@@ -10,6 +10,16 @@ use App\Http\Controllers\Controller;
 class HeadsetController extends Controller
 {
     /**
+     * Fetch models by brand
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function model(Request $request)
+    {
+        return DB::table('headsets')->select('*')->where('brand', '=', $request->brand)->get();
+    }
+
+    /**
      * Fetch distinct table columns
      *
      * @return \Illuminate\Http\Response
