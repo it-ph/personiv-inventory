@@ -18,8 +18,8 @@ class CreateAssetTagsTable extends Migration
             $table->integer('component_id');
             $table->integer('work_station_id');
             $table->string('serial');
-            $table->date('date_purchase');
-            $table->string('supplier');
+            $table->date('date_purchase')->nullable();
+            $table->string('supplier')->nullable();
             $table->timestamps();
         });
     }

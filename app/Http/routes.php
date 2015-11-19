@@ -121,3 +121,7 @@ Route::get('/work-station-department/{departmentID}/station/{workStationID}', 'W
 
 // Route resource store multiple
 Route::post('/asset-tag-multiple', 'AssetTagController@storeMultiple');
+
+// Other routes
+// fetch asset tags by component type
+Route::post('/asset-tag-component-type', 'AssetTagController@componentType');

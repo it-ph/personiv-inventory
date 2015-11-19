@@ -44,5 +44,13 @@ sharedModule
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
 			},
+
+			/**
+			 * Search by component type
+			 *
+			*/
+			componentType: function(data){
+				return $http.post(urlBase + '-component-type', data);
+			}
 		};
 	}]);

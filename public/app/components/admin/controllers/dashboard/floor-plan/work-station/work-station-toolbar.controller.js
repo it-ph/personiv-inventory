@@ -1,5 +1,5 @@
 adminModule
-	.controller('workStationToolbarController', ['$scope', '$state', '$stateParams', 'departmentService', 'Department', 'WorkStation', function($scope, $state, $stateParams, departmentService, Department, WorkStation){
+	.controller('workStationToolbarController', ['$scope', '$state', '$stateParams', 'departmentService', 'Department', 'WorkStation', 'AssetTagService', function($scope, $state, $stateParams, departmentService, Department, WorkStation, AssetTagService){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -37,6 +37,7 @@ adminModule
 		WorkStation.show($stateParams.workStationID)
 			.success(function(data){
 				$scope.toolbar.childState = data.name;
+				AssetTagService.setStation(data.name);
 			})
 			.error(function(){
 				Preload.error();

@@ -22,7 +22,7 @@
 						<!-- Brand -->
 						<md-input-container flex>
 							<label>Brand</label>
-							<md-select name="Brand{{$index}}" ng-change="assets[$index].brandChange()" required ng-model="asset.brand">
+							<md-select name="Brand{{$index}}" ng-change="assets[$index].brandChange($index)" required ng-model="asset.brand">
 								<md-option ng-repeat="asset in asset.brands" value="{{ asset.brand }}">
 									<span>{{ asset.brand }}</span>
 								</md-option>
@@ -35,7 +35,7 @@
 						<!-- Capacity -->
 						<md-input-container flex ng-if="asset.component_type=='Hard Disk'">
 							<label>Capacity</label>
-							<md-select name="Capacity{{$index}}" ng-change="assets[$index].capacityChange()" required ng-model="asset.capacity">
+							<md-select name="Capacity{{$index}}" ng-change="assets[$index].capacityChange($index)" required ng-model="asset.capacity">
 								<md-option ng-repeat="asset in asset.capacities" value="{{ asset.capacity }}">
 									<span>{{ asset.capacity }}</span>
 								</md-option>
@@ -48,7 +48,7 @@
 						<!-- Type -->
 						<md-input-container flex ng-if="asset.component_type=='Memory'">
 							<label>Type</label>
-							<md-select name="Type{{$index}}" ng-change="assets[$index].typeChange()" required ng-model="asset.memory_type">
+							<md-select name="Type{{$index}}" ng-change="assets[$index].typeChange($index)" required ng-model="asset.memory_type">
 								<md-option ng-repeat="asset in asset.types" value="{{ asset.type }}">
 									<span>{{ asset.type }}</span>
 								</md-option>
@@ -61,7 +61,7 @@
 						<!-- Speed -->
 						<md-input-container flex ng-if="asset.component_type=='Memory'">
 							<label>Speed</label>
-							<md-select name="Speed{{$index}}" ng-change="assets[$index].speedChange()" required ng-model="asset.speed">
+							<md-select name="Speed{{$index}}" ng-change="assets[$index].speedChange($index)" required ng-model="asset.speed">
 								<md-option ng-repeat="asset in asset.speeds" value="{{ asset.speed }}">
 									<span>{{ asset.speed }}</span>
 								</md-option>
@@ -87,7 +87,7 @@
 						<!-- Size for video card -->
 						<md-input-container flex ng-if="asset.component_type=='Video Card'">
 							<label>Size</label>
-							<md-select name="Size{{$index}}" ng-change="assets[$index].sizeChange()" required ng-model="asset.size">
+							<md-select name="Size{{$index}}" ng-change="assets[$index].sizeChange($index)" required ng-model="asset.size">
 								<md-option ng-repeat="asset in asset.sizes" value="{{ asset.size }}">
 									<span>{{ asset.size }}</span>
 								</md-option>
@@ -116,7 +116,7 @@
 						<!-- Maker -->
 						<md-input-container flex>
 							<label>Maker</label>
-							<md-select name="Maker{{$index}}" ng-change="assets[$index].makerChange()" required ng-model="asset.maker">
+							<md-select name="Maker{{$index}}" ng-change="assets[$index].makerChange($index)" required ng-model="asset.maker">
 								<md-option ng-repeat="asset in asset.makers" value="{{ asset.maker }}">
 									<span>{{ asset.maker }}</span>
 								</md-option>
@@ -129,7 +129,7 @@
 						<!-- Name -->
 						<md-input-container flex>
 							<label>Name</label>
-							<md-select name="Name{{$index}}" ng-change="assets[$index].nameChange()" required ng-model="asset.name">
+							<md-select name="Name{{$index}}" ng-change="assets[$index].nameChange($index)" required ng-model="asset.name">
 								<md-option ng-repeat="asset in asset.names" value="{{ asset.name }}">
 									<span>{{ asset.name }}</span>
 								</md-option>
@@ -142,7 +142,7 @@
 						<!-- Version -->
 						<md-input-container flex>
 							<label>Version</label>
-							<md-select name="Version{{$index}}" ng-change="assets[$index].versionChange()" required ng-model="asset.component_id">
+							<md-select name="Version{{$index}}" ng-change="assets[$index].versionChange($index)" required ng-model="asset.component_id">
 								<md-option ng-repeat="asset in asset.versions" value="{{ asset.id }}">
 									<span>{{ asset.version }}</span>
 								</md-option>
@@ -160,6 +160,12 @@
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>
 					</md-input-container>
+					<div layout="row" layout-align="end center" ng-if="asset.component_type=='Memory' || asset.component_type=='Monitor' || asset.component_type=='Software'">
+						<md-button class="md-primary md-fab" ng-click="addMoreComponent($index, asset.component_type)">
+							<md-icon class="mdi mdi-plus" aria-label="Add {{ asset.component_type }}"></md-icon>
+							<md-tooltip>Add {{ asset.component_type }}</md-tooltip>
+						</md-button>
+					</div>
 				</div>
 			</div>
 		</md-dialog-content>
