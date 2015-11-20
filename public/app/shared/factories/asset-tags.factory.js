@@ -51,6 +51,14 @@ sharedModule
 			*/
 			componentType: function(data){
 				return $http.post(urlBase + '-component-type', data);
-			}
+			},
+
+			/**
+			 * Search all components by work-station 
+			 *
+			*/
+			workStation: function(id){
+				return $http.get(urlBase + '-work-station/' + id);
+			},
 		};
 	}]);

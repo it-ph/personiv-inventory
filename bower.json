@@ -24,6 +24,8 @@
     "mdi": "~1.2.65",
     "pusher": "~3.0.0",
     "angular-messages": "~1.4.7",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "moment": "~2.10.6",
+    "angular-strap": "~2.3.6"
   }
 }

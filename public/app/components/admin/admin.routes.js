@@ -1,5 +1,8 @@
 adminModule
-	.config(['$stateProvider',  function($stateProvider, assetService){
+	.config(['$stateProvider', '$mdDateLocaleProvider',  function($stateProvider, $mdDateLocaleProvider){
+		$mdDateLocaleProvider.formatDate = function(date) {
+		    return moment(date).format('L');
+		};
 		$stateProvider
 			/**
 			 * Home Route

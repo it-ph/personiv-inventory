@@ -3,5 +3,6 @@ var sharedModule = angular.module('sharedModule', [
 	'ui.router',
 	'ngMaterial',
 	'ngMessages',
-	'infinite-scroll'
+	'infinite-scroll',
+	'mgcrea.ngStrap'
 ]);

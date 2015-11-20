@@ -153,7 +153,8 @@
 				</div>
 				<div layout="row">				
 					<md-input-container flex>
-						 <md-datepicker name="Date{{$index}}" required ng-model="asset.date_purchase" md-placeholder="Date Purchase" md-max-date="maxDate"></md-datepicker>
+						<label>Date of Purchase(YYYY-MM-DD)</label>
+						<input type="text" name="Date{{$index}}" ng-model="asset.date_purchase" data-date-format="yyyy-MM-dd" data-max-date="today" data-autoclose="1" bs-datepicker data-timezone="UTC">
 						<div ng-messages="addWorkStationForm['Date' + $index].$error" ng-if="addWorkStationForm['Date' + $index].$touched">
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>

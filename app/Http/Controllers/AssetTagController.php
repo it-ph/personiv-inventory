@@ -9,6 +9,51 @@ use App\Http\Controllers\Controller;
 
 class AssetTagController extends Controller
 {
+    public function workStation($work_station_id)
+    {
+        // fetch all components of the work station
+        $assets = AssetTag::where('work_station_id', $work_station_id)->get();
+
+        // create a custom array to contain the response data
+        $asset_array = array();
+
+        // create a join statement that will fetch its details
+        foreach ($assets as $key => $value) {
+            $type = $value->component_type;
+
+            if ($type == 'Desktop') { $table_name = 'desktops'; }
+            else if ($type == 'Hard Disk') { $table_name = 'hard_disks'; }
+            else if ($type == 'Headset') { $table_name = 'headsets'; }
+            else if ($type == 'Keyboard') { $table_name = 'keyboards'; }
+            else if ($type == 'Memory') { $table_name = 'memories'; }
+            else if ($type == 'Monitor') { $table_name = 'monitors'; }
+            else if ($type == 'Mouse') { $table_name = 'mice'; }
+            else if ($type == 'Software') { $table_name = 'softwares'; }
+            else if ($type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
+            else if ($type == 'Video Card') { $table_name = 'video_cards'; }
+            else if ($type == 'Other Component') { $table_name = 'other_components'; }
+
+            $first_letter = $type == 'Software' ? '.name' : '.brand';
+
+            $query = DB::table('asset_tags')
+                ->join($table_name, $table_name.'.id', '=', 'asset_tags.component_id')
+                ->select(
+                    '*',
+                    'asset_tags.id as asset_tags_id',
+                    DB::raw('LEFT('. $table_name . $first_letter .', 1) as first_letter'),
+                    DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase')
+                    )
+                ->where('asset_tags.id', $value->id)
+                ->get();
+
+            // push each results to custom array
+            foreach ($query as $key => $value) {
+                array_push($asset_array, $value);
+            }
+        }
+
+        return response()->json($asset_array);
+    }
     /**
      * Fetch asset tag by component type and id.
      *

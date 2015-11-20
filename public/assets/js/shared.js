@@ -3,7 +3,8 @@ var sharedModule = angular.module('sharedModule', [
 	'ui.router',
 	'ngMaterial',
 	'ngMessages',
-	'infinite-scroll'
+	'infinite-scroll',
+	'mgcrea.ngStrap'
 ]);
 sharedModule
 	.config(['$urlRouterProvider', '$stateProvider', '$mdThemingProvider', function($urlRouterProvider, $stateProvider, $mdThemingProvider){
@@ -87,7 +88,15 @@ sharedModule
 			*/
 			componentType: function(data){
 				return $http.post(urlBase + '-component-type', data);
-			}
+			},
+
+			/**
+			 * Search all components by work-station 
+			 *
+			*/
+			workStation: function(id){
+				return $http.get(urlBase + '-work-station/' + id);
+			},
 		};
 	}]);
 sharedModule

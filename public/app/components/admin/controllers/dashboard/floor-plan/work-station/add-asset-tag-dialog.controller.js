@@ -6,9 +6,6 @@ adminModule
 		$scope.asset_type = AssetTagService.getType();
 		$scope.workStation = AssetTagService.getStation();
 
-		$scope.maxDate = new Date();
-		console.log($scope.maxDate);
-
 		$scope.cancel = function(){
 			$mdDialog.cancel();
 		};
@@ -269,7 +266,10 @@ adminModule
 
 			angular.forEach($scope.assets, function(item, key){
 				item.work_station_id = workStationID;
+				moment(item.date_purchase).format('L');
 			});
+
+			// console.log($scope.assets);
 
 			AssetTag.storeMultiple($scope.assets)
 				.success(function(){

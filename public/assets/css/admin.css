@@ -164,6 +164,34 @@ md-content.blue-bg {
   background: transparent;
   box-shadow: none; }
 
+.md-datepicker-calendar {
+  background: white; }
+
+.md-calendar-day-header {
+  background: #2196F3;
+  color: white; }
+
+.datepicker.dropdown-menu {
+  width: 250px;
+  height: 250px; }
+  .datepicker.dropdown-menu button {
+    outline: none;
+    border: 0px; }
+  .datepicker.dropdown-menu tbody {
+    height: 180px; }
+  .datepicker.dropdown-menu tbody button {
+    padding: 6px; }
+  .datepicker.dropdown-menu.datepicker-mode-1 tbody button, .datepicker.dropdown-menu.datepicker-mode-2 tbody button {
+    height: 65px; }
+
+.timepicker.dropdown-menu {
+  padding: 0 4px; }
+  .timepicker.dropdown-menu button {
+    outline: none;
+    border: 0px; }
+  .timepicker.dropdown-menu tbody button {
+    padding: 6px; }
+
 /* transition duration */
 .transition, .fade-transition, .main-view {
   transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2); }

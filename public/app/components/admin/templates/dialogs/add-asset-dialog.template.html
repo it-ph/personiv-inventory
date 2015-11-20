@@ -1,177 +1,30 @@
 <md-dialog layout="column" flex="50"  aria-label="Add {{ workStation.name }} Asset" ng-cloak>
-	<form name="addWorkStationForm" novalidate>
+	<form name="showAddAssetForm" novalidate>
 		<md-toolbar>
 			<div class="md-toolbar-tools">
-				<h2>{{ workStation.name }}'s Asset</h2>
+				<h2>{{ workStation }}'s Asset</h2>
 				<span flex></span>
 				<md-button class="md-icon-button" ng-click="cancel()">
 					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
 				</md-button>
 			</div>
 		</md-toolbar>
-		<md-dialog-content layout="column" flex layout-padding>
-			<div flex ng-repeat="asset in assets">
-				<!-- Components -->
-				<md-subheader class="md-no-sticky">
-					<md-checkbox ng-model="assets[$index].hasComponent">
-						{{ asset.component_type }}
-					</md-checkbox>
-				</md-subheader>
-				<div ng-if="assets[$index].hasComponent">
-					<div layout="row" ng-if="asset.component_type!='Software'">
-						<!-- Brand -->
-						<md-input-container flex>
-							<label>Brand</label>
-							<md-select name="Brand{{$index}}" ng-change="assets[$index].brandChange($index)" required ng-model="asset.brand">
-								<md-option ng-repeat="asset in asset.brands" value="{{ asset.brand }}">
-									<span>{{ asset.brand }}</span>
-								</md-option>
-							</md-select>
-							<div ng-messages="addWorkStationForm['Brand' + $index].$error" ng-if="addWorkStationForm['Brand' + $index].$touched">
-								<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-							</div>
-						</md-input-container>
-
-						<!-- Capacity -->
-						<md-input-container flex ng-if="asset.component_type=='Hard Disk'">
-							<label>Capacity</label>
-							<md-select name="Capacity{{$index}}" ng-change="assets[$index].capacityChange($index)" required ng-model="asset.capacity">
-								<md-option ng-repeat="asset in asset.capacities" value="{{ asset.capacity }}">
-									<span>{{ asset.capacity }}</span>
-								</md-option>
-							</md-select>
-							<div ng-messages="addWorkStationForm['Capacity' + $index].$error" ng-if="addWorkStationForm['Capacity' + $index].$touched">
-								<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-							</div>
-						</md-input-container>
-
-						<!-- Type -->
-						<md-input-container flex ng-if="asset.component_type=='Memory'">
-							<label>Type</label>
-							<md-select name="Type{{$index}}" ng-change="assets[$index].typeChange($index)" required ng-model="asset.memory_type">
-								<md-option ng-repeat="asset in asset.types" value="{{ asset.type }}">
-									<span>{{ asset.type }}</span>
-								</md-option>
-							</md-select>
-							<div ng-messages="addWorkStationForm['Type' + $index].$error" ng-if="addWorkStationForm['Type' + $index].$touched">
-								<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-							</div>
-						</md-input-container>
-
-						<!-- Speed -->
-						<md-input-container flex ng-if="asset.component_type=='Memory'">
-							<label>Speed</label>
-							<md-select name="Speed{{$index}}" ng-change="assets[$index].speedChange($index)" required ng-model="asset.speed">
-								<md-option ng-repeat="asset in asset.speeds" value="{{ asset.speed }}">
-									<span>{{ asset.speed }}</span>
-								</md-option>
-							</md-select>
-							<div ng-messages="addWorkStationForm['Speed' + $index].$error" ng-if="addWorkStationForm['Speed' + $index].$touched">
-								<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-							</div>
-						</md-input-container>
-						
-						<!-- Size for memory -->
-						<md-input-container flex ng-if="asset.component_type=='Memory'">
-							<label>Size</label>
-							<md-select name="Size{{$index}}" required ng-model="asset.component_id">
-								<md-option ng-repeat="asset in asset.sizes" value="{{ asset.id }}">
-									<span>{{ asset.size }}</span>
-								</md-option>
-							</md-select>
-							<div ng-messages="addWorkStationForm['Size' + $index].$error" ng-if="addWorkStationForm['Size' + $index].$touched">
-								<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-							</div>
-						</md-input-container>
-
-						<!-- Size for video card -->
-						<md-input-container flex ng-if="asset.component_type=='Video Card'">
-							<label>Size</label>
-							<md-select name="Size{{$index}}" ng-change="assets[$index].sizeChange($index)" required ng-model="asset.size">
-								<md-option ng-repeat="asset in asset.sizes" value="{{ asset.size }}">
-									<span>{{ asset.size }}</span>
-								</md-option>
-							</md-select>
-							<div ng-messages="addWorkStationForm['Size' + $index].$error" ng-if="addWorkStationForm['Size' + $index].$touched">
-								<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-							</div>
-						</md-input-container>
-
-						<!-- Model -->
-						<md-input-container flex ng-if="asset.component_type!='Memory'">
-							<label>Model</label>
-							<md-select name="Model{{$index}}" required ng-model="asset.component_id">
-								<md-option ng-repeat="asset in asset.models" value="{{ asset.id }}">
-									<span>{{ asset.model }}</span>
-								</md-option>
-							</md-select>
-							<div ng-messages="addWorkStationForm['Model' + $index].$error" ng-if="addWorkStationForm['Model' + $index].$touched">
-								<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-							</div>
-						</md-input-container>
-					</div>
-
-					<!-- Dropdowns on Software -->
-					<div layout="row" ng-if="asset.component_type=='Software'">
-						<!-- Maker -->
-						<md-input-container flex>
-							<label>Maker</label>
-							<md-select name="Maker{{$index}}" ng-change="assets[$index].makerChange($index)" required ng-model="asset.maker">
-								<md-option ng-repeat="asset in asset.makers" value="{{ asset.maker }}">
-									<span>{{ asset.maker }}</span>
-								</md-option>
-							</md-select>
-							<div ng-messages="addWorkStationForm['Maker' + $index].$error" ng-if="addWorkStationForm['Maker' + $index].$touched">
-								<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-							</div>
-						</md-input-container>
-
-						<!-- Name -->
-						<md-input-container flex>
-							<label>Name</label>
-							<md-select name="Name{{$index}}" ng-change="assets[$index].nameChange($index)" required ng-model="asset.name">
-								<md-option ng-repeat="asset in asset.names" value="{{ asset.name }}">
-									<span>{{ asset.name }}</span>
-								</md-option>
-							</md-select>
-							<div ng-messages="addWorkStationForm['Name' + $index].$error" ng-if="addWorkStationForm['Name' + $index].$touched">
-								<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-							</div>
-						</md-input-container>
-
-						<!-- Version -->
-						<md-input-container flex>
-							<label>Version</label>
-							<md-select name="Version{{$index}}" ng-change="assets[$index].versionChange($index)" required ng-model="asset.component_id">
-								<md-option ng-repeat="asset in asset.versions" value="{{ asset.id }}">
-									<span>{{ asset.version }}</span>
-								</md-option>
-							</md-select>
-							<div ng-messages="addWorkStationForm['Version' + $index].$error" ng-if="addWorkStationForm['Version' + $index].$touched">
-								<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-							</div>
-						</md-input-container>
-					</div>
-
-					<md-input-container flex>
-						<label>Serial Code</label>
-						<input type="text" name="Serial{{$index}}" required ng-model="asset.serial">
-						<div ng-messages="addWorkStationForm['Serial' + $index].$error" ng-if="addWorkStationForm['Serial' + $index].$touched">
-							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-						</div>
-					</md-input-container>
-					<div layout="row" layout-align="end center" ng-if="asset.component_type=='Memory' || asset.component_type=='Monitor' || asset.component_type=='Software'">
-						<md-button class="md-primary md-fab" ng-click="addMoreComponent($index, asset.component_type)">
-							<md-icon class="mdi mdi-plus" aria-label="Add {{ asset.component_type }}"></md-icon>
-							<md-tooltip>Add {{ asset.component_type }}</md-tooltip>
-						</md-button>
-					</div>
+		<md-dialog-content layout="row" flex layout-padding layout-wrap>
+			<md-input-container flex>
+				<label>What would you like to add?</label>
+				<md-select required name="Categories" ng-model="category">
+					<md-option ng-repeat="component in components" value="{{ component.value }}">
+						{{ component.name }}
+					</md-option>
+				</md-select>
+				<div ng-messages="showAddAssetForm['Categories' + $index].$error" ng-if="showAddAssetForm['Categories' + $index].$touched">
+					<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 				</div>
-			</div>
+			</md-input-container>
 		</md-dialog-content>
 	</form>
 	<div layout="row" layout-align="end center">		
-		<md-button class="md-fab md-primary" ng-disabled="addWorkStationForm.$invalid" aria-label="Submit" ng-click="submit()">
+		<md-button class="md-fab md-primary" ng-disabled="showAddAssetForm.$invalid" aria-label="Submit" ng-click="submit()">
 			<md-icon class="mdi mdi-check"></md-icon>
 		</md-button>
 	</div>

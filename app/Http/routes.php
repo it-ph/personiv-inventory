@@ -125,3 +125,5 @@ Route::post('/asset-tag-multiple', 'AssetTagController@storeMultiple');
 // Other routes
 // fetch asset tags by component type
 Route::post('/asset-tag-component-type', 'AssetTagController@componentType');
+//fetch all components of the workstation
+Route::get('/asset-tag-work-station/{work_station_id}', 'AssetTagController@workstation');
