@@ -40,6 +40,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Asset';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -106,4 +107,40 @@ adminModule
 			// 		Preloader.error();
 			// 	});
 		};
+
+		$scope.editAsset = function(id){
+			AssetTagService.setID(id);
+			$mdDialog.show({
+		      	controller: 'editAssetDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/edit-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		$scope.transferAsset = function(id){
+			AssetTagService.setID(id);
+			$mdDialog.show({
+		      	controller: 'transferAssetDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		$scope.pullOutAsset = function(id){
+			AssetTagService.setID(id);
+			$mdDialog.show({
+		      	controller: 'pullOutAssetDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/pull-out-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.subheader.refresh();
+		    });
+		}
 	}]);

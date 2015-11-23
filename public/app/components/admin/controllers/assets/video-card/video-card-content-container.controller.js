@@ -33,6 +33,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Video Card';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){

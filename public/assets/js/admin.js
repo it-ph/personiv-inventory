@@ -227,6 +227,7 @@ adminModule
 	.service('AssetTagService', ['AssetTag', 'Preloader', function(AssetTag, Preloader){
 		var type = null;
 		var station = null;
+		var id = null;
 		return {
 			setStation: function(data){
 				station = data;
@@ -239,6 +240,12 @@ adminModule
 			},
 			getType: function(){
 				return type;
+			},
+			setID: function(data){
+				id = data;
+			},
+			getID: function(){
+				return id;
 			},
 		}
 	}]);
@@ -777,6 +784,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add CPU';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -979,6 +987,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Hard Disk';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -1164,6 +1173,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Headset';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -1352,6 +1362,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Keyboard';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -1563,6 +1574,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Memory';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -1759,6 +1771,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Monitor';		
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -1943,6 +1956,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Mouse';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -2132,6 +2146,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Other Component';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -2316,6 +2331,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Printer';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -2500,6 +2516,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Scanner';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -2684,6 +2701,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Software';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -2873,6 +2891,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add UPS';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -3062,6 +3081,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Video Card';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -3326,6 +3346,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Work Station';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -3809,6 +3830,119 @@ adminModule
 		};
 	}]);
 adminModule
+	.controller('editAssetDialogController', ['$scope', '$mdDialog', 'Preloader', 'AssetTagService', 'AssetTag', function($scope, $mdDialog, Preloader, AssetTagService, AssetTag){
+		var assetTagID = AssetTagService.getID();
+		$scope.workStation = AssetTagService.getStation();
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		AssetTag.specific(assetTagID)
+			.success(function(data){
+				$scope.asset = data;
+			})
+			.error(function(){
+				Preloader.error();
+			})
+
+		$scope.submit = function(){
+			// start preloader
+			Preloader.preload();
+			AssetTag.update(assetTagID, $scope.asset)
+				.success(function(){
+					$mdDialog.hide();
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+	}]);
+adminModule
+	.controller('pullOutAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Department', 'WorkStation', 'Preloader', 'AssetTagService', 'AssetTag', function($scope, $stateParams, $mdDialog, Department, WorkStation, Preloader, AssetTagService, AssetTag){
+		var assetTagID = AssetTagService.getID();
+		$scope.workStation = AssetTagService.getStation();
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		AssetTag.specific(assetTagID)
+			.success(function(data){
+				$scope.asset = data;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		$scope.repair = function(){
+			Preloader.preload();
+			AssetTag.repair(assetTagID)
+				.success(function(){
+					//
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		};
+
+		$scope.dispose = function(){
+			Preloader.preload();
+			AssetTag.dispose(assetTagID)
+				.success(function(){
+					//
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		};
+
+	}]);
+adminModule
+	.controller('transferAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Department', 'WorkStation', 'Preloader', 'AssetTagService', 'AssetTag', function($scope, $stateParams, $mdDialog, Department, WorkStation, Preloader, AssetTagService, AssetTag){
+		var assetTagID = AssetTagService.getID();
+		$scope.workStation = AssetTagService.getStation();
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		AssetTag.specific(assetTagID)
+			.success(function(data){
+				$scope.asset = data;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		Department.index()
+			.success(function(data){
+				$scope.departments = data
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		$scope.showWorkStations = function(){
+			WorkStation.department($scope.asset.department, $stateParams.workStationID)
+				.success(function(data){
+					$scope.workstations = data;
+				});
+		};
+
+		$scope.submit = function(){
+			// start preloader
+			Preloader.preload();
+			AssetTag.transfer(assetTagID, $scope.asset)
+				.success(function(){
+					$mdDialog.hide();
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+	}]);
+adminModule
 	.controller('workStationContentContainerController', ['$scope', '$timeout', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', function($scope, $timeout, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService){
 		/**
 		 * Object for subheader
@@ -3850,6 +3984,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Asset';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
@@ -3916,6 +4051,42 @@ adminModule
 			// 		Preloader.error();
 			// 	});
 		};
+
+		$scope.editAsset = function(id){
+			AssetTagService.setID(id);
+			$mdDialog.show({
+		      	controller: 'editAssetDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/edit-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		$scope.transferAsset = function(id){
+			AssetTagService.setID(id);
+			$mdDialog.show({
+		      	controller: 'transferAssetDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		$scope.pullOutAsset = function(id){
+			AssetTagService.setID(id);
+			$mdDialog.show({
+		      	controller: 'pullOutAssetDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/pull-out-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.subheader.refresh();
+		    });
+		}
 	}]);
 
 adminModule

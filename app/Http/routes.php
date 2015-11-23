@@ -112,18 +112,28 @@ Route::post('/mouse-model', 'MouseController@model');
 Route::post('/ups-model', 'UninterruptiblePowerSupplyController@model');
 Route::post('/other-component-model', 'OtherComponentController@model');
 
+// Other routes
+
 /**
  * Workstation fetch by department except the existing
  * used at work-station-toolbar controller
 */
-
 Route::get('/work-station-department/{departmentID}/station/{workStationID}', 'WorkStationController@department');
 
 // Route resource store multiple
 Route::post('/asset-tag-multiple', 'AssetTagController@storeMultiple');
 
-// Other routes
-// fetch asset tags by component type
-Route::post('/asset-tag-component-type', 'AssetTagController@componentType');
-//fetch all components of the workstation
-Route::get('/asset-tag-work-station/{work_station_id}', 'AssetTagController@workstation');
+// fetch all components of the workstation
+Route::get('/asset-tag-work-station/{workStationID}', 'AssetTagController@workstation');
+
+// fetch specific component by asset tag id
+Route::get('/asset-tag-specific/{assetTagID}', 'AssetTagController@specific');
+
+// transfer asset to another work station
+Route::put('/asset-tag-transfer/{assetTagID}', 'AssetTagController@transfer');
+
+// set asset tag status to repair
+Route::put('/asset-tag-repair/{assetTagID}', 'AssetTagController@repair');
+
+// set asset tag status to dispose
+Route::put('/asset-tag-dispose/{assetTagID}', 'AssetTagController@dispose');

@@ -9,10 +9,98 @@ use App\Http\Controllers\Controller;
 
 class AssetTagController extends Controller
 {
+    /**
+     * Set Asset Tag Status as dispose
+     *
+    */
+    public function dispose($id)
+    {
+        $asset_tag = AssetTag::where('id', $id)->first();
+
+        $asset_tag->status = 'dispose';
+
+        $asset_tag->save();
+    }
+
+    /**
+     * Set Asset Tag Status as repair
+     *
+    */
+    public function repair($id)
+    {
+        $asset_tag = AssetTag::where('id', $id)->first();
+
+        $asset_tag->status = 'repair';
+
+        $asset_tag->save();
+    }
+
+    /**
+     * Transfer a components of the work station
+     * Returns array of object
+     *
+    */
+    public function transfer(Request $request, $id)
+    {
+        $this->validate($request, [
+            'work_station_id' => 'required|numeric',
+        ]);
+
+        $asset_tag = AssetTag::where('id', $id)->first();
+
+        $asset_tag->work_station_id = $request->workStationID;
+
+        $asset_tag->save();
+    }
+
+    /**
+     * Fetch specific component of the work station and returns a joined information with the corresponding asset
+     * Returns object
+     *
+     */
+    public function specific($id)
+    {
+        // fetch the specific asset tag
+        $asset_tag = AssetTag::where('id', $id)->first();
+
+        // determine its component type
+        if ($asset_tag->component_type == 'Desktop') { $table_name = 'desktops'; }
+        else if ($asset_tag->component_type == 'Hard Disk') { $table_name = 'hard_disks'; }
+        else if ($asset_tag->component_type == 'Headset') { $table_name = 'headsets'; }
+        else if ($asset_tag->component_type == 'Keyboard') { $table_name = 'keyboards'; }
+        else if ($asset_tag->component_type == 'Memory') { $table_name = 'memories'; }
+        else if ($asset_tag->component_type == 'Monitor') { $table_name = 'monitors'; }
+        else if ($asset_tag->component_type == 'Mouse') { $table_name = 'mice'; }
+        else if ($asset_tag->component_type == 'Software') { $table_name = 'softwares'; }
+        else if ($asset_tag->component_type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
+        else if ($asset_tag->component_type == 'Video Card') { $table_name = 'video_cards'; }
+        else if ($asset_tag->component_type == 'Other Component') { $table_name = 'other_components'; }
+
+        $first_letter = $asset_tag->component_type == 'Software' ? '.name' : '.brand';
+
+        // execute a query that will join the correct asset table
+        $asset = DB::table('asset_tags')
+            ->join($table_name, $table_name.'.id', '=', 'asset_tags.component_id')
+            ->select(
+                '*',
+                DB::raw('LEFT('. $table_name . $first_letter .', 1) as first_letter'),
+                'asset_tags.id as asset_tags_id'
+                )
+            ->where('asset_tags.id', $id)
+            ->first();
+
+        return response()->json($asset);
+    }
+
+    /**
+     * Fetches all components of the work station and returns a joined information with the corresponding asset
+     * Returns array of object
+     *
+     */
     public function workStation($work_station_id)
     {
         // fetch all components of the work station
-        $assets = AssetTag::where('work_station_id', $work_station_id)->get();
+        $assets = AssetTag::where('work_station_id', $work_station_id)->where('status', 'active')->get();
 
         // create a custom array to contain the response data
         $asset_array = array();
@@ -53,26 +141,6 @@ class AssetTagController extends Controller
         }
 
         return response()->json($asset_array);
-    }
-    /**
-     * Fetch asset tag by component type and id.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function componentType(Request $request)
-    {
-        $first_letter = $request->table_name == 'softwares' ? '.name' : '.brand';
-        return DB::table('asset_tags')
-            ->join($request->table_name, $request->table_name.'.id', '=', 'asset_tags.component_id')
-            ->select(
-                '*',
-                'asset_tags.id as asset_tags_id',
-                DB::raw('LEFT('. $request->table_name . $first_letter .', 1) as first_letter'),
-                DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase')
-                )
-            ->where('asset_tags.work_station_id', $request->work_station_id)
-            ->where('asset_tags.component_type', $request->component_type)
-            ->get();
     }
 
     /**
@@ -121,9 +189,10 @@ class AssetTagController extends Controller
                 $i.'.component_id' => 'numeric',
                 $i.'.component_type' => 'required|string',
                 $i.'.work_station_id' => 'required|numeric',
-                $i.'.serial' => 'required|string',
-                $i.'.date_purchase' => 'required|date',
-                $i.'.supplier' => 'required|string',
+                $i.'.serial' => 'string',
+                $i.'.property_code' => 'required|string',
+                $i.'.date_purchase' => 'date',
+                $i.'.supplier' => 'string',
             ]);
 
             //create a new instance of Skill per loop
@@ -134,8 +203,10 @@ class AssetTagController extends Controller
             $asset_tag->component_type = $request->input($i.'.component_type');
             $asset_tag->work_station_id = $request->input($i.'.work_station_id');
             $asset_tag->serial = $request->input($i.'.serial');
-            $asset_tag->date_purchase = $request->input($i.'.date_purchase');
-            $asset_tag->supplier = $request->input($i.'.supplier');
+            $asset_tag->property_code = $request->input($i.'.property_code');
+            $asset_tag->status = 'active';
+            $asset_tag->date_purchase = $request->input($i.'.date_purchase') ? $request->input($i.'.date_purchase') : null;
+            $asset_tag->supplier = $request->input($i.'.supplier') ? $request->input($i.'.supplier') : null;
 
             //save to database
             $asset_tag->save();
@@ -173,7 +244,17 @@ class AssetTagController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'date_purchase' => 'date',
+            'supplier' => 'string',
+        ]);
+
+        $asset_tag = AssetTag::where('id', $id)->first();
+
+        $asset_tag->date_purchase = $request->date_purchase ? $request->date_purchase : null; 
+        $asset_tag->supplier = $request->supplier ? $request->supplier : null;
+
+        $asset_tag->save();
     }
 
     /**

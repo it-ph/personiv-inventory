@@ -161,21 +161,29 @@
 					</md-input-container>
 
 					<md-input-container flex>
-						<label>Serial Code</label>
-						<input type="text" name="Serial{{$index}}" required ng-model="asset.serial">
-						<div ng-messages="addWorkStationForm['Serial' + $index].$error" ng-if="addWorkStationForm['Serial' + $index].$touched">
-							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-						</div>
-					</md-input-container>
-
-					<md-input-container flex>
 						<label>Supplier</label>
 						<input type="text" name="Supplier{{$index}}" required ng-model="asset.supplier">
 						<div ng-messages="addWorkStationForm['Supplier' + $index].$error" ng-if="addWorkStationForm['Supplier' + $index].$touched">
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>
 					</md-input-container>
-
+				</div>
+				<div layout="row">
+					<md-input-container flex>
+						<label>Serial Code</label>
+						<input type="text" name="Serial{{$index}}" ng-model="asset.serial">
+						<div ng-messages="addWorkStationForm['Serial' + $index].$error" ng-if="addWorkStationForm['Serial' + $index].$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+					
+					<md-input-container flex>
+						<label>Property Code</label>
+						<input type="text" name="PropertyCode{{$index}}" required ng-model="asset.property_code">
+						<div ng-messages="addWorkStationForm['PropertyCode' + $index].$error" ng-if="addWorkStationForm['PropertyCode' + $index].$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
 				</div>
 			</div>
 			<div layout="row" layout-align="start center" ng-if="asset_type=='Memory' || asset_type=='Monitor' || asset_type=='Software'">

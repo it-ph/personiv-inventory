@@ -16,7 +16,10 @@
 						<div class="md-list-item-text" layout="column">
 							<h3>{{ asset.brand }} {{ asset.maker }}</h3>
 							<h4>{{ asset.model }} <span ng-if="asset.processor">/</span> {{ asset.processor }} {{ asset.type }} <span ng-if="asset.size">/</span> {{ asset.size }} <span ng-if="asset.speed">/</span> {{ asset.speed }} {{ asset.name }} {{ asset.version }}</h4>
-							<p>Serial: {{ asset.serial }}</p>
+							<p>
+								<span>Serial: {{ asset.serial }}</span> <br>
+								<span>Property Code: {{ asset.property_code }}</span>
+							</p>
 						</div>
 						<p flex class="text-right secondary-text md-caption" layout="column">
 							<span>{{ asset.date_purchase }}</span>
@@ -24,6 +27,24 @@
 						</p>
 					</md-list-item>
 				</md-list>
+				<md-card-actions layout="row" layout-align="end center">
+					<md-button class="md-icon-button" ng-click="editAsset(asset.asset_tags_id)">
+						<md-icon class="mdi grey mdi-pencil"></md-icon>
+						<md-tooltip>Edit</md-tooltip>
+					</md-button>
+					<md-button class="md-icon-button">
+						<md-icon class="mdi grey mdi-transfer" ng-click="transferAsset(asset.asset_tags_id)"></md-icon>
+						<md-tooltip>Transfer</md-tooltip>
+					</md-button>
+					<md-button class="md-icon-button">
+						<md-icon class="mdi grey mdi-outbox" ng-click="pullOutAsset(asset.asset_tags_id)"></md-icon>
+						<md-tooltip>Pull Out</md-tooltip>
+					</md-button>
+					<md-button class="md-icon-button">
+						<md-icon class="mdi grey mdi-delete" ng-click="removeAsset(asset.asset_tags_id)"></md-icon>
+						<md-tooltip>Delete</md-tooltip>
+					</md-button>
+				</md-card-actions>
 			</md-card-content>
 		</md-card>
 	</div>

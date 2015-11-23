@@ -60,5 +60,45 @@ sharedModule
 			workStation: function(id){
 				return $http.get(urlBase + '-work-station/' + id);
 			},
+
+			/*
+			 * Show specific asset tag with join details on corresponding asset table
+			 *
+			*/
+			specific: function(id){
+				return $http.get(urlBase + '-specific/' + id);
+			},
+
+			/**
+     		 * Update the specified resource in storage.
+     		 *
+     		*/
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+
+			/*
+			 * Transfer the asset to a different work station
+			 *
+			*/
+			transfer: function(assetID, data){
+				return $http.put(urlBase + '-transfer/' + assetID, data);
+			},
+
+			/*
+			 * Set asset tag status for repair
+			 *
+			*/
+			repair: function(id){
+				return $http.put(urlBase + '-repair/' + id);
+			},
+
+			/*
+			 * Set asset tag status for dispose
+			 *
+			*/
+			dispose: function(id){
+				return $http.put(urlBase + '-dispose/' + id);
+			},
 		};
 	}]);

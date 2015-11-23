@@ -33,6 +33,7 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Other Component';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){

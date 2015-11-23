@@ -1,0 +1,69 @@
+<md-dialog layout="column" flex="50"  aria-label="Add {{ workStation.name }} Asset" ng-cloak>
+	<form name="editAssetForm" novalidate>
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Edit {{ workStation }}'s Asset</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content layout="column" flex layout-padding>
+			<md-list>
+				<md-list-item class="md-2-line" layout="row">
+					<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+						<span class="weight-200 white-text">{{ asset.first_letter }}</span>
+					</h2>
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ asset.brand }} {{ asset.maker }}</h3>
+						<h4>{{ asset.model }} <span ng-if="asset.processor">/</span> {{ asset.processor }} {{ asset.type }} <span ng-if="asset.size">/</span> {{ asset.size }} <span ng-if="asset.speed">/</span> {{ asset.speed }} {{ asset.name }} {{ asset.version }}</h4>
+					</div>
+				</md-list-item>
+			</md-list>
+			<div layout="row">			
+				<!-- Serial -->
+				<md-input-container flex>
+					<label>Serial</label>
+					<input type="text" name="Serial" ng-model="asset.serial" required>
+					<div ng-messages="editAssetForm.Serial.$error" ng-if="editAssetForm.Serial.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+
+				<!-- Property Code -->
+				<md-input-container flex>
+					<label>Property Code</label>
+					<input type="text" name="PropertyCode" ng-model="asset.property_code" required>
+					<div ng-messages="editAssetForm.PropertyCode.$error" ng-if="editAssetForm.PropertyCode.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+			</div>
+
+			<div layout="row" flex>
+				<!-- Date Purchase -->
+				<md-input-container flex>
+					<label>Date Purchase</label>
+					<input type="text" name="DatePurchase" ng-model="asset.date_purchase" data-date-format="yyyy-MM-dd" data-max-date="today" data-autoclose="1" bs-datepicker data-timezone="UTC">
+					<div ng-messages="editAssetForm.DatePurchase.$error" ng-if="editAssetForm.DatePurchase.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+				<!-- Supplier -->
+				<md-input-container flex>
+					<label>Supplier</label>
+					<input type="text" name="Supplier" ng-model="asset.supplier" required>
+					<div ng-messages="editAssetForm.Supplier.$error" ng-if="editAssetForm.Supplier.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-fab md-primary" ng-disabled="editAssetForm.$invalid" aria-label="Submit" ng-click="submit()">
+			<md-icon class="mdi mdi-check"></md-icon>
+		</md-button>
+	</div>
+</md-dialog>
