@@ -9,6 +9,11 @@ use App\Http\Controllers\Controller;
 
 class UninterruptiblePowerSupplyController extends Controller
 {
+    // fetch other records
+    public function other($id)
+    {
+        return DB::table('uninterruptible_power_supplies')->select('*', DB::raw('LEFT(model, 1) as first_letter'))->whereNotIn('id', [$id])->get();    }
+    }
     /**
      * Fetch models by brand
      *

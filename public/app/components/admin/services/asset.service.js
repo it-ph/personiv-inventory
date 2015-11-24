@@ -62,5 +62,21 @@ adminModule
 				// returns assetNameRightSidenavController
 				return assets[id].controller  + 'RightSidenavController';
 			},
+			unitToolbarController: function(id){
+				// returns assetNameToolbarController
+				return assets[id].controller  + 'UnitToolbarController';
+			},
+			unitContentContainerController: function(id){
+				// returns assetNameContentContainerController
+				return assets[id].controller  + 'UnitContentContainerController';
+			},
+			unitContentController: function(id){
+				// returns assetNameContentController
+				return assets[id].controller  + 'UnitContentController';
+			},
+			unitRightSidenavController: function(id){
+				// returns assetNameRightSidenavController
+				return assets[id].controller  + 'UnitRightSidenavController';
+			},
 		};
 	}]);

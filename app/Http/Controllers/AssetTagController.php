@@ -10,6 +10,149 @@ use App\Http\Controllers\Controller;
 class AssetTagController extends Controller
 {
     /**
+     * Search database for records
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function search(Request $request)
+    {
+        return DB::table('asset_tags')
+            ->join($request->table_name, $request->table_name . '.id', '=', 'asset_tags.component_id')
+            ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
+            ->select(
+                '*',
+                DB::raw('SUBSTRING(work_stations.name, 4, 1) as first_letter'),
+                DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase'),
+                'asset_tags.id as asset_tags_id',
+                'work_stations.name as work_station_name'
+            )
+            ->where('asset_tags.component_id', $request->component_id)
+            ->where('asset_tags.component_type', $request->component_type)
+            ->orWhere('asset_tags.serial', 'like', '%'. $request->userInput .'%')
+            ->orWhere('asset_tags.property_code', 'like', $request->property_code. $request->userInput .'%')
+            ->orWhere('asset_tags.date_purchase', 'like', '%'. $request->userInput .'%')
+            ->orWhere('asset_tags.supplier', 'like', '%'. $request->userInput .'%')
+            ->groupBy('asset_tags.id')
+            ->orderBy('asset_tags.updated_at', 'desc')
+            ->get();
+    }
+    /**
+     * Fetches paginated active units of the asset
+     *
+    */
+    public function active_unit(Request $request)
+    {
+        // determine its component type
+        if ($request->component_type == 'Desktop') { $table_name = 'desktops'; }
+        else if ($request->component_type == 'Hard Disk') { $table_name = 'hard_disks'; }
+        else if ($request->component_type == 'Headset') { $table_name = 'headsets'; }
+        else if ($request->component_type == 'Keyboard') { $table_name = 'keyboards'; }
+        else if ($request->component_type == 'Memory') { $table_name = 'memories'; }
+        else if ($request->component_type == 'Monitor') { $table_name = 'monitors'; }
+        else if ($request->component_type == 'Mouse') { $table_name = 'mice'; }
+        else if ($request->component_type == 'Software') { $table_name = 'softwares'; }
+        else if ($request->component_type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
+        else if ($request->component_type == 'Video Card') { $table_name = 'video_cards'; }
+        else if ($request->component_type == 'Other Component') { $table_name = 'other_components'; }
+
+        $first_letter = $request->component_type == 'Software' ? '.name' : '.brand';
+
+        // execute a query that will join the correct asset table
+        return DB::table('asset_tags')
+            ->join($table_name, $table_name.'.id', '=', 'asset_tags.component_id')
+            ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
+            ->select(
+                '*',
+                DB::raw('SUBSTRING(work_stations.name, 4, 1) as first_letter'),
+                DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase'),
+                'asset_tags.id as asset_tags_id',
+                'work_stations.name as work_station_name'
+                )
+            ->where('asset_tags.component_id', $request->component_id)
+            ->where('asset_tags.component_type', $request->component_type)
+            ->where('asset_tags.status', 'active')
+            ->whereNull('asset_tags.deleted_at')
+            ->paginate(25);
+    }
+
+    /**
+     * Fetches paginated repair units of the asset
+     *
+    */
+    public function repair_unit(Request $request)
+    {
+        // determine its component type
+        if ($request->component_type == 'Desktop') { $table_name = 'desktops'; }
+        else if ($request->component_type == 'Hard Disk') { $table_name = 'hard_disks'; }
+        else if ($request->component_type == 'Headset') { $table_name = 'headsets'; }
+        else if ($request->component_type == 'Keyboard') { $table_name = 'keyboards'; }
+        else if ($request->component_type == 'Memory') { $table_name = 'memories'; }
+        else if ($request->component_type == 'Monitor') { $table_name = 'monitors'; }
+        else if ($request->component_type == 'Mouse') { $table_name = 'mice'; }
+        else if ($request->component_type == 'Software') { $table_name = 'softwares'; }
+        else if ($request->component_type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
+        else if ($request->component_type == 'Video Card') { $table_name = 'video_cards'; }
+        else if ($request->component_type == 'Other Component') { $table_name = 'other_components'; }
+
+        $first_letter = $request->component_type == 'Software' ? '.name' : '.brand';
+
+        // execute a query that will join the correct asset table
+       return DB::table('asset_tags')
+            ->join($table_name, $table_name.'.id', '=', 'asset_tags.component_id')
+            ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
+            ->select(
+                '*',
+                DB::raw('SUBSTRING(work_stations.name, 4, 1) as first_letter'),
+                DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase'),
+                'asset_tags.id as asset_tags_id',
+                'work_stations.name as work_station_name'
+                )
+            ->where('asset_tags.component_id', $request->component_id)
+            ->where('asset_tags.component_type', $request->component_type)
+            ->where('asset_tags.status', 'repair')
+            ->whereNull('asset_tags.deleted_at')
+            ->paginate(25);
+    }
+    /**
+     * Fetches paginated dispose units of the asset
+     *
+    */
+    public function dispose_unit(Request $request)
+    {
+        // determine its component type
+        if ($request->component_type == 'Desktop') { $table_name = 'desktops'; }
+        else if ($request->component_type == 'Hard Disk') { $table_name = 'hard_disks'; }
+        else if ($request->component_type == 'Headset') { $table_name = 'headsets'; }
+        else if ($request->component_type == 'Keyboard') { $table_name = 'keyboards'; }
+        else if ($request->component_type == 'Memory') { $table_name = 'memories'; }
+        else if ($request->component_type == 'Monitor') { $table_name = 'monitors'; }
+        else if ($request->component_type == 'Mouse') { $table_name = 'mice'; }
+        else if ($request->component_type == 'Software') { $table_name = 'softwares'; }
+        else if ($request->component_type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
+        else if ($request->component_type == 'Video Card') { $table_name = 'video_cards'; }
+        else if ($request->component_type == 'Other Component') { $table_name = 'other_components'; }
+
+        $first_letter = $request->component_type == 'Software' ? '.name' : '.brand';
+
+        // execute a query that will join the correct asset table
+        return DB::table('asset_tags')
+            ->join($table_name, $table_name.'.id', '=', 'asset_tags.component_id')
+            ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
+            ->select(
+                '*',
+                DB::raw('SUBSTRING(work_stations.name, 4, 1) as first_letter'),
+                DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase'),
+                'asset_tags.id as asset_tags_id',
+                'work_stations.name as work_station_name'
+                )
+            ->where('asset_tags.component_id', $request->component_id)
+            ->where('asset_tags.component_type', $request->component_type)
+            ->where('asset_tags.status', 'dispose')
+            ->whereNull('asset_tags.deleted_at')
+            ->paginate(25);
+    }
+
+    /**
      * Set Asset Tag Status as dispose
      *
     */
@@ -100,7 +243,7 @@ class AssetTagController extends Controller
     public function workStation($work_station_id)
     {
         // fetch all components of the work station
-        $assets = AssetTag::where('work_station_id', $work_station_id)->where('status', 'active')->get();
+        $assets = AssetTag::where('work_station_id', $work_station_id)->where('status', 'active')->orderBy('component_type')->get();
 
         // create a custom array to contain the response data
         $asset_array = array();
@@ -265,6 +408,6 @@ class AssetTagController extends Controller
      */
     public function destroy($id)
     {
-        //
+        return AssetTag::where('id', $id)->delete();
     }
 }

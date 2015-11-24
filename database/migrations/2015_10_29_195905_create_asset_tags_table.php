@@ -23,6 +23,7 @@ class CreateAssetTagsTable extends Migration
             $table->string('supplier')->nullable();
             $table->string('status');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

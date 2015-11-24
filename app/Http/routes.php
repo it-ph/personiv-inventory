@@ -54,21 +54,21 @@ Route::resource('work-station', 'WorkStationController');
 Route::resource('asset-tag', 'AssetTagController');
 
 // Route Resource Paginations
-Route::get('desktop-paginate', 'DesktopController@paginate');
-Route::get('hard-disk-paginate', 'HardDiskController@paginate');
-Route::get('headset-paginate', 'HeadsetController@paginate');
-Route::get('keyboard-paginate', 'KeyboardController@paginate');
-Route::get('memory-paginate', 'MemoryController@paginate');
-Route::get('monitor-paginate', 'MonitorController@paginate');
-Route::get('mouse-paginate', 'MouseController@paginate');
-Route::get('printer-paginate', 'PrinterController@paginate');
-Route::get('scanner-paginate', 'ScannerController@paginate');
-Route::get('software-paginate', 'SoftwareController@paginate');
-Route::get('ups-paginate', 'UninterruptiblePowerSupplyController@paginate');
-Route::get('video-card-paginate', 'VideoCardController@paginate');
-Route::get('other-component-paginate', 'OtherComponentController@paginate');
-Route::get('employee-paginate/{departmentID}', 'EmployeeController@paginate');
-Route::get('work-station-paginate/{departmentID}', 'WorkStationController@paginate');
+Route::get('/desktop-paginate', 'DesktopController@paginate');
+Route::get('/hard-disk-paginate', 'HardDiskController@paginate');
+Route::get('/headset-paginate', 'HeadsetController@paginate');
+Route::get('/keyboard-paginate', 'KeyboardController@paginate');
+Route::get('/memory-paginate', 'MemoryController@paginate');
+Route::get('/monitor-paginate', 'MonitorController@paginate');
+Route::get('/mouse-paginate', 'MouseController@paginate');
+Route::get('/printer-paginate', 'PrinterController@paginate');
+Route::get('/scanner-paginate', 'ScannerController@paginate');
+Route::get('/software-paginate', 'SoftwareController@paginate');
+Route::get('/ups-paginate', 'UninterruptiblePowerSupplyController@paginate');
+Route::get('/video-card-paginate', 'VideoCardController@paginate');
+Route::get('/other-component-paginate', 'OtherComponentController@paginate');
+Route::get('/employee-paginate/{departmentID}', 'EmployeeController@paginate');
+Route::get('/work-station-paginate/{departmentID}', 'WorkStationController@paginate');
 
 // Route Resource Search
 Route::post('desktop-search', 'DesktopController@search');
@@ -84,6 +84,7 @@ Route::post('software-search', 'SoftwareController@search');
 Route::post('ups-search', 'UninterruptiblePowerSupplyController@search');
 Route::post('video-card-search', 'VideoCardController@search');
 Route::post('other-component-search', 'OtherComponentController@search');
+Route::post('asset-tag-search', 'AssetTagController@search');
 Route::post('employee-search/{departmentID}', 'EmployeeController@search');
 Route::post('work-station-search/{departmentID}', 'WorkStationController@search');
 
@@ -103,14 +104,30 @@ Route::post('other-component-distinct', 'OtherComponentController@distinct');
 Route::post('video-card-distinct', 'VideoCardController@distinct');
 
 // Route resource models
-Route::post('/desktop-model', 'DesktopController@model');
-Route::post('/hard-disk-model', 'HardDiskController@model');
-Route::post('/headset-model', 'HeadsetController@model');
-Route::post('/keyboard-model', 'KeyboardController@model');
-Route::post('/monitor-model', 'MonitorController@model');
-Route::post('/mouse-model', 'MouseController@model');
-Route::post('/ups-model', 'UninterruptiblePowerSupplyController@model');
-Route::post('/other-component-model', 'OtherComponentController@model');
+Route::post('desktop-model', 'DesktopController@model');
+Route::post('hard-disk-model', 'HardDiskController@model');
+Route::post('headset-model', 'HeadsetController@model');
+Route::post('keyboard-model', 'KeyboardController@model');
+Route::post('monitor-model', 'MonitorController@model');
+Route::post('mouse-model', 'MouseController@model');
+Route::post('ups-model', 'UninterruptiblePowerSupplyController@model');
+Route::post('other-component-model', 'OtherComponentController@model');
+
+// Route resource others
+Route::get('desktop-other/{desktopID}', 'DesktopController@other');
+Route::get('hard-disk-other/{hardDiskID}', 'HardDiskController@other');
+Route::get('headset-other/{headsetID}', 'HeadsetController@other');
+Route::get('keyboard-other/{keyboardID}', 'KeyboardController@other');
+Route::get('memory-other/{memoryID}', 'MemoryController@other');
+Route::get('monitor-other/{monitorID}', 'MonitorController@other');
+Route::get('mouse-other/{mouseID}', 'MouseController@other');
+Route::get('printer-other/{printerID}', 'PrinterController@other');
+Route::get('scanner-other/{scannerID}', 'ScannerController@other');
+Route::get('software-other/{softwareID}', 'SoftwareController@other');
+Route::get('ups-other/{upsID}', 'UninterruptiblePowerSupplyController@other');
+Route::get('video-card-other/{videoCardID}', 'VideoCardController@other');
+Route::get('other-component-other/{videoCardID}', 'VideoCardController@other');
+
 
 // Other routes
 
@@ -118,22 +135,31 @@ Route::post('/other-component-model', 'OtherComponentController@model');
  * Workstation fetch by department except the existing
  * used at work-station-toolbar controller
 */
-Route::get('/work-station-department/{departmentID}/station/{workStationID}', 'WorkStationController@department');
+Route::get('work-station-department/{departmentID}/station/{workStationID}', 'WorkStationController@department');
 
 // Route resource store multiple
-Route::post('/asset-tag-multiple', 'AssetTagController@storeMultiple');
+Route::post('asset-tag-multiple', 'AssetTagController@storeMultiple');
 
 // fetch all components of the workstation
-Route::get('/asset-tag-work-station/{workStationID}', 'AssetTagController@workstation');
+Route::get('asset-tag-work-station/{workStationID}', 'AssetTagController@workstation');
 
 // fetch specific component by asset tag id
-Route::get('/asset-tag-specific/{assetTagID}', 'AssetTagController@specific');
+Route::get('asset-tag-specific/{assetTagID}', 'AssetTagController@specific');
 
 // transfer asset to another work station
-Route::put('/asset-tag-transfer/{assetTagID}', 'AssetTagController@transfer');
+Route::put('asset-tag-transfer/{assetTagID}', 'AssetTagController@transfer');
 
 // set asset tag status to repair
-Route::put('/asset-tag-repair/{assetTagID}', 'AssetTagController@repair');
+Route::put('asset-tag-repair/{assetTagID}', 'AssetTagController@repair');
 
 // set asset tag status to dispose
-Route::put('/asset-tag-dispose/{assetTagID}', 'AssetTagController@dispose');
+Route::put('asset-tag-dispose/{assetTagID}', 'AssetTagController@dispose');
+
+// fetch all active units 
+Route::post('asset-tag-active-unit', 'AssetTagController@active_unit');
+
+// fetch all repair units 
+Route::post('asset-tag-repair-unit', 'AssetTagController@repair_unit');
+
+// fetch all dispose units 
+Route::post('asset-tag-dispose-unit', 'AssetTagController@dispose_unit');

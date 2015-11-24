@@ -263,4 +263,10 @@ md-content.blue-bg {
   .right-sidenav-list .active .primary-text {
     color: white; }
 
+.orange-bg {
+  background: #FF9800; }
+
+.red-bg {
+  background: #F44336; }
+
 /*# sourceMappingURL=admin.css.map */

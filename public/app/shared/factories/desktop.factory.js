@@ -58,6 +58,14 @@ sharedModule
 			*/
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
-			}
+			},
+
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
+			},
 		};
 	}]);

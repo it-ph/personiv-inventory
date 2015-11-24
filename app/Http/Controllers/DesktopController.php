@@ -9,6 +9,11 @@ use App\Http\Controllers\Controller;
 
 class DesktopController extends Controller
 {
+    // fetch other records
+    public function other($id)
+    {
+        return DB::table('desktops')->select('*', DB::raw('LEFT(brand, 1) as first_letter'))->whereNotIn('id', [$id])->get();
+    }
     /**
      * Fetch models by brand
      *
@@ -115,7 +120,7 @@ class DesktopController extends Controller
      */
     public function show($id)
     {
-        //
+        return Desktop::where('id', $id)->first();
     }
 
     /**

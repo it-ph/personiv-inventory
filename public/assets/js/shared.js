@@ -137,6 +137,38 @@ sharedModule
 			dispose: function(id){
 				return $http.put(urlBase + '-dispose/' + id);
 			},
+
+			/**
+			 * Delete the asset tag
+			 *
+			*/
+			delete : function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
+
+			/**
+			 * Paginated load of resource for infinite scrolling.
+			 * @return: Object
+			*/
+			activeUnit: function(page, data){
+				return $http.post(urlBase + '-active-unit?page=' + page, data);
+			},
+
+			/**
+			 * Paginated load of resource for infinite scrolling.
+			 * @return: Object
+			*/
+			repairUnit: function(page, data){
+				return $http.post(urlBase + '-repair-unit?page=' + page, data);
+			},
+
+			/**
+			 * Paginated load of resource for infinite scrolling.
+			 * @return: Object
+			*/
+			disposeUnit: function(page, data){
+				return $http.post(urlBase + '-dispose-unit?page=' + page, data);
+			},			
 		};
 	}]);
 sharedModule
@@ -221,7 +253,15 @@ sharedModule
 			*/
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
-			}
+			},
+
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
+			},
 		};
 	}]);
 sharedModule
@@ -332,6 +372,14 @@ sharedModule
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
 			},
+			
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
+			},
 		};
 	}]);
 sharedModule
@@ -395,6 +443,14 @@ sharedModule
 			*/
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
+			},
+			
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
 			},
 		};
 	}]);
@@ -460,6 +516,14 @@ sharedModule
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
 			},
+			
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
+			},
 		};
 	}]);
 sharedModule
@@ -515,6 +579,14 @@ sharedModule
 			*/
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
+			},
+			
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
 			},
 		};
 	}]);
@@ -580,6 +652,13 @@ sharedModule
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
 			},
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
+			},
 		};
 	}]);
 sharedModule
@@ -643,6 +722,14 @@ sharedModule
 			*/
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
+			},
+			
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
 			},
 		};
 	}]);
@@ -708,6 +795,14 @@ sharedModule
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
 			},
+
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
+			},
 		};
 	}]);
 sharedModule
@@ -763,6 +858,14 @@ sharedModule
 			*/
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
+			},
+
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
 			},
 		};
 	}]);
@@ -820,6 +923,14 @@ sharedModule
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
 			},
+
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
+			},
 		};
 	}]);
 sharedModule
@@ -875,6 +986,14 @@ sharedModule
 			*/
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
+			},
+
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
 			},
 		};
 	}]);
@@ -939,6 +1058,14 @@ sharedModule
 			*/
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
+			},
+
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
 			},
 		};
 	}]);
@@ -1018,6 +1145,14 @@ sharedModule
 			*/
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
+			},
+
+			/**
+			 * Search for other records in database except the given id
+			 *
+			*/
+			other: function(id){
+				return $http.get(urlBase +'-other/' + id);
 			},
 		};
 	}]);

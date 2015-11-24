@@ -22,7 +22,7 @@ adminModule
 				.error(function(){
 					Preloader.error();
 				});
-		}
+		};
 
 		AssetTag.workStation(workStationID)
 			.success(function(data){
@@ -142,5 +142,23 @@ adminModule
 		    .then(function(){
 		    	$scope.subheader.refresh();
 		    });
-		}
+		};
+
+		$scope.removeAsset = function(id){
+			var confirm = $mdDialog.confirm()
+	        	.title('Delete asset from records.')
+	          	.content('Are you sure you want to delete this asset from our records?')
+	          	.ariaLabel('Delete Asset')
+	          	.ok('Delete')
+	          	.cancel('Cancel');
+
+	        $mdDialog.show(confirm).then(function() {
+		      	AssetTag.delete(id)
+		      		.success(function(){
+		      			$scope.subheader.refresh();
+		      		});
+		    }, function() {
+		      	return;
+		    });
+		};
 	}]);

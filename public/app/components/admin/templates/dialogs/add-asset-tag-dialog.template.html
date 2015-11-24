@@ -162,7 +162,7 @@
 
 					<md-input-container flex>
 						<label>Supplier</label>
-						<input type="text" name="Supplier{{$index}}" required ng-model="asset.supplier">
+						<input type="text" name="Supplier{{$index}}" ng-model="asset.supplier">
 						<div ng-messages="addWorkStationForm['Supplier' + $index].$error" ng-if="addWorkStationForm['Supplier' + $index].$touched">
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>

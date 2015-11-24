@@ -3,7 +3,7 @@
 	<div layout-margin layout-padding>
 		<md-card>
 			<md-list>
-				<md-list-item class="md-2-line" ng-click="show()" layout="row" ng-repeat="keyboard in keyboard.results | filter:keyboard.userInput">
+				<md-list-item class="md-2-line" ng-click="show(keyboard.id)" layout="row" ng-repeat="keyboard in keyboard.results | filter:keyboard.userInput">
 					<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ keyboard.first_letter }}</span>
 					</h2>
@@ -27,7 +27,7 @@
 		<div layout-margin layout-padding>
 			<md-card >
 				<md-list>
-					<md-list-item class="md-2-line" ng-click="show()" layout="row" ng-repeat="keyboard in keyboard.paginated.data | filter:keyboard.userInput">
+					<md-list-item class="md-2-line" ng-click="show(keyboard.id)" layout="row" ng-repeat="keyboard in keyboard.paginated.data | filter:keyboard.userInput">
 						<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ keyboard.first_letter }}</span>
 						</h2>

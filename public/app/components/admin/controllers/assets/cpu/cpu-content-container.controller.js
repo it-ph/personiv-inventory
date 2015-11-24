@@ -1,5 +1,5 @@
 adminModule
-	.controller('cpuContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Desktop', function($scope, $mdDialog, Preloader, Desktop){
+	.controller('cpuContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Desktop', function($scope, $state, $stateParams, $mdDialog, Preloader, Desktop){
 		/**
 		 * Object for subheader
 		 *
@@ -138,4 +138,7 @@ adminModule
 				});
 		};
 
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
+		};
 	}]);

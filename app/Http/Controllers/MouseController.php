@@ -9,6 +9,11 @@ use App\Http\Controllers\Controller;
 
 class MouseController extends Controller
 {
+    // fetch other records
+    public function other($id)
+    {
+        return Mouse::whereNotIn('id', [$id])->get();
+    }
     /**
      * Fetch models by brand
      *

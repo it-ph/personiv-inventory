@@ -9,6 +9,10 @@ use App\Http\Controllers\Controller;
 
 class KeyboardController extends Controller
 {
+    // fetch other records
+    public function other($id)
+    {
+        return DB::table('keyboards')->select('*', DB::raw('LEFT(brand, 1) as first_letter'))->whereNotIn('id', [$id])->get();    }
     /**
      * Fetch models by brand
      *

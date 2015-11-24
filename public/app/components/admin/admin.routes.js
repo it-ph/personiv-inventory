@@ -174,13 +174,6 @@ adminModule
 							return assetService.contentController(index);
 						}]
 					},
-					// 'right-sidenav@main.assets': {
-					// 	templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
-					// 	controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
-					// 		var index = $stateParams.assetID - 1;
-					// 		return assetService.rightSidenavController(index);
-					// 	}]
-					// },
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
 					var leftSidenav = $('[md-component-id="left"]');
@@ -190,6 +183,53 @@ adminModule
 					$mdSidenav('left').toggle();
 				}],
 			})
+			/**
+			 * Unit Routes
+			 *
+			*/
+			.state('main.units', {
+				url: 'assets/{assetID}/unit/{unitID}',
+				params: {'assetID':null, 'unitID':null},
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.unitContentContainerController(index);
+						}]
+					},
+					'toolbar@main.units': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.unitToolbarController(index);
+						}]
+					},
+					'content@main.units': {
+						templateUrl: '/app/components/admin/templates/content/assets-unit.content.template.html',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.unitContentController(index);
+						}]
+					},
+					'right-sidenav@main.units': {
+						templateUrl : '/app/components/admin/templates/sidenavs/unit-right.sidenav.html',
+						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+							var index = $stateParams.assetID - 1;
+							return assetService.unitRightSidenavController(index);
+						}]
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+
+
 			/**
 			 * Department Routes
 			 *

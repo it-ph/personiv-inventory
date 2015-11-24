@@ -9,6 +9,11 @@ use App\Http\Controllers\Controller;
 
 class HardDiskController extends Controller
 {
+    // fetch other records
+    public function other($id)
+    {
+        return DB::table('hard_disks')->select('*', DB::raw('LEFT(brand, 1) as first_letter'))->whereNotIn('id', [$id])->get();
+    }
     /**
      * Fetch models by brand
      *
