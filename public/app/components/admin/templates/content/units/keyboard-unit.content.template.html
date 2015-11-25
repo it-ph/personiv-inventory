@@ -1,0 +1,58 @@
+<!-- Search Results -->
+<div class="fade-transition" layout="column" flex ng-if="keyboard.results && !keyboard.paginated.show">
+	<div layout-margin layout-padding>
+		<md-card>
+			<md-list>
+				<md-list-item class="md-3-line" layout="row" ng-repeat="keyboard in keyboard.results | filter:keyboard.userInput">
+					<h2 class="md-avatar md-headline" ng-class="keyboard.status == 'active' ? 'blue-bg' : (keyboard.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
+						<span class="weight-200 white-text">{{ keyboard.first_letter }}</span>
+					</h2>
+					<div class="md-list-item-text" layout="column" flex>
+						<h3>Serial: {{ keyboard.serial }}</h3>
+						<h4>Property: {{ keyboard.property_code }}</h4>
+						<p>Work Station: {{ keyboard.work_station_name }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>Date Purchase: {{ keyboard.date_purchase }}</span>
+						<span>{{ keyboard.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+			<md-card-content ng-if="!keyboard.results.length">
+				<p class="secondary-text">No results found.</p>
+			</md-card-content>
+		</md-card>
+	</div>
+</div>
+
+<!-- Paginated Data -->
+<div class="fade-transition" ng-if="keyboard.paginated.show" flex infinite-scroll='keyboard.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="keyboard.busy" infinite-scroll-parent>
+	<div layout="column" flex>
+		<div layout-margin layout-padding>
+			<md-subheader class="md-no-sticky md-primary">
+				{{ listType }}
+			</md-subheader>
+			<md-card>
+				<md-list>
+					<md-list-item class="md-3-line" layout="row" ng-repeat="keyboard in keyboard.paginated.data | filter:keyboard.userInput">
+						<h2 class="md-avatar md-headline" ng-class="keyboard.status == 'active' ? 'blue-bg' : (keyboard.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
+							<span class="weight-200 white-text">{{ keyboard.first_letter }}</span>
+						</h2>
+						<div class="md-list-item-text" layout="column" flex>
+							<h3>Serial: {{ keyboard.serial }} <span ng-if="!keyboard.serial">N/A</span></h3>
+							<h4>Property: {{ keyboard.property_code }}</h4>
+							<p>Work Station: {{ keyboard.work_station_name }}</p>
+						</div>
+						<p flex class="text-right secondary-text md-caption" layout="column">
+							<span ng-if="keyboard.date_purchase">Date Purchase: {{ keyboard.date_purchase }}</span>
+							<span>{{ keyboard.supplier }}</span>
+						</p>
+					</md-list-item>
+				</md-list>
+				<md-card-content ng-if="!keyboard.paginated.data.length">
+					<p class="secondary-text">No records yet.</p>
+				</md-card-content>
+			</md-card>
+		</div>
+	</div>
+</div>

@@ -6,14 +6,17 @@
 	</md-toolbar>
 	<div class="full-width-min">
 		<md-list>
+			<md-subheader class="md-primary" ng-if="!others.length">
+				<p>No Other {{ asset }}</p>
+			</md-subheader>
 			<md-list-item class="md-3-line" ng-click="show(item.id)" layout="row" ng-repeat="item in others">
 				<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
 					<span class="weight-200 white-text">{{ item.first_letter }}</span>
 				</h2>
 				<div class="md-list-item-text" layout="column" flex>
-					<h3>{{ item.brand }}</h3>
-					<h4>{{ item.model }}</h4>
-					<p>{{ item.processor }} /<span ng-if="item.dvd">w/ DVD</span></p>
+					<h3>{{ item.brand }} {{ item.maker }}</h3>
+					<h4>{{ item.model }} {{ item.type }} {{ item.name }}</h4>
+					<p>{{ item.processor }} <span ng-if="item.dvd">/w/ DVD</span> {{ item.capacity }} {{ item.size }} <span ng-if="item.speed">/</span> {{ item.speed }} {{ item.version }} {{ item.wattage }}</p>
 				</div>
 			</md-list-item>
 		</md-list>

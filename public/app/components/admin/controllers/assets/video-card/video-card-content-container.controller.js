@@ -1,5 +1,5 @@
 adminModule
-	.controller('videoCardContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'VideoCard', function($scope, $mdDialog, Preloader, VideoCard){
+	.controller('videoCardContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'VideoCard', function($scope, $state, $stateParams, $mdDialog, Preloader, VideoCard){
 		/**
 		 * Object for subheader
 		 *
@@ -135,5 +135,9 @@ adminModule
 				.error(function(data){
 					Preloader.error();
 				});
+		};
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
 		};
 	}]);

@@ -1,5 +1,5 @@
 adminModule
-	.controller('monitorContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Monitor', function($scope, $mdDialog, Preloader, Monitor){
+	.controller('monitorContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Monitor', function($scope, $state, $stateParams, $mdDialog, Preloader, Monitor){
 		/**
 		 * Object for subheader
 		 *
@@ -135,5 +135,9 @@ adminModule
 				.error(function(data){
 					Preloader.error();
 				});
+		};
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
 		};
 	}]);

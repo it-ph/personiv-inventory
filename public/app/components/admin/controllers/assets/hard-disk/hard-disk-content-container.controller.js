@@ -1,5 +1,5 @@
 adminModule
-	.controller('hardDiskContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'HardDisk', function($scope, $mdDialog, Preloader, HardDisk){
+	.controller('hardDiskContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'HardDisk', function($scope, $state, $stateParams, $mdDialog, Preloader, HardDisk){
 		/**
 		 * Object for subheader
 		 *
@@ -135,5 +135,9 @@ adminModule
 				.error(function(data){
 					Preloader.error();
 				});
+		};
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
 		};
 	}]);

@@ -50,6 +50,8 @@ class AssetTagController extends Controller
         else if ($request->component_type == 'Memory') { $table_name = 'memories'; }
         else if ($request->component_type == 'Monitor') { $table_name = 'monitors'; }
         else if ($request->component_type == 'Mouse') { $table_name = 'mice'; }
+        else if ($request->component_type == 'Printer') { $table_name = 'printers'; }
+        else if ($request->component_type == 'Scanner') { $table_name = 'scanners'; }
         else if ($request->component_type == 'Software') { $table_name = 'softwares'; }
         else if ($request->component_type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
         else if ($request->component_type == 'Video Card') { $table_name = 'video_cards'; }
@@ -89,6 +91,8 @@ class AssetTagController extends Controller
         else if ($request->component_type == 'Memory') { $table_name = 'memories'; }
         else if ($request->component_type == 'Monitor') { $table_name = 'monitors'; }
         else if ($request->component_type == 'Mouse') { $table_name = 'mice'; }
+        else if ($request->component_type == 'Printer') { $table_name = 'printers'; }
+        else if ($request->component_type == 'Scanner') { $table_name = 'scanners'; }
         else if ($request->component_type == 'Software') { $table_name = 'softwares'; }
         else if ($request->component_type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
         else if ($request->component_type == 'Video Card') { $table_name = 'video_cards'; }
@@ -127,6 +131,8 @@ class AssetTagController extends Controller
         else if ($request->component_type == 'Memory') { $table_name = 'memories'; }
         else if ($request->component_type == 'Monitor') { $table_name = 'monitors'; }
         else if ($request->component_type == 'Mouse') { $table_name = 'mice'; }
+        else if ($request->component_type == 'Printer') { $table_name = 'printers'; }
+        else if ($request->component_type == 'Scanner') { $table_name = 'scanners'; }
         else if ($request->component_type == 'Software') { $table_name = 'softwares'; }
         else if ($request->component_type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
         else if ($request->component_type == 'Video Card') { $table_name = 'video_cards'; }

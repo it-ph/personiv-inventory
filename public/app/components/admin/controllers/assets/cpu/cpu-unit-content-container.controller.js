@@ -15,7 +15,6 @@ adminModule
 
 		/* Refreshes the list */
 		$scope.subheader.activeUnit = function(){
-			$scope.desktopClass = 'blue-bg';
 			// start preloader
 			Preloader.preload();
 			// clear desktop
@@ -178,7 +177,6 @@ adminModule
 		
 		AssetTag.activeUnit(1, query)
 			.then(function(data){
-				$scope.desktopClass = 'blue-bg';
 				$scope.listType = 'Active'
 				$scope.desktop.paginated = data.data;
 				$scope.desktop.paginated.show = true;

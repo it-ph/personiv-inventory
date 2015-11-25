@@ -1,5 +1,5 @@
 adminModule
-	.controller('memoryContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Memory', function($scope, $mdDialog, Preloader, Memory){
+	.controller('memoryContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Memory', function($scope, $state, $stateParams, $mdDialog, Preloader, Memory){
 		/**
 		 * Object for subheader
 		 *
@@ -135,5 +135,9 @@ adminModule
 				.error(function(data){
 					Preloader.error();
 				});
+		};
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
 		};
 	}]);

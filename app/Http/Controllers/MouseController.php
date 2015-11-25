@@ -12,7 +12,7 @@ class MouseController extends Controller
     // fetch other records
     public function other($id)
     {
-        return Mouse::whereNotIn('id', [$id])->get();
+        return DB::table('mice')->select('*', DB::raw('LEFT(brand, 1) as first_letter'))->whereNotIn('id', [$id])->get();
     }
     /**
      * Fetch models by brand
@@ -42,7 +42,7 @@ class MouseController extends Controller
     public function search(Request $request)
     {
         return DB::table('mice')
-            ->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->select('*', DB::raw('LEFT(brand, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
             ->where('brand', 'like', '%'. $request->userInput .'%')
             ->orWhere('model', 'like', '%'. $request->userInput .'%')
             ->whereNull('deleted_at')
@@ -58,7 +58,7 @@ class MouseController extends Controller
     */
     public function paginate()
     {
-        return DB::table('mice')->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
+        return DB::table('mice')->select('*', DB::raw('LEFT(brand, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
     }
 
     /**
@@ -114,7 +114,7 @@ class MouseController extends Controller
      */
     public function show($id)
     {
-        //
+        return Mouse::where('id', $id)->first();
     }
 
     /**

@@ -1,5 +1,5 @@
 adminModule
-	.controller('printerContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Printer', function($scope, $mdDialog, Preloader, Printer){
+	.controller('printerContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Printer', function($scope, $state, $stateParams, $mdDialog, Preloader, Printer){
 		/**
 		 * Object for subheader
 		 *
@@ -135,5 +135,9 @@ adminModule
 				.error(function(data){
 					Preloader.error();
 				});
+		};
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
 		};
 	}]);

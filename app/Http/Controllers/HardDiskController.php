@@ -49,7 +49,7 @@ class HardDiskController extends Controller
     public function search(Request $request)
     {
         return DB::table('hard_disks')
-            ->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->select('*', DB::raw('LEFT(brand, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
             ->where('brand', 'like', '%'. $request->userInput .'%')
             ->orWhere('model', 'like', '%'. $request->userInput .'%')
             ->orWhere('capacity', 'like', '%'. $request->userInput .'%')
@@ -67,7 +67,7 @@ class HardDiskController extends Controller
     */
     public function paginate()
     {
-        return DB::table('hard_disks')->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
+        return DB::table('hard_disks')->select('*', DB::raw('LEFT(brand, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
     }
     /**
      * Display a listing of the resource.
@@ -124,7 +124,7 @@ class HardDiskController extends Controller
      */
     public function show($id)
     {
-        //
+        return HardDisk::where('id', $id)->first();
     }
 
     /**

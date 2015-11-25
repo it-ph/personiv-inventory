@@ -1,0 +1,40 @@
+<md-dialog layout="column" flex="50"  aria-label="Add Firewall" ng-cloak>
+	<form name="addFirewallForm" novalidate>
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Add Firewall</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content flex layout-padding>
+			<div layout="column" flex>
+				<div layout="row" flex>
+					<!-- Brand -->
+					<md-input-container flex>
+						<label>Brand</label>
+						<input name="Brand" type="text" required ng-model="firewall.brand">
+						<div ng-messages="addFirewallForm.Brand.$error" ng-if="addFirewallForm.Brand.$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+					<!-- Model -->
+					<md-input-container flex>
+						<label>Model</label>
+						<input name="Model" type="text" required ng-model="firewall.model">
+						<div ng-messages="addFirewallForm.Model.$error" ng-if="addFirewallForm.Model.$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+				</div>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-fab md-primary" ng-disabled="addFirewallForm.$invalid" aria-label="Submit" ng-click="submit()">
+			<md-icon class="mdi mdi-check"></md-icon>
+		</md-button>
+	</div>
+</md-dialog>

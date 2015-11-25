@@ -1,45 +1,26 @@
 adminModule
 	.service('assetService', ['$http', function($http){
 		var assets = [
-			{
-				'controller' : 'cpu',
-			},
-			{
-				'controller' : 'hardDisk',
-			},
-			{
-				'controller' : 'headset',
-			},
-			{
-				'controller' : 'keyboard'
-			},
-			{
-				'controller' : 'memory',
-			},
-			{
-				'controller' : 'monitor',
-			},
-			{
-				'controller' : 'mouse',
-			},
-			{
-				'controller' : 'printer',
-			},
-			{
-				'controller' : 'scanner',
-			},
-			{
-				'controller' : 'software',
-			},
-			{
-				'controller' : 'ups',
-			},
-			{
-				'controller' : 'videoCard',
-			},
-			{
-				'controller' : 'otherComponent',
-			},
+			{ 'controller' : 'cpu' },
+			{ 'controller' : 'firewall' },
+			{ 'controller' : 'hardDisk' },
+			{ 'controller' : 'headset' },
+			{ 'controller' : 'keyboard' },
+			{ 'controller' : 'mac' },
+			{ 'controller' : 'memory' },
+			{ 'controller' : 'monitor' },
+			{ 'controller' : 'mouse' },
+			{ 'controller' : 'networkSwitch' },
+			{ 'controller' : 'portableHardDisk' },
+			{ 'controller' : 'printer' },
+			{ 'controller' : 'router' },
+			{ 'controller' : 'scanner' },
+			{ 'controller' : 'software' },
+			{ 'controller' : 'speaker' },
+			{ 'controller' : 'telephone' },
+			{ 'controller' : 'ups' },
+			{ 'controller' : 'videoCard' },
+			{ 'controller' : 'otherComponent' },
 		];
 
 		return{

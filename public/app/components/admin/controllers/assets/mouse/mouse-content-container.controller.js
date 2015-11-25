@@ -1,5 +1,5 @@
 adminModule
-	.controller('mouseContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Mouse', function($scope, $mdDialog, Preloader, Mouse){
+	.controller('mouseContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Mouse', function($scope, $state, $stateParams, $mdDialog, Preloader, Mouse){
 		/**
 		 * Object for subheader
 		 *
@@ -135,5 +135,9 @@ adminModule
 				.error(function(data){
 					Preloader.error();
 				});
+		};
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
 		};
 	}]);

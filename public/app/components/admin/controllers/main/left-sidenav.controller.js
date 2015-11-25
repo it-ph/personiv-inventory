@@ -34,64 +34,99 @@ adminModule
 					'id': 1
 				},
 				{
-					'name': 'Hard Disk',
+					'name': 'Firewall',
 					'state':'main.assets',
 					'id': 2
 				},
 				{
-					'name': 'Headset',
+					'name': 'Hard Disk',
 					'state':'main.assets',
 					'id': 3
 				},
 				{
-					'name': 'Keyboard',
+					'name': 'Headset',
 					'state':'main.assets',
 					'id': 4
 				},
 				{
-					'name': 'Memory',
+					'name': 'Keyboard',
 					'state':'main.assets',
 					'id': 5
 				},
 				{
-					'name': 'Monitor',
+					'name': 'Mac Computer',
 					'state':'main.assets',
 					'id': 6
 				},
 				{
-					'name': 'Mouse',
+					'name': 'Memory',
 					'state':'main.assets',
 					'id': 7
 				},
 				{
-					'name': 'Printer',
+					'name': 'Monitor',
 					'state':'main.assets',
 					'id': 8
 				},
 				{
-					'name': 'Scanner',
+					'name': 'Mouse',
 					'state':'main.assets',
 					'id': 9
 				},
 				{
-					'name': 'Software',
+					'name': 'Network Switch',
 					'state':'main.assets',
 					'id': 10
 				},
 				{
-					'name': 'UPS',
+					'name': 'Portable Hard Disk',
 					'state':'main.assets',
 					'id': 11
 				},
 				{
-					'name': 'Video Card',
+					'name': 'Printer',
 					'state':'main.assets',
 					'id': 12
 				},
 				{
-					'name': 'Other Components',
+					'name': 'Router',
 					'state':'main.assets',
 					'id': 13
+				},
+				{
+					'name': 'Scanner',
+					'state':'main.assets',
+					'id': 14
+				},
+				{
+					'name': 'Software',
+					'state':'main.assets',
+					'id': 15
+				},
+				{
+					'name': 'Speaker',
+					'state':'main.assets',
+					'id': 16
+				},
+				{
+					'name': 'Telephone',
+					'state':'main.assets',
+					'id': 17
+				},
+				{
+					'name': 'UPS',
+					'state':'main.assets',
+					'id': 18
+				},
+				{
+					'name': 'Video Card',
+					'state':'main.assets',
+					'id': 19
+				},
+				{
+					'name': 'Other Components',
+					'state':'main.assets',
+					'id': 20
 				},
 			],
 		];

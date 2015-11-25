@@ -1,5 +1,5 @@
 adminModule
-	.controller('keyboardContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Keyboard', function($scope, $mdDialog, Preloader, Keyboard){
+	.controller('keyboardContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Keyboard', function($scope, $state, $stateParams, $mdDialog, Preloader, Keyboard){
 		/**
 		 * Object for subheader
 		 *
@@ -135,5 +135,9 @@ adminModule
 				.error(function(data){
 					Preloader.error();
 				});
+		};
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
 		};
 	}]);

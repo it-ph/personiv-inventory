@@ -12,7 +12,7 @@ class MemoryController extends Controller
     // fetch other records
     public function other($id)
     {
-        return DB::table('desktops')->select('*', DB::raw('LEFT(model, 1) as first_letter'))->whereNotIn('id', [$id])->get();    }
+        return DB::table('memories')->select('*', DB::raw('LEFT(brand, 1) as first_letter'))->whereNotIn('id', [$id])->get();
     }
     /**
      * Fetch distinct table columns

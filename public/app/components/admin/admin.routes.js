@@ -129,7 +129,7 @@ adminModule
 					},
 					'content@main.work-station': {
 						templateUrl: '/app/components/admin/templates/content/work-station.content.template.html',
-						controller: 'workStationContentController',
+						// controller: 'workStationContentController',
 					},
 					'right-sidenav@main.work-station': {
 						templateUrl : '/app/components/admin/templates/sidenavs/work-station-right.sidenav.html',
@@ -169,10 +169,10 @@ adminModule
 					},
 					'content@main.assets': {
 						templateUrl: '/app/components/admin/templates/content/assets.content.template.html',
-						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
-							var index = $stateParams.assetID - 1;
-							return assetService.contentController(index);
-						}]
+						// controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+						// 	var index = $stateParams.assetID - 1;
+						// 	return assetService.contentController(index);
+						// }]
 					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
@@ -188,7 +188,7 @@ adminModule
 			 *
 			*/
 			.state('main.units', {
-				url: 'assets/{assetID}/unit/{unitID}',
+				url: 'assets/{assetID}/item/{unitID}',
 				params: {'assetID':null, 'unitID':null},
 				views: {
 					'content-container': {
@@ -207,10 +207,10 @@ adminModule
 					},
 					'content@main.units': {
 						templateUrl: '/app/components/admin/templates/content/assets-unit.content.template.html',
-						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
-							var index = $stateParams.assetID - 1;
-							return assetService.unitContentController(index);
-						}]
+						// controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
+						// 	var index = $stateParams.assetID - 1;
+						// 	return assetService.unitContentController(index);
+						// }]
 					},
 					'right-sidenav@main.units': {
 						templateUrl : '/app/components/admin/templates/sidenavs/unit-right.sidenav.html',

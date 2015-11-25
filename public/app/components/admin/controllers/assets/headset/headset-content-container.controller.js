@@ -1,5 +1,5 @@
 adminModule
-	.controller('headsetContentContainerController', ['$scope', '$mdDialog', 'Preloader', 'Headset', function($scope, $mdDialog, Preloader, Headset){
+	.controller('headsetContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Headset', function($scope, $state, $stateParams, $mdDialog, Preloader, Headset){
 		/**
 		 * Object for subheader
 		 *
@@ -135,5 +135,9 @@ adminModule
 				.error(function(data){
 					Preloader.error();
 				});
+		};
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
 		};
 	}]);

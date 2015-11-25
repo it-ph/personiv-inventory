@@ -52,23 +52,37 @@ Route::resource('other-component', 'OtherComponentController');
 Route::resource('employee', 'EmployeeController');
 Route::resource('work-station', 'WorkStationController');
 Route::resource('asset-tag', 'AssetTagController');
+Route::resource('firewall', 'FirewallController');
+Route::resource('mac', 'MacController');
+Route::resource('portable-hard-disk', 'PortableHardDiskController');
+Route::resource('network-switch', 'NetworkSwitchController');
+Route::resource('router', 'RouterController');
+Route::resource('speaker', 'SpeakerController');
+Route::resource('telephone', 'TelephoneController');
 
 // Route Resource Paginations
-Route::get('/desktop-paginate', 'DesktopController@paginate');
-Route::get('/hard-disk-paginate', 'HardDiskController@paginate');
-Route::get('/headset-paginate', 'HeadsetController@paginate');
-Route::get('/keyboard-paginate', 'KeyboardController@paginate');
-Route::get('/memory-paginate', 'MemoryController@paginate');
-Route::get('/monitor-paginate', 'MonitorController@paginate');
-Route::get('/mouse-paginate', 'MouseController@paginate');
-Route::get('/printer-paginate', 'PrinterController@paginate');
-Route::get('/scanner-paginate', 'ScannerController@paginate');
-Route::get('/software-paginate', 'SoftwareController@paginate');
-Route::get('/ups-paginate', 'UninterruptiblePowerSupplyController@paginate');
-Route::get('/video-card-paginate', 'VideoCardController@paginate');
-Route::get('/other-component-paginate', 'OtherComponentController@paginate');
-Route::get('/employee-paginate/{departmentID}', 'EmployeeController@paginate');
-Route::get('/work-station-paginate/{departmentID}', 'WorkStationController@paginate');
+Route::get('desktop-paginate', 'DesktopController@paginate');
+Route::get('hard-disk-paginate', 'HardDiskController@paginate');
+Route::get('headset-paginate', 'HeadsetController@paginate');
+Route::get('keyboard-paginate', 'KeyboardController@paginate');
+Route::get('memory-paginate', 'MemoryController@paginate');
+Route::get('monitor-paginate', 'MonitorController@paginate');
+Route::get('mouse-paginate', 'MouseController@paginate');
+Route::get('printer-paginate', 'PrinterController@paginate');
+Route::get('scanner-paginate', 'ScannerController@paginate');
+Route::get('software-paginate', 'SoftwareController@paginate');
+Route::get('ups-paginate', 'UninterruptiblePowerSupplyController@paginate');
+Route::get('video-card-paginate', 'VideoCardController@paginate');
+Route::get('other-component-paginate', 'OtherComponentController@paginate');
+Route::get('employee-paginate/{departmentID}', 'EmployeeController@paginate');
+Route::get('work-station-paginate/{departmentID}', 'WorkStationController@paginate');
+Route::get('firewall-paginate', 'FirewallController@paginate');
+Route::get('mac-paginate', 'MacController@paginate');
+Route::get('portable-hard-disk-paginate', 'PortableHardDiskController@paginate');
+Route::get('network-switch-paginate', 'NetworkSwitchController@paginate');
+Route::get('router-paginate', 'RouterController@paginate');
+Route::get('speaker-paginate', 'SpeakerController@paginate');
+Route::get('telephone-paginate', 'TelephoneController@paginate');
 
 // Route Resource Search
 Route::post('desktop-search', 'DesktopController@search');
@@ -87,6 +101,13 @@ Route::post('other-component-search', 'OtherComponentController@search');
 Route::post('asset-tag-search', 'AssetTagController@search');
 Route::post('employee-search/{departmentID}', 'EmployeeController@search');
 Route::post('work-station-search/{departmentID}', 'WorkStationController@search');
+Route::post('firewall-search', 'FirewallController@search');
+Route::post('mac-search', 'MacController@search');
+Route::post('portable-hard-disk-search', 'PortableHardDiskController@search');
+Route::post('network-switch-search', 'NetworkSwitchController@search');
+Route::post('router-search', 'RouterController@search');
+Route::post('speaker-search', 'SpeakerController@search');
+Route::post('telephone-search', 'TelephoneController@search');
 
 // Route Resource Distinct column
 Route::post('desktop-distinct', 'DesktopController@distinct');
@@ -102,6 +123,13 @@ Route::post('software-distinct', 'SoftwareController@distinct');
 Route::post('ups-distinct', 'UninterruptiblePowerSupplyController@distinct');
 Route::post('other-component-distinct', 'OtherComponentController@distinct');
 Route::post('video-card-distinct', 'VideoCardController@distinct');
+Route::post('firewall-distinct', 'FirewallController@distinct');
+Route::post('mac-distinct', 'MacController@distinct');
+Route::post('portable-hard-disk-distinct', 'PortableHardDiskController@distinct');
+Route::post('network-switch-distinct', 'NetworkSwitchController@distinct');
+Route::post('router-distinct', 'RouterController@distinct');
+Route::post('speaker-distinct', 'SpeakerController@distinct');
+Route::post('telephone-distinct', 'TelephoneController@distinct');
 
 // Route resource models
 Route::post('desktop-model', 'DesktopController@model');
@@ -112,6 +140,12 @@ Route::post('monitor-model', 'MonitorController@model');
 Route::post('mouse-model', 'MouseController@model');
 Route::post('ups-model', 'UninterruptiblePowerSupplyController@model');
 Route::post('other-component-model', 'OtherComponentController@model');
+Route::post('firewall-model', 'FirewallController@model');
+Route::post('portable-hard-disk-model', 'PortableHardDiskController@model');
+Route::post('network-switch-model', 'NetworkSwitchController@model');
+Route::post('router-model', 'RouterController@model');
+Route::post('speaker-model', 'SpeakerController@model');
+Route::post('telephone-model', 'TelephoneController@model');
 
 // Route resource others
 Route::get('desktop-other/{desktopID}', 'DesktopController@other');
@@ -126,7 +160,14 @@ Route::get('scanner-other/{scannerID}', 'ScannerController@other');
 Route::get('software-other/{softwareID}', 'SoftwareController@other');
 Route::get('ups-other/{upsID}', 'UninterruptiblePowerSupplyController@other');
 Route::get('video-card-other/{videoCardID}', 'VideoCardController@other');
-Route::get('other-component-other/{videoCardID}', 'VideoCardController@other');
+Route::get('other-component-other/{videoCardID}', 'OtherComponentController@other');
+Route::get('firewall-other', 'FirewallController@other');
+Route::get('mac-other', 'MacController@other');
+Route::get('portable-hard-disk-other', 'PortableHardDiskController@other');
+Route::get('network-switch-other', 'NetworkSwitchController@other');
+Route::get('router-other', 'RouterController@other');
+Route::get('speaker-other', 'SpeakerController@other');
+Route::get('telephone-other', 'TelephoneController@other');
 
 
 // Other routes
