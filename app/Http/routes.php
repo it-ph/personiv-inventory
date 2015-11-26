@@ -59,6 +59,7 @@ Route::resource('network-switch', 'NetworkSwitchController');
 Route::resource('router', 'RouterController');
 Route::resource('speaker', 'SpeakerController');
 Route::resource('telephone', 'TelephoneController');
+Route::resource('projector', 'ProjectorController');
 
 // Route Resource Paginations
 Route::get('desktop-paginate', 'DesktopController@paginate');
@@ -83,6 +84,7 @@ Route::get('network-switch-paginate', 'NetworkSwitchController@paginate');
 Route::get('router-paginate', 'RouterController@paginate');
 Route::get('speaker-paginate', 'SpeakerController@paginate');
 Route::get('telephone-paginate', 'TelephoneController@paginate');
+Route::get('projector-paginate', 'ProjectorController@paginate');
 
 // Route Resource Search
 Route::post('desktop-search', 'DesktopController@search');
@@ -108,6 +110,7 @@ Route::post('network-switch-search', 'NetworkSwitchController@search');
 Route::post('router-search', 'RouterController@search');
 Route::post('speaker-search', 'SpeakerController@search');
 Route::post('telephone-search', 'TelephoneController@search');
+Route::post('projector-search', 'ProjectorController@search');
 
 // Route Resource Distinct column
 Route::post('desktop-distinct', 'DesktopController@distinct');
@@ -130,6 +133,7 @@ Route::post('network-switch-distinct', 'NetworkSwitchController@distinct');
 Route::post('router-distinct', 'RouterController@distinct');
 Route::post('speaker-distinct', 'SpeakerController@distinct');
 Route::post('telephone-distinct', 'TelephoneController@distinct');
+Route::post('projector-distinct', 'ProjectorController@distinct');
 
 // Route resource models
 Route::post('desktop-model', 'DesktopController@model');
@@ -138,6 +142,8 @@ Route::post('headset-model', 'HeadsetController@model');
 Route::post('keyboard-model', 'KeyboardController@model');
 Route::post('monitor-model', 'MonitorController@model');
 Route::post('mouse-model', 'MouseController@model');
+Route::post('printer-model', 'PrinterController@model');
+Route::post('scanner-model', 'ScannerController@model');
 Route::post('ups-model', 'UninterruptiblePowerSupplyController@model');
 Route::post('other-component-model', 'OtherComponentController@model');
 Route::post('firewall-model', 'FirewallController@model');
@@ -146,6 +152,7 @@ Route::post('network-switch-model', 'NetworkSwitchController@model');
 Route::post('router-model', 'RouterController@model');
 Route::post('speaker-model', 'SpeakerController@model');
 Route::post('telephone-model', 'TelephoneController@model');
+Route::post('projector-model', 'ProjectorController@model');
 
 // Route resource others
 Route::get('desktop-other/{desktopID}', 'DesktopController@other');
@@ -161,14 +168,14 @@ Route::get('software-other/{softwareID}', 'SoftwareController@other');
 Route::get('ups-other/{upsID}', 'UninterruptiblePowerSupplyController@other');
 Route::get('video-card-other/{videoCardID}', 'VideoCardController@other');
 Route::get('other-component-other/{videoCardID}', 'OtherComponentController@other');
-Route::get('firewall-other', 'FirewallController@other');
-Route::get('mac-other', 'MacController@other');
-Route::get('portable-hard-disk-other', 'PortableHardDiskController@other');
-Route::get('network-switch-other', 'NetworkSwitchController@other');
-Route::get('router-other', 'RouterController@other');
-Route::get('speaker-other', 'SpeakerController@other');
-Route::get('telephone-other', 'TelephoneController@other');
-
+Route::get('firewall-other/{firewallID}', 'FirewallController@other');
+Route::get('mac-other/{macID}', 'MacController@other');
+Route::get('portable-hard-disk-other/{portableHardDiskID}', 'PortableHardDiskController@other');
+Route::get('network-switch-other/{networkSwitchID}', 'NetworkSwitchController@other');
+Route::get('router-other/{routerSwitchID}', 'RouterController@other');
+Route::get('speaker-other/{speakerID}', 'SpeakerController@other');
+Route::get('telephone-other/{telephoneID}', 'TelephoneController@other');
+Route::get('projector-other/{projectorID}', 'ProjectorController@other');
 
 // Other routes
 
@@ -204,3 +211,6 @@ Route::post('asset-tag-repair-unit', 'AssetTagController@repair_unit');
 
 // fetch all dispose units 
 Route::post('asset-tag-dispose-unit', 'AssetTagController@dispose_unit');
+
+// fetch all Mac with the specific type
+Route::post('mac-processor', 'MacController@processor');

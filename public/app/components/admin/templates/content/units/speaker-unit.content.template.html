@@ -1,0 +1,58 @@
+<!-- Search Results -->
+<div class="fade-transition" layout="column" flex ng-if="speaker.results && !speaker.paginated.show">
+	<div layout-margin layout-padding>
+		<md-card>
+			<md-list>
+				<md-list-item class="md-3-line" layout="row" ng-repeat="speaker in speaker.results | filter:speaker.userInput">
+					<h2 class="md-avatar md-headline" ng-class="speaker.status == 'active' ? 'blue-bg' : (speaker.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
+						<span class="weight-200 white-text">{{ speaker.first_letter }}</span>
+					</h2>
+					<div class="md-list-item-text" layout="column" flex>
+						<h3>Serial: {{ speaker.serial }}</h3>
+						<h4>Property: {{ speaker.property_code }}</h4>
+						<p>Work Station: {{ speaker.work_station_name }}</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>Date Purchase: {{ speaker.date_purchase }}</span>
+						<span>{{ speaker.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+			<md-card-content ng-if="!speaker.results.length">
+				<p class="secondary-text">No results found.</p>
+			</md-card-content>
+		</md-card>
+	</div>
+</div>
+
+<!-- Paginated Data -->
+<div class="fade-transition" ng-if="speaker.paginated.show" flex infinite-scroll='speaker.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="speaker.busy" infinite-scroll-parent>
+	<div layout="column" flex>
+		<div layout-margin layout-padding>
+			<md-subheader class="md-no-sticky md-primary">
+				{{ listType }}
+			</md-subheader>
+			<md-card>
+				<md-list>
+					<md-list-item class="md-3-line" layout="row" ng-repeat="speaker in speaker.paginated.data | filter:speaker.userInput">
+						<h2 class="md-avatar md-headline" ng-class="speaker.status == 'active' ? 'blue-bg' : (speaker.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
+							<span class="weight-200 white-text">{{ speaker.first_letter }}</span>
+						</h2>
+						<div class="md-list-item-text" layout="column" flex>
+							<h3>Serial: {{ speaker.serial }} <span ng-if="!speaker.serial">N/A</span></h3>
+							<h4>Property: {{ speaker.property_code }}</h4>
+							<p>Work Station: {{ speaker.work_station_name }}</p>
+						</div>
+						<p flex class="text-right secondary-text md-caption" layout="column">
+							<span ng-if="speaker.date_purchase">Date Purchase: {{ speaker.date_purchase }}</span>
+							<span>{{ speaker.supplier }}</span>
+						</p>
+					</md-list-item>
+				</md-list>
+				<md-card-content ng-if="!speaker.paginated.data.length">
+					<p class="secondary-text">No records yet.</p>
+				</md-card-content>
+			</md-card>
+		</div>
+	</div>
+</div>

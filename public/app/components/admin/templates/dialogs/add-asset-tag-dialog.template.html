@@ -19,9 +19,9 @@
 				</div>
 				<div layout="row" ng-if="asset.component_type!='Software'">
 					<!-- Brand -->
-					<md-input-container flex>
+					<md-input-container flex ng-if="asset.component_type!='Mac'">
 						<label>Brand</label>
-						<md-select name="Brand{{$index}}" ng-change="brandChange($index, asset.component_type)" required ng-model="asset.brand">
+						<md-select name="Brand{{$index}}" ng-change="brandChange($index)" required ng-model="asset.brand">
 							<md-option ng-repeat="asset in asset.brands" value="{{ asset.brand }}">
 								<span>{{ asset.brand }}</span>
 							</md-option>
@@ -32,9 +32,9 @@
 					</md-input-container>
 
 					<!-- Capacity -->
-					<md-input-container flex ng-if="asset.component_type=='Hard Disk'">
+					<md-input-container flex ng-if="asset.component_type=='Hard Disk' || asset.component_type=='Portable Hard Disk'">
 						<label>Capacity</label>
-						<md-select name="Capacity{{$index}}" ng-change="capacityChange($index)" required ng-model="asset.capacity">
+						<md-select name="Capacity{{$index}}" ng-change="capacityChange($index, asset.component_type)" required ng-model="asset.capacity">
 							<md-option ng-repeat="asset in asset.capacities" value="{{ asset.capacity }}">
 								<span>{{ asset.capacity }}</span>
 							</md-option>
@@ -44,10 +44,23 @@
 						</div>
 					</md-input-container>
 
-					<!-- Type -->
+					<!-- Type for Memory -->
 					<md-input-container flex ng-if="asset.component_type=='Memory'">
 						<label>Type</label>
 						<md-select name="Type{{$index}}" ng-change="typeChange($index)" required ng-model="asset.memory_type">
+							<md-option ng-repeat="asset in asset.types" value="{{ asset.type }}">
+								<span>{{ asset.type }}</span>
+							</md-option>
+						</md-select>
+						<div ng-messages="addWorkStationForm['Type' + $index].$error" ng-if="addWorkStationForm['Type' + $index].$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+
+					<!-- Type for Mac -->
+					<md-input-container flex ng-if="asset.component_type=='Mac'">
+						<label>Type</label>
+						<md-select name="Type{{$index}}" ng-change="mactypeChange($index)" required ng-model="asset.type">
 							<md-option ng-repeat="asset in asset.types" value="{{ asset.type }}">
 								<span>{{ asset.type }}</span>
 							</md-option>
@@ -97,7 +110,7 @@
 					</md-input-container>
 
 					<!-- Model -->
-					<md-input-container flex ng-if="asset.component_type!='Memory'">
+					<md-input-container flex ng-if="asset.component_type!='Memory' && asset.component_type!='Mac'">
 						<label>Model</label>
 						<md-select name="Model{{$index}}" required ng-model="asset.component_id">
 							<md-option ng-repeat="asset in asset.models" value="{{ asset.id }}">
@@ -105,6 +118,19 @@
 							</md-option>
 						</md-select>
 						<div ng-messages="addWorkStationForm['Model' + $index].$error" ng-if="addWorkStationForm['Model' + $index].$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+					
+					<!-- Processor -->
+					<md-input-container flex ng-if="asset.component_type=='Mac'">
+						<label>Processor</label>
+						<md-select name="Processor{{$index}}" required ng-model="asset.component_id">
+							<md-option ng-repeat="asset in asset.processors" value="{{ asset.id }}">
+								<span>{{ asset.processor }}</span>
+							</md-option>
+						</md-select>
+						<div ng-messages="addWorkStationForm['Processor' + $index].$error" ng-if="addWorkStationForm['Processor' + $index].$touched">
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>
 					</md-input-container>
@@ -128,7 +154,7 @@
 					<!-- Name -->
 					<md-input-container flex>
 						<label>Name</label>
-						<md-select name="Name{{$index}}" ng-change="nameChange($index, asset.component_type)" required ng-model="asset.name">
+						<md-select name="Name{{$index}}" ng-change="nameChange($index)" required ng-model="asset.name">
 							<md-option ng-repeat="asset in asset.names" value="{{ asset.name }}">
 								<span>{{ asset.name }}</span>
 							</md-option>
@@ -141,7 +167,7 @@
 					<!-- Version -->
 					<md-input-container flex>
 						<label>Version</label>
-						<md-select name="Version{{$index}}" ng-change="versionChange($index, asset.component_type)" required ng-model="asset.component_id">
+						<md-select name="Version{{$index}}" required ng-model="asset.component_id">
 							<md-option ng-repeat="asset in asset.versions" value="{{ asset.id }}">
 								<span>{{ asset.version }}</span>
 							</md-option>
@@ -179,7 +205,7 @@
 					
 					<md-input-container flex>
 						<label>Property Code</label>
-						<input type="text" name="PropertyCode{{$index}}" required ng-model="asset.property_code">
+						<input type="text" name="PropertyCode{{$index}}" required ng-minlength="9" ng-maxlength="9" ng-model="asset.property_code">
 						<div ng-messages="addWorkStationForm['PropertyCode' + $index].$error" ng-if="addWorkStationForm['PropertyCode' + $index].$touched">
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>

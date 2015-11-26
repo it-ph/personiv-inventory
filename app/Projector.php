@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Telephone extends Model
+class Projector extends Model
 {
     protected $dates = ['deleted_at'];
 }

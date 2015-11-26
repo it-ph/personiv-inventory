@@ -99,14 +99,14 @@ class NetworkSwitchController extends Controller
         ]);
 
         // create a new instance of desktop
-        $headset = new Headset;
+        $network_switch = new NetworkSwitch;
 
         // assign its properties
-        $headset->brand = $request->brand;
-        $headset->model = $request->model;
+        $network_switch->brand = $request->brand;
+        $network_switch->model = $request->model;
 
         // save to database
-        $headset->save();
+        $network_switch->save();
     }
 
     /**

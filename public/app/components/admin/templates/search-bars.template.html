@@ -5,6 +5,12 @@
 		<input type="text" ng-model="desktop.userInput">
 	</md-input-container>
 
+	<!-- Firewall -->
+	<md-input-container flex ng-if="firewall">
+		<label>Search</label>
+		<input type="text" ng-model="firewall.userInput">
+	</md-input-container>
+
 	<!-- Hard Disk -->
 	<md-input-container flex ng-if="hardDisk">
 		<label>Search</label>
@@ -21,6 +27,12 @@
 	<md-input-container flex ng-if="keyboard">
 		<label>Search</label>
 		<input type="text" ng-model="keyboard.userInput">
+	</md-input-container>
+
+	<!-- Mac -->
+	<md-input-container flex ng-if="mac">
+		<label>Search</label>
+		<input type="text" ng-model="mac.userInput">
 	</md-input-container>
 
 	<!-- Memory -->
@@ -41,10 +53,28 @@
 		<input type="text" ng-model="mouse.userInput">
 	</md-input-container>
 
+	<!-- Network Switch -->
+	<md-input-container flex ng-if="networkSwitch">
+		<label>Search</label>
+		<input type="text" ng-model="networkSwitch.userInput">
+	</md-input-container>
+
+	<!-- Portable Hard Disk -->
+	<md-input-container flex ng-if="portableHardDisk">
+		<label>Search</label>
+		<input type="text" ng-model="portableHardDisk.userInput">
+	</md-input-container>
+
 	<!-- Printer -->
 	<md-input-container flex ng-if="printer">
 		<label>Search</label>
 		<input type="text" ng-model="printer.userInput">
+	</md-input-container>
+
+	<!-- Router -->
+	<md-input-container flex ng-if="router">
+		<label>Search</label>
+		<input type="text" ng-model="router.userInput">
 	</md-input-container>
 
 	<!-- Scanner -->
@@ -57,6 +87,18 @@
 	<md-input-container flex ng-if="software">
 		<label>Search</label>
 		<input type="text" ng-model="software.userInput">
+	</md-input-container>
+
+	<!-- Speaker -->
+	<md-input-container flex ng-if="speaker">
+		<label>Search</label>
+		<input type="text" ng-model="speaker.userInput">
+	</md-input-container>
+
+	<!-- Telephone -->
+	<md-input-container flex ng-if="telephone">
+		<label>Search</label>
+		<input type="text" ng-model="telephone.userInput">
 	</md-input-container>
 
 	<!-- UPS -->

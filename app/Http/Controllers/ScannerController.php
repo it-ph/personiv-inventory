@@ -15,6 +15,15 @@ class ScannerController extends Controller
         return DB::table('scanners')->select('*', DB::raw('LEFT(brand, 1) as first_letter'))->whereNotIn('id', [$id])->get();
     }
     /**
+     * Fetch models by brand
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function model(Request $request)
+    {
+        return DB::table('scanners')->select('*')->where('brand', '=', $request->brand)->get();
+    }
+    /**
      * Fetch distinct table columns
      *
      * @return \Illuminate\Http\Response

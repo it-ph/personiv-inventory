@@ -15,7 +15,7 @@
 						</h2>
 						<div class="md-list-item-text" layout="column">
 							<h3>{{ asset.brand }} {{ asset.maker }}</h3>
-							<h4>{{ asset.model }} <span ng-if="asset.processor">/</span> {{ asset.processor }} {{ asset.type }} <span ng-if="asset.size">/</span> {{ asset.size }} <span ng-if="asset.speed">/</span> {{ asset.speed }} {{ asset.name }} {{ asset.version }}</h4>
+							<h4>{{ asset.model }} <span ng-if="asset.processor && asset.component_type == 'Desktop'">/</span> {{ asset.type }} {{ asset.processor }} <span ng-if="asset.size">/</span> {{ asset.size }} <span ng-if="asset.speed">/</span> {{ asset.speed }} {{ asset.name }} {{ asset.version }}</h4>
 							<p>
 								<span>Serial: {{ asset.serial }}</span> <br>
 								<span>Property Code: {{ asset.property_code }}</span>

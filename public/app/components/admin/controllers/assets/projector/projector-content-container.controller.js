@@ -1,5 +1,5 @@
 adminModule
-	.controller('networkSwitchContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'NetworkSwitch', function($scope, $state, $stateParams, $mdDialog, Preloader, NetworkSwitch){
+	.controller('projectorContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Projector', function($scope, $state, $stateParams, $mdDialog, Preloader, Projector){
 		/**
 		 * Object for subheader
 		 *
@@ -12,12 +12,12 @@ adminModule
 			// start preloader
 			Preloader.preload();
 			// clear desktop
-			$scope.networkSwitch.paginated = {};
-			$scope.networkSwitch.page = 2;
-			NetworkSwitch.paginate()
+			$scope.projector.paginated = {};
+			$scope.projector.page = 2;
+			Projector.paginate()
 				.then(function(data){
-					$scope.networkSwitch.paginated = data.data;
-					$scope.networkSwitch.paginated.show = true;
+					$scope.projector.paginated = data.data;
+					$scope.projector.paginated.show = true;
 					// stop preload
 					Preloader.stop();
 				}, function(){
@@ -33,13 +33,13 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
-		$scope.fab.tooltip = 'Add Network Switch';
+		$scope.fab.tooltip = 'Add projector';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
 		    $mdDialog.show({
-		      	controller: 'addNetworkSwitchDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-network-switch-dialog.template.html',
+		      	controller: 'addProjectorDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-projector-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
@@ -57,21 +57,21 @@ adminModule
 		$scope.rightSidenav.show = false;
 
 		/**
-		 * Object for networkSwitch
+		 * Object for projector
 		 *
 		*/
-		$scope.networkSwitch = {};
+		$scope.projector = {};
 		// 2 is default so the next page to be loaded will be page 2 
-		$scope.networkSwitch.page = 2;
+		$scope.projector.page = 2;
 
-		NetworkSwitch.paginate()
+		Projector.paginate()
 			.then(function(data){
-				$scope.networkSwitch.paginated = data.data;
-				$scope.networkSwitch.paginated.show = true;
+				$scope.projector.paginated = data.data;
+				$scope.projector.paginated.show = true;
 
-				$scope.networkSwitch.paginateLoad = function(){
+				$scope.projector.paginateLoad = function(){
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.networkSwitch.busy || ($scope.networkSwitch.page > $scope.networkSwitch.paginated.last_page)){
+					if($scope.projector.busy || ($scope.projector.page > $scope.projector.paginated.last_page)){
 						return;
 					}
 					/**
@@ -79,21 +79,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.networkSwitch.busy = true;
+					$scope.projector.busy = true;
 
 					// Calls the next page of pagination.
-					NetworkSwitch.paginate($scope.networkSwitch.page)
+					Projector.paginate($scope.projector.page)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.networkSwitch.page++;
+							$scope.projector.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.networkSwitch.paginated.data.push(item);
+								$scope.projector.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.networkSwitch.busy = false;
+							$scope.projector.busy = false;
 						});
 				}
 			}, function(){
@@ -119,17 +119,17 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.networkSwitch.userInput = '';
+			$scope.projector.userInput = '';
 			$scope.searchBar = false;
 		};
 		
 		
 		$scope.searchUserInput = function(){
-			$scope.networkSwitch.paginated.show = false;
+			$scope.projector.paginated.show = false;
 			Preloader.preload();
-			NetworkSwitch.search($scope.networkSwitch)
+			Projector.search($scope.projector)
 				.success(function(data){
-					$scope.networkSwitch.results = data;
+					$scope.projector.results = data;
 					Preloader.stop();
 				})
 				.error(function(data){

@@ -58,7 +58,11 @@ sharedModule
 			 *
 			*/
 			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
+				return $http.get(urlBase + '-other/' + id);
+			},
+
+			processor: function(data){
+				return $http.post(urlBase + '-processor', data);
 			},
 		};
 	}]);

@@ -1,6 +1,6 @@
 adminModule
-	.controller('addTelephoneDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Telephone', function($scope, $state, $mdDialog, Preloader, Telephone){
-		$scope.telephone = {};
+	.controller('addProjectorDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Projector', function($scope, $state, $mdDialog, Preloader, Projector){
+		$scope.projector = {};
 
 		$scope.cancel = function(){
 			$mdDialog.cancel();
@@ -12,7 +12,7 @@ adminModule
 			/**
 			 * Stores Single Record
 			*/
-			Telephone.store($scope.telephone)
+			Projector.store($scope.projector)
 				.then(function(){
 					// Stops Preloader 
 					Preloader.stop();

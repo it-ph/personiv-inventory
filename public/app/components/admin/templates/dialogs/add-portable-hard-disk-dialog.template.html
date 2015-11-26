@@ -1,0 +1,52 @@
+<md-dialog layout="column" flex="50"  aria-label="Add Portable Hard Disk" ng-cloak>
+	<form name="addPortableHardDiskForm" novalidate>
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Add Portable Hard Disk</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content flex layout-padding>
+			<div layout="column" flex>
+				<div layout="row" flex>
+					<!-- Brand -->
+					<md-input-container flex>
+						<label>Brand</label>
+						<input name="Brand" type="text" required ng-model="portableHardDisk.brand">
+						<div ng-messages="addPortableHardDiskForm.Brand.$error" ng-if="addPortableHardDiskForm.Brand.$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+					<!-- Model -->
+					<md-input-container flex>
+						<label>Model</label>
+						<input name="Model" type="text" required ng-model="portableHardDisk.model">
+						<div ng-messages="addPortableHardDiskForm.Model.$error" ng-if="addPortableHardDiskForm.Model.$touched">
+							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						</div>
+					</md-input-container>
+				</div>
+				<!-- Capacity -->
+				<md-input-container>
+					<label>Capacity</label>
+					<md-select name="Capacity" required ng-model="portableHardDisk.capacity">
+						<md-option ng-repeat="capacity in portableHardDisk.capacities" value="{{ capacity.capacity }}">
+							{{ capacity.capacity }}
+						</md-option>
+					</md-select>
+					<div ng-messages="addHardDiskForm.Capacity.$error" ng-if="addHardDiskForm.Capacity.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-fab md-primary" ng-disabled="addPortableHardDiskForm.$invalid" aria-label="Submit" ng-click="submit()">
+			<md-icon class="mdi mdi-check"></md-icon>
+		</md-button>
+	</div>
+</md-dialog>

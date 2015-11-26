@@ -1,20 +1,19 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Printer;
+use App\Projector;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class PrinterController extends Controller
+class ProjectorController extends Controller
 {
     // fetch other records
     public function other($id)
     {
-        return DB::table('printers')->select('*', DB::raw('LEFT(brand, 1) as first_letter'))->whereNotIn('id', [$id])->get();
+        return DB::table('projectors')->select('*', DB::raw('LEFT(brand, 1) as first_letter'))->whereNotIn('id', [$id])->get();
     }
-
     /**
      * Fetch models by brand
      *
@@ -22,8 +21,9 @@ class PrinterController extends Controller
     */
     public function model(Request $request)
     {
-        return DB::table('printers')->select('*')->where('brand', '=', $request->brand)->get();
+        return DB::table('projectors')->select('*')->where('brand', '=', $request->brand)->get();
     }
+
     /**
      * Fetch distinct table columns
      *
@@ -31,10 +31,11 @@ class PrinterController extends Controller
     */
     public function distinct(Request $request)
     {
-        return DB::table('printers')
+        return DB::table('projectors')
             ->select(DB::raw("DISTINCT ". $request->search))
             ->get();
     }
+
     /**
      * Search database for records
      *
@@ -42,13 +43,14 @@ class PrinterController extends Controller
     */
     public function search(Request $request)
     {
-        return DB::table('printers')
+        return DB::table('projectors')
             ->select('*', DB::raw('LEFT(brand, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
             ->where('brand', 'like', '%'. $request->userInput .'%')
             ->orWhere('model', 'like', '%'. $request->userInput .'%')
             ->whereNull('deleted_at')
             ->groupBy('id')
             ->orderBy('updated_at', 'desc')
+            ->whereNull('deleted_at')
             ->get();
     }
 
@@ -59,9 +61,8 @@ class PrinterController extends Controller
     */
     public function paginate()
     {
-        return DB::table('printers')->select('*', DB::raw('LEFT(brand, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
+        return DB::table('projectors')->select('*', DB::raw('LEFT(brand, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
     }
-
     /**
      * Display a listing of the resource.
      *
@@ -69,7 +70,7 @@ class PrinterController extends Controller
      */
     public function index()
     {
-        return Printer::get();
+        return Projector::get();
     }
 
     /**
@@ -97,14 +98,14 @@ class PrinterController extends Controller
         ]);
 
         // create a new instance of desktop
-        $printer = new Printer;
+        $projector = new Projector;
 
         // assign its properties
-        $printer->brand = $request->brand;
-        $printer->model = $request->model;
+        $projector->brand = $request->brand;
+        $projector->model = $request->model;
 
         // save to database
-        $printer->save();
+        $projector->save();
     }
 
     /**
@@ -115,7 +116,7 @@ class PrinterController extends Controller
      */
     public function show($id)
     {
-        return Printer::where('id', $id)->first();
+        return Projector::where('id', $id)->first();
     }
 
     /**

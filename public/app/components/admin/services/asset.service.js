@@ -13,6 +13,7 @@ adminModule
 			{ 'controller' : 'networkSwitch' },
 			{ 'controller' : 'portableHardDisk' },
 			{ 'controller' : 'printer' },
+			{ 'controller' : 'projector' },
 			{ 'controller' : 'router' },
 			{ 'controller' : 'scanner' },
 			{ 'controller' : 'software' },

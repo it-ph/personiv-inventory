@@ -1,6 +1,6 @@
 sharedModule
-	.factory('Scanner', ['$http', function($http){
-		var urlBase = '/scanner';
+	.factory('Projector', ['$http', function($http){
+		var urlBase = '/projector';
 
 		return {
 			/**

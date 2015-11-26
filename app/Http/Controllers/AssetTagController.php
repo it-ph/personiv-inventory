@@ -44,15 +44,23 @@ class AssetTagController extends Controller
     {
         // determine its component type
         if ($request->component_type == 'Desktop') { $table_name = 'desktops'; }
+        else if ($request->component_type == 'Firewall') { $table_name = 'firewalls'; }
         else if ($request->component_type == 'Hard Disk') { $table_name = 'hard_disks'; }
         else if ($request->component_type == 'Headset') { $table_name = 'headsets'; }
         else if ($request->component_type == 'Keyboard') { $table_name = 'keyboards'; }
+        else if ($request->component_type == 'Mac') { $table_name = 'macs'; }
         else if ($request->component_type == 'Memory') { $table_name = 'memories'; }
         else if ($request->component_type == 'Monitor') { $table_name = 'monitors'; }
         else if ($request->component_type == 'Mouse') { $table_name = 'mice'; }
+        else if ($request->component_type == 'Network Switch') { $table_name = 'network_switches'; }
+        else if ($request->component_type == 'Portable Hard Disk') { $table_name = 'portable_hard_disks'; }
         else if ($request->component_type == 'Printer') { $table_name = 'printers'; }
+        else if ($request->component_type == 'Projector') { $table_name = 'projectors'; }
+        else if ($request->component_type == 'Router') { $table_name = 'routers'; }
         else if ($request->component_type == 'Scanner') { $table_name = 'scanners'; }
         else if ($request->component_type == 'Software') { $table_name = 'softwares'; }
+        else if ($request->component_type == 'Speaker') { $table_name = 'speakers'; }
+        else if ($request->component_type == 'Telephone') { $table_name = 'telephones'; }
         else if ($request->component_type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
         else if ($request->component_type == 'Video Card') { $table_name = 'video_cards'; }
         else if ($request->component_type == 'Other Component') { $table_name = 'other_components'; }
@@ -85,15 +93,23 @@ class AssetTagController extends Controller
     {
         // determine its component type
         if ($request->component_type == 'Desktop') { $table_name = 'desktops'; }
+        else if ($request->component_type == 'Firewall') { $table_name = 'firewalls'; }
         else if ($request->component_type == 'Hard Disk') { $table_name = 'hard_disks'; }
         else if ($request->component_type == 'Headset') { $table_name = 'headsets'; }
         else if ($request->component_type == 'Keyboard') { $table_name = 'keyboards'; }
+        else if ($request->component_type == 'Mac') { $table_name = 'macs'; }
         else if ($request->component_type == 'Memory') { $table_name = 'memories'; }
         else if ($request->component_type == 'Monitor') { $table_name = 'monitors'; }
         else if ($request->component_type == 'Mouse') { $table_name = 'mice'; }
+        else if ($request->component_type == 'Network Switch') { $table_name = 'network_switches'; }
+        else if ($request->component_type == 'Portable Hard Disk') { $table_name = 'portable_hard_disks'; }
         else if ($request->component_type == 'Printer') { $table_name = 'printers'; }
+        else if ($request->component_type == 'Projector') { $table_name = 'projectors'; }
+        else if ($request->component_type == 'Router') { $table_name = 'routers'; }
         else if ($request->component_type == 'Scanner') { $table_name = 'scanners'; }
         else if ($request->component_type == 'Software') { $table_name = 'softwares'; }
+        else if ($request->component_type == 'Speaker') { $table_name = 'speakers'; }
+        else if ($request->component_type == 'Telephone') { $table_name = 'telephones'; }
         else if ($request->component_type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
         else if ($request->component_type == 'Video Card') { $table_name = 'video_cards'; }
         else if ($request->component_type == 'Other Component') { $table_name = 'other_components'; }
@@ -125,15 +141,23 @@ class AssetTagController extends Controller
     {
         // determine its component type
         if ($request->component_type == 'Desktop') { $table_name = 'desktops'; }
+        else if ($request->component_type == 'Firewall') { $table_name = 'firewalls'; }
         else if ($request->component_type == 'Hard Disk') { $table_name = 'hard_disks'; }
         else if ($request->component_type == 'Headset') { $table_name = 'headsets'; }
         else if ($request->component_type == 'Keyboard') { $table_name = 'keyboards'; }
+        else if ($request->component_type == 'Mac') { $table_name = 'macs'; }
         else if ($request->component_type == 'Memory') { $table_name = 'memories'; }
         else if ($request->component_type == 'Monitor') { $table_name = 'monitors'; }
         else if ($request->component_type == 'Mouse') { $table_name = 'mice'; }
+        else if ($request->component_type == 'Network Switch') { $table_name = 'network_switches'; }
+        else if ($request->component_type == 'Portable Hard Disk') { $table_name = 'portable_hard_disks'; }
         else if ($request->component_type == 'Printer') { $table_name = 'printers'; }
+        else if ($request->component_type == 'Projector') { $table_name = 'projectors'; }
+        else if ($request->component_type == 'Router') { $table_name = 'routers'; }
         else if ($request->component_type == 'Scanner') { $table_name = 'scanners'; }
         else if ($request->component_type == 'Software') { $table_name = 'softwares'; }
+        else if ($request->component_type == 'Speaker') { $table_name = 'speakers'; }
+        else if ($request->component_type == 'Telephone') { $table_name = 'telephones'; }
         else if ($request->component_type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
         else if ($request->component_type == 'Video Card') { $table_name = 'video_cards'; }
         else if ($request->component_type == 'Other Component') { $table_name = 'other_components'; }
@@ -213,17 +237,27 @@ class AssetTagController extends Controller
         $asset_tag = AssetTag::where('id', $id)->first();
 
         // determine its component type
-        if ($asset_tag->component_type == 'Desktop') { $table_name = 'desktops'; }
-        else if ($asset_tag->component_type == 'Hard Disk') { $table_name = 'hard_disks'; }
-        else if ($asset_tag->component_type == 'Headset') { $table_name = 'headsets'; }
-        else if ($asset_tag->component_type == 'Keyboard') { $table_name = 'keyboards'; }
-        else if ($asset_tag->component_type == 'Memory') { $table_name = 'memories'; }
-        else if ($asset_tag->component_type == 'Monitor') { $table_name = 'monitors'; }
-        else if ($asset_tag->component_type == 'Mouse') { $table_name = 'mice'; }
-        else if ($asset_tag->component_type == 'Software') { $table_name = 'softwares'; }
-        else if ($asset_tag->component_type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
-        else if ($asset_tag->component_type == 'Video Card') { $table_name = 'video_cards'; }
-        else if ($asset_tag->component_type == 'Other Component') { $table_name = 'other_components'; }
+        if ($type == 'Desktop') { $table_name = 'desktops'; }
+        else if ($type == 'Firewall') { $table_name = 'firewalls'; }
+        else if ($type == 'Hard Disk') { $table_name = 'hard_disks'; }
+        else if ($type == 'Headset') { $table_name = 'headsets'; }
+        else if ($type == 'Keyboard') { $table_name = 'keyboards'; }
+        else if ($type == 'Mac') { $table_name = 'macs'; }
+        else if ($type == 'Memory') { $table_name = 'memories'; }
+        else if ($type == 'Monitor') { $table_name = 'monitors'; }
+        else if ($type == 'Mouse') { $table_name = 'mice'; }
+        else if ($type == 'Network Switch') { $table_name = 'network_switches'; }
+        else if ($type == 'Portable Hard Disk') { $table_name = 'portable_hard_disks'; }
+        else if ($type == 'Printer') { $table_name = 'printers'; }
+        else if ($type == 'Projector') { $table_name = 'projectors'; }
+        else if ($type == 'Router') { $table_name = 'routers'; }
+        else if ($type == 'Scanner') { $table_name = 'scanners'; }
+        else if ($type == 'Software') { $table_name = 'softwares'; }
+        else if ($type == 'Speaker') { $table_name = 'speakers'; }
+        else if ($type == 'Telephone') { $table_name = 'telephones'; }
+        else if ($type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
+        else if ($type == 'Video Card') { $table_name = 'video_cards'; }
+        else if ($type == 'Other Component') { $table_name = 'other_components'; }
 
         $first_letter = $asset_tag->component_type == 'Software' ? '.name' : '.brand';
 
@@ -258,19 +292,30 @@ class AssetTagController extends Controller
         foreach ($assets as $key => $value) {
             $type = $value->component_type;
 
+            // determine its component type
             if ($type == 'Desktop') { $table_name = 'desktops'; }
+            else if ($type == 'Firewall') { $table_name = 'firewalls'; }
             else if ($type == 'Hard Disk') { $table_name = 'hard_disks'; }
             else if ($type == 'Headset') { $table_name = 'headsets'; }
             else if ($type == 'Keyboard') { $table_name = 'keyboards'; }
+            else if ($type == 'Mac') { $table_name = 'macs'; }
             else if ($type == 'Memory') { $table_name = 'memories'; }
             else if ($type == 'Monitor') { $table_name = 'monitors'; }
             else if ($type == 'Mouse') { $table_name = 'mice'; }
+            else if ($type == 'Network Switch') { $table_name = 'network_switches'; }
+            else if ($type == 'Portable Hard Disk') { $table_name = 'portable_hard_disks'; }
+            else if ($type == 'Printer') { $table_name = 'printers'; }
+            else if ($type == 'Projector') { $table_name = 'projectors'; }
+            else if ($type == 'Router') { $table_name = 'routers'; }
+            else if ($type == 'Scanner') { $table_name = 'scanners'; }
             else if ($type == 'Software') { $table_name = 'softwares'; }
+            else if ($type == 'Speaker') { $table_name = 'speakers'; }
+            else if ($type == 'Telephone') { $table_name = 'telephones'; }
             else if ($type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
             else if ($type == 'Video Card') { $table_name = 'video_cards'; }
             else if ($type == 'Other Component') { $table_name = 'other_components'; }
 
-            $first_letter = $type == 'Software' ? '.name' : '.brand';
+            $first_letter = $type == 'Software' ? '.name' : ($type == 'Mac' ? '.type' : '.brand');
 
             $query = DB::table('asset_tags')
                 ->join($table_name, $table_name.'.id', '=', 'asset_tags.component_id')

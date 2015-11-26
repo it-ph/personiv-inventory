@@ -1,8 +1,8 @@
-<md-dialog layout="column" flex="50"  aria-label="Add Mac" ng-cloak>
-	<form name="addMacForm" novalidate>
+<md-dialog layout="column" flex="50"  aria-label="Add Speaker" ng-cloak>
+	<form name="addSpeakerForm" novalidate>
 		<md-toolbar>
 			<div class="md-toolbar-tools">
-				<h2>Add Mac</h2>
+				<h2>Add Speaker</h2>
 				<span flex></span>
 				<md-button class="md-icon-button" ng-click="cancel()">
 					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
@@ -12,23 +12,19 @@
 		<md-dialog-content flex layout-padding>
 			<div layout="column" flex>
 				<div layout="row" flex>
-					<!-- Type -->
+					<!-- Brand -->
 					<md-input-container flex>
-						<label>Type</label>
-						<md-select name="Type" ng-model="mac.type">
-							<md-option ng-repeat="type in types" value="{{ type.name }}">
-								{{ type.name }}
-							</md-option>
-						</md-select>
-						<div ng-messages="addMacForm.Type.$error" ng-if="addMacForm.Type.$touched">
+						<label>Brand</label>
+						<input name="Brand" type="text" required ng-model="speaker.brand">
+						<div ng-messages="addSpeakerForm.Brand.$error" ng-if="addSpeakerForm.Brand.$touched">
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>
 					</md-input-container>
-					<!-- Processor -->
+					<!-- Model -->
 					<md-input-container flex>
-						<label>Processor</label>
-						<input name="Processor" type="text" required ng-model="mac.processor">
-						<div ng-messages="addMacForm.Processor.$error" ng-if="addMacForm.Processor.$touched">
+						<label>Model</label>
+						<input name="Model" type="text" required ng-model="speaker.model">
+						<div ng-messages="addSpeakerForm.Model.$error" ng-if="addSpeakerForm.Model.$touched">
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>
 					</md-input-container>
@@ -37,7 +33,7 @@
 		</md-dialog-content>
 	</form>
 	<div layout="row" layout-align="end center">		
-		<md-button class="md-fab md-primary" ng-disabled="addMacForm.$invalid" aria-label="Submit" ng-click="submit()">
+		<md-button class="md-fab md-primary" ng-disabled="addSpeakerForm.$invalid" aria-label="Submit" ng-click="submit()">
 			<md-icon class="mdi mdi-check"></md-icon>
 		</md-button>
 	</div>

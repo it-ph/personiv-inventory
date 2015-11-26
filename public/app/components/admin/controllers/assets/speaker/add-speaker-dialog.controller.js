@@ -12,7 +12,7 @@ adminModule
 			/**
 			 * Stores Single Record
 			*/
-			Speaker.store($scope.router)
+			Speaker.store($scope.speaker)
 				.then(function(){
 					// Stops Preloader 
 					Preloader.stop();

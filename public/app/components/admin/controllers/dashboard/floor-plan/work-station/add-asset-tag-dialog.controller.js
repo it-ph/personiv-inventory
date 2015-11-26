@@ -1,8 +1,9 @@
 adminModule
-	.controller('addAssetTagDialogController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', 'Desktop', 'HardDisk', 'Headset', 'Keyboard', 'Memory', 'Monitor', 'Mouse', 'Software', 'UPS', 'VideoCard', 'OtherComponent', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService, Desktop, HardDisk, Headset, Keyboard, Memory, Monitor, Mouse, Software, UPS, VideoCard, OtherComponent){
+	.controller('addAssetTagDialogController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', 'Desktop', 'Firewall', 'HardDisk', 'Headset', 'Keyboard', 'Mac', 'Memory', 'Monitor', 'Mouse', 'NetworkSwitch', 'PortableHardDisk', 'Printer', 'Projector', 'Router', 'Scanner', 'Software', 'Speaker', 'Telephone', 'UPS', 'VideoCard', 'OtherComponent', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService, Desktop, Firewall, HardDisk, Headset, Keyboard, Mac, Memory, Monitor, Mouse, NetworkSwitch, PortableHardDisk, Printer, Projector, Router, Scanner, Software, Speaker, Telephone, UPS, VideoCard, OtherComponent){
 		var workStationID = $stateParams.workStationID;
 		var brand = {'search':'brand'};
 		var maker = {'search':'maker'};
+		var type = {'search':'type'};
 		$scope.asset_type = AssetTagService.getType();
 		$scope.workStation = AssetTagService.getStation();
 
@@ -22,9 +23,24 @@ adminModule
 					$scope.assets[0].brands = data;
 				});
 
-			$scope.brandChange = function(idx, type){				
+			$scope.brandChange = function(idx){				
 				$scope.assets[idx].component_id = null;
 				Desktop.model($scope.assets[idx])
+					.success(function(data){
+						$scope.assets[idx].models = data;
+					});
+			}
+		}
+
+		else if ($scope.asset_type == 'Firewall') {
+			Firewall.distinct(brand)
+				.success(function(data){
+					$scope.assets[0].brands = data;
+				});
+
+			$scope.brandChange = function(idx){				
+				$scope.assets[idx].component_id = null;
+				Firewall.model($scope.assets[idx])
 					.success(function(data){
 						$scope.assets[idx].models = data;
 					});
@@ -37,7 +53,7 @@ adminModule
 					$scope.assets[0].brands = data;
 				});
 
-			$scope.brandChange = function(idx, type){
+			$scope.brandChange = function(idx){
 				$scope.assets[idx].capacity = null;
 				$scope.assets[idx].models = null;
 				$scope.assets[idx].component_id = null;
@@ -54,7 +70,7 @@ adminModule
 					$scope.assets[0].brands = data;
 				});
 
-			$scope.brandChange = function(idx, type){
+			$scope.brandChange = function(idx){
 				$scope.assets[idx].component_id = null;
 				Headset.model($scope.assets[idx])
 					.success(function(data){
@@ -68,11 +84,25 @@ adminModule
 					$scope.assets[0].brands = data;
 				});
 
-			$scope.brandChange = function(idx, type){
+			$scope.brandChange = function(idx){
 				$scope.assets[idx].component_id = null;
 				Keyboard.model($scope.assets[idx])
 					.success(function(data){
 						$scope.assets[idx].models = data;
+					});
+			}
+		}
+		else if ($scope.asset_type == 'Mac') {
+			Mac.distinct(type)
+				.success(function(data){
+					$scope.assets[0].types = data;
+				});
+
+			$scope.mactypeChange = function(idx){
+				$scope.assets[idx].component_id = null;
+				Mac.processor($scope.assets[idx])
+					.success(function(data){
+						$scope.assets[idx].processors = data;
 					});
 			}
 		}
@@ -82,7 +112,7 @@ adminModule
 					$scope.assets[0].brands = data;
 				});
 
-			$scope.brandChange = function(idx, type){
+			$scope.brandChange = function(idx){
 				$scope.assets[idx].memory_type = null;
 				$scope.assets[idx].speeds = null;
 				$scope.assets[idx].speed = null;
@@ -101,7 +131,7 @@ adminModule
 					$scope.assets[0].brands = data;
 				});
 
-			$scope.brandChange = function(idx, type){
+			$scope.brandChange = function(idx){
 				$scope.assets[idx].component_id = null;
 				Monitor.model($scope.assets[idx])
 					.success(function(data){
@@ -115,9 +145,99 @@ adminModule
 					$scope.assets[0].brands = data;
 				});
 
-			$scope.brandChange = function(idx, type){
+			$scope.brandChange = function(idx){
 				$scope.assets[idx].component_id = null;
 				Mouse.model($scope.assets[idx])
+					.success(function(data){
+						$scope.assets[idx].models = data;
+					});
+			}
+		}
+		else if ($scope.asset_type == 'Network Switch') {
+			NetworkSwitch.distinct(brand)
+				.success(function(data){
+					$scope.assets[0].brands = data;
+				});
+
+			$scope.brandChange = function(idx){
+				$scope.assets[idx].component_id = null;
+				NetworkSwitch.model($scope.assets[idx])
+					.success(function(data){
+						$scope.assets[idx].models = data;
+					});
+			}
+		}
+
+		else if ($scope.asset_type == 'Portable Hard Disk') {
+			PortableHardDisk.distinct(brand)
+				.success(function(data){
+					$scope.assets[0].brands = data;
+				});
+
+			$scope.brandChange = function(idx){
+				$scope.assets[idx].capacity = null;
+				$scope.assets[idx].models = null;
+				$scope.assets[idx].component_id = null;
+				var query = {'search':'capacity', 'brand': $scope.assets[idx].brand };
+				PortableHardDisk.distinct(query)
+					.success(function(data){
+						$scope.assets[idx].capacities = data;
+					});
+			}
+		}
+
+		else if ($scope.asset_type == 'Printer') {
+			Printer.distinct(brand)
+				.success(function(data){
+					$scope.assets[0].brands = data;
+				});
+
+			$scope.brandChange = function(idx){
+				$scope.assets[idx].component_id = null;
+				Printer.model($scope.assets[idx])
+					.success(function(data){
+						$scope.assets[idx].models = data;
+					});
+			}
+		}
+
+		else if ($scope.asset_type == 'Projector') {
+			Projector.distinct(brand)
+				.success(function(data){
+					$scope.assets[0].brands = data;
+				});
+
+			$scope.brandChange = function(idx){
+				$scope.assets[idx].component_id = null;
+				Projector.model($scope.assets[idx])
+					.success(function(data){
+						$scope.assets[idx].models = data;
+					});
+			}
+		}
+		else if ($scope.asset_type == 'Router') {
+			Router.distinct(brand)
+				.success(function(data){
+					$scope.assets[0].brands = data;
+				});
+
+			$scope.brandChange = function(idx){
+				$scope.assets[idx].component_id = null;
+				Router.model($scope.assets[idx])
+					.success(function(data){
+						$scope.assets[idx].models = data;
+					});
+			}
+		}
+		else if ($scope.asset_type == 'Scanner') {
+			Scanner.distinct(brand)
+				.success(function(data){
+					$scope.assets[0].brands = data;
+				});
+
+			$scope.brandChange = function(idx){
+				$scope.assets[idx].component_id = null;
+				Scanner.model($scope.assets[idx])
 					.success(function(data){
 						$scope.assets[idx].models = data;
 					});
@@ -129,13 +249,41 @@ adminModule
 					$scope.assets[0].makers = data;
 				});
 		}
+		else if ($scope.asset_type == 'Speaker') {
+			Speaker.distinct(brand)
+				.success(function(data){
+					$scope.assets[0].brands = data;
+				});
+
+			$scope.brandChange = function(idx){
+				$scope.assets[idx].component_id = null;
+				Speaker.model($scope.assets[idx])
+					.success(function(data){
+						$scope.assets[idx].models = data;
+					});
+			}
+		}
+		else if ($scope.asset_type == 'Telephone') {
+			Telephone.distinct(brand)
+				.success(function(data){
+					$scope.assets[0].brands = data;
+				});
+
+			$scope.brandChange = function(idx){
+				$scope.assets[idx].component_id = null;
+				Telephone.model($scope.assets[idx])
+					.success(function(data){
+						$scope.assets[idx].models = data;
+					});
+			}
+		}
 		else if ($scope.asset_type == 'Uninterruptible Power Supply') {
 			UPS.distinct(brand)
 				.success(function(data){
 					$scope.assets[0].brands = data;
 				});
 
-			$scope.brandChange = function(idx, type){
+			$scope.brandChange = function(idx){
 				$scope.assets[idx].model = null;
 				UPS.model($scope.assets[idx])
 					.success(function(data){
@@ -149,7 +297,7 @@ adminModule
 					$scope.assets[0].brands = data;
 				});
 
-			$scope.brandChange = function(idx, type){
+			$scope.brandChange = function(idx){
 				$scope.assets[idx].component_id = null;
 				$scope.assets[idx].models = null;
 				$scope.assets[idx].size = null;
@@ -166,7 +314,7 @@ adminModule
 					$scope.assets[0].brands = data;
 				});
 
-			$scope.brandChange = function(idx, type){
+			$scope.brandChange = function(idx){
 				$scope.assets[idx].model = null;
 				OtherComponent.model($scope.assets[idx])
 					.success(function(data){
@@ -175,12 +323,20 @@ adminModule
 			}
 		}
 
-		$scope.capacityChange = function(idx){
+		$scope.capacityChange = function(idx, type){
 			$scope.assets[idx].component_id = null;
-			HardDisk.model($scope.assets[idx])
-				.success(function(data){
-					$scope.assets[idx].models = data;
-				});
+			if(type == 'Hard Disk'){			
+				HardDisk.model($scope.assets[idx])
+					.success(function(data){
+						$scope.assets[idx].models = data;
+					});
+			}
+			else{
+				PortableHardDisk.model($scope.assets[idx])
+					.success(function(data){
+						$scope.assets[idx].models = data;
+					});
+			}
 		};
 
 		$scope.typeChange = function(idx){

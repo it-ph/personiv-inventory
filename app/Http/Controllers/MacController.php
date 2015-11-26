@@ -14,6 +14,15 @@ class MacController extends Controller
     {
         return DB::table('macs')->select('*', DB::raw('LEFT(type, 1) as first_letter'))->whereNotIn('id', [$id])->get();
     }
+    /**
+     * Fetch processor by type
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function processor(Request $request)
+    {
+        return DB::table('macs')->select('*')->where('type', '=', $request->type)->get();
+    }
 
     /**
      * Fetch distinct table columns
@@ -35,7 +44,7 @@ class MacController extends Controller
     public function search(Request $request)
     {
         return DB::table('macs')
-            ->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->select('*', DB::raw('LEFT(type, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
             ->where('type', 'like', '%'. $request->userInput .'%')
             ->orWhere('processor', 'like', '%'. $request->userInput .'%')
             ->whereNull('deleted_at')
@@ -93,8 +102,8 @@ class MacController extends Controller
         $mac = new Mac;
 
         // assign its properties
-        $mac->brand = $request->brand;
-        $mac->model = $request->model;
+        $mac->type = $request->type;
+        $mac->processor = $request->processor;
 
         // save to database
         $mac->save();

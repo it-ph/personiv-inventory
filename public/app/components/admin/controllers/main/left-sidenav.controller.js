@@ -89,44 +89,49 @@ adminModule
 					'id': 12
 				},
 				{
-					'name': 'Router',
+					'name': 'Projector',
 					'state':'main.assets',
 					'id': 13
 				},
 				{
-					'name': 'Scanner',
+					'name': 'Router',
 					'state':'main.assets',
 					'id': 14
 				},
 				{
-					'name': 'Software',
+					'name': 'Scanner',
 					'state':'main.assets',
 					'id': 15
 				},
 				{
-					'name': 'Speaker',
+					'name': 'Software',
 					'state':'main.assets',
 					'id': 16
 				},
 				{
-					'name': 'Telephone',
+					'name': 'Speaker',
 					'state':'main.assets',
 					'id': 17
 				},
 				{
-					'name': 'UPS',
+					'name': 'Telephone',
 					'state':'main.assets',
 					'id': 18
 				},
 				{
-					'name': 'Video Card',
+					'name': 'UPS',
 					'state':'main.assets',
 					'id': 19
 				},
 				{
-					'name': 'Other Components',
+					'name': 'Video Card',
 					'state':'main.assets',
 					'id': 20
+				},
+				{
+					'name': 'Other Components',
+					'state':'main.assets',
+					'id': 21
 				},
 			],
 		];

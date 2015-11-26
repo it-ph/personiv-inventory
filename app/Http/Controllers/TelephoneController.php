@@ -54,6 +54,7 @@ class TelephoneController extends Controller
             ->get();
     }
 
+
     /**
      * Paginate listing of the resource.
      * 
@@ -63,6 +64,7 @@ class TelephoneController extends Controller
     {
         return DB::table('telephones')->select('*', DB::raw('LEFT(brand, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
     }
+
     /**
      * Display a listing of the resource.
      *
