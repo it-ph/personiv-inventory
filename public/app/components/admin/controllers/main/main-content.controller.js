@@ -6,5 +6,5 @@ adminModule
 		*/
 		$scope.content = {};
 
-		$scope.content.title = 'Main Content Initialized';
+		$scope.content.title = 'Coming Soon...';
 	}]);
