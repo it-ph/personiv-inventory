@@ -60,6 +60,7 @@ Route::resource('router', 'RouterController');
 Route::resource('speaker', 'SpeakerController');
 Route::resource('telephone', 'TelephoneController');
 Route::resource('projector', 'ProjectorController');
+Route::resource('log', 'LogController');
 
 // Route Resource Paginations
 Route::get('desktop-paginate', 'DesktopController@paginate');

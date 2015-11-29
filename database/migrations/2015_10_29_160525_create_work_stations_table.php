@@ -17,7 +17,7 @@ class CreateWorkStationsTable extends Migration
             $table->string('name')->unique();
             $table->string('type');
             $table->string('division');
-            $table->integer('department_id');
+            $table->boolean('occupied');
             $table->timestamps();
             $table->softDeletes();
         });

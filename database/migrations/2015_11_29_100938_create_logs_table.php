@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateWorkStationTagsTable extends Migration
+class CreateLogsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,12 +12,13 @@ class CreateWorkStationTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create('work_station_tags', function (Blueprint $table) {
+        Schema::create('logs', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('work_station_id');
-            $table->integer('department_id');
+            $table->integer('user_id');
+            $table->integer('activity_id');
+            $table->text('activity');
+            $table->string('state');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -28,6 +29,6 @@ class CreateWorkStationTagsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('work_station_tags');
+        Schema::drop('logs');
     }
 }

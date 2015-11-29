@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateWorkStationTagsTable extends Migration
+class CreateEmployeeTagsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,10 +12,10 @@ class CreateWorkStationTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create('work_station_tags', function (Blueprint $table) {
+        Schema::create('employee_tags', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('employee_id');
             $table->integer('work_station_id');
-            $table->integer('department_id');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +28,6 @@ class CreateWorkStationTagsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('work_station_tags');
+        Schema::drop('employee_tags');
     }
 }
