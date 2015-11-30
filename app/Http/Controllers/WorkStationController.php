@@ -10,6 +10,21 @@ use App\Http\Controllers\Controller;
 class WorkStationController extends Controller
 {
     /**
+     * Search for vacant workstation
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function vacant(Request $request)
+    {
+        return DB::table('work_stations')
+            ->where('occupied', false)
+            ->where('type', $request->type)
+            ->where('division', $request->division)
+            ->whereNull('deleted_at')
+            ->get();
+    }
+
+    /**
      * Search for workstation according to department id except the exisiting workstation
      *
      * @return \Illuminate\Http\Response
@@ -17,34 +32,81 @@ class WorkStationController extends Controller
 
     public function department($departmentID, $workstationID)
     {
-        return Workstation::where('department_id', $departmentID)->whereNotIn('id', [$workstationID])->get();
+        return DB::table('work_stations')
+            ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
+            ->join('departments', 'departments.id', '=', 'work_station_tags.department_id')
+            ->select('work_stations.*')
+            ->where('work_station_tags.department_id', $departmentID)
+            ->whereNotIn('work_stations.id', [$workstationID])
+            ->get();
+        // return Workstation::where('department_id', $departmentID)->whereNotIn('id', [$workstationID])->get();
     }
 
     /**
-     * Search database for records
+     * Search database for records by department
      *
      * @return \Illuminate\Http\Response
     */
-    public function search($departmentID, Request $request)
+    public function search(Request $request)
     {
         return DB::table('work_stations')
-            ->select('*', DB::raw('SUBSTRING(name, 6, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
-            ->where('department_id', $departmentID)
-            ->where('name', 'like', '%'. $request->userInput .'%')
-            ->whereNull('deleted_at')
-            ->groupBy('id')
-            ->orderBy('updated_at', 'desc')
+            ->select('*', DB::raw('SUBSTRING(work_stations.name, 6, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->where('work_stations.name', 'like', '%'. $request->userInput .'%')
+            ->whereNull('work_stations.deleted_at')
+            ->groupBy('work_stations.id')
+            ->orderBy('work_stations.name')
             ->get();
     }
 
+    /**
+     * Search database for records by department
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function searchDepartment($departmentID, Request $request)
+    {
+        return DB::table('work_stations')
+            ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
+            ->join('departments', 'departments.id', '=', 'work_station_tags.department_id')
+            ->select('work_stations.*', 'departments.id as department_id', DB::raw('SUBSTRING(work_stations.name, 6, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->where('work_station_tags.department_id', $departmentID)
+            ->where('work_stations.name', 'like', '%'. $request->userInput .'%')
+            ->whereNull('work_stations.deleted_at')
+            ->groupBy('work_stations.id')
+            ->orderBy('work_stations.name')
+            ->get();
+    }
     /**
      * Paginate listing of the resource.
      * 
      * @return  \Illuminate\Http\Response
     */
-    public function paginate($departmentID)
+    public function paginate()
     {
-        return DB::table('work_stations')->select('*', DB::raw('SUBSTRING(name, 6, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->where('department_id', $departmentID)->whereNull('deleted_at')->orderBy('name')->paginate(25);
+        return DB::table('work_stations')
+            ->select('work_stations.*', DB::raw('SUBSTRING(work_stations.name, 6, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->whereNull('work_stations.deleted_at')
+            // ->groupBy('work_stations.id')
+            ->orderBy('work_stations.name')
+            ->paginate(25);
+    }
+
+    /**
+     * Paginate listing of the resource by department.
+     * 
+     * @return  \Illuminate\Http\Response
+    */
+    public function paginateDepartment($departmentID)
+    {
+        return DB::table('work_stations')
+            ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
+            ->join('departments', 'departments.id', '=', 'work_station_tags.department_id')
+            ->select('work_stations.*', 'departments.id as department_id', DB::raw('SUBSTRING(work_stations.name, 6, 1) as first_letter'), DB::raw('DATE_FORMAT(work_station_tags.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->where('work_station_tags.department_id', $departmentID)
+            ->whereNull('work_stations.deleted_at')
+            ->groupBy('work_stations.id')
+            ->orderBy('work_stations.name')
+            ->paginate(25);
     }
 
     /**
@@ -77,7 +139,6 @@ class WorkStationController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string',
-            'department_id' => 'required|numeric',
             'quantity' =>'required|numeric',
         ]);
 
@@ -122,9 +183,9 @@ class WorkStationController extends Controller
             $work_station = new Workstation;
             // concat the station number
             $work_station->name = $request->name . $concat_station_number;
-            $work_station->department_id = $request->department_id;
             $work_station->type = $type;
             $work_station->division = $division;
+            $work_station->occupied = false;
 
             $work_station->save();
         }

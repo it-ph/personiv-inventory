@@ -273,7 +273,14 @@ sharedModule
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
 			*/
-			paginate: function(id, page){
+			paginate: function(page){
+				return $http.get(urlBase + '-paginate/' + '?page=' + page);
+			},
+			/**
+			 * Paginated load of resource for infinite scrolling.
+			 * @return: Object
+			*/
+			paginateDepartment: function(id, page){
 				return $http.get(urlBase + '-paginate/' + id + '?page=' + page);
 			},
 			/**
@@ -1745,15 +1752,68 @@ sharedModule
 		};
 	}]);
 sharedModule
+	.factory('WorkStationTag', ['$http', function($http){
+		var urlBase = '/work-station-tag';
+
+		return {
+			/**
+			 * Fetch all.
+			 * @return: Array of Objects
+			*/
+			index: function(){
+				return $http.get(urlBase);
+			},
+
+			/**
+			 * Fetch specific.
+			 * @return: Object
+			*/
+			show: function(id){
+				return $http.get(urlBase +  '/' + id);
+			},
+			
+			/**
+			 * Store single record and returns the input data for updating record.
+			 * @return object
+			 *
+			*/
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+
+			/**
+			 * Fetch Work Station Tag by workstation_id
+			 * 
+			*/
+			workstation: function(id){
+				return $http.get(urlBase + '-workstation/' + id);
+			},
+		};
+	}])
+sharedModule
 	.factory('WorkStation', ['$http', function($http){
 		var urlBase = '/work-station';
 
 		return {
 			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
+			 * Search for vacant work stations
+			 * @return : Array
 			*/
-			paginate: function(id, page){
+			vacant: function(data){
+				return $http.post(urlBase + '-vacant', data);
+			},
+			/**
+			 * Paginated load of resource for infinite scrolling.
+			 * @return: Array
+			*/
+			paginate: function(page){
+				return $http.get(urlBase + '-paginate' + '?page=' + page);
+			},
+			/**
+			 * Paginated load of resource for infinite scrolling.
+			 * @return: Array
+			*/
+			paginateDepartment: function(id, page){
 				return $http.get(urlBase + '-paginate/' + id + '?page=' + page);
 			},
 			/**
@@ -1783,15 +1843,23 @@ sharedModule
 
 			/**
 			 * Search database tables for data
-			 *
+			 * @return Array
 			*/
-			search: function(id, data){
+			search: function(data){
+				return $http.post(urlBase + '-search', data);
+			},
+
+			/**
+			 * Search database tables for data by department
+			 * @return Array
+			*/
+			searchDepartment: function(id, data){
 				return $http.post(urlBase + '-search/' + id, data);
 			},
 
 			/**
 		     * Search for workstation according to department id except the exisiting workstation
-		     *
+		     * @return Array
 		    */
 			department: function(departmentID, workstationID){
 				return $http.get(urlBase + '-department/' + departmentID + '/station/' + workstationID);

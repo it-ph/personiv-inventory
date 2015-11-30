@@ -1,7 +1,6 @@
 adminModule
-	.controller('addWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Department', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, Department, WorkStation){
+	.controller('addWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
 		$scope.workStation = {};
-		$scope.workStation.department_id = $stateParams.departmentID;
 
 		$scope.patterns = [
 			{
@@ -29,11 +28,6 @@ adminModule
 				'meaning': 'Aeon 6th Floor - Division B - Production Station Number',
 			},
 		];
-
-		Department.show($stateParams.departmentID)
-			.success(function(data){
-				$scope.department = data;
-			});
 
 		$scope.cancel = function(){
 			$mdDialog.cancel();

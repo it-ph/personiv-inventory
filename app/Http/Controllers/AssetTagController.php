@@ -237,27 +237,27 @@ class AssetTagController extends Controller
         $asset_tag = AssetTag::where('id', $id)->first();
 
         // determine its component type
-        if ($type == 'Desktop') { $table_name = 'desktops'; }
-        else if ($type == 'Firewall') { $table_name = 'firewalls'; }
-        else if ($type == 'Hard Disk') { $table_name = 'hard_disks'; }
-        else if ($type == 'Headset') { $table_name = 'headsets'; }
-        else if ($type == 'Keyboard') { $table_name = 'keyboards'; }
-        else if ($type == 'Mac') { $table_name = 'macs'; }
-        else if ($type == 'Memory') { $table_name = 'memories'; }
-        else if ($type == 'Monitor') { $table_name = 'monitors'; }
-        else if ($type == 'Mouse') { $table_name = 'mice'; }
-        else if ($type == 'Network Switch') { $table_name = 'network_switches'; }
-        else if ($type == 'Portable Hard Disk') { $table_name = 'portable_hard_disks'; }
-        else if ($type == 'Printer') { $table_name = 'printers'; }
-        else if ($type == 'Projector') { $table_name = 'projectors'; }
-        else if ($type == 'Router') { $table_name = 'routers'; }
-        else if ($type == 'Scanner') { $table_name = 'scanners'; }
-        else if ($type == 'Software') { $table_name = 'softwares'; }
-        else if ($type == 'Speaker') { $table_name = 'speakers'; }
-        else if ($type == 'Telephone') { $table_name = 'telephones'; }
-        else if ($type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
-        else if ($type == 'Video Card') { $table_name = 'video_cards'; }
-        else if ($type == 'Other Component') { $table_name = 'other_components'; }
+        if ($asset_tag->component_type == 'Desktop') { $table_name = 'desktops'; }
+        else if ($asset_tag->component_type == 'Firewall') { $table_name = 'firewalls'; }
+        else if ($asset_tag->component_type == 'Hard Disk') { $table_name = 'hard_disks'; }
+        else if ($asset_tag->component_type == 'Headset') { $table_name = 'headsets'; }
+        else if ($asset_tag->component_type == 'Keyboard') { $table_name = 'keyboards'; }
+        else if ($asset_tag->component_type == 'Mac') { $table_name = 'macs'; }
+        else if ($asset_tag->component_type == 'Memory') { $table_name = 'memories'; }
+        else if ($asset_tag->component_type == 'Monitor') { $table_name = 'monitors'; }
+        else if ($asset_tag->component_type == 'Mouse') { $table_name = 'mice'; }
+        else if ($asset_tag->component_type == 'Network Switch') { $table_name = 'network_switches'; }
+        else if ($asset_tag->component_type == 'Portable Hard Disk') { $table_name = 'portable_hard_disks'; }
+        else if ($asset_tag->component_type == 'Printer') { $table_name = 'printers'; }
+        else if ($asset_tag->component_type == 'Projector') { $table_name = 'projectors'; }
+        else if ($asset_tag->component_type == 'Router') { $table_name = 'routers'; }
+        else if ($asset_tag->component_type == 'Scanner') { $table_name = 'scanners'; }
+        else if ($asset_tag->component_type == 'Software') { $table_name = 'softwares'; }
+        else if ($asset_tag->component_type == 'Speaker') { $table_name = 'speakers'; }
+        else if ($asset_tag->component_type == 'Telephone') { $table_name = 'telephones'; }
+        else if ($asset_tag->component_type == 'Uninterruptible Power Supply') { $table_name = 'uninterruptible_power_supplies'; }
+        else if ($asset_tag->component_type == 'Video Card') { $table_name = 'video_cards'; }
+        else if ($asset_tag->component_type == 'Other Component') { $table_name = 'other_components'; }
 
         $first_letter = $asset_tag->component_type == 'Software' ? '.name' : '.brand';
 
@@ -384,10 +384,32 @@ class AssetTagController extends Controller
                 $i.'.component_type' => 'required|string',
                 $i.'.work_station_id' => 'required|numeric',
                 $i.'.serial' => 'string',
-                $i.'.property_code' => 'required|string',
+                $i.'.property_code' => 'required|numeric',
                 $i.'.date_purchase' => 'date',
                 $i.'.supplier' => 'string',
             ]);
+
+            if ($request->input($i.'.component_type') == 'Desktop') { $property_code = 'PCPU'; }
+            else if ($request->input($i.'.component_type') == 'Firewall') { $property_code = 'PFWL'; }
+            else if ($request->input($i.'.component_type') == 'Hard Disk') { $property_code = 'PKBD'; }
+            else if ($request->input($i.'.component_type') == 'Headset') { $property_code = 'PHDS'; }
+            else if ($request->input($i.'.component_type') == 'Keyboard') { $property_code = 'PKBD'; }
+            else if ($request->input($i.'.component_type') == 'Mac') { $property_code = 'PMAC'; }
+            else if ($request->input($i.'.component_type') == 'Memory') { $property_code = 'PRAM'; }
+            else if ($request->input($i.'.component_type') == 'Monitor') { $property_code = 'PMON'; }
+            else if ($request->input($i.'.component_type') == 'Mouse') { $property_code = 'PMSE'; }
+            else if ($request->input($i.'.component_type') == 'Network Switch') { $property_code = 'PNSW'; }
+            else if ($request->input($i.'.component_type') == 'Portable Hard Disk') { $property_code = 'PPHD'; }
+            else if ($request->input($i.'.component_type') == 'Printer') { $property_code = 'PPRT'; }
+            else if ($request->input($i.'.component_type') == 'Projector') { $property_code = 'PPRJ'; }
+            else if ($request->input($i.'.component_type') == 'Router') { $property_code = 'RTR'; }
+            else if ($request->input($i.'.component_type') == 'Scanner') { $property_code = 'PSCN'; }
+            else if ($request->input($i.'.component_type') == 'Software') { $property_code = 'PSFW'; }
+            else if ($request->input($i.'.component_type') == 'Speaker') { $property_code = 'PSPK'; }
+            else if ($request->input($i.'.component_type') == 'Telephone') { $property_code = 'PTEL'; }
+            else if ($request->input($i.'.component_type') == 'Uninterruptible Power Supply') { $property_code = 'PUPS'; }
+            else if ($request->input($i.'.component_type') == 'Video Card') { $property_code = 'PVDC'; }
+            else if ($request->input($i.'.component_type') == 'Other Component') { $property_code = 'POTH'; }
 
             //create a new instance of Skill per loop
             $asset_tag = new AssetTag;
@@ -397,7 +419,7 @@ class AssetTagController extends Controller
             $asset_tag->component_type = $request->input($i.'.component_type');
             $asset_tag->work_station_id = $request->input($i.'.work_station_id');
             $asset_tag->serial = $request->input($i.'.serial');
-            $asset_tag->property_code = $request->input($i.'.property_code');
+            $asset_tag->property_code =  $property_code . $request->input($i.'.property_code');
             $asset_tag->status = 'active';
             $asset_tag->date_purchase = $request->input($i.'.date_purchase') ? $request->input($i.'.date_purchase') : null;
             $asset_tag->supplier = $request->input($i.'.supplier') ? $request->input($i.'.supplier') : null;

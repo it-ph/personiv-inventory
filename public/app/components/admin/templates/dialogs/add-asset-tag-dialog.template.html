@@ -205,8 +205,9 @@
 					
 					<md-input-container flex>
 						<label>Property Code</label>
-						<input type="text" name="PropertyCode{{$index}}" required ng-minlength="9" ng-maxlength="9" ng-model="asset.property_code">
+						<input type="text" name="PropertyCode{{$index}}" required ng-minlength="5" ng-maxlength="5" ng-model="asset.property_code" ng-pattern="/^[0-9]*$/">
 						<div ng-messages="addWorkStationForm['PropertyCode' + $index].$error" ng-if="addWorkStationForm['PropertyCode' + $index].$touched">
+							<span class="pattern" ng-show="addWorkStationForm['PropertyCode' + $index].$error.pattern">Numeric characters only.</span>
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>
 					</md-input-container>

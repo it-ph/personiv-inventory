@@ -50,7 +50,9 @@ Route::resource('ups', 'UninterruptiblePowerSupplyController');
 Route::resource('video-card', 'VideoCardController');
 Route::resource('other-component', 'OtherComponentController');
 Route::resource('employee', 'EmployeeController');
+Route::resource('employee-tag', 'EmployeeTagController');
 Route::resource('work-station', 'WorkStationController');
+Route::resource('work-station-tag', 'WorkStationTagController');
 Route::resource('asset-tag', 'AssetTagController');
 Route::resource('firewall', 'FirewallController');
 Route::resource('mac', 'MacController');
@@ -76,8 +78,6 @@ Route::get('software-paginate', 'SoftwareController@paginate');
 Route::get('ups-paginate', 'UninterruptiblePowerSupplyController@paginate');
 Route::get('video-card-paginate', 'VideoCardController@paginate');
 Route::get('other-component-paginate', 'OtherComponentController@paginate');
-Route::get('employee-paginate/{departmentID}', 'EmployeeController@paginate');
-Route::get('work-station-paginate/{departmentID}', 'WorkStationController@paginate');
 Route::get('firewall-paginate', 'FirewallController@paginate');
 Route::get('mac-paginate', 'MacController@paginate');
 Route::get('portable-hard-disk-paginate', 'PortableHardDiskController@paginate');
@@ -86,7 +86,11 @@ Route::get('router-paginate', 'RouterController@paginate');
 Route::get('speaker-paginate', 'SpeakerController@paginate');
 Route::get('telephone-paginate', 'TelephoneController@paginate');
 Route::get('projector-paginate', 'ProjectorController@paginate');
-
+Route::get('employee-paginate', 'EmployeeController@paginate');
+Route::get('work-station-paginate', 'WorkStationController@paginate');
+// paginate by department
+Route::get('employee-paginate/{departmentID}', 'EmployeeController@paginateDepartment');
+Route::get('work-station-paginate/{departmentID}', 'WorkStationController@paginateDepartment');
 // Route Resource Search
 Route::post('desktop-search', 'DesktopController@search');
 Route::post('hard-disk-search', 'HardDiskController@search');
@@ -102,8 +106,6 @@ Route::post('ups-search', 'UninterruptiblePowerSupplyController@search');
 Route::post('video-card-search', 'VideoCardController@search');
 Route::post('other-component-search', 'OtherComponentController@search');
 Route::post('asset-tag-search', 'AssetTagController@search');
-Route::post('employee-search/{departmentID}', 'EmployeeController@search');
-Route::post('work-station-search/{departmentID}', 'WorkStationController@search');
 Route::post('firewall-search', 'FirewallController@search');
 Route::post('mac-search', 'MacController@search');
 Route::post('portable-hard-disk-search', 'PortableHardDiskController@search');
@@ -112,7 +114,11 @@ Route::post('router-search', 'RouterController@search');
 Route::post('speaker-search', 'SpeakerController@search');
 Route::post('telephone-search', 'TelephoneController@search');
 Route::post('projector-search', 'ProjectorController@search');
-
+Route::post('employee-search', 'EmployeeController@search');
+Route::post('work-station-search', 'WorkStationController@search');
+// search by 
+Route::post('employee-search/{departmentID}', 'EmployeeController@searchDepartment');
+Route::post('work-station-search/{departmentID}', 'WorkStationController@searchDepartment');
 // Route Resource Distinct column
 Route::post('desktop-distinct', 'DesktopController@distinct');
 Route::post('hard-disk-distinct', 'HardDiskController@distinct');
@@ -215,3 +221,7 @@ Route::post('asset-tag-dispose-unit', 'AssetTagController@dispose_unit');
 
 // fetch all Mac with the specific type
 Route::post('mac-processor', 'MacController@processor');
+// fetch for vacant work stations
+Route::post('work-station-vacant', 'WorkStationController@vacant');
+// fetch workstation tag by workstation
+Route::get('work-station-tag-workstation/{workstationID}', 'WorkStationTagController@workstation');

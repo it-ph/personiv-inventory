@@ -26,13 +26,22 @@ class EmployeeController extends Controller
             ->orderBy('updated_at', 'desc')
             ->get();
     }
+    /**
+     * Paginate listing of the resource.
+     * 
+     * @return  \Illuminate\Http\Response
+    */
+    public function paginate()
+    {
+        return DB::table('employees')->select('*', DB::raw('LEFT(full_name, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
+    }
 
     /**
      * Paginate listing of the resource.
      * 
      * @return  \Illuminate\Http\Response
     */
-    public function paginate($departmentID)
+    public function paginateDepartment($departmentID)
     {
         return DB::table('employees')->select('*', DB::raw('LEFT(full_name, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->where('department_id', $departmentID)->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
     }

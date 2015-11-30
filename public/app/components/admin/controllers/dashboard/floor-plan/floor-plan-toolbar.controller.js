@@ -20,13 +20,13 @@ adminModule
 			Department.index()
 				.success(function(data){
 					departments = data;
-					$scope.toolbar.childState = departments[index].name;
+					$scope.toolbar.childState = index > -1 ? departments[index].name : null;
 				})
 				.error(function(data){
 					Preload.error();
 				});
 		}
 		else{
-			$scope.toolbar.childState = departments[index].name;
+			$scope.toolbar.childState =  index > -1 ? departments[index].name : null;
 		}
 	}]);

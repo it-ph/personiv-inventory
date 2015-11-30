@@ -7,7 +7,14 @@ sharedModule
 			 * Paginated load of resource for infinite scrolling.
 			 * @return: Object
 			*/
-			paginate: function(id, page){
+			paginate: function(page){
+				return $http.get(urlBase + '-paginate/' + '?page=' + page);
+			},
+			/**
+			 * Paginated load of resource for infinite scrolling.
+			 * @return: Object
+			*/
+			paginateDepartment: function(id, page){
 				return $http.get(urlBase + '-paginate/' + id + '?page=' + page);
 			},
 			/**

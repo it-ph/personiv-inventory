@@ -1,0 +1,58 @@
+<md-dialog layout="column" flex="50"  aria-label="Tag {{ department.name }} Work Station" ng-cloak>
+	<form name="tagWorkStationForm" novalidate>
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Tag {{ department.name }} Work Station</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content flex layout-padding>
+			<div layout="row" flex>
+				<!-- Division -->
+				<md-input-container flex>
+					<label>Division</label>
+					<md-select name="Division" ng-change="searchWorkStations()" required ng-model="workStationTag.division">
+						<md-option ng-repeat="division in divisions" value="{{ division.value }}">
+							{{ division.name }}
+						</md-option>
+					</md-select>
+					<div ng-messages="tagWorkStationForm.Division.$error" ng-if="tagWorkStationForm.Division.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+				<!-- Type -->
+				<md-input-container flex>
+					<label>Type</label>
+					<md-select name="Type" ng-change="searchWorkStations()" required ng-model="workStationTag.type">
+						<md-option ng-repeat="type in types" value="{{ type.value }}">
+							{{ type.name }}
+						</md-option>
+					</md-select>
+					<div ng-messages="tagWorkStationForm.Type.$error" ng-if="tagWorkStationForm.Type.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+			</div>
+			<!-- Work Station -->
+			<md-input-container flex>
+				<label>Work Station</label>
+				<md-select name="WorkStation" ng-disabled="!workStationTag.division || !workStationTag.type" required ng-model="workStationTag.work_station_id">
+					<md-option ng-repeat="workStation in workStations" value="{{ workStation.id }}">
+						{{ workStation.name }}
+					</md-option>
+				</md-select>
+				<div ng-messages="tagWorkStationForm.WorkStation.$error" ng-if="tagWorkStationForm.WorkStation.$touched">
+					<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+				</div>
+			</md-input-container>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-fab md-primary" ng-disabled="tagWorkStationForm.$invalid" aria-label="Submit" ng-click="submit()">
+			<md-icon class="mdi mdi-check"></md-icon>
+		</md-button>
+	</div>
+</md-dialog>

@@ -27,7 +27,7 @@
 		<div layout-margin layout-padding>
 			<md-card >
 				<md-list>
-					<md-list-item class="md-2-line" ng-click="show(workStation.id)" layout="row" ng-repeat="workStation in workStation.paginated.data | filter:workStation.userInput">
+					<md-list-item class="md-2-line" ng-click="show(workStation.id)" layout="row" ng-repeat="workStation in workStation.paginated.data |  filter:workStation.userInput">
 						<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ workStation.first_letter }}</span>
 						</h2>
