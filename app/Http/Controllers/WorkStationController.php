@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\WorkStation;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -189,6 +190,16 @@ class WorkStationController extends Controller
 
             $work_station->save();
         }
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $work_station->id;
+        $log->activity = 'added '. $request->quantity . ' new work stations.';
+        $log->state = 'main.floor-plan';
+
+        $log->save();
     }
 
     /**

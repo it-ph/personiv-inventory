@@ -20,12 +20,11 @@
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>
 					</md-input-container>
-					<!-- Type -->
+					<!-- Model -->
 					<md-input-container flex>
-						<label>Type</label>
-						<p></p>
-						<input name="Type" type="text" required ng-model="monitor.type">
-						<div ng-messages="addMonitorForm.Type.$error" ng-if="addMonitorForm.Type.$touched">
+						<label>Model</label>
+						<input name="Model" type="text" required ng-model="monitor.model">
+						<div ng-messages="addMonitorForm.Model.$error" ng-if="addMonitorForm.Model.$touched">
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 						</div>
 					</md-input-container>

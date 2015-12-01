@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Mac;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -107,6 +108,16 @@ class MacController extends Controller
 
         // save to database
         $mac->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $mac->id;
+        $log->activity = 'added a new Mac.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

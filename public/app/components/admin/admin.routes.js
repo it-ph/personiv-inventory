@@ -30,7 +30,7 @@ adminModule
 					},
 					'content@main': {
 						templateUrl: '/app/components/admin/templates/content/main.content.template.html',
-						controller: 'mainContentController',	
+						// controller: 'mainContentController',	
 					},
 					'right-sidenav@main': {
 						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
@@ -96,7 +96,7 @@ adminModule
 					},
 					'content@main.floor-plan': {
 						templateUrl: '/app/components/admin/templates/content/floor-plan.content.template.html',
-						controller: 'floorPlanContentController',
+						// controller: 'floorPlanContentController',
 					},
 					'right-sidenav@main.floor-plan': {
 						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',

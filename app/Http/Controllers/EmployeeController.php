@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Employee;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -90,6 +91,16 @@ class EmployeeController extends Controller
 
         // save to database
         $employee->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $employee->department_id;
+        $log->activity = 'added a new Employee.';
+        $log->state = 'main.department';
+
+        $log->save();
     }
 
     /**

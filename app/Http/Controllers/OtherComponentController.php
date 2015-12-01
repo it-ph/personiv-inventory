@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\OtherComponent;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -109,6 +110,16 @@ class OtherComponentController extends Controller
 
         // save to database
         $other_component->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $other_component->id;
+        $log->activity = 'added a new Other Component.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

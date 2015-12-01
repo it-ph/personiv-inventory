@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Scanner;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -104,6 +105,16 @@ class ScannerController extends Controller
 
         // save to database
         $scanner->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $scanner->id;
+        $log->activity = 'added a new Scanner.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

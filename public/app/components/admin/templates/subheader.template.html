@@ -5,6 +5,11 @@
 		<md-tooltip>Refresh</md-tooltip>
 	</md-button>
 
+	<md-button class="md-icon-button" ng-if="subheader.state == 'work-station'" ng-click="subheader.edit()">
+		<md-icon class="mdi mdi-transfer grey" aria-label="Transfer"></md-icon>
+		<md-tooltip>Transfer</md-tooltip>
+	</md-button>
+
 	<!-- Right Sidenav Button -->
 	<md-button class="md-icon-button" hide-gt-sm ng-if="subheader.state != 'assets'" ng-click="toggleSidenav('right')">
 		<md-icon class="mdi mdi-menu grey" aria-label="right sidenav"></md-icon>

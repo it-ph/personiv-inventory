@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Software;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -114,6 +115,16 @@ class SoftwareController extends Controller
 
         // save to database
         $software->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $software->id;
+        $log->activity = 'added a new Software.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

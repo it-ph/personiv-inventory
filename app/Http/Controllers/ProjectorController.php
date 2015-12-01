@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Projector;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -106,6 +107,16 @@ class ProjectorController extends Controller
 
         // save to database
         $projector->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $projector->id;
+        $log->activity = 'added a new Projector.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

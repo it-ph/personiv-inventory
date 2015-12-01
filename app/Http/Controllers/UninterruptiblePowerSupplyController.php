@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\UninterruptiblePowerSupply;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -108,6 +109,16 @@ class UninterruptiblePowerSupplyController extends Controller
 
         // save to database
         $ups->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $ups->id;
+        $log->activity = 'added a new UPS.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

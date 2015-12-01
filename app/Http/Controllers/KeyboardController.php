@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Keyboard;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -105,6 +106,16 @@ class KeyboardController extends Controller
 
         // save to database
         $keyboard->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $keyboard->id;
+        $log->activity = 'added a new Keyboard.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

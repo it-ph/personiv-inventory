@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\VideoCard;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -101,7 +102,7 @@ class VideoCardController extends Controller
         // validate request input
         $this->validate($request, [
             'brand' => 'required|string',
-            'gpu' => 'required|string',
+            'model' => 'required|string',
             'size' => 'required|string',
         ]);
 
@@ -110,11 +111,21 @@ class VideoCardController extends Controller
 
         // assign its properties
         $video_card->brand = $request->brand;
-        $video_card->gpu = $request->gpu;
+        $video_card->model = $request->model;
         $video_card->size = $request->size;
 
         // save to database
         $video_card->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $video_card->id;
+        $log->activity = 'added a new Video Card.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

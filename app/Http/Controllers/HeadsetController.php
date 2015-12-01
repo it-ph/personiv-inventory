@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Headset;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -108,6 +109,16 @@ class HeadsetController extends Controller
 
         // save to database
         $headset->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $headset->id;
+        $log->activity = 'added a new Headset.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

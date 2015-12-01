@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Monitor;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -109,6 +110,16 @@ class MonitorController extends Controller
 
         // save to database
         $monitor->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $monitor->id;
+        $log->activity = 'added a new Monitor.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

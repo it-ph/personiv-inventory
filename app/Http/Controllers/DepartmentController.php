@@ -10,6 +10,16 @@ use App\Http\Controllers\Controller;
 class DepartmentController extends Controller
 {
     /**
+     * Display others listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function others($id)
+    {
+        return Department::whereNotIn('id', [$id])->get();
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response

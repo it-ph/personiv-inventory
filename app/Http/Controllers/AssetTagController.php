@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\AssetTag;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -193,6 +194,15 @@ class AssetTagController extends Controller
         $asset_tag->status = 'dispose';
 
         $asset_tag->save();
+
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $asset_tag->id;
+        $log->activity = 'pulled out a unit for disposal.';
+        $log->state = 'main.units';
+
+        $log->save();
     }
 
     /**
@@ -206,6 +216,15 @@ class AssetTagController extends Controller
         $asset_tag->status = 'repair';
 
         $asset_tag->save();
+
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $asset_tag->id;
+        $log->activity = 'pulled out a unit for repair.';
+        $log->state = 'main.units';
+
+        $log->save();
     }
 
     /**
@@ -224,6 +243,15 @@ class AssetTagController extends Controller
         $asset_tag->work_station_id = $request->workStationID;
 
         $asset_tag->save();
+
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $asset_tag->id;
+        $log->activity = 'transfered a unit to a different work station.';
+        $log->state = 'main.units';
+
+        $log->save();        
     }
 
     /**
@@ -427,6 +455,15 @@ class AssetTagController extends Controller
             //save to database
             $asset_tag->save();
         };
+
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $asset_tag->id;
+        $log->activity = 'added an asset tag.';
+        $log->state = 'main.work-station';
+
+        $log->save();
     }
 
     /**
@@ -471,6 +508,15 @@ class AssetTagController extends Controller
         $asset_tag->supplier = $request->supplier ? $request->supplier : null;
 
         $asset_tag->save();
+
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $asset_tag->id;
+        $log->activity = 'updated an asset tag.';
+        $log->state = 'main.work-station';
+
+        $log->save(); 
     }
 
     /**

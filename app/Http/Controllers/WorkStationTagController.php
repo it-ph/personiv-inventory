@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\WorkStationTag;
 use App\WorkStation;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -66,6 +67,15 @@ class WorkStationTagController extends Controller
 
         // update record
         $work_station->save();
+
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $request->department_id;
+        $log->activity = 'assigned a workstation to a department.';
+        $log->state = 'main.floor-plan';
+
+        $log->save();
     }
 
     /**
@@ -99,7 +109,30 @@ class WorkStationTagController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // validate request input
+        $this->validate($request, [
+            'department_id' => 'required|numeric',
+            'work_station_id' => 'required|numeric',
+        ]);
+
+        // create a new instance of desktop
+        $work_station_tag = WorkStationTag::where('department_id', $id)->where('work_station_id', $request->work_station_id)->first();
+
+        // assign its properties
+        $work_station_tag->department_id = $request->department_id;
+        $work_station_tag->work_station_id = $request->work_station_id;
+
+        // save to database
+        $work_station_tag->save();
+
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $work_station_tag->id;
+        $log->activity = 'set a work station to a different department.';
+        $log->state = 'main.work-station';
+
+        $log->save(); 
     }
 
     /**

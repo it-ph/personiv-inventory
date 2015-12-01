@@ -12,7 +12,7 @@ adminModule
 			/**
 			 * Stores Single Record
 			*/
-			Memory.store($scope.memory)
+			Printer.store($scope.printer)
 				.then(function(){
 					// Stops Preloader 
 					Preloader.stop();

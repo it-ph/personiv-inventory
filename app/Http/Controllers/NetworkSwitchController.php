@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\NetworkSwitch;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -107,6 +108,16 @@ class NetworkSwitchController extends Controller
 
         // save to database
         $network_switch->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $network_switch->id;
+        $log->activity = 'added a new Network Switch.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

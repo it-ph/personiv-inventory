@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Speaker;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -106,6 +107,16 @@ class SpeakerController extends Controller
 
         // save to database
         $speaker->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $speaker->id;
+        $log->activity = 'added a new Speaker.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

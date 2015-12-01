@@ -17,6 +17,14 @@ sharedModule
 			*/
 			show: function(id){
 				return $http.get(urlBase +  '/' + id);
-			}
+			},
+
+			/**
+			 * Other departments
+			 * @return: Array of Objects
+			*/
+			others: function(id){
+				return $http.get(urlBase + '-others/' + id);
+			},
 		};
 	}]);

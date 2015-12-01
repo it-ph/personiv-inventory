@@ -1,5 +1,5 @@
 adminModule
-	.controller('workStationContentContainerController', ['$scope', '$timeout', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', function($scope, $timeout, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService){
+	.controller('workStationContentContainerController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', function($scope, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService){
 		/**
 		 * Object for subheader
 		 *
@@ -8,7 +8,7 @@ adminModule
 		var workStationID = $stateParams.workStationID;
 
 		$scope.subheader = {};
-		$scope.subheader.state = 'floor-plan';
+		$scope.subheader.state = 'work-station';
 
 		$scope.subheader.refresh = function(){
 			Preloader.preload();
@@ -23,6 +23,14 @@ adminModule
 					Preloader.error();
 				});
 		};
+
+		$scope.subheader.edit = function(){
+			$mdDialog.show({
+		      	controller: 'editWorkStationDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/edit-work-station-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		}
 
 		AssetTag.workStation(workStationID)
 			.success(function(data){

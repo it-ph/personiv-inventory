@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\HardDisk;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -114,6 +115,16 @@ class HardDiskController extends Controller
 
         // save to database
         $hardDisk->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $hardDisk->id;
+        $log->activity = 'added a new Hard Disk.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

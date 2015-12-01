@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\PortableHardDisk;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -104,7 +105,7 @@ class PortableHardDiskController extends Controller
             'capacity' => 'required|string',
         ]);
 
-        // create a new instance of desktop
+        // create a new instance of portableHardDisk
         $portableHardDisk = new PortableHardDisk;
 
         // assign its properties
@@ -114,6 +115,16 @@ class PortableHardDiskController extends Controller
 
         // save to database
         $portableHardDisk->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $portableHardDisk->id;
+        $log->activity = 'added a new Portable Hard Disk.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

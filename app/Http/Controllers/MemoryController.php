@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Memory;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -127,6 +128,16 @@ class MemoryController extends Controller
 
         // save to database
         $memory->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $memory->id;
+        $log->activity = 'added a new Memory.';
+        $log->state = 'main.assets';
+
+        $log->save();
     }
 
     /**

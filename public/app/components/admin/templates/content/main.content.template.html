@@ -1,1 +1,47 @@
-<h1 class="md-display-3">{{ content.title }}</h1>
+<!-- Search Results -->
+<div class="fade-transition" layout="column" flex flex-gt-sm="70" ng-if="log.results && !log.paginated.show">
+	<div layout-margin layout-padding>
+		<md-card>
+			<md-list>
+				<md-list-item class="md-3-line" ng-click="show(log.id)" layout="row" ng-repeat="log in log.results | filter:log.userInput">
+					<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+						<span class="weight-200 white-text">{{ log.first_letter }}</span>
+					</h2>
+					<div class="md-list-item-text" layout="column" flex>
+						<h3>{{ log.first_name }} {{ log.last_name }}</h3>
+						<h4>{{ log.activity }}</h4>
+						<p>{{ log.created_at }}</p>
+					</div>
+				</md-list-item>
+			</md-list>
+			<md-card-content ng-if="!log.results.length">
+				<p class="secondary-text">No results found.</p>
+			</md-card-content>
+		</md-card>
+	</div>
+</div>
+
+<!-- Paginated Data -->
+<div class="fade-transition" ng-if="log.paginated.show" flex infinite-scroll='log.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="log.busy" infinite-scroll-parent>
+	<div layout="column" flex flex-gt-sm="70">
+		<div layout-margin layout-padding>
+			<md-card >
+				<md-list>
+					<md-list-item class="md-3-line" ng-click="show(log.id)" layout="row" ng-repeat="log in log.paginated.data | filter:log.userInput">
+						<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+							<span class="weight-200 white-text">{{ log.first_letter }}</span>
+						</h2>
+						<div class="md-list-item-text" layout="column" flex>
+							<h3>{{ log.first_name }} {{ log.last_name }}</h3>
+							<h4>{{ log.activity }}</h4>
+							<p>{{ log.created_at }}</p>
+						</div>
+					</md-list-item>
+				</md-list>
+				<md-card-content ng-if="!log.paginated.data.length">
+					<p class="secondary-text">No records yet.</p>
+				</md-card-content>
+			</md-card>
+		</div>
+	</div>
+</div>

@@ -88,6 +88,7 @@ Route::get('telephone-paginate', 'TelephoneController@paginate');
 Route::get('projector-paginate', 'ProjectorController@paginate');
 Route::get('employee-paginate', 'EmployeeController@paginate');
 Route::get('work-station-paginate', 'WorkStationController@paginate');
+Route::get('log-paginate', 'LogController@paginate');
 // paginate by department
 Route::get('employee-paginate/{departmentID}', 'EmployeeController@paginateDepartment');
 Route::get('work-station-paginate/{departmentID}', 'WorkStationController@paginateDepartment');
@@ -225,3 +226,5 @@ Route::post('mac-processor', 'MacController@processor');
 Route::post('work-station-vacant', 'WorkStationController@vacant');
 // fetch workstation tag by workstation
 Route::get('work-station-tag-workstation/{workstationID}', 'WorkStationTagController@workstation');
+// other departments
+Route::get('department-others/{departmentID}', 'DepartmentController@others');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Desktop;
+use App\Log;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -109,6 +110,17 @@ class DesktopController extends Controller
 
         // save to database
         $desktop->save();
+
+        // create a Log record
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $desktop->id;
+        $log->activity = 'added a new CPU.';
+        $log->state = 'main.assets';
+
+        $log->save();
+
     }
 
     /**

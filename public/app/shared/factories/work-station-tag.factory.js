@@ -35,5 +35,14 @@ sharedModule
 			workstation: function(id){
 				return $http.get(urlBase + '-workstation/' + id);
 			},
+
+			/**
+			 * Update single record and returns the input data for updating record.
+			 * @return object
+			 *
+			*/
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
 		};
 	}])
