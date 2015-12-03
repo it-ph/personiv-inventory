@@ -1,0 +1,31 @@
+<md-dialog layout="column" flex="50"  aria-label="Transfer {{ employee.full_name }}" ng-cloak>
+	<form name="transferUserForm" novalidate>
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Transfer {{ employee.full_name }}</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content layout="row" flex layout-padding layout-wrap>
+			<md-input-container flex>
+				<label>Work Station</label>
+				<md-select required name="WorkStation" ng-model="employee_tag.work_station_id">
+					<md-option ng-repeat="workStation in workStations" value="{{ workStation.id }}">
+						{{ workStation.name }}
+					</md-option>
+				</md-select>
+				<div ng-messages="transferUserForm['WorkStation' + $index].$error" ng-if="transferUserForm['WorkStation' + $index].$touched">
+					<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+				</div>
+			</md-input-container>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-fab md-primary" ng-disabled="transferUserForm.$invalid" aria-label="Submit" ng-click="submit()">
+			<md-icon class="mdi mdi-check"></md-icon>
+		</md-button>
+	</div>
+</md-dialog>

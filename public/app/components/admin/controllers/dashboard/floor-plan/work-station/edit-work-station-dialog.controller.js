@@ -1,5 +1,5 @@
 adminModule
-	.controller('editWorkStationDialogController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', 'Department', 'WorkStationTag', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService, Department, WorkStationTag){
+	.controller('transferWorkStationDialogController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', 'Department', 'WorkStationTag', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService, Department, WorkStationTag){
 		var workStationID = $stateParams.workStationID;
 		var departmentID = $stateParams.departmentID;
 		$scope.workStation = AssetTagService.getStation();

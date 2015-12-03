@@ -1,5 +1,5 @@
 adminModule
-	.controller('departmentContentContainerController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Employee', function($scope, $stateParams, $mdDialog, Preloader, Employee){
+	.controller('departmentContentContainerController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Employee', 'UserService', function($scope, $stateParams, $mdDialog, Preloader, Employee, UserService){
 		/**
 		 * Object for subheader
 		 *
@@ -139,5 +139,15 @@ adminModule
 				.error(function(data){
 					Preloader.error();
 				});
+		};
+
+		$scope.show = function(id){
+			UserService.set(id);
+			$mdDialog.show({
+		      	controller: 'showEmployeeDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/show-employee-dialog.template.html',
+		      	parent: angular.element($('body')),
+		      	clickOutsideToClose:true,
+		    });
 		};
 	}]);

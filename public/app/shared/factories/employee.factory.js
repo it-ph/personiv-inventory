@@ -48,6 +48,22 @@ sharedModule
 			*/
 			search: function(id, data){
 				return $http.post(urlBase + '-search/' + id, data);
-			}
+			},
+
+			/**
+			 * Show employees assigned to the work station.
+ 			 *
+			*/
+			workstation: function(id){
+				return $http.get(urlBase + '-workstation/' + id);
+			},
+
+			/**
+			 * Show unassigned employees by department.
+ 			 *
+			*/
+			department: function(id){
+				return $http.get(urlBase + '-department/' + id);
+			},
 		};
 	}])

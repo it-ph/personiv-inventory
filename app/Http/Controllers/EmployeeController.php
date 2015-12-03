@@ -10,6 +10,27 @@ use App\Http\Controllers\Controller;
 
 class EmployeeController extends Controller
 {
+    public function department($departmentID)
+    {
+        return DB::table('employees')
+            ->where('department_id', $departmentID)
+            ->where('assigned', false)
+            ->get();
+    }
+    /**
+     * Search assigned employee to the workstation
+     *
+     * @return \Illuminate\Http\Response
+    */
+    public function workstation($workStationID)
+    {
+        return DB::table('employees')
+            ->join('employee_tags', 'employee_tags.employee_id', '=', 'employees.id')
+            ->select('employees.*', 'employee_tags.id as employee_tag_id', DB::raw('LEFT(employees.full_name, 1) as first_letter'))
+            ->where('work_station_id', $workStationID)
+            ->whereNull('employee_tags.deleted_at')
+            ->get();
+    }
     /**
      * Search database for records
      *
@@ -34,7 +55,11 @@ class EmployeeController extends Controller
     */
     public function paginate()
     {
-        return DB::table('employees')->select('*', DB::raw('LEFT(full_name, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
+        return DB::table('employees')
+            ->select('*', DB::raw('LEFT(full_name, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->whereNull('deleted_at')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(25);
     }
 
     /**
@@ -88,6 +113,7 @@ class EmployeeController extends Controller
         $employee->employee_id = $request->employee_id;
         $employee->full_name = $request->full_name;
         $employee->department_id = $request->department_id;
+        $employee->assigned = false;
 
         // save to database
         $employee->save();
@@ -111,7 +137,7 @@ class EmployeeController extends Controller
      */
     public function show($id)
     {
-        //
+        return Employee::where('id', $id)->first();
     }
 
     /**

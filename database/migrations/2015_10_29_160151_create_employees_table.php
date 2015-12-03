@@ -17,6 +17,7 @@ class CreateEmployeesTable extends Migration
             $table->string('employee_id')->unique();
             $table->string('full_name');
             $table->integer('department_id');
+            $table->boolean('assigned');
             $table->timestamps();
             $table->softDeletes();
         });

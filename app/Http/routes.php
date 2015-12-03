@@ -228,3 +228,9 @@ Route::post('work-station-vacant', 'WorkStationController@vacant');
 Route::get('work-station-tag-workstation/{workstationID}', 'WorkStationTagController@workstation');
 // other departments
 Route::get('department-others/{departmentID}', 'DepartmentController@others');
+// fetch employees assigned on that workstation
+Route::get('employee-workstation/{workStationID}', 'EmployeeController@workstation');
+// fetch  unassigned employees per department
+Route::get('employee-department/{departmentID}', 'EmployeeController@department');
+// fetch employee details and work station 
+Route::get('employee-tag-employee/{employeeID}', 'EmployeeTagController@employee');

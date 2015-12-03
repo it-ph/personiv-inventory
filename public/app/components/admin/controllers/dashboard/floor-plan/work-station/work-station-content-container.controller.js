@@ -1,5 +1,5 @@
 adminModule
-	.controller('workStationContentContainerController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', function($scope, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService){
+	.controller('workStationContentContainerController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', 'UserService', function($scope, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService, UserService){
 		/**
 		 * Object for subheader
 		 *
@@ -24,13 +24,44 @@ adminModule
 				});
 		};
 
-		$scope.subheader.edit = function(){
+		$scope.subheader.transfer = function(){
 			$mdDialog.show({
-		      	controller: 'editWorkStationDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/edit-work-station-dialog.template.html',
+		      	controller: 'transferWorkStationDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/transfer-work-station-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
-		}
+		};
+
+		$scope.subheader.users = function(){
+			$mdDialog.show({
+		      	controller: 'usersWorkStationDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/users-work-station-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(answer){
+		    	if(!answer){
+			    	$mdDialog.show({
+				      	controller: 'tagUsersWorkStationDialogController',
+					    templateUrl: '/app/components/admin/templates/dialogs/tag-users-work-station-dialog.template.html',
+				      	parent: angular.element($('body')),
+				    })
+				    .then(function(){
+				    	$scope.subheader.refresh();
+				    })
+		    	}
+		    	else{
+		    		UserService.set(answer);
+		    		$mdDialog.show({
+				      	controller: 'transferUsersDialogController',
+					    templateUrl: '/app/components/admin/templates/dialogs/transfer-users-dialog.template.html',
+				      	parent: angular.element($('body')),
+				    })
+				    .then(function(){
+				    	$scope.subheader.refresh();
+				    })
+		    	}
+		    })
+		};
 
 		AssetTag.workStation(workStationID)
 			.success(function(data){

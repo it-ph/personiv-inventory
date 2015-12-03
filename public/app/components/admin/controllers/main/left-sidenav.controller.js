@@ -17,10 +17,10 @@ adminModule
 		$scope.menu.pages = [
 			/* 0 */
 			[
-				{
-					'name':'Analysis',
-					'state':'main.analysis',
-				},
+				// {
+				// 	'name':'Analysis',
+				// 	'state':'main.analysis',
+				// },
 				{
 					'name':'Floor Plan',
 					'state':'main.floor-plan',
