@@ -2,7 +2,7 @@
 <div class="fade-transition" layout="column" flex ng-if="projector.results && !projector.paginated.show">
 	<div layout-margin layout-padding>
 		<md-card>
-			<md-list>
+			<md-list layout-padding>
 				<md-list-item class="md-3-line" layout="row" ng-repeat="projector in projector.results | filter:projector.userInput">
 					<h2 class="md-avatar md-headline" ng-class="projector.status == 'active' ? 'blue-bg' : (projector.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ projector.first_letter }}</span>
@@ -12,10 +12,16 @@
 						<h4>Property: {{ projector.property_code }}</h4>
 						<p>Work Station: {{ projector.work_station_name }}</p>
 					</div>
-					<p flex class="text-right secondary-text md-caption" layout="column">
-						<span>Date Purchase: {{ projector.date_purchase }}</span>
-						<span>{{ projector.supplier }}</span>
-					</p>
+					<div layout="row" layout-align="end center">
+						<md-button class="md-icon-button" ng-click="repaired(projector.asset_tag_id)">
+							<md-icon class="mdi mdi-check grey"></md-icon>
+							<md-tooltip>Repaired</md-tooltip>
+						</md-button>
+						<md-button class="md-icon-button" ng-click="dispose(projector.asset_tag_id)">
+							<md-icon class="mdi mdi-delete grey"></md-icon>
+							<md-tooltip>Dispose</md-tooltip>
+						</md-button>
+					</div>
 				</md-list-item>
 			</md-list>
 			<md-card-content ng-if="!projector.results.length">
@@ -33,7 +39,7 @@
 				{{ listType }}
 			</md-subheader>
 			<md-card>
-				<md-list>
+				<md-list layout-padding>
 					<md-list-item class="md-3-line" layout="row" ng-repeat="projector in projector.paginated.data | filter:projector.userInput">
 						<h2 class="md-avatar md-headline" ng-class="projector.status == 'active' ? 'blue-bg' : (projector.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ projector.first_letter }}</span>
@@ -43,10 +49,16 @@
 							<h4>Property: {{ projector.property_code }}</h4>
 							<p>Work Station: {{ projector.work_station_name }}</p>
 						</div>
-						<p flex class="text-right secondary-text md-caption" layout="column">
-							<span ng-if="projector.date_purchase">Date Purchase: {{ projector.date_purchase }}</span>
-							<span>{{ projector.supplier }}</span>
-						</p>
+						<div layout="row" layout-align="end center">
+							<md-button class="md-icon-button" ng-click="repaired(projector.asset_tag_id)">
+								<md-icon class="mdi mdi-check grey"></md-icon>
+								<md-tooltip>Repaired</md-tooltip>
+							</md-button>
+							<md-button class="md-icon-button" ng-click="dispose(projector.asset_tag_id)">
+								<md-icon class="mdi mdi-delete grey"></md-icon>
+								<md-tooltip>Dispose</md-tooltip>
+							</md-button>
+						</div>
 					</md-list-item>
 				</md-list>
 				<md-card-content ng-if="!projector.paginated.data.length">

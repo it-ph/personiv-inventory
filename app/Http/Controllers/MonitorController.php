@@ -97,7 +97,7 @@ class MonitorController extends Controller
         $this->validate($request, [
             'brand' => 'required|string',
             'model' => 'required|string',
-            'size' => 'required|string',
+            // 'size' => 'required|string',
         ]);
 
         // create a new instance of desktop
@@ -106,7 +106,7 @@ class MonitorController extends Controller
         // assign its properties
         $monitor->brand = $request->brand;
         $monitor->model = $request->model;
-        $monitor->size = $request->size;
+        // $monitor->size = $request->size;
 
         // save to database
         $monitor->save();

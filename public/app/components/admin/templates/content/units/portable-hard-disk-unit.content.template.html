@@ -2,7 +2,7 @@
 <div class="fade-transition" layout="column" flex ng-if="portableHardDisk.results && !portableHardDisk.paginated.show">
 	<div layout-margin layout-padding>
 		<md-card>
-			<md-list>
+			<md-list layout-padding>
 				<md-list-item class="md-3-line" layout="row" ng-repeat="portableHardDisk in portableHardDisk.results | filter:portableHardDisk.userInput">
 					<h2 class="md-avatar md-headline" ng-class="portableHardDisk.status == 'active' ? 'blue-bg' : (portableHardDisk.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ portableHardDisk.first_letter }}</span>
@@ -12,10 +12,16 @@
 						<h4>Property: {{ portableHardDisk.property_code }}</h4>
 						<p>Work Station: {{ portableHardDisk.work_station_name }}</p>
 					</div>
-					<p flex class="text-right secondary-text md-caption" layout="column">
-						<span>Date Purchase: {{ portableHardDisk.date_purchase }}</span>
-						<span>{{ portableHardDisk.supplier }}</span>
-					</p>
+					<div layout="row" layout-align="end center">
+						<md-button class="md-icon-button" ng-click="repaired(portableHardDisk.asset_tag_id)">
+							<md-icon class="mdi mdi-check grey"></md-icon>
+							<md-tooltip>Repaired</md-tooltip>
+						</md-button>
+						<md-button class="md-icon-button" ng-click="dispose(portableHardDisk.asset_tag_id)">
+							<md-icon class="mdi mdi-delete grey"></md-icon>
+							<md-tooltip>Dispose</md-tooltip>
+						</md-button>
+					</div>
 				</md-list-item>
 			</md-list>
 			<md-card-content ng-if="!portableHardDisk.results.length">
@@ -33,7 +39,7 @@
 				{{ listType }}
 			</md-subheader>
 			<md-card>
-				<md-list>
+				<md-list layout-padding>
 					<md-list-item class="md-3-line" layout="row" ng-repeat="portableHardDisk in portableHardDisk.paginated.data | filter:portableHardDisk.userInput">
 						<h2 class="md-avatar md-headline" ng-class="portableHardDisk.status == 'active' ? 'blue-bg' : (portableHardDisk.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ portableHardDisk.first_letter }}</span>
@@ -43,10 +49,16 @@
 							<h4>Property: {{ portableHardDisk.property_code }}</h4>
 							<p>Work Station: {{ portableHardDisk.work_station_name }}</p>
 						</div>
-						<p flex class="text-right secondary-text md-caption" layout="column">
-							<span ng-if="portableHardDisk.date_purchase">Date Purchase: {{ portableHardDisk.date_purchase }}</span>
-							<span>{{ portableHardDisk.supplier }}</span>
-						</p>
+						<div layout="row" layout-align="end center" ng-if="listType=='Under Repair'">
+							<md-button class="md-icon-button" ng-click="repaired(portableHardDisk.asset_tag_id)">
+								<md-icon class="mdi mdi-check grey"></md-icon>
+								<md-tooltip>Repaired</md-tooltip>
+							</md-button>
+							<md-button class="md-icon-button" ng-click="dispose(portableHardDisk.asset_tag_id)">
+								<md-icon class="mdi mdi-delete grey"></md-icon>
+								<md-tooltip>Dispose</md-tooltip>
+							</md-button>
+						</div>
 					</md-list-item>
 				</md-list>
 				<md-card-content ng-if="!portableHardDisk.paginated.data.length">

@@ -211,6 +211,9 @@ Route::put('asset-tag-repair/{assetTagID}', 'AssetTagController@repair');
 // set asset tag status to dispose
 Route::put('asset-tag-dispose/{assetTagID}', 'AssetTagController@dispose');
 
+// set asset tag status to active
+Route::put('asset-tag-active/{assetTagID}', 'AssetTagController@active');
+
 // fetch all active units 
 Route::post('asset-tag-active-unit', 'AssetTagController@active_unit');
 
@@ -234,3 +237,4 @@ Route::get('employee-workstation/{workStationID}', 'EmployeeController@workstati
 Route::get('employee-department/{departmentID}', 'EmployeeController@department');
 // fetch employee details and work station 
 Route::get('employee-tag-employee/{employeeID}', 'EmployeeTagController@employee');
+

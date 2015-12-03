@@ -16,7 +16,7 @@ adminModule
 			// clear desktop
 			$scope.employee.paginated = {};
 			$scope.employee.page = 2;
-			Employee.paginate(departmentID)
+			Employee.paginateDepartment(departmentID)
 				.then(function(data){
 					$scope.employee.paginated = data.data;
 					$scope.employee.paginated.show = true;
@@ -66,7 +66,7 @@ adminModule
 		$scope.employee.page = 2;
 		//
 
-		Employee.paginate(departmentID)
+		Employee.paginateDepartment(departmentID)
 			.then(function(data){
 				$scope.employee.paginated = data.data;
 				$scope.employee.paginated.show = true;
@@ -84,7 +84,7 @@ adminModule
 					$scope.employee.busy = true;
 
 					// Calls the next page of pagination.
-					Employee.paginate(departmentID, $scope.employee.page)
+					Employee.paginateDepartment(departmentID, $scope.employee.page)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
 							$scope.employee.page++;

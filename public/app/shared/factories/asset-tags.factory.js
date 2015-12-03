@@ -101,6 +101,14 @@ sharedModule
 				return $http.put(urlBase + '-dispose/' + id);
 			},
 
+			/*
+			 * Set asset tag status for active
+			 *
+			*/
+			active: function(id){
+				return $http.put(urlBase + '-active/' + id);
+			},
+
 			/**
 			 * Delete the asset tag
 			 *

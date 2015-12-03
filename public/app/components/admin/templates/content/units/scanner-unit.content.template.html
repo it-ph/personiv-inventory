@@ -2,7 +2,7 @@
 <div class="fade-transition" layout="column" flex ng-if="scanner.results && !scanner.paginated.show">
 	<div layout-margin layout-padding>
 		<md-card>
-			<md-list>
+			<md-list layout-padding>
 				<md-list-item class="md-3-line" layout="row" ng-repeat="scanner in scanner.results | filter:scanner.userInput">
 					<h2 class="md-avatar md-headline" ng-class="scanner.status == 'active' ? 'blue-bg' : (scanner.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ scanner.first_letter }}</span>
@@ -12,10 +12,16 @@
 						<h4>Property: {{ scanner.property_code }}</h4>
 						<p>Work Station: {{ scanner.work_station_name }}</p>
 					</div>
-					<p flex class="text-right secondary-text md-caption" layout="column">
-						<span>Date Purchase: {{ scanner.date_purchase }}</span>
-						<span>{{ scanner.supplier }}</span>
-					</p>
+					<div layout="row" layout-align="end center">
+						<md-button class="md-icon-button" ng-click="repaired(scanner.asset_tag_id)">
+							<md-icon class="mdi mdi-check grey"></md-icon>
+							<md-tooltip>Repaired</md-tooltip>
+						</md-button>
+						<md-button class="md-icon-button" ng-click="dispose(scanner.asset_tag_id)">
+							<md-icon class="mdi mdi-delete grey"></md-icon>
+							<md-tooltip>Dispose</md-tooltip>
+						</md-button>
+					</div>
 				</md-list-item>
 			</md-list>
 			<md-card-content ng-if="!scanner.results.length">
@@ -33,7 +39,7 @@
 				{{ listType }}
 			</md-subheader>
 			<md-card>
-				<md-list>
+				<md-list layout-padding>
 					<md-list-item class="md-3-line" layout="row" ng-repeat="scanner in scanner.paginated.data | filter:scanner.userInput">
 						<h2 class="md-avatar md-headline" ng-class="scanner.status == 'active' ? 'blue-bg' : (scanner.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ scanner.first_letter }}</span>
@@ -43,10 +49,16 @@
 							<h4>Property: {{ scanner.property_code }}</h4>
 							<p>Work Station: {{ scanner.work_station_name }}</p>
 						</div>
-						<p flex class="text-right secondary-text md-caption" layout="column">
-							<span ng-if="scanner.date_purchase">Date Purchase: {{ scanner.date_purchase }}</span>
-							<span>{{ scanner.supplier }}</span>
-						</p>
+						<div layout="row" layout-align="end center">
+							<md-button class="md-icon-button" ng-click="repaired(scanner.asset_tag_id)">
+								<md-icon class="mdi mdi-check grey"></md-icon>
+								<md-tooltip>Repaired</md-tooltip>
+							</md-button>
+							<md-button class="md-icon-button" ng-click="dispose(scanner.asset_tag_id)">
+								<md-icon class="mdi mdi-delete grey"></md-icon>
+								<md-tooltip>Dispose</md-tooltip>
+							</md-button>
+						</div>
 					</md-list-item>
 				</md-list>
 				<md-card-content ng-if="!scanner.paginated.data.length">

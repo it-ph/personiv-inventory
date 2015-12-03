@@ -74,6 +74,7 @@ class AssetTagController extends Controller
             ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
             ->select(
                 '*',
+                'asset_tags.id as asset_tag_id',
                 DB::raw('SUBSTRING(work_stations.name, 4, 1) as first_letter'),
                 DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase'),
                 'asset_tags.id as asset_tags_id',
@@ -123,6 +124,7 @@ class AssetTagController extends Controller
             ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
             ->select(
                 '*',
+                'asset_tags.id as asset_tag_id',
                 DB::raw('SUBSTRING(work_stations.name, 4, 1) as first_letter'),
                 DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase'),
                 'asset_tags.id as asset_tags_id',
@@ -171,6 +173,7 @@ class AssetTagController extends Controller
             ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
             ->select(
                 '*',
+                'asset_tags.id as asset_tag_id',
                 DB::raw('SUBSTRING(work_stations.name, 4, 1) as first_letter'),
                 DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase'),
                 'asset_tags.id as asset_tags_id',
@@ -187,7 +190,29 @@ class AssetTagController extends Controller
      * Set Asset Tag Status as dispose
      *
     */
-    public function dispose($id)
+    public function active(Request $request, $id)
+    {
+        $asset_tag = AssetTag::where('id', $id)->first();
+
+        $asset_tag->status = 'active';
+
+        $asset_tag->save();
+
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $asset_tag->id;
+        $log->activity = 'repaired a unit.';
+        $log->state = 'main.units';
+
+        $log->save();
+    }
+
+    /**
+     * Set Asset Tag Status as dispose
+     *
+    */
+    public function dispose(Request $request, $id)
     {
         $asset_tag = AssetTag::where('id', $id)->first();
 
@@ -209,7 +234,7 @@ class AssetTagController extends Controller
      * Set Asset Tag Status as repair
      *
     */
-    public function repair($id)
+    public function repair(Request $request, $id)
     {
         $asset_tag = AssetTag::where('id', $id)->first();
 

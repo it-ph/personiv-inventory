@@ -16,7 +16,7 @@ class CreateMonitorsTable extends Migration
             $table->increments('id');
             $table->string('brand');
             $table->string('model');
-            $table->string('size');
+            // $table->string('size');
             $table->timestamps();
             $table->softDeletes();
         });

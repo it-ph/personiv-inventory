@@ -25,7 +25,7 @@
 				<!-- Serial -->
 				<md-input-container flex>
 					<label>Serial</label>
-					<input type="text" name="Serial" ng-model="asset.serial" required>
+					<input type="text" name="Serial" ng-model="asset.serial">
 					<div ng-messages="editAssetForm.Serial.$error" ng-if="editAssetForm.Serial.$touched">
 						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 					</div>
@@ -53,7 +53,7 @@
 				<!-- Supplier -->
 				<md-input-container flex>
 					<label>Supplier</label>
-					<input type="text" name="Supplier" ng-model="asset.supplier" required>
+					<input type="text" name="Supplier" ng-model="asset.supplier">
 					<div ng-messages="editAssetForm.Supplier.$error" ng-if="editAssetForm.Supplier.$touched">
 						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 					</div>
