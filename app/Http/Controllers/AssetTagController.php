@@ -444,7 +444,7 @@ class AssetTagController extends Controller
 
             if ($request->input($i.'.component_type') == 'Desktop') { $property_code = 'PCPU'; }
             else if ($request->input($i.'.component_type') == 'Firewall') { $property_code = 'PFWL'; }
-            else if ($request->input($i.'.component_type') == 'Hard Disk') { $property_code = 'PKBD'; }
+            else if ($request->input($i.'.component_type') == 'Hard Disk') { $property_code = 'PHDD'; }
             else if ($request->input($i.'.component_type') == 'Headset') { $property_code = 'PHDS'; }
             else if ($request->input($i.'.component_type') == 'Keyboard') { $property_code = 'PKBD'; }
             else if ($request->input($i.'.component_type') == 'Mac') { $property_code = 'PMAC'; }
@@ -455,7 +455,7 @@ class AssetTagController extends Controller
             else if ($request->input($i.'.component_type') == 'Portable Hard Disk') { $property_code = 'PPHD'; }
             else if ($request->input($i.'.component_type') == 'Printer') { $property_code = 'PPRT'; }
             else if ($request->input($i.'.component_type') == 'Projector') { $property_code = 'PPRJ'; }
-            else if ($request->input($i.'.component_type') == 'Router') { $property_code = 'RTR'; }
+            else if ($request->input($i.'.component_type') == 'Router') { $property_code = 'PRTR'; }
             else if ($request->input($i.'.component_type') == 'Scanner') { $property_code = 'PSCN'; }
             else if ($request->input($i.'.component_type') == 'Software') { $property_code = 'PSFW'; }
             else if ($request->input($i.'.component_type') == 'Speaker') { $property_code = 'PSPK'; }
