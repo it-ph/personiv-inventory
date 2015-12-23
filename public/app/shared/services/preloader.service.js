@@ -27,7 +27,7 @@ sharedModule
 			},
 			/* Send temporary data for retrival */
 			set: function(data){
-				returdataHolder = data;
+				dataHolder = data;
 			},
 			/* Retrieves data */
 			get: function(){

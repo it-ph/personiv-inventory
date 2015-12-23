@@ -34,7 +34,7 @@
 				<!-- Property Code -->
 				<md-input-container flex>
 					<label>Property Code</label>
-					<input type="text" name="PropertyCode" ng-model="asset.property_code" required>
+					<input type="text" name="PropertyCode" ng-model="asset.property_code" ng-minlength="5" ng-maxlength="5" required>
 					<div ng-messages="editAssetForm.PropertyCode.$error" ng-if="editAssetForm.PropertyCode.$touched">
 						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 					</div>

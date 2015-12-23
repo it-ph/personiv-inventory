@@ -12,7 +12,7 @@
 						<h4>Property: {{ hardDisk.property_code }}</h4>
 						<p>Work Station: {{ hardDisk.work_station_name }}</p>
 					</div>
-					<div layout="row" layout-align="end center">
+					<div layout="row" layout-align="end center" ng-if="hardDisk.status=='repair'">
 						<md-button class="md-icon-button" ng-click="repaired(hardDisk.asset_tag_id)">
 							<md-icon class="mdi mdi-check grey"></md-icon>
 							<md-tooltip>Repaired</md-tooltip>

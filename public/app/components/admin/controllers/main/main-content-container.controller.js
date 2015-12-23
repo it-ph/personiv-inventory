@@ -94,16 +94,16 @@ adminModule
 		
 		
 		$scope.searchUserInput = function(){
-			$scope.log.paginated.show = false;
-			Preloader.preload()
-			Log.search($scope.log)
-				.success(function(data){
-					$scope.log.results = data;
-					Preloader.stop();
-				})
-				.error(function(data){
-					Preloader.error();
-				});
+			// $scope.log.paginated.show = false;
+			// Preloader.preload()
+			// Log.search($scope.log)
+			// 	.success(function(data){
+			// 		$scope.log.results = data;
+			// 		Preloader.stop();
+			// 	})
+			// 	.error(function(data){
+			// 		Preloader.error();
+			// 	});
 		};
 
 		$scope.show = function(id){

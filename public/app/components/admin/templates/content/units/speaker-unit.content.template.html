@@ -12,7 +12,7 @@
 						<h4>Property: {{ speaker.property_code }}</h4>
 						<p>Work Station: {{ speaker.work_station_name }}</p>
 					</div>
-					<div layout="row" layout-align="end center">
+					<div layout="row" layout-align="end center" ng-if="speaker.status=='repair'">
 						<md-button class="md-icon-button" ng-click="repaired(speaker.asset_tag_id)">
 							<md-icon class="mdi mdi-check grey"></md-icon>
 							<md-tooltip>Repaired</md-tooltip>

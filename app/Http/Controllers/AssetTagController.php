@@ -319,6 +319,7 @@ class AssetTagController extends Controller
             ->join($table_name, $table_name.'.id', '=', 'asset_tags.component_id')
             ->select(
                 '*',
+                DB::raw('SUBSTRING(property_code, 5,5) as property_code'),
                 DB::raw('LEFT('. $table_name . $first_letter .', 1) as first_letter'),
                 'asset_tags.id as asset_tags_id'
                 )
@@ -525,10 +526,36 @@ class AssetTagController extends Controller
         $this->validate($request, [
             'date_purchase' => 'date',
             'supplier' => 'string',
+            'serial' => 'numeric',
+            'property_code' => 'required|numeric',
         ]);
+
+        if ($request->component_type == 'Desktop') { $property_code = 'PCPU'; }
+            else if ($request->component_type == 'Firewall') { $property_code = 'PFWL'; }
+            else if ($request->component_type == 'Hard Disk') { $property_code = 'PHDD'; }
+            else if ($request->component_type == 'Headset') { $property_code = 'PHDS'; }
+            else if ($request->component_type == 'Keyboard') { $property_code = 'PKBD'; }
+            else if ($request->component_type == 'Mac') { $property_code = 'PMAC'; }
+            else if ($request->component_type == 'Memory') { $property_code = 'PRAM'; }
+            else if ($request->component_type == 'Monitor') { $property_code = 'PMON'; }
+            else if ($request->component_type == 'Mouse') { $property_code = 'PMSE'; }
+            else if ($request->component_type == 'Network Switch') { $property_code = 'PNSW'; }
+            else if ($request->component_type == 'Portable Hard Disk') { $property_code = 'PPHD'; }
+            else if ($request->component_type == 'Printer') { $property_code = 'PPRT'; }
+            else if ($request->component_type == 'Projector') { $property_code = 'PPRJ'; }
+            else if ($request->component_type == 'Router') { $property_code = 'PRTR'; }
+            else if ($request->component_type == 'Scanner') { $property_code = 'PSCN'; }
+            else if ($request->component_type == 'Software') { $property_code = 'PSFW'; }
+            else if ($request->component_type == 'Speaker') { $property_code = 'PSPK'; }
+            else if ($request->component_type == 'Telephone') { $property_code = 'PTEL'; }
+            else if ($request->component_type == 'Uninterruptible Power Supply') { $property_code = 'PUPS'; }
+            else if ($request->component_type == 'Video Card') { $property_code = 'PVDC'; }
+            else if ($request->component_type == 'Other Component') { $property_code = 'POTH'; }
 
         $asset_tag = AssetTag::where('id', $id)->first();
 
+        $asset_tag->serial = $request->serial ? $request->serial : null;
+        $asset_tag->property_code = $property_code . $request->property_code;
         $asset_tag->date_purchase = $request->date_purchase ? $request->date_purchase : null; 
         $asset_tag->supplier = $request->supplier ? $request->supplier : null;
 

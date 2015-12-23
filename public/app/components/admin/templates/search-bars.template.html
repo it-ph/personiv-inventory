@@ -1,5 +1,10 @@
 <div layout="row" flex>
 	<!-- Desktop -->
+	<md-input-container flex ng-if="log">
+		<label>Search</label>
+		<input type="text" ng-model="log.userInput">
+	</md-input-container>
+	<!-- Desktop -->
 	<md-input-container flex ng-if="desktop">
 		<label>Search</label>
 		<input type="text" ng-model="desktop.userInput">

@@ -19,8 +19,7 @@
 						<h3>{{ asset.brand }} {{ asset.maker }}</h3>
 						<h4>{{ asset.model }} <span ng-if="asset.processor">/</span> {{ asset.processor }} {{ asset.type }} <span ng-if="asset.size">/</span> {{ asset.size }} <span ng-if="asset.speed">/</span> {{ asset.speed }} {{ asset.name }} {{ asset.version }}</h4>
 						<p>
-							<span>Serial: {{ asset.serial }}</span> <br>
-							<span>Property Code: {{ asset.property_code }}</span>
+							<span>Serial: {{ asset.serial }}</span><span ng-if="!asset.serial">N/A</span><br>
 						</p>
 					</div>
 				</md-list-item>
