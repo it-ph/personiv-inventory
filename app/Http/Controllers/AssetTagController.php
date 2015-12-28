@@ -472,7 +472,7 @@ class AssetTagController extends Controller
             $asset_tag->component_id = $request->input($i.'.component_id');
             $asset_tag->component_type = $request->input($i.'.component_type');
             $asset_tag->work_station_id = $request->input($i.'.work_station_id');
-            $asset_tag->serial = $request->input($i.'.serial');
+            $asset_tag->serial = $request->input($i.'.serial') ? $request->input($i.'.serial') : null;
             $asset_tag->property_code =  $property_code . $request->input($i.'.property_code');
             $asset_tag->status = 'active';
             $asset_tag->date_purchase = $request->input($i.'.date_purchase') ? $request->input($i.'.date_purchase') : null;
