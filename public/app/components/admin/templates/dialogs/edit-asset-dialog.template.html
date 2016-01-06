@@ -34,9 +34,10 @@
 				<!-- Property Code -->
 				<md-input-container flex>
 					<label>Property Code</label>
-					<input type="text" name="PropertyCode" ng-model="asset.property_code" ng-minlength="5" ng-maxlength="5" required>
+					<input type="text" name="PropertyCode" ng-model="asset.property_code" ng-minlength="5" ng-maxlength="5" ng-pattern="/^[0-9]*$/" required>
 					<div ng-messages="editAssetForm.PropertyCode.$error" ng-if="editAssetForm.PropertyCode.$touched">
 						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						<span class="pattern" ng-show="editAssetForm.PropertyCode.$error.pattern">Numeric characters only.</span>
 					</div>
 				</md-input-container>
 			</div>

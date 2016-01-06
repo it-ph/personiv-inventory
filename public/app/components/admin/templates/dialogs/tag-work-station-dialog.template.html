@@ -40,7 +40,7 @@
 			<md-input-container flex>
 				<label>Work Station</label>
 				<md-select name="WorkStation" ng-disabled="!workStationTag.division || !workStationTag.type" required ng-model="workStationTag.work_station_id">
-					<md-option ng-repeat="workStation in workStations" value="{{ workStation.id }}">
+					<md-option ng-repeat="workStation in workStations | orderBy:'name'" value="{{ workStation.id }}">
 						{{ workStation.name }}
 					</md-option>
 				</md-select>

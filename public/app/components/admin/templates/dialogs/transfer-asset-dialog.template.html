@@ -38,7 +38,7 @@
 				<md-input-container flex>
 					<label>Work Station</label>
 					<md-select name="WorkStation" required ng-model="asset.workStationID">
-						<md-option ng-repeat="workstation in workstations" value="{{ workstation.id }}">
+						<md-option ng-repeat="workstation in workstations | orderBy:'name'" value="{{ workstation.id }}">
 							{{ workstation.name }}
 						</md-option>
 					</md-select>

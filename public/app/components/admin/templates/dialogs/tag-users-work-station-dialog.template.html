@@ -13,7 +13,7 @@
 			<md-input-container flex>
 				<label>Employee</label>
 				<md-select required name="Employees" ng-model="employee_tag.employee_id">
-					<md-option ng-repeat="employee in employees" value="{{ employee.id }}">
+					<md-option ng-repeat="employee in employees | orderBy:'full_name'" value="{{ employee.id }}">
 						{{ employee.full_name }}
 					</md-option>
 				</md-select>

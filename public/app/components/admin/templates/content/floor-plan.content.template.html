@@ -28,7 +28,7 @@
 			<md-card >
 				<md-list>
 					<md-list-item class="md-2-line" ng-click="show(workStation.id)" layout="row" ng-repeat="workStation in workStation.paginated.data |  filter:workStation.userInput">
-						<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+						<h2 class="md-avatar md-headline" ng-class="{'red-bg':workStation.occupied, 'blue-bg':!workStation.occupied}" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ workStation.first_letter }}</span>
 						</h2>
 						<div class="md-list-item-text" layout="column" flex>

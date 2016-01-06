@@ -195,6 +195,9 @@ adminModule
 		      	AssetTag.delete(id)
 		      		.success(function(){
 		      			$scope.subheader.refresh();
+		      		})
+		      		.error(function(){
+		      			Preloader.error();
 		      		});
 		    }, function() {
 		      	return;

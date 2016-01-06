@@ -526,8 +526,8 @@ class AssetTagController extends Controller
         $this->validate($request, [
             'date_purchase' => 'date',
             'supplier' => 'string',
-            'serial' => 'numeric',
-            'property_code' => 'required|numeric',
+            'serial' => 'string',
+            'property_code' => 'required|string',
         ]);
 
         if ($request->component_type == 'Desktop') { $property_code = 'PCPU'; }
@@ -577,8 +577,17 @@ class AssetTagController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        $log = new Log;
+
+        $log->user_id = $request->user()->id;
+        $log->activity_id = $id;
+        $log->activity = 'deleted an asset tag.';
+        $log->state = 'main.work-station';
+
+        $log->save();
+
         return AssetTag::where('id', $id)->delete();
     }
 }

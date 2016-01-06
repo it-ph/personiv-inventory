@@ -50,7 +50,6 @@ class FirewallController extends Controller
             ->orWhere('model', 'like', '%'. $request->userInput .'%')
             ->whereNull('deleted_at')
             ->groupBy('id')
-            ->orderBy('updated_at', 'desc')
             ->whereNull('deleted_at')
             ->get();
     }
@@ -62,7 +61,7 @@ class FirewallController extends Controller
     */
     public function paginate()
     {
-        return DB::table('firewalls')->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->orderBy('updated_at', 'desc')->paginate(25);
+        return DB::table('firewalls')->select('*', DB::raw('LEFT(model, 1) as first_letter'), DB::raw('DATE_FORMAT(created_at, "%h:%i %p, %b. %d, %Y") as created_at'))->whereNull('deleted_at')->paginate(25);
     }
     /**
      * Display a listing of the resource.

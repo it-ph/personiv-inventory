@@ -22,7 +22,7 @@
 					<md-input-container flex ng-if="asset.component_type!='Mac'">
 						<label>Brand</label>
 						<md-select name="Brand{{$index}}" ng-change="brandChange($index)" required ng-model="asset.brand">
-							<md-option ng-repeat="asset in asset.brands" value="{{ asset.brand }}">
+							<md-option ng-repeat="asset in asset.brands | orderBy:'brand'" value="{{ asset.brand }}">
 								<span>{{ asset.brand }}</span>
 							</md-option>
 						</md-select>
@@ -35,7 +35,7 @@
 					<md-input-container flex ng-if="asset.component_type=='Hard Disk' || asset.component_type=='Portable Hard Disk'">
 						<label>Capacity</label>
 						<md-select name="Capacity{{$index}}" ng-change="capacityChange($index, asset.component_type)" required ng-model="asset.capacity">
-							<md-option ng-repeat="asset in asset.capacities" value="{{ asset.capacity }}">
+							<md-option ng-repeat="asset in asset.capacities | orderBy:'capacity'" value="{{ asset.capacity }}">
 								<span>{{ asset.capacity }}</span>
 							</md-option>
 						</md-select>
@@ -48,7 +48,7 @@
 					<md-input-container flex ng-if="asset.component_type=='Memory'">
 						<label>Type</label>
 						<md-select name="Type{{$index}}" ng-change="typeChange($index)" required ng-model="asset.memory_type">
-							<md-option ng-repeat="asset in asset.types" value="{{ asset.type }}">
+							<md-option ng-repeat="asset in asset.types | orderBy:'type'" value="{{ asset.type }}">
 								<span>{{ asset.type }}</span>
 							</md-option>
 						</md-select>
@@ -61,7 +61,7 @@
 					<md-input-container flex ng-if="asset.component_type=='Mac'">
 						<label>Type</label>
 						<md-select name="Type{{$index}}" ng-change="mactypeChange($index)" required ng-model="asset.type">
-							<md-option ng-repeat="asset in asset.types" value="{{ asset.type }}">
+							<md-option ng-repeat="asset in asset.types | orderBy:'type'" value="{{ asset.type }}">
 								<span>{{ asset.type }}</span>
 							</md-option>
 						</md-select>
@@ -74,7 +74,7 @@
 					<md-input-container flex ng-if="asset.component_type=='Memory'">
 						<label>Speed</label>
 						<md-select name="Speed{{$index}}" ng-change="speedChange($index)" required ng-model="asset.speed">
-							<md-option ng-repeat="asset in asset.speeds" value="{{ asset.speed }}">
+							<md-option ng-repeat="asset in asset.speeds | orderBy:'speed'" value="{{ asset.speed }}">
 								<span>{{ asset.speed }}</span>
 							</md-option>
 						</md-select>
@@ -87,7 +87,7 @@
 					<md-input-container flex ng-if="asset.component_type=='Memory'">
 						<label>Size</label>
 						<md-select name="Size{{$index}}" required ng-model="asset.component_id">
-							<md-option ng-repeat="asset in asset.sizes" value="{{ asset.id }}">
+							<md-option ng-repeat="asset in asset.sizes | orderBy:'size'" value="{{ asset.id }}">
 								<span>{{ asset.size }}</span>
 							</md-option>
 						</md-select>
@@ -100,7 +100,7 @@
 					<md-input-container flex ng-if="asset.component_type=='Video Card'">
 						<label>Size</label>
 						<md-select name="Size{{$index}}" ng-change="sizeChange($index)" required ng-model="asset.size">
-							<md-option ng-repeat="asset in asset.sizes" value="{{ asset.size }}">
+							<md-option ng-repeat="asset in asset.sizes | orderBy:'size'" value="{{ asset.size }}">
 								<span>{{ asset.size }}</span>
 							</md-option>
 						</md-select>
@@ -113,7 +113,7 @@
 					<md-input-container flex ng-if="asset.component_type!='Memory' && asset.component_type!='Mac'">
 						<label>Model</label>
 						<md-select name="Model{{$index}}" required ng-model="asset.component_id">
-							<md-option ng-repeat="asset in asset.models" value="{{ asset.id }}">
+							<md-option ng-repeat="asset in asset.models | orderBy:'model'" value="{{ asset.id }}">
 								<span>{{ asset.model }}</span>
 							</md-option>
 						</md-select>
@@ -126,7 +126,7 @@
 					<md-input-container flex ng-if="asset.component_type=='Mac'">
 						<label>Processor</label>
 						<md-select name="Processor{{$index}}" required ng-model="asset.component_id">
-							<md-option ng-repeat="asset in asset.processors" value="{{ asset.id }}">
+							<md-option ng-repeat="asset in asset.processors | orderBy:'processor'" value="{{ asset.id }}">
 								<span>{{ asset.processor }}</span>
 							</md-option>
 						</md-select>
@@ -142,7 +142,7 @@
 					<md-input-container flex>
 						<label>Maker</label>
 						<md-select name="Maker{{$index}}" ng-change="makerChange($index)" required ng-model="asset.maker">
-							<md-option ng-repeat="asset in asset.makers" value="{{ asset.maker }}">
+							<md-option ng-repeat="asset in asset.makers | orderBy:'maker'" value="{{ asset.maker }}">
 								<span>{{ asset.maker }}</span>
 							</md-option>
 						</md-select>
@@ -155,7 +155,7 @@
 					<md-input-container flex>
 						<label>Name</label>
 						<md-select name="Name{{$index}}" ng-change="nameChange($index)" required ng-model="asset.name">
-							<md-option ng-repeat="asset in asset.names" value="{{ asset.name }}">
+							<md-option ng-repeat="asset in asset.names | orderBy:'name'" value="{{ asset.name }}">
 								<span>{{ asset.name }}</span>
 							</md-option>
 						</md-select>
@@ -168,7 +168,7 @@
 					<md-input-container flex>
 						<label>Version</label>
 						<md-select name="Version{{$index}}" required ng-model="asset.component_id">
-							<md-option ng-repeat="asset in asset.versions" value="{{ asset.id }}">
+							<md-option ng-repeat="asset in asset.versions | orderBy:'version'" value="{{ asset.id }}">
 								<span>{{ asset.version }}</span>
 							</md-option>
 						</md-select>
