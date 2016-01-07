@@ -15,6 +15,7 @@ class CreateWorkStationsTable extends Migration
         Schema::create('work_stations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->unique();
+            $table->integer('floor');
             $table->string('type');
             $table->string('division');
             $table->boolean('occupied');

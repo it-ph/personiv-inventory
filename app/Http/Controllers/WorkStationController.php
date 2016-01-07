@@ -51,11 +51,10 @@ class WorkStationController extends Controller
     public function search(Request $request)
     {
         return DB::table('work_stations')
-            ->select('*', DB::raw('SUBSTRING(work_stations.name, 6, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->select('*', DB::raw('SUBSTRING(work_stations.name, 7, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
             ->where('work_stations.name', 'like', '%'. $request->userInput .'%')
             ->whereNull('work_stations.deleted_at')
             ->groupBy('work_stations.id')
-            ->orderBy('work_stations.name')
             ->get();
     }
 
@@ -69,12 +68,11 @@ class WorkStationController extends Controller
         return DB::table('work_stations')
             ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
             ->join('departments', 'departments.id', '=', 'work_station_tags.department_id')
-            ->select('work_stations.*', 'departments.id as department_id', DB::raw('SUBSTRING(work_stations.name, 6, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->select('work_stations.*', 'departments.id as department_id', DB::raw('SUBSTRING(work_stations.name, 7, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
             ->where('work_station_tags.department_id', $departmentID)
             ->where('work_stations.name', 'like', '%'. $request->userInput .'%')
             ->whereNull('work_stations.deleted_at')
             ->groupBy('work_stations.id')
-            ->orderBy('work_stations.name')
             ->get();
     }
     /**
@@ -85,10 +83,9 @@ class WorkStationController extends Controller
     public function paginate()
     {
         return DB::table('work_stations')
-            ->select('work_stations.*', DB::raw('SUBSTRING(work_stations.name, 6, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->select('work_stations.*', DB::raw('SUBSTRING(work_stations.name, 7, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
             ->whereNull('work_stations.deleted_at')
             // ->groupBy('work_stations.id')
-            ->orderBy('work_stations.name')
             ->paginate(25);
     }
 
@@ -102,11 +99,10 @@ class WorkStationController extends Controller
         return DB::table('work_stations')
             ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
             ->join('departments', 'departments.id', '=', 'work_station_tags.department_id')
-            ->select('work_stations.*', 'departments.id as department_id', DB::raw('SUBSTRING(work_stations.name, 6, 1) as first_letter'), DB::raw('DATE_FORMAT(work_station_tags.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
+            ->select('work_stations.*', 'departments.id as department_id', DB::raw('SUBSTRING(work_stations.name, 7, 1) as first_letter'), DB::raw('DATE_FORMAT(work_station_tags.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
             ->where('work_station_tags.department_id', $departmentID)
             ->whereNull('work_stations.deleted_at')
             ->groupBy('work_stations.id')
-            ->orderBy('work_stations.name')
             ->paginate(25);
     }
 
@@ -117,7 +113,13 @@ class WorkStationController extends Controller
      */
     public function index()
     {
-        //
+        $work_stations = Workstation::all();
+
+        foreach ($work_stations as $key => $value) {
+            $work_station_sbstr = substr($value->name, 1);
+            $value->name = 'A0' . $work_station_sbstr;
+            $value->save();
+        }
     }
 
     /**
@@ -139,17 +141,16 @@ class WorkStationController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|string',
+            'floor' => 'required|string',
+            'division' => 'required|string',
+            'type' => 'required|string',
             'quantity' =>'required|numeric',
         ]);
 
-        // determine the type of department if production or admin
-        $type = substr($request->name, 5, 1) == 'P' ? 'production' : 'admin';
-        // determine where in the building are they
-        $division = substr($request->name, 3, 1);
+        $type = $request->type == 'A' ? 'admin' : 'production';
 
         // gets the last station
-        $last_station =  Workstation::where('type', $type)->where('division', $division)->orderBy('id', 'desc')->first();
+        $last_station =  Workstation::where('floor', $request->floor)->where('type', $type)->where('division', $request->division)->orderBy('id', 'desc')->first();
 
         if($last_station){
             $last_station_name = $last_station->name;
@@ -183,9 +184,10 @@ class WorkStationController extends Controller
             // create a new instance of Workstation
             $work_station = new Workstation;
             // concat the station number
-            $work_station->name = $request->name . $concat_station_number;
-            $work_station->type = $type;
-            $work_station->division = $division;
+            $work_station->name = 'A' . $request->floor . '-' . $request->division . '-' . $request->type . $concat_station_number;
+            $work_station->floor = $request->floor;
+            $work_station->division = $request->division;
+            $work_station->type = $request->type;
             $work_station->occupied = false;
 
             $work_station->save();
@@ -196,7 +198,7 @@ class WorkStationController extends Controller
 
         $log->user_id = $request->user()->id;
         $log->activity_id = $work_station->id;
-        $log->activity = 'added '. $request->quantity . ' new work stations.';
+        $log->activity = 'added '. $request->quantity . ' new work station(s).';
         $log->state = 'main.floor-plan';
 
         $log->save();
