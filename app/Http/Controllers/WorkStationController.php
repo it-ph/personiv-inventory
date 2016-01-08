@@ -115,11 +115,11 @@ class WorkStationController extends Controller
     {
         $work_stations = Workstation::all();
 
-        foreach ($work_stations as $key => $value) {
-            $work_station_sbstr = substr($value->name, 1);
-            $value->name = 'A0' . $work_station_sbstr;
-            $value->save();
-        }
+        // foreach ($work_stations as $key => $value) {
+        //     $work_station_sbstr = substr($value->name, 1);
+        //     $value->name = 'A0' . $work_station_sbstr;
+        //     $value->save();
+        // }
     }
 
     /**
