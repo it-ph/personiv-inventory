@@ -187,7 +187,7 @@ class WorkStationController extends Controller
             $work_station->name = 'A' . $request->floor . '-' . $request->division . '-' . $request->type . $concat_station_number;
             $work_station->floor = $request->floor;
             $work_station->division = $request->division;
-            $work_station->type = $request->type;
+            $work_station->type = $type;
             $work_station->occupied = false;
 
             $work_station->save();
