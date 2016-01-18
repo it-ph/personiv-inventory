@@ -5,6 +5,12 @@
 		<md-tooltip>Refresh</md-tooltip>
 	</md-button>
 
+	<!-- Download Button -->
+	<md-button class="md-icon-button" ng-if="subheader.state == 'logs'" href="/email-report" target="_blank">
+		<md-icon class="mdi mdi-download grey" aria-label="download"></md-icon>
+		<md-tooltip>Download Reports</md-tooltip>
+	</md-button>
+
 	<md-button class="md-icon-button" ng-if="subheader.state == 'work-station'" ng-click="subheader.transfer()">
 		<md-icon class="mdi mdi-transfer grey" aria-label="Transfer"></md-icon>
 		<md-tooltip>Transfer</md-tooltip>

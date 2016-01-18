@@ -1,5 +1,5 @@
 adminModule
-	.controller('mainContentContainerController', ['$scope', '$state', 'Preloader', 'Log', function($scope, $state, Preloader, Log){
+	.controller('mainContentContainerController', ['$scope', '$state', 'Preloader', 'Log', 'EmailReport', function($scope, $state, Preloader, Log, EmailReport){
 		/**
 		 * Object for subheader
 		 *
@@ -24,6 +24,16 @@ adminModule
 					Preloader.error();
 				});
 		};
+
+		// $scope.subheader.download = function(){
+		// 	// start preloader
+		// 	Preloader.preload();
+
+		// 	EmailReport.index()
+		// 		.success(function(){
+		// 			Preloader.stop();
+		// 		});
+		// };
 		/**
 		 * Object for log
 		 *
