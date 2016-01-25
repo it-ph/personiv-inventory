@@ -114,13 +114,13 @@ class Kernel extends ConsoleKernel
                 $excel->sheet('Memory', function($sheet){
                     $data = DB::table('asset_tags')
                     ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
-                    ->join('macs', 'macs.id', '=', 'asset_tags.component_id')
+                    ->join('memories', 'memories.id', '=', 'asset_tags.component_id')
                     ->select('*')
                     ->where('asset_tags.component_type', 'Memory')
                     ->orderBy('work_stations.name')
                     ->get();
 
-                    $sheet->loadView('excel.assets')->with('data',$data);
+                    $sheet->loadView('excel.assets-memory')->with('data',$data);
                 });
 
                 // Monitor Sheet
@@ -289,7 +289,7 @@ class Kernel extends ConsoleKernel
                     ->orderBy('work_stations.name')
                     ->get();
 
-                    $sheet->loadView('excel.assets')->with('data',$data);
+                    $sheet->loadView('excel.assets-other')->with('data',$data);
                 });
 
             })->store('xlsx');

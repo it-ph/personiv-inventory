@@ -795,15 +795,15 @@ adminModule
 				});
 		};
 
-		// $scope.subheader.download = function(){
-		// 	// start preloader
-		// 	Preloader.preload();
+		$scope.subheader.download = function(){
+			// start preloader
+			Preloader.preload();
 
-		// 	EmailReport.index()
-		// 		.success(function(){
-		// 			Preloader.stop();
-		// 		});
-		// };
+			EmailReport.index()
+				.success(function(){
+					Preloader.stop();
+				});
+		};
 		/**
 		 * Object for log
 		 *
