@@ -23,12 +23,37 @@ adminModule
 				Preloader.error();
 			});
 
+
+		$scope.showFloors = function(){
+			$scope.workstations = [];
+			$scope.asset.work_station_id = null;
+			$scope.asset.floor = null;
+			$scope.asset.division = null;
+			WorkStation.floors($scope.asset.department)
+				.success(function(data){
+					$scope.floors = data;
+				})
+		}
+
+		$scope.showDivisions = function(){
+			$scope.asset.work_station_id = null;
+			$scope.asset.division = null;
+			$scope.workstations = [];
+			WorkStation.divisions($scope.asset.department, $scope.asset.floor)
+				.success(function(data){
+					$scope.divisions = data;
+				})
+		}
+
 		$scope.showWorkStations = function(){
-			WorkStation.department($scope.asset.department, $stateParams.workStationID)
+			$scope.asset.work_station_id = null;
+			$scope.workstations = [];
+			WorkStation.availableTransfer($scope.asset, $stateParams.workStationID)
 				.success(function(data){
 					$scope.workstations = data;
 				});
 		};
+
 
 		$scope.submit = function(){
 			// start preloader

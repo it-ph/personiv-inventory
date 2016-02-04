@@ -72,12 +72,13 @@ class AssetTagController extends Controller
         return DB::table('asset_tags')
             ->join($table_name, $table_name.'.id', '=', 'asset_tags.component_id')
             ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
+            ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
             ->select(
                 '*',
                 'asset_tags.id as asset_tag_id',
-                DB::raw('SUBSTRING(work_stations.name, 4, 1) as first_letter'),
+                DB::raw('SUBSTRING(work_stations.name, 5, 1) as first_letter'),
                 DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase'),
-                'asset_tags.id as asset_tags_id',
+                'work_stations.id as work_station_id',
                 'work_stations.name as work_station_name'
                 )
             ->where('asset_tags.component_id', $request->component_id)
@@ -122,10 +123,11 @@ class AssetTagController extends Controller
        return DB::table('asset_tags')
             ->join($table_name, $table_name.'.id', '=', 'asset_tags.component_id')
             ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
+            ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
             ->select(
                 '*',
                 'asset_tags.id as asset_tag_id',
-                DB::raw('SUBSTRING(work_stations.name, 4, 1) as first_letter'),
+                DB::raw('SUBSTRING(work_stations.name, 5, 1) as first_letter'),
                 DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase'),
                 'asset_tags.id as asset_tags_id',
                 'work_stations.name as work_station_name'
@@ -171,10 +173,11 @@ class AssetTagController extends Controller
         return DB::table('asset_tags')
             ->join($table_name, $table_name.'.id', '=', 'asset_tags.component_id')
             ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
+            ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
             ->select(
                 '*',
                 'asset_tags.id as asset_tag_id',
-                DB::raw('SUBSTRING(work_stations.name, 4, 1) as first_letter'),
+                DB::raw('SUBSTRING(work_stations.name, 5, 1) as first_letter'),
                 DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase'),
                 'asset_tags.id as asset_tags_id',
                 'work_stations.name as work_station_name'

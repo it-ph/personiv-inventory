@@ -10,6 +10,36 @@ use App\Http\Controllers\Controller;
 
 class WorkStationController extends Controller
 {
+    public function availableTransfer(Request $request, $workstationID)
+    {
+        return DB::table('work_stations')
+            ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
+            ->join('departments', 'departments.id', '=', 'work_station_tags.department_id')
+            ->select('work_stations.*')
+            ->where('work_station_tags.department_id', $request->department)
+            ->where('work_stations.floor', $request->floor)
+            ->where('work_stations.division', $request->division)
+            ->whereNotIn('work_stations.id', [$workstationID])
+            ->get();
+    }
+    public function floors($department_id)
+    {
+        return DB::table('work_stations')
+            ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
+            ->select(DB::raw("DISTINCT work_stations.floor"))
+            ->where('work_station_tags.department_id', $department_id)
+            ->get();
+    }
+
+    public function divisions($department_id, $floor)
+    {
+        return DB::table('work_stations')
+            ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
+            ->select(DB::raw("DISTINCT work_stations.division"))
+            ->where('work_station_tags.department_id', $department_id)
+            ->where('work_stations.floor', $floor)
+            ->get();
+    }
     /**
      * Search for vacant workstation
      *

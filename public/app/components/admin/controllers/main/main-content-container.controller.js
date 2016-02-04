@@ -1,5 +1,5 @@
 adminModule
-	.controller('mainContentContainerController', ['$scope', '$state', 'Preloader', 'Log', 'EmailReport', function($scope, $state, Preloader, Log, EmailReport){
+	.controller('mainContentContainerController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Log', 'EmailReport', function($scope, $state, $mdDialog, Preloader, Log, EmailReport){
 		/**
 		 * Object for subheader
 		 *
@@ -34,6 +34,14 @@ adminModule
 					Preloader.stop();
 				});
 		};
+
+		$scope.subheader.barcode = function(){
+			$mdDialog.show({
+		    	controller: 'barcodeDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/barcode-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    });
+		}
 		/**
 		 * Object for log
 		 *

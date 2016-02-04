@@ -3,7 +3,7 @@
 	<div layout-margin layout-padding>
 		<md-card>
 			<md-list layout-padding>
-				<md-list-item class="md-3-line" layout="row" ng-repeat="monitor in monitor.results | filter:monitor.userInput">
+				<md-list-item class="md-3-line" layout="row" ng-repeat="monitor in monitor.results | filter:monitor.userInput" ng-click="show(monitor.department_id, monitor.work_station_id)">
 					<h2 class="md-avatar md-headline" ng-class="monitor.status == 'active' ? 'blue-bg' : (monitor.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ monitor.first_letter }}</span>
 					</h2>
@@ -40,7 +40,7 @@
 			</md-subheader>
 			<md-card>
 				<md-list layout-padding>
-					<md-list-item class="md-3-line" layout="row" ng-repeat="monitor in monitor.paginated.data | filter:monitor.userInput" flex>
+					<md-list-item class="md-3-line" layout="row" ng-repeat="monitor in monitor.paginated.data | filter:monitor.userInput" flex ng-click="show(monitor.department_id, monitor.work_station_id)">
 						<h2 class="md-avatar md-headline" ng-class="monitor.status == 'active' ? 'blue-bg' : (monitor.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ monitor.first_letter }}</span>
 						</h2>

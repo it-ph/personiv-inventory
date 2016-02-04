@@ -25,7 +25,7 @@
 				<!-- Department -->
 				<md-input-container flex>
 					<label>Department</label>
-					<md-select name="Department" required ng-model="asset.department" ng-change="showWorkStations()">
+					<md-select name="Department" required ng-model="asset.department" ng-change="showFloors()">
 						<md-option ng-repeat="department in departments" value="{{ department.id }}">
 							{{ department.name }}
 						</md-option>
@@ -34,19 +34,43 @@
 						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 					</div>
 				</md-input-container>
-				<!-- Work Station -->
+				<!-- Floor -->
 				<md-input-container flex>
-					<label>Work Station</label>
-					<md-select name="WorkStation" required ng-model="asset.workStationID">
-						<md-option ng-repeat="workstation in workstations | orderBy:'name'" value="{{ workstation.id }}">
-							{{ workstation.name }}
+					<label>Floor</label>
+					<md-select name="Floor" required ng-model="asset.floor" ng-change="showDivisions()">
+						<md-option ng-repeat="floor in floors" value="{{ floor.floor }}">
+							{{ floor.floor }}
 						</md-option>
 					</md-select>
-					<div ng-messages="transferAssetForm.WorkStation.$error" ng-if="transferAssetForm.WorkStation.$touched">
+					<div ng-messages="transferAssetForm.Floor.$error" ng-if="transferAssetForm.Floor.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+				<!-- Division -->
+				<md-input-container flex>
+					<label>Division</label>
+					<md-select name="Division" required ng-model="asset.division" ng-change="showWorkStations()">
+						<md-option ng-repeat="division in divisions" value="{{ division.division }}">
+							{{ division.division }}
+						</md-option>
+					</md-select>
+					<div ng-messages="transferAssetForm.Division.$error" ng-if="transferAssetForm.Division.$touched">
 						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
 					</div>
 				</md-input-container>
 			</div>
+			<!-- Work Station -->
+			<md-input-container flex>
+				<label>Work Station</label>
+				<md-select name="WorkStation" required ng-model="asset.work_station_id">
+					<md-option ng-repeat="workstation in workstations | orderBy:'name'" value="{{ workstation.id }}">
+						{{ workstation.name }}
+					</md-option>
+				</md-select>
+				<div ng-messages="transferAssetForm.WorkStation.$error" ng-if="transferAssetForm.WorkStation.$touched">
+					<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+				</div>
+			</md-input-container>
 		</md-dialog-content>
 	</form>
 	<div layout="row" layout-align="end center">		

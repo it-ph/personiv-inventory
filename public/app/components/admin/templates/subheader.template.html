@@ -4,11 +4,20 @@
 		<md-icon class="mdi mdi-refresh grey" aria-label="refresh"></md-icon>
 		<md-tooltip>Refresh</md-tooltip>
 	</md-button>
-
+	<!-- Count -->
+	<div ng-if="subheader.state == 'floor-plan'">
+		<span class="main-text md-subhead">Total: <span class="primary-text">{{subheader.count}}</span></span>
+	</div>
 	<!-- Download Button -->
 	<md-button class="md-icon-button" ng-if="subheader.state == 'logs'" href="/email-report" target="_blank">
 		<md-icon class="mdi mdi-download grey" aria-label="download"></md-icon>
 		<md-tooltip>Download Reports</md-tooltip>
+	</md-button>
+
+	<!-- Barcode Button -->
+	<md-button class="md-icon-button" ng-if="subheader.state == 'logs'" ng-click="subheader.barcode()">
+		<md-icon class="mdi mdi-barcode grey" aria-label="barcode"></md-icon>
+		<md-tooltip>Generate Barcodes</md-tooltip>
 	</md-button>
 
 	<md-button class="md-icon-button" ng-if="subheader.state == 'work-station'" ng-click="subheader.transfer()">

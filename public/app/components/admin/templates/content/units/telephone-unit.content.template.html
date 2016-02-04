@@ -3,7 +3,7 @@
 	<div layout-margin layout-padding>
 		<md-card>
 			<md-list layout-padding>
-				<md-list-item class="md-3-line" layout="row" ng-repeat="telephone in telephone.results | filter:telephone.userInput">
+				<md-list-item class="md-3-line" layout="row" ng-repeat="telephone in telephone.results | filter:telephone.userInput" ng-click="show(telephone.department_id, telephone.work_station_id)">
 					<h2 class="md-avatar md-headline" ng-class="telephone.status == 'active' ? 'blue-bg' : (telephone.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ telephone.first_letter }}</span>
 					</h2>
@@ -40,7 +40,7 @@
 			</md-subheader>
 			<md-card>
 				<md-list layout-padding>
-					<md-list-item class="md-3-line" layout="row" ng-repeat="telephone in telephone.paginated.data | filter:telephone.userInput">
+					<md-list-item class="md-3-line" layout="row" ng-repeat="telephone in telephone.paginated.data | filter:telephone.userInput" ng-click="show(telephone.department_id, telephone.work_station_id)">
 						<h2 class="md-avatar md-headline" ng-class="telephone.status == 'active' ? 'blue-bg' : (telephone.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ telephone.first_letter }}</span>
 						</h2>

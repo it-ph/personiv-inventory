@@ -21,6 +21,7 @@ adminModule
 			if(departmentID){
 				WorkStation.paginateDepartment(departmentID)
 					.then(function(data){
+						$scope.subheader.count = data.total;
 						$scope.workStation.paginated = data.data;
 						$scope.workStation.paginated.show = true;
 						// stop preload
@@ -32,6 +33,7 @@ adminModule
 			else{
 				WorkStation.paginate()
 				.then(function(data){
+					$scope.subheader.count = data.total;
 					$scope.workStation.paginated = data.data;
 					$scope.workStation.paginated.show = true;
 					// stop preload
@@ -98,6 +100,7 @@ adminModule
 		if(departmentID){
 			WorkStation.paginateDepartment(departmentID)
 				.then(function(data){
+					$scope.subheader.count = data.data.total;
 					$scope.workStation.paginated = data.data;
 					$scope.workStation.paginated.show = true;
 
@@ -135,6 +138,7 @@ adminModule
 		else{
 			WorkStation.paginate()
 				.then(function(data){
+					$scope.subheader.count = data.data.total;
 					$scope.workStation.paginated = data.data;
 					$scope.workStation.paginated.show = true;
 

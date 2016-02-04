@@ -275,4 +275,7 @@ adminModule
 					Preloader.error();
 				});
 		}
+		$scope.show = function(departmentID, workStationID){
+			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID':workStationID})
+		}
 	}]);

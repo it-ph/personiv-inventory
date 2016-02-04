@@ -2044,6 +2044,18 @@ sharedModule
 			department: function(departmentID, workstationID){
 				return $http.get(urlBase + '-department/' + departmentID + '/station/' + workstationID);
 			},
+
+			floors: function(departmentID){
+				return $http.get(urlBase + '-floors/' + departmentID);
+			},
+
+			divisions: function(departmentID, floor){
+				return $http.get(urlBase + '-divisions/' + departmentID + '/floor/' + floor);
+			},
+
+			availableTransfer: function(data, id){
+				return $http.post(urlBase + '-available-transfer/' + id, data);
+			}
 		};
 	}])
 sharedModule
