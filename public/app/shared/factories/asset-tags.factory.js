@@ -139,6 +139,25 @@ sharedModule
 			*/
 			disposeUnit: function(page, data){
 				return $http.post(urlBase + '-dispose-unit?page=' + page, data);
-			},			
+			},
+
+			/**
+			 * Pull out the components when pc is pulled out.
+			 * 
+			*/
+			repairComponents: function(id){
+				return $http.put(urlBase + '-repair-components/' + id);
+			},
+
+			/**
+			 * Pull out the components when pc is pulled out.
+			 * 
+			*/
+			disposeComponents: function(id){
+				return $http.put(urlBase + '-dispose-components/' + id);
+			},
+			searchBarcode: function(data){
+				return $http.post(urlBase + '-search-barcode', data);
+			},		
 		};
 	}]);

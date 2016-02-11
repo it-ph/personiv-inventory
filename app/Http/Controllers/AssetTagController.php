@@ -10,6 +10,104 @@ use App\Http\Controllers\Controller;
 
 class AssetTagController extends Controller
 {
+    public function searchBarcode(Request $request)
+    {
+        if(substr($request->userInput, 1, 3) == 'CPU') { $table_name = 'desktops'; }
+        else if (substr($request->userInput, 1, 3) == 'FWL') { $table_name = 'firewalls'; }
+        else if (substr($request->userInput, 1, 3) == 'HDD') { $table_name = 'hard_disks'; }
+        else if (substr($request->userInput, 1, 3) == 'HDS') { $table_name = 'headsets'; }
+        else if (substr($request->userInput, 1, 3) == 'KBD') { $table_name = 'keyboards'; }
+        else if (substr($request->userInput, 1, 3) == 'MAC') { $table_name = 'macs'; }
+        else if (substr($request->userInput, 1, 3) == 'RAM') { $table_name = 'memories'; }
+        else if (substr($request->userInput, 1, 3) == 'MON') { $table_name = 'monitors'; }
+        else if (substr($request->userInput, 1, 3) == 'MSE') { $table_name = 'mice'; }
+        else if (substr($request->userInput, 1, 3) == 'NSW') { $table_name = 'network_switches'; }
+        else if (substr($request->userInput, 1, 3) == 'PHD') { $table_name = 'portable_hard_disks'; }
+        else if (substr($request->userInput, 1, 3) == 'PRT') { $table_name = 'printers'; }
+        else if (substr($request->userInput, 1, 3) == 'PRJ') { $table_name = 'projectors'; }
+        else if (substr($request->userInput, 1, 3) == 'RTR') { $table_name = 'routers'; }
+        else if (substr($request->userInput, 1, 3) == 'SCN') { $table_name = 'scanners'; }
+        else if (substr($request->userInput, 1, 3) == 'SFW') { $table_name = 'softwares'; }
+        else if (substr($request->userInput, 1, 3) == 'SPK') { $table_name = 'speakers'; }
+        else if (substr($request->userInput, 1, 3) == 'TEL') { $table_name = 'telephones'; }
+        else if (substr($request->userInput, 1, 3) == 'UPS') { $table_name = 'uninterruptible_power_supplies'; }
+        else if (substr($request->userInput, 1, 3) == 'VDC') { $table_name = 'video_cards'; }
+        else if (substr($request->userInput, 1, 3) == 'OTH') { $table_name = 'other_components'; } 
+
+        $query = DB::table('asset_tags')
+            ->join($table_name, $table_name . '.id', '=', 'asset_tags.component_id')
+            ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
+            ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
+            ->select(
+                'asset_tags.*',
+                $table_name. '.*',
+                DB::raw('SUBSTRING(work_stations.name, 5, 1) as first_letter'),
+                DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase'),
+                'asset_tags.id as asset_tags_id',
+                'work_stations.name as work_station_name',
+                'work_stations.type as work_station_type',
+                'work_station_tags.department_id'
+            )
+            ->where('asset_tags.property_code', $request->userInput)
+            // ->orWhere('asset_tags.serial', 'like', '%'. $request->userInput .'%')
+            // ->orWhere('asset_tags.property_code', 'like', $request->property_code. $request->userInput .'%')
+            // ->orWhere('asset_tags.date_purchase', 'like', '%'. $request->userInput .'%')
+            // ->orWhere('asset_tags.supplier', 'like', '%'. $request->userInput .'%')
+            // ->groupBy('asset_tags.id')
+            // ->orderBy('asset_tags.updated_at', 'desc')
+            ->first();
+
+        return response()->json($query);
+    }
+    public function repairComponents($workStationID)
+    {
+        $hard_disk = AssetTag::where('component_type', 'Hard Disk')->where('work_station_id', $workStationID)->get();
+        $memory = AssetTag::where('component_type', 'Memory')->where('work_station_id', $workStationID)->get();
+        $software = AssetTag::where('component_type', 'Software')->where('work_station_id', $workStationID)->get();
+        $video_card = AssetTag::where('component_type', 'Video Card')->where('work_station_id', $workStationID)->get();
+
+        foreach ($hard_disk as $key => $value) {
+            $value->status = 'repair';
+            $value->save();
+        }
+        foreach ($memory as $key => $value) {
+            $value->status = 'repair';
+            $value->save();
+        }
+        foreach ($software as $key => $value) {
+            $value->status = 'repair';
+            $value->save();
+        }
+        foreach ($video_card as $key => $value) {
+            $value->status = 'repair';
+            $value->save();
+        }
+    }
+
+    public function disposeComponents($workStationID)
+    {
+        $hard_disk = AssetTag::where('component_type', 'Hard Disk')->where('work_station_id', $workStationID)->get();
+        $memory = AssetTag::where('component_type', 'Memory')->where('work_station_id', $workStationID)->get();
+        $software = AssetTag::where('component_type', 'Software')->where('work_station_id', $workStationID)->get();
+        $video_card = AssetTag::where('component_type', 'Video Card')->where('work_station_id', $workStationID)->get();
+
+        foreach ($hard_disk as $key => $value) {
+            $value->status = 'dispose';
+            $value->save();
+        }
+        foreach ($memory as $key => $value) {
+            $value->status = 'dispose';
+            $value->save();
+        }
+        foreach ($software as $key => $value) {
+            $value->status = 'dispose';
+            $value->save();
+        }
+        foreach ($video_card as $key => $value) {
+            $value->status = 'dispose';
+            $value->save();
+        }
+    }
     /**
      * Search database for records
      *
@@ -22,7 +120,7 @@ class AssetTagController extends Controller
             ->join('work_stations', 'work_stations.id', '=', 'asset_tags.work_station_id')
             ->select(
                 '*',
-                DB::raw('SUBSTRING(work_stations.name, 4, 1) as first_letter'),
+                DB::raw('SUBSTRING(work_stations.name, 5, 1) as first_letter'),
                 DB::raw('DATE_FORMAT(asset_tags.date_purchase, "%b. %d, %Y") as date_purchase'),
                 'asset_tags.id as asset_tags_id',
                 'work_stations.name as work_station_name'

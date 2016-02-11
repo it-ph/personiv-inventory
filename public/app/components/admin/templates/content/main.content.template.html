@@ -1,20 +1,84 @@
+<div class="fade-transition" layout="column" layout-align="center center" flex layout-padding>
+	<div layout="row" flex layout-margin layout-padding>	
+		<div layout="column" layout-align="center center" flex>
+			<img src="/assets/img/magnifier13.png" alt="Search">
+			<md-content layout="column" layout-align="center center">
+				<h1 class="md-headline">Quick Search</h1>
+				<p>Quickly search assets, or work stations.</p>
+				<md-tooltip>Click the search icon at the upper right part of the screen.</md-tooltip>
+			</md-content>
+		</div>
+		<div layout="column" layout-align="center center" flex>
+			<img src="/assets/img/download164.png" alt="Search">
+			<md-content layout="column" layout-align="center center">
+				<h1 class="md-headline">Report</h1>
+				<p>Download summary report of current inventory.</p>
+				<md-tooltip>Click the download icon at the navigation bar.</md-tooltip>
+			</md-content>
+		</div>
+		<div layout="column" layout-align="center center" flex>
+			<img src="/assets/img/product3.png" alt="Search">
+			<md-content layout="column" layout-align="center center">
+				<h1 class="md-headline">Barcode</h1>
+				<p>Generate barcode of work stations and property codes.</p>
+				<md-tooltip>Click the barcode icon at the navigation bar.</md-tooltip>
+			</md-content>
+		</div>
+	</div>
+</div>
 <!-- Search Results -->
-<div class="fade-transition" layout="column" flex flex-gt-sm="70" ng-if="log.results && !log.paginated.show">
+<div class="fade-transition" layout="column" flex ng-if="search.showAsset">
 	<div layout-margin layout-padding>
+		<md-subheader>Search Results</md-subheader>	
+		<md-card>
+			<md-list ng-if="search.result">
+				<md-subheader class="md-no-sticky md-primary" flex>{{ search.result.component_type }}</md-subheader>
+				<md-list-item class="md-3-line" layout="row" ng-click="show(search.result.department_id, search.result.work_station_id)">
+					<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+						<span class="weight-200 white-text">{{ search.result.first_letter }}</span>
+					</h2>
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ search.result.brand }} {{ search.result.maker }}</h3>
+						<h4>{{ search.result.model }} <span ng-if="search.result.processor && search.result.component_type == 'Desktop'">/</span> {{ search.result.type }} {{ search.result.processor }} <span ng-if="search.result.size">/</span> {{ search.result.size }} <span ng-if="search.result.speed">/</span> {{ search.result.speed }} {{ search.result.name }} {{ search.result.version }}</h4>
+						<p>
+							<span>Serial: {{ search.result.serial }}</span><span ng-if="!search.result.serial">N/A</span> <br>
+							<span>Property Code: {{ search.result.property_code }}</span><br>
+							<span>Work Station: {{ search.result.work_station_name }}</span><br>
+						</p>
+					</div>
+					<p flex class="text-right secondary-text md-caption" layout="column">
+						<span>{{ search.result.date_purchase }}</span>
+						<span>{{ search.result.supplier }}</span>
+					</p>
+				</md-list-item>
+			</md-list>
+			<md-card-content ng-if="!search.result">
+				<p class="secondary-text">No results found.</p>
+			</md-card-content>
+		</md-card>
+	</div>
+</div>
+
+<!-- Search Work Station -->
+<div class="fade-transition" layout="column" flex ng-if="search.showWorkStation">
+	<div layout-margin layout-padding>
+		<md-subheader>Search Results</md-subheader>	
 		<md-card>
 			<md-list>
-				<md-list-item class="md-3-line" ng-click="show(log.id)" layout="row" ng-repeat="log in log.results | filter:log.userInput">
+				<md-subheader class="md-no-sticky md-primary" flex>{{ search.component_type }}</md-subheader>
+				<md-list-item class="md-2-line" layout="row" ng-click="show(search.result.department_id, search.result.work_station_id)">
 					<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
-						<span class="weight-200 white-text">{{ log.first_letter }}</span>
+						<span class="weight-200 white-text">{{ search.result.first_letter }}</span>
 					</h2>
-					<div class="md-list-item-text" layout="column" flex>
-						<h3>{{ log.first_name }} {{ log.last_name }}</h3>
-						<h4>{{ log.activity }}</h4>
-						<p>{{ log.created_at }}</p>
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ search.result.work_station_name }}</h3>
+						<h4>{{ search.result.department_name }}</h4>
 					</div>
 				</md-list-item>
 			</md-list>
-			<md-card-content ng-if="!log.results.length">
+		</md-card>
+		<md-card>
+			<md-card-content ng-if="!search.result">
 				<p class="secondary-text">No results found.</p>
 			</md-card-content>
 		</md-card>
@@ -22,7 +86,7 @@
 </div>
 
 <!-- Paginated Data -->
-<div class="fade-transition" ng-if="log.paginated.show" flex infinite-scroll='log.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="log.busy" infinite-scroll-parent>
+<!-- <div class="fade-transition" ng-if="log.paginated.show" flex infinite-scroll='log.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="log.busy" infinite-scroll-parent>
 	<div layout="column" flex flex-gt-sm="70">
 		<div layout-margin layout-padding>
 			<md-card >
@@ -44,4 +108,4 @@
 			</md-card>
 		</div>
 	</div>
-</div>
+</div> -->

@@ -44,5 +44,9 @@ sharedModule
 			update: function(id, data){
 				return $http.put(urlBase + '/' + id, data);
 			},
+
+			searchBarcode: function(data){
+				return $http.post(urlBase + '-search-barcode', data);
+			}
 		};
 	}])

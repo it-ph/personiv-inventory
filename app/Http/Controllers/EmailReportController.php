@@ -17,7 +17,6 @@ class EmailReportController extends Controller
      */
     public function index()
     {
-
         // create the excell file
             Excel::create('Inventory Report', function($excel){
                 // CPU Sheet

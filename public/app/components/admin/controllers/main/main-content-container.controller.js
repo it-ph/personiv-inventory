@@ -1,5 +1,5 @@
 adminModule
-	.controller('mainContentContainerController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Log', 'EmailReport', function($scope, $state, $mdDialog, Preloader, Log, EmailReport){
+	.controller('mainContentContainerController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Log', 'EmailReport', 'AssetTag', 'WorkStationTag', function($scope, $state, $mdDialog, Preloader, Log, EmailReport, AssetTag, WorkStationTag){
 		/**
 		 * Object for subheader
 		 *
@@ -11,6 +11,7 @@ adminModule
 		$scope.subheader.refresh = function(){
 			// start preloader
 			Preloader.preload();
+			$scope.search = {};
 			// clear log
 			$scope.log.paginated = {};
 			$scope.log.page = 2;
@@ -23,6 +24,8 @@ adminModule
 				}, function(){
 					Preloader.error();
 				});
+
+
 		};
 
 		$scope.subheader.download = function(){
@@ -106,26 +109,50 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.log.userInput = '';
+			$scope.search.userInput = '';
 			$scope.searchBar = false;
 		};
+
+		$scope.search = {};
 		
 		
 		$scope.searchUserInput = function(){
-			// $scope.log.paginated.show = false;
-			// Preloader.preload()
-			// Log.search($scope.log)
-			// 	.success(function(data){
-			// 		$scope.log.results = data;
-			// 		Preloader.stop();
-			// 	})
-			// 	.error(function(data){
-			// 		Preloader.error();
-			// 	});
+			if($scope.search.userInput){
+				$scope.search.showWorkStation = false;
+				var firstLetter = $scope.search.userInput.charAt(0);
+				if(firstLetter == 'p' || firstLetter == 'P'){
+					Preloader.preload();
+					AssetTag.searchBarcode($scope.search)
+						.success(function(data){
+							$scope.search.showAsset = true;
+							$scope.search.result = data;
+							Preloader.stop();
+						})
+						.error(function(){
+							Preloader.error();
+						});
+				}
+				else if(firstLetter == 'a' || firstLetter == 'A'){
+					$scope.search.showAsset = false;
+					Preloader.preload();
+					WorkStationTag.searchBarcode($scope.search)
+						.success(function(data){
+							$scope.search.showWorkStation = true;
+							$scope.search.result = data;
+							Preloader.stop();
+						})
+						.error(function(){
+							Preloader.error();
+						});
+				}
+				else{
+					$scope.search.show = true;
+				}
+			}
 		};
 
-		$scope.show = function(id){
-			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
+		$scope.show = function(departmentID, workStationID){
+			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID':workStationID});
 		};
 		/**
 		 * Object for content view
@@ -141,4 +168,7 @@ adminModule
 		// $scope.fab.action = function(){
 		// 	return;
 		// };
+
+		$scope.rightSidenav = {};
+		$scope.rightSidenav.show = true;
 	}]);

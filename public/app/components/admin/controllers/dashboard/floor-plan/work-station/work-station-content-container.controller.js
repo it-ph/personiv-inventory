@@ -178,9 +178,6 @@ adminModule
 			    templateUrl: '/app/components/admin/templates/dialogs/pull-out-asset-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
-		    .then(function(){
-		    	$scope.subheader.refresh();
-		    });
 		};
 
 		$scope.removeAsset = function(id){

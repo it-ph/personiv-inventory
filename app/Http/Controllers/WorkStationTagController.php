@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\WorkStationTag;
 use App\WorkStation;
+use App\AssetTag;
 use App\Log;
 use DB;
 use Illuminate\Http\Request;
@@ -11,6 +12,22 @@ use App\Http\Controllers\Controller;
 
 class WorkStationTagController extends Controller
 {
+    public function searchBarcode(Request $request)
+    {
+        $query = DB::table('work_stations')
+            ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
+            ->join('departments', 'departments.id', '=', 'work_station_tags.department_id')
+            ->select(
+                '*',
+                'work_stations.name as work_station_name',
+                'departments.name as department_name',
+                DB::raw('SUBSTRING(work_stations.name, 7, 1) as first_letter')
+            )
+            ->where('work_stations.name', $request->userInput)
+            ->first();
+
+        return response()->json($query);
+    }
     public function workstation($id)
     {
         return WorkStationTag::where('work_station_id', $id)->first();

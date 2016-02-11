@@ -239,9 +239,13 @@ Route::get('employee-department/{departmentID}', 'EmployeeController@department'
 // fetch employee details and work station 
 Route::get('employee-tag-employee/{employeeID}', 'EmployeeTagController@employee');
 
-Route::get('/barcode-assets/{format}/starting-point/{starting_point}/quantity/{quantity}', 'BarcodeController@assets');
-Route::get('/barcode-work-station/{floor}/division/{division}/type/{type}/starting-point/{starting_point}/quantity/{quantity}', 'BarcodeController@workStation');
+Route::get('barcode-assets/{format}/starting-point/{starting_point}/quantity/{quantity}', 'BarcodeController@assets');
+Route::get('barcode-work-station/{floor}/division/{division}/type/{type}/starting-point/{starting_point}/quantity/{quantity}', 'BarcodeController@workStation');
 
-Route::get('/work-station-floors/{departmentID}', 'WorkStationController@floors');
-Route::get('/work-station-divisions/{departmentID}/floor/{floor}', 'WorkStationController@divisions');
-Route::post('/work-station-available-transfer/{workStationID}', 'WorkStationController@availableTransfer');
+Route::get('work-station-floors/{departmentID}', 'WorkStationController@floors');
+Route::get('work-station-divisions/{departmentID}/floor/{floor}', 'WorkStationController@divisions');
+Route::post('work-station-available-transfer/{workStationID}', 'WorkStationController@availableTransfer');
+Route::put('asset-tag-repair-components/{workStationID}', 'AssetTagController@repairComponents');
+Route::put('asset-tag-dispose-components/{workStationID}', 'AssetTagController@disposeComponents');
+Route::post('asset-tag-search-barcode', 'AssetTagController@searchBarcode');
+Route::post('work-station-tag-search-barcode', 'WorkStationTagController@searchBarcode');

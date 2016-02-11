@@ -33,7 +33,7 @@ adminModule
 						// controller: 'mainContentController',	
 					},
 					'right-sidenav@main': {
-						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
+						templateUrl : '/app/components/admin/templates/sidenavs/logs-right.sidenav.html',
 						controller: 'mainRightSidenavController',
 					},
 				},
@@ -258,4 +258,25 @@ adminModule
 					$mdSidenav('left').toggle();
 				}],
 			})
+
+		/**
+		 * Quick Finder
+		 * 
+		*/
+		// .state('main.quick-finder', {
+		// 	url: 'quick-finder',
+		// 	views: {
+		// 		'content-container': {
+		// 			templateUrl: '/app/components/admin/views/content-container.view.html',
+		// 			controller: 'quickFinderContentContainerController',
+		// 		},
+		// 		'toolbar@main.department': {
+		// 			templateUrl: '/app/components/admin/templates/toolbar.template.html',
+		// 			controller: 'departmentToolbarController',
+		// 		},
+		// 		'content@main.department': {
+		// 			templateUrl: '/app/components/admin/templates/content/department.content.template.html',
+		// 		},
+		// 	}
+		// })
 	}]);

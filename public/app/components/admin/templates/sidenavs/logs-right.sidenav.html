@@ -1,0 +1,30 @@
+<div layout="column" flex>
+	<md-toolbar md-scroll-shrink>
+		<div class="md-toolbar-tools">
+	      	<h3>
+	        	<span>Logs</span>
+	      	</h3>
+	    </div>
+	</md-toolbar>
+	<md-content>
+		<div class="fade-transition" layout="row" ng-if="log.paginated.show" flex infinite-scroll='log.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="log.busy" infinite-scroll-parent>
+			<div layout="column" flex>
+				<div layout-margin layout-padding>
+					<md-list>
+						<md-list-item class="md-3-line" ng-click="show(log.id)" layout="row" ng-repeat="log in log.paginated.data">
+							<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+								<span class="weight-200 white-text">{{ log.first_letter }}</span>
+							</h2>
+							<div class="md-list-item-text" layout="column" flex>
+								<h3>{{ log.first_name }} {{ log.last_name }}</h3>
+								<h4>{{ log.activity }}</h4>
+								<p>{{ log.created_at }}</p>
+							</div>
+						</md-list-item>
+					</md-list>
+					<p class="secondary-text">No records yet.</p>
+				</div>
+			</div>
+		</div>
+	</md-content>
+</div>
