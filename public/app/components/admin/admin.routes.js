@@ -258,25 +258,4 @@ adminModule
 					$mdSidenav('left').toggle();
 				}],
 			})
-
-		/**
-		 * Quick Finder
-		 * 
-		*/
-		// .state('main.quick-finder', {
-		// 	url: 'quick-finder',
-		// 	views: {
-		// 		'content-container': {
-		// 			templateUrl: '/app/components/admin/views/content-container.view.html',
-		// 			controller: 'quickFinderContentContainerController',
-		// 		},
-		// 		'toolbar@main.department': {
-		// 			templateUrl: '/app/components/admin/templates/toolbar.template.html',
-		// 			controller: 'departmentToolbarController',
-		// 		},
-		// 		'content@main.department': {
-		// 			templateUrl: '/app/components/admin/templates/content/department.content.template.html',
-		// 		},
-		// 	}
-		// })
 	}]);

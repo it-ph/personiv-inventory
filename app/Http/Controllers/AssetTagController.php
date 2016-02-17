@@ -10,6 +10,41 @@ use App\Http\Controllers\Controller;
 
 class AssetTagController extends Controller
 {
+    public function swap(Request $request, $id)
+    {
+        $this->validate($request, [
+            'asset_tag_id' => 'required',
+        ]);
+
+        // for swap
+        $asset_tag = AssetTag::where('id', $id)->first();
+        // swap target
+        $asset_tag_swap = AssetTag::where('id', $request->asset_tag_id)->first();
+        // change the work station id of the for swap item
+        $asset_tag->work_station_id = $asset_tag_swap->work_station_id;
+        // for swap 2
+        $asset_tag_2 = AssetTag::where('id', $id)->first();
+        // change the work station id of the swap target
+        $asset_tag_swap->work_station_id = $asset_tag_2->work_station_id;
+
+        $asset_tag->save();
+        $asset_tag_swap->save();
+
+        return $asset_tag->work_station_id;
+
+    }
+    public function availableSwap(Request $request)
+    {
+        $this->validate($request, [
+            'work_station_id' => 'required'
+        ]);
+
+        return DB::table('asset_tags')
+            ->where('work_station_id', $request->work_station_id)
+            ->where('component_type', $request->component_type)
+            ->get();
+    }
+
     public function searchBarcode(Request $request)
     {
         if(substr($request->userInput, 1, 3) == 'CPU') { $table_name = 'desktops'; }
@@ -49,16 +84,83 @@ class AssetTagController extends Controller
                 'work_station_tags.department_id'
             )
             ->where('asset_tags.property_code', $request->userInput)
-            // ->orWhere('asset_tags.serial', 'like', '%'. $request->userInput .'%')
-            // ->orWhere('asset_tags.property_code', 'like', $request->property_code. $request->userInput .'%')
-            // ->orWhere('asset_tags.date_purchase', 'like', '%'. $request->userInput .'%')
-            // ->orWhere('asset_tags.supplier', 'like', '%'. $request->userInput .'%')
-            // ->groupBy('asset_tags.id')
-            // ->orderBy('asset_tags.updated_at', 'desc')
             ->first();
 
         return response()->json($query);
     }
+
+    public function swapComponents($workStationID, $swapWorkStationID)
+    {
+        $hard_disk = AssetTag::where('component_type', 'Hard Disk')->where('work_station_id', $workStationID)->get();
+        $memory = AssetTag::where('component_type', 'Memory')->where('work_station_id', $workStationID)->get();
+        $software = AssetTag::where('component_type', 'Software')->where('work_station_id', $workStationID)->get();
+        $video_card = AssetTag::where('component_type', 'Video Card')->where('work_station_id', $workStationID)->get();
+
+        $hard_disk_swap = AssetTag::where('component_type', 'Hard Disk')->where('work_station_id', $swapWorkStationID)->get();
+        $memory_swap = AssetTag::where('component_type', 'Memory')->where('work_station_id', $swapWorkStationID)->get();
+        $software_swap = AssetTag::where('component_type', 'Software')->where('work_station_id', $swapWorkStationID)->get();
+        $video_card_swap = AssetTag::where('component_type', 'Video Card')->where('work_station_id', $swapWorkStationID)->get();
+
+        foreach ($hard_disk as $key => $value) {
+            $value->work_station_id = $swapWorkStationID;
+            $value->save();
+        }
+        foreach ($memory as $key => $value) {
+            $value->work_station_id = $swapWorkStationID;
+            $value->save();
+        }
+        foreach ($software as $key => $value) {
+            $value->work_station_id = $swapWorkStationID;
+            $value->save();
+        }
+        foreach ($video_card as $key => $value) {
+            $value->work_station_id = $swapWorkStationID;
+            $value->save();
+        }
+
+        foreach ($hard_disk_swap as $key => $value) {
+            $value->work_station_id = $workStationID;
+            $value->save();
+        }
+        foreach ($memory_swap as $key => $value) {
+            $value->work_station_id = $workStationID;
+            $value->save();
+        }
+        foreach ($software_swap as $key => $value) {
+            $value->work_station_id = $workStationID;
+            $value->save();
+        }
+        foreach ($video_card_swap as $key => $value) {
+            $value->work_station_id = $workStationID;
+            $value->save();
+        }
+    }
+
+    public function transferComponents(Request $request, $workStationID)
+    {
+        $hard_disk = AssetTag::where('component_type', 'Hard Disk')->where('work_station_id', $workStationID)->get();
+        $memory = AssetTag::where('component_type', 'Memory')->where('work_station_id', $workStationID)->get();
+        $software = AssetTag::where('component_type', 'Software')->where('work_station_id', $workStationID)->get();
+        $video_card = AssetTag::where('component_type', 'Video Card')->where('work_station_id', $workStationID)->get();
+
+        foreach ($hard_disk as $key => $value) {
+            $value->work_station_id = $request->work_station_id;
+            $value->save();
+        }
+        foreach ($memory as $key => $value) {
+            $value->work_station_id = $request->work_station_id;
+            $value->save();
+        }
+        foreach ($software as $key => $value) {
+            $value->work_station_id = $request->work_station_id;
+            $value->save();
+        }
+        foreach ($video_card as $key => $value) {
+            $value->work_station_id = $request->work_station_id;
+            $value->save();
+        }
+    }
+
     public function repairComponents($workStationID)
     {
         $hard_disk = AssetTag::where('component_type', 'Hard Disk')->where('work_station_id', $workStationID)->get();
@@ -361,12 +463,12 @@ class AssetTagController extends Controller
     public function transfer(Request $request, $id)
     {
         $this->validate($request, [
-            'work_station_id' => 'required|numeric',
+            'work_station_id' => 'required',
         ]);
 
         $asset_tag = AssetTag::where('id', $id)->first();
 
-        $asset_tag->work_station_id = $request->workStationID;
+        $asset_tag->work_station_id = $request->work_station_id;
 
         $asset_tag->save();
 

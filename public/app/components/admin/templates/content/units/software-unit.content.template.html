@@ -3,13 +3,13 @@
 	<div layout-margin layout-padding>
 		<md-card>
 			<md-list layout-padding>
-				<md-list-item class="md-3-line" layout="row" ng-repeat="software in software.results | filter:software.userInput" ng-click="show(software.department_id, software.work_station_id)">
+				<md-list-item class="md-3-line" layout="row" ng-repeat="software in software.results | filter:software.userInput | orderBy:'property_code'">
 					<h2 class="md-avatar md-headline" ng-class="software.status == 'active' ? 'blue-bg' : (software.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ software.first_letter }}</span>
 					</h2>
-					<div class="md-list-item-text" layout="column" flex>
-						<h3>Serial: {{ software.serial }}</h3>
-						<h4>Property: {{ software.property_code }}</h4>
+					<div class="md-list-item-text" layout="column" flex ng-click="show(software.department_id, software.work_station_id)">
+						<h3>Property: {{ software.property_code }}</h3>
+						<h4>Serial: {{ software.serial }} <span ng-if="!software.serial">N/A</span></h4>
 						<p>Work Station: {{ software.work_station_name }}</p>
 					</div>
 					<div layout="row" layout-align="end center" ng-if="software.status=='repair'">
@@ -40,13 +40,13 @@
 			</md-subheader>
 			<md-card>
 				<md-list layout-padding>
-					<md-list-item class="md-3-line" layout="row" ng-repeat="software in software.paginated.data | filter:software.userInput" ng-click="show(software.department_id, software.work_station_id)">
+					<md-list-item class="md-3-line" layout="row" ng-repeat="software in software.paginated.data | filter:software.userInput | orderBy:'property_code'">
 						<h2 class="md-avatar md-headline" ng-class="software.status == 'active' ? 'blue-bg' : (software.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ software.first_letter }}</span>
 						</h2>
-						<div class="md-list-item-text" layout="column" flex>
-							<h3>Serial: {{ software.serial }} <span ng-if="!software.serial">N/A</span></h3>
-							<h4>Property: {{ software.property_code }}</h4>
+						<div class="md-list-item-text" layout="column" flex ng-click="show(software.department_id, software.work_station_id)">
+							<h3>Property: {{ software.property_code }}</h3>
+							<h4>Serial: {{ software.serial }} <span ng-if="!software.serial">N/A</span></h4>
 							<p>Work Station: {{ software.work_station_name }}</p>
 						</div>
 						<div layout="row" layout-align="end center">

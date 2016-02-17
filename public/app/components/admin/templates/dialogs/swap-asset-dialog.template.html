@@ -1,0 +1,97 @@
+<md-dialog layout="column" flex="50"  aria-label="Swap {{ workStation.name }} Asset" ng-cloak>
+	<form name="swapAssetForm" novalidate>
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>Swap {{ workStation }}'s Asset</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content layout="column" flex layout-padding>
+			<md-list>
+				<md-list-item class="md-3-line" layout="row">
+					<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+						<span class="weight-200 white-text">{{ assetTag.first_letter }}</span>
+					</h2>
+					<div class="md-list-item-text" layout="column">
+						<h3>{{ assetTag.brand }} {{ assetTag.maker }}</h3>
+						<h4>{{ assetTag.model }} <span ng-if="assetTag.processor">/</span> {{ assetTag.processor }} {{ assetTag.type }} <span ng-if="assetTag.size">/</span> {{ assetTag.size }} <span ng-if="assetTag.speed">/</span> {{ assetTag.speed }} {{ assetTag.name }} {{ assetTag.version }}</h4>
+						<p>{{ assetTag.component_type }} - {{ assetTag.property_code }}</p>
+					</div>
+				</md-list-item>
+			</md-list>
+			<p></p>
+			<div layout="row" flex>
+				<!-- Department -->
+				<md-input-container flex>
+					<label>Department</label>
+					<md-select name="Department" required ng-model="assetTag.department" ng-change="showFloors()">
+						<md-option ng-repeat="department in departments" value="{{ department.id }}">
+							{{ department.name }}
+						</md-option>
+					</md-select>
+					<div ng-messages="swapAssetForm.Department.$error" ng-if="swapAssetForm.Department.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+				<!-- Floor -->
+				<md-input-container flex>
+					<label>Floor</label>
+					<md-select name="Floor" required ng-model="assetTag.floor" ng-change="showDivisions()">
+						<md-option ng-repeat="floor in floors" value="{{ floor.floor }}">
+							{{ floor.floor }}
+						</md-option>
+					</md-select>
+					<div ng-messages="swapAssetForm.Floor.$error" ng-if="swapAssetForm.Floor.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+				<!-- Division -->
+				<md-input-container flex>
+					<label>Division</label>
+					<md-select name="Division" required ng-model="assetTag.division" ng-change="showWorkStations()">
+						<md-option ng-repeat="division in divisions" value="{{ division.division }}">
+							{{ division.division }}
+						</md-option>
+					</md-select>
+					<div ng-messages="swapAssetForm.Division.$error" ng-if="swapAssetForm.Division.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+			</div>
+			<div layout="row">
+				<!-- Work Station -->
+				<md-input-container flex>
+					<label>Work Station</label>
+					<md-select name="WorkStation" required ng-model="assetTag.work_station_id" ng-change="showAssets()">
+						<md-option ng-repeat="workstation in workstations | orderBy:'name'" value="{{ workstation.id }}">
+							{{ workstation.name }}
+						</md-option>
+					</md-select>
+					<div ng-messages="swapAssetForm.WorkStation.$error" ng-if="swapAssetForm.WorkStation.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+				<!-- Property Code -->
+				<md-input-container flex>
+					<label>Property Code</label>
+					<md-select name="PropertyCode" required ng-model="asset.asset_tag_id">
+						<md-option ng-repeat="asset_tag in asset_tags | orderBy:'property_code'" value="{{ asset_tag.id }}">
+							{{ asset_tag.property_code }}
+						</md-option>
+					</md-select>
+					<div ng-messages="swapAssetForm.PropertyCode.$error" ng-if="swapAssetForm.PropertyCode.$touched">
+						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+					</div>
+				</md-input-container>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-fab md-primary" ng-disabled="swapAssetForm.$invalid" aria-label="Submit" ng-click="submit()">
+			<md-icon class="mdi mdi-check"></md-icon>
+		</md-button>
+	</div>
+</md-dialog>

@@ -3,13 +3,13 @@
 	<div layout-margin layout-padding>
 		<md-card>
 			<md-list layout-padding>
-				<md-list-item class="md-3-line" layout="row" ng-repeat="keyboard in keyboard.results | filter:keyboard.userInput" ng-click="show(keyboard.department_id, keyboard.work_station_id)">
+				<md-list-item class="md-3-line" layout="row" ng-repeat="keyboard in keyboard.results | filter:keyboard.userInput | orderBy:'property_code'">
 					<h2 class="md-avatar md-headline" ng-class="keyboard.status == 'active' ? 'blue-bg' : (keyboard.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ keyboard.first_letter }}</span>
 					</h2>
-					<div class="md-list-item-text" layout="column" flex>
-						<h3>Serial: {{ keyboard.serial }}</h3>
-						<h4>Property: {{ keyboard.property_code }}</h4>
+					<div class="md-list-item-text" layout="column" flex ng-click="show(keyboard.department_id, keyboard.work_station_id)">
+						<h3>Property: {{ keyboard.property_code }}</h3>
+						<h4>Serial: {{ keyboard.serial }} <span ng-if="!keyboard.serial">N/A</span></h4>
 						<p>Work Station: {{ keyboard.work_station_name }}</p>
 					</div>
 					<div layout="row" layout-align="end center" ng-if="keyboard.status=='repair'">
@@ -40,13 +40,13 @@
 			</md-subheader>
 			<md-card>
 				<md-list layout-padding>
-					<md-list-item class="md-3-line" layout="row" ng-repeat="keyboard in keyboard.paginated.data | filter:keyboard.userInput" ng-click="show(keyboard.department_id, keyboard.work_station_id)">
+					<md-list-item class="md-3-line" layout="row" ng-repeat="keyboard in keyboard.paginated.data | filter:keyboard.userInput | orderBy:'property_code'">
 						<h2 class="md-avatar md-headline" ng-class="keyboard.status == 'active' ? 'blue-bg' : (keyboard.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ keyboard.first_letter }}</span>
 						</h2>
-						<div class="md-list-item-text" layout="column" flex>
-							<h3>Serial: {{ keyboard.serial }} <span ng-if="!keyboard.serial">N/A</span></h3>
-							<h4>Property: {{ keyboard.property_code }}</h4>
+						<div class="md-list-item-text" layout="column" flex ng-click="show(keyboard.department_id, keyboard.work_station_id)">
+							<h3>Property: {{ keyboard.property_code }}</h3>
+							<h4>Serial: {{ keyboard.serial }} <span ng-if="!keyboard.serial">N/A</span></h4>
 							<p>Work Station: {{ keyboard.work_station_name }}</p>
 						</div>
 						<div layout="row" layout-align="end center" ng-if="listType=='Under Repair'">

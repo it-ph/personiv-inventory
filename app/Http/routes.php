@@ -249,3 +249,7 @@ Route::put('asset-tag-repair-components/{workStationID}', 'AssetTagController@re
 Route::put('asset-tag-dispose-components/{workStationID}', 'AssetTagController@disposeComponents');
 Route::post('asset-tag-search-barcode', 'AssetTagController@searchBarcode');
 Route::post('work-station-tag-search-barcode', 'WorkStationTagController@searchBarcode');
+Route::post('asset-tag-available-swap', 'AssetTagController@availableSwap');
+Route::put('asset-tag-swap/{assetTagID}', 'AssetTagController@swap');
+Route::put('asset-tag-transfer-components/{workStationID}', 'AssetTagController@transferComponents');
+Route::put('asset-tag-swap-components/{workStationID}/target/{swapWorkStationID}', 'AssetTagController@swapComponents');

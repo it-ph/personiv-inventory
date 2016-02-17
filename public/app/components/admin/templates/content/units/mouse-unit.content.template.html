@@ -3,13 +3,13 @@
 	<div layout-margin layout-padding>
 		<md-card>
 			<md-list layout-padding>
-				<md-list-item class="md-3-line" layout="row" ng-repeat="mouse in mouse.results | filter:mouse.userInput" ng-click="show(mouse.department_id, mouse.work_station_id)">
+				<md-list-item class="md-3-line" layout="row" ng-repeat="mouse in mouse.results | filter:mouse.userInput | orderBy:'property_code'">
 					<h2 class="md-avatar md-headline" ng-class="mouse.status == 'active' ? 'blue-bg' : (mouse.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ mouse.first_letter }}</span>
 					</h2>
-					<div class="md-list-item-text" layout="column" flex>
-						<h3>Serial: {{ mouse.serial }}</h3>
-						<h4>Property: {{ mouse.property_code }}</h4>
+					<div class="md-list-item-text" layout="column" flex ng-click="show(mouse.department_id, mouse.work_station_id)">
+						<h3>Property: {{ mouse.property_code }}</h3>
+						<h4>Serial: {{ mouse.serial }} <span ng-if="!mouse.serial">N/A</span></h4>
 						<p>Work Station: {{ mouse.work_station_name }}</p>
 					</div>
 					<div layout="row" layout-align="end center" ng-if="mouse.status=='repair'">
@@ -40,13 +40,13 @@
 			</md-subheader>
 			<md-card>
 				<md-list layout-padding>
-					<md-list-item class="md-3-line" layout="row" ng-repeat="mouse in mouse.paginated.data | filter:mouse.userInput" ng-click="show(mouse.department_id, mouse.work_station_id)">
+					<md-list-item class="md-3-line" layout="row" ng-repeat="mouse in mouse.paginated.data | filter:mouse.userInput | orderBy:'property_code'">
 						<h2 class="md-avatar md-headline" ng-class="mouse.status == 'active' ? 'blue-bg' : (mouse.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ mouse.first_letter }}</span>
 						</h2>
-						<div class="md-list-item-text" layout="column" flex>
-							<h3>Serial: {{ mouse.serial }} <span ng-if="!mouse.serial">N/A</span></h3>
-							<h4>Property: {{ mouse.property_code }}</h4>
+						<div class="md-list-item-text" layout="column" flex ng-click="show(mouse.department_id, mouse.work_station_id)">
+							<h3>Property: {{ mouse.property_code }}</h3>
+							<h4>Serial: {{ mouse.serial }} <span ng-if="!mouse.serial">N/A</span></h4>
 							<p>Work Station: {{ mouse.work_station_name }}</p>
 						</div>
 						<div layout="row" layout-align="end center" ng-if="listType=='Under Repair'">

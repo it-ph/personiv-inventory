@@ -13,11 +13,11 @@
 			<md-list>
 				<md-list-item class="md-2-line" layout="row">
 					<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
-						<span class="weight-200 white-text">{{ asset.first_letter }}</span>
+						<span class="weight-200 white-text">{{ assetTag.first_letter }}</span>
 					</h2>
 					<div class="md-list-item-text" layout="column">
-						<h3>{{ asset.brand }} {{ asset.maker }}</h3>
-						<h4>{{ asset.model }} <span ng-if="asset.processor">/</span> {{ asset.processor }} {{ asset.type }} <span ng-if="asset.size">/</span> {{ asset.size }} <span ng-if="asset.speed">/</span> {{ asset.speed }} {{ asset.name }} {{ asset.version }}</h4>
+						<h3>{{ assetTag.brand }} {{ assetTag.maker }}</h3>
+						<h4>{{ assetTag.model }} <span ng-if="assetTag.processor">/</span> {{ assetTag.processor }} {{ assetTag.type }} <span ng-if="assetTag.size">/</span> {{ assetTag.size }} <span ng-if="assetTag.speed">/</span> {{ assetTag.speed }} {{ assetTag.name }} {{ assetTag.version }}</h4>
 					</div>
 				</md-list-item>
 			</md-list>

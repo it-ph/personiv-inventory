@@ -158,6 +158,18 @@ sharedModule
 			},
 			searchBarcode: function(data){
 				return $http.post(urlBase + '-search-barcode', data);
-			},		
+			},
+			availableSwap: function(data){
+				return $http.post(urlBase + '-available-swap', data);
+			},	
+			swap: function(id, data){
+				return $http.put(urlBase + '-swap/' + id , data);
+			},
+			transferComponents: function(id, data){
+				return $http.put(urlBase + '-transfer-components/' + id, data);
+			},
+			swapComponents: function(id, swapID){
+				return $http.put(urlBase + '-swap-components/' + id + '/target/' + swapID);
+			},
 		};
 	}]);

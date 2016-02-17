@@ -3,13 +3,13 @@
 	<div layout-margin layout-padding>
 		<md-card>
 			<md-list layout-padding>
-				<md-list-item class="md-3-line" layout="row" ng-repeat="videoCard in videoCard.results | filter:videoCard.userInput" ng-click="show(videoCard.department_id, videoCard.work_station_id)">
+				<md-list-item class="md-3-line" layout="row" ng-repeat="videoCard in videoCard.results | filter:videoCard.userInput | orderBy:'property_code'">
 					<h2 class="md-avatar md-headline" ng-class="videoCard.status == 'active' ? 'blue-bg' : (videoCard.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ videoCard.first_letter }}</span>
 					</h2>
-					<div class="md-list-item-text" layout="column" flex>
-						<h3>Serial: {{ videoCard.serial }}</h3>
-						<h4>Property: {{ videoCard.property_code }}</h4>
+					<div class="md-list-item-text" layout="column" flex ng-click="show(videoCard.department_id, videoCard.work_station_id)">
+						<h3>Property: {{ videoCard.property_code }}</h3>
+						<h4>Serial: {{ videoCard.serial }} <span ng-if="!videoCard.serial">N/A</span></h4>
 						<p>Work Station: {{ videoCard.work_station_name }}</p>
 					</div>
 					<div layout="row" layout-align="end center" ng-if="videoCard.status=='repair'">
@@ -40,13 +40,13 @@
 			</md-subheader>
 			<md-card>
 				<md-list layout-padding>
-					<md-list-item class="md-3-line" layout="row" ng-repeat="videoCard in videoCard.paginated.data | filter:videoCard.userInput" ng-click="show(videoCard.department_id, videoCard.work_station_id)">
+					<md-list-item class="md-3-line" layout="row" ng-repeat="videoCard in videoCard.paginated.data | filter:videoCard.userInput | orderBy:'property_code'">
 						<h2 class="md-avatar md-headline" ng-class="videoCard.status == 'active' ? 'blue-bg' : (videoCard.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ videoCard.first_letter }}</span>
 						</h2>
-						<div class="md-list-item-text" layout="column" flex>
-							<h3>Serial: {{ videoCard.serial }} <span ng-if="!videoCard.serial">N/A</span></h3>
-							<h4>Property: {{ videoCard.property_code }}</h4>
+						<div class="md-list-item-text" layout="column" flex ng-click="show(videoCard.department_id, videoCard.work_station_id)">
+							<h3>Property: {{ videoCard.property_code }}</h3>
+							<h4>Serial: {{ videoCard.serial }} <span ng-if="!videoCard.serial">N/A</span></h4>
 							<p>Work Station: {{ videoCard.work_station_name }}</p>
 						</div>
 						<div layout="row" layout-align="end center">

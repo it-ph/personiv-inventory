@@ -3,13 +3,13 @@
 	<div layout-margin layout-padding>
 		<md-card>
 			<md-list layout-padding>
-				<md-list-item class="md-3-line" layout="row" ng-repeat="headset in headset.results | filter:headset.userInput" ng-click="show(headset.department_id, headset.work_station_id)">
+				<md-list-item class="md-3-line" layout="row" ng-repeat="headset in headset.results | filter:headset.userInput | orderBy:'property_code'">
 					<h2 class="md-avatar md-headline" ng-class="headset.status == 'active' ? 'blue-bg' : (headset.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ headset.first_letter }}</span>
 					</h2>
-					<div class="md-list-item-text" layout="column" flex>
-						<h3>Serial: {{ headset.serial }}</h3>
-						<h4>Property: {{ headset.property_code }}</h4>
+					<div class="md-list-item-text" ng-click="show(headset.department_id, headset.work_station_id)" layout="column" flex>
+						<h3>Property: {{ headset.property_code }}</h3>
+						<h4>Serial: {{ headset.serial }} <span ng-if="!headset.serial">N/A</span></h4>
 						<p>Work Station: {{ headset.work_station_name }}</p>
 					</div>
 					<div layout="row" layout-align="end center" ng-if="headset.status=='repair'">
@@ -40,13 +40,13 @@
 			</md-subheader>
 			<md-card>
 				<md-list layout-padding>
-					<md-list-item class="md-3-line" layout="row" ng-repeat="headset in headset.paginated.data | filter:headset.userInput" ng-click="show(headset.department_id, headset.work_station_id)">
+					<md-list-item class="md-3-line" layout="row" ng-repeat="headset in headset.paginated.data | filter:headset.userInput | orderBy:'property_code'">
 						<h2 class="md-avatar md-headline" ng-class="headset.status == 'active' ? 'blue-bg' : (headset.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ headset.first_letter }}</span>
 						</h2>
-						<div class="md-list-item-text" layout="column" flex>
-							<h3>Serial: {{ headset.serial }} <span ng-if="!headset.serial">N/A</span></h3>
-							<h4>Property: {{ headset.property_code }}</h4>
+						<div class="md-list-item-text" layout="column" flex ng-click="show(headset.department_id, headset.work_station_id)">
+							<h3>Property: {{ headset.property_code }}</h3>
+							<h4>Serial: {{ headset.serial }} <span ng-if="!headset.serial">N/A</span></h4>
 							<p>Work Station: {{ headset.work_station_name }}</p>
 						</div>
 						<div layout="row" layout-align="end center" ng-if="listType=='Under Repair'">

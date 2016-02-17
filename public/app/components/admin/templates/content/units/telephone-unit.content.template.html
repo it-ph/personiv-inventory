@@ -3,13 +3,13 @@
 	<div layout-margin layout-padding>
 		<md-card>
 			<md-list layout-padding>
-				<md-list-item class="md-3-line" layout="row" ng-repeat="telephone in telephone.results | filter:telephone.userInput" ng-click="show(telephone.department_id, telephone.work_station_id)">
+				<md-list-item class="md-3-line" layout="row" ng-repeat="telephone in telephone.results | filter:telephone.userInput | orderBy:'property_code'">
 					<h2 class="md-avatar md-headline" ng-class="telephone.status == 'active' ? 'blue-bg' : (telephone.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ telephone.first_letter }}</span>
 					</h2>
-					<div class="md-list-item-text" layout="column" flex>
-						<h3>Serial: {{ telephone.serial }}</h3>
-						<h4>Property: {{ telephone.property_code }}</h4>
+					<div class="md-list-item-text" layout="column" flex ng-click="show(telephone.department_id, telephone.work_station_id)">
+						<h3>Property: {{ telephone.property_code }}</h3>
+						<h4>Serial: {{ telephone.serial }} <span ng-if="!telephone.serial">N/A</span></h4>
 						<p>Work Station: {{ telephone.work_station_name }}</p>
 					</div>
 					<div layout="row" layout-align="end center" ng-if="telephone.status=='repair'">
@@ -40,13 +40,13 @@
 			</md-subheader>
 			<md-card>
 				<md-list layout-padding>
-					<md-list-item class="md-3-line" layout="row" ng-repeat="telephone in telephone.paginated.data | filter:telephone.userInput" ng-click="show(telephone.department_id, telephone.work_station_id)">
+					<md-list-item class="md-3-line" layout="row" ng-repeat="telephone in telephone.paginated.data | filter:telephone.userInput | orderBy:'property_code'">
 						<h2 class="md-avatar md-headline" ng-class="telephone.status == 'active' ? 'blue-bg' : (telephone.status == 'repair' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
 							<span class="weight-200 white-text">{{ telephone.first_letter }}</span>
 						</h2>
-						<div class="md-list-item-text" layout="column" flex>
-							<h3>Serial: {{ telephone.serial }} <span ng-if="!telephone.serial">N/A</span></h3>
-							<h4>Property: {{ telephone.property_code }}</h4>
+						<div class="md-list-item-text" layout="column" flex ng-click="show(telephone.department_id, telephone.work_station_id)">
+							<h3>Property: {{ telephone.property_code }}</h3>
+							<h4>Serial: {{ telephone.serial }} <span ng-if="!telephone.serial">N/A</span></h4>
 							<p>Work Station: {{ telephone.work_station_name }}</p>
 						</div>
 						<div layout="row" layout-align="end center">

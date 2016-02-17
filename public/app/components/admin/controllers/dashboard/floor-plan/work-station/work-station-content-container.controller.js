@@ -166,9 +166,15 @@ adminModule
 			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
-		    .then(function(){
-		    	$scope.subheader.refresh();
-		    });
+		};
+
+		$scope.swapAsset = function(id){
+			AssetTagService.setID(id);
+			$mdDialog.show({
+		      	controller: 'swapAssetDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/swap-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
 		};
 
 		$scope.pullOutAsset = function(id){
