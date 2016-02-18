@@ -30,49 +30,6 @@ sharedModule
 			})
 	}]);
 sharedModule
-	.controller('homePageController', ['$scope', function($scope){
-		$scope.show = function(){
-			angular.element(document.querySelector('.main-view')).removeClass('hidden-custom');
-		};
-	}]);
-sharedModule
-	.service('Preloader', ['$mdDialog', function($mdDialog){
-		var dataHolder = null;
-		return {
-			/* Starts the preloader */
-			preload: function(){
-				return $mdDialog.show({
-					templateUrl: '/app/shared/templates/preloader.html',
-				    parent: angular.element(document.body),
-				});
-			},
-			/* Stops the preloader */
-			stop: function(data){
-				$mdDialog.hide(data);
-			},
-			/* Shows error message if AJAX failed */
-			error: function(){
-				return $mdDialog.show(
-			    	$mdDialog.alert()
-				        .parent(angular.element($('body')))
-				        .clickOutsideToClose(true)
-				        .title('Oops! Something went wrong!')
-				        .content('An error occured. Please contact administrator for assistance.')
-				        .ariaLabel('Error Message')
-				        .ok('Got it!')
-				);
-			},
-			/* Send temporary data for retrival */
-			set: function(data){
-				dataHolder = data;
-			},
-			/* Retrieves data */
-			get: function(){
-				return dataHolder;
-			}
-		};
-	}]);
-sharedModule
 	.factory('AssetTag', ['$http', function($http){
 		var urlBase = '/asset-tag';
 
@@ -229,6 +186,9 @@ sharedModule
 			*/
 			disposeComponents: function(id){
 				return $http.put(urlBase + '-dispose-components/' + id);
+			},
+			activeComponents: function(id){
+				return $http.put(urlBase + '-active-components/' + id);
 			},
 			searchBarcode: function(data){
 				return $http.post(urlBase + '-search-barcode', data);
@@ -2117,6 +2077,9 @@ sharedModule
 				return $http.get(urlBase + '-department/' + departmentID + '/station/' + workstationID);
 			},
 
+			departmentPaginate: function(departmentID, workstationID, page){
+				return $http.get(urlBase + '-department/' + departmentID + '/station/' + workstationID + '/paginate' + '?page=' + page);
+			},
 			floors: function(departmentID){
 				return $http.get(urlBase + '-floors/' + departmentID);
 			},
@@ -2130,4 +2093,47 @@ sharedModule
 			}
 		};
 	}])
+sharedModule
+	.controller('homePageController', ['$scope', function($scope){
+		$scope.show = function(){
+			angular.element(document.querySelector('.main-view')).removeClass('hidden-custom');
+		};
+	}]);
+sharedModule
+	.service('Preloader', ['$mdDialog', function($mdDialog){
+		var dataHolder = null;
+		return {
+			/* Starts the preloader */
+			preload: function(){
+				return $mdDialog.show({
+					templateUrl: '/app/shared/templates/preloader.html',
+				    parent: angular.element(document.body),
+				});
+			},
+			/* Stops the preloader */
+			stop: function(data){
+				$mdDialog.hide(data);
+			},
+			/* Shows error message if AJAX failed */
+			error: function(){
+				return $mdDialog.show(
+			    	$mdDialog.alert()
+				        .parent(angular.element($('body')))
+				        .clickOutsideToClose(true)
+				        .title('Oops! Something went wrong!')
+				        .content('An error occured. Please contact administrator for assistance.')
+				        .ariaLabel('Error Message')
+				        .ok('Got it!')
+				);
+			},
+			/* Send temporary data for retrival */
+			set: function(data){
+				dataHolder = data;
+			},
+			/* Retrieves data */
+			get: function(){
+				return dataHolder;
+			}
+		};
+	}]);
 //# sourceMappingURL=shared.js.map

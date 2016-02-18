@@ -1501,13 +1501,37 @@ adminModule
 		};
 
 		$scope.repaired = function(id){
-			AssetTag.active(id)
-				.success(function(){
-					$scope.subheader.repairUnit();
-				})
-				.error(function(){
-					Preloader.error();
-				});
+			var confirm = $mdDialog.confirm()
+		        .title('Would you like to include components under this unit?')
+		        .content('Hard disk(s), RAM(s), video card, and softwares will be marked as repaired along with the unit.')
+		        .ok('Continue')
+		        .cancel('Keep it');
+		    $mdDialog.show(confirm)
+		    	.then(function() {
+			      	Preloader.preload();
+					AssetTag.active(id)
+						.success(function(data){
+							AssetTag.activeComponents(data.work_station_id)
+								.success(function(){
+									$scope.subheader.repairUnit();
+								})
+								.error(function(){
+									Preloader.error();
+								});
+						})
+						.error(function(){
+							Preloader.error();
+						});
+			    }, function() {
+			    	Preloader.preload();
+				    AssetTag.active(id)
+						.success(function(){
+							$scope.subheader.repairUnit();
+						})
+						.error(function(){
+							Preloader.error();
+						});
+			    });
 		}
 
 		$scope.dispose = function(id){
@@ -13541,11 +13565,49 @@ adminModule
 
 		var departmentID = $stateParams.departmentID;
 
-		WorkStation.department(departmentID, $stateParams.workStationID)
-			.success(function(data){
-				$scope.rightSidenav.workStations = data;
-			})
-			.error(function(){
+		$scope.rightSidenav.page = 2;
+
+		// WorkStation.departmentPaginate(departmentID, $stateParams.workStationID)
+		// 	.success(function(data){
+		// 		$scope.rightSidenav.workStations = data;
+		// 	})
+		// 	.error(function(){
+		// 		Preloader.error();
+		// 	});
+
+		WorkStation.departmentPaginate(departmentID, $stateParams.workStationID)
+			.then(function(data){
+				$scope.rightSidenav.paginated = data.data;
+				$scope.rightSidenav.paginated.show = true;
+
+				$scope.rightSidenav.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.rightSidenav.busy || ($scope.rightSidenav.page > $scope.rightSidenav.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.rightSidenav.busy = true;
+
+					// Calls the next page of pagination.
+					WorkStation.departmentPaginate(departmentID, $stateParams.workStationID, $scope.rightSidenav.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.rightSidenav.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.rightSidenav.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.rightSidenav.busy = false;
+						});
+				}
+			}, function(){
 				Preloader.error();
 			});
 

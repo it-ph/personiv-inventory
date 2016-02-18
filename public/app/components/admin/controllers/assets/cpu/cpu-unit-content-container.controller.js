@@ -257,13 +257,37 @@ adminModule
 		};
 
 		$scope.repaired = function(id){
-			AssetTag.active(id)
-				.success(function(){
-					$scope.subheader.repairUnit();
-				})
-				.error(function(){
-					Preloader.error();
-				});
+			var confirm = $mdDialog.confirm()
+		        .title('Would you like to include components under this unit?')
+		        .content('Hard disk(s), RAM(s), video card, and softwares will be marked as repaired along with the unit.')
+		        .ok('Continue')
+		        .cancel('Keep it');
+		    $mdDialog.show(confirm)
+		    	.then(function() {
+			      	Preloader.preload();
+					AssetTag.active(id)
+						.success(function(data){
+							AssetTag.activeComponents(data.work_station_id)
+								.success(function(){
+									$scope.subheader.repairUnit();
+								})
+								.error(function(){
+									Preloader.error();
+								});
+						})
+						.error(function(){
+							Preloader.error();
+						});
+			    }, function() {
+			    	Preloader.preload();
+				    AssetTag.active(id)
+						.success(function(){
+							$scope.subheader.repairUnit();
+						})
+						.error(function(){
+							Preloader.error();
+						});
+			    });
 		}
 
 		$scope.dispose = function(id){

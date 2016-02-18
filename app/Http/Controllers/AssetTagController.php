@@ -210,6 +210,31 @@ class AssetTagController extends Controller
             $value->save();
         }
     }
+
+    public function activeComponents($workStationID)
+    {
+        $hard_disk = AssetTag::where('component_type', 'Hard Disk')->where('work_station_id', $workStationID)->get();
+        $memory = AssetTag::where('component_type', 'Memory')->where('work_station_id', $workStationID)->get();
+        $software = AssetTag::where('component_type', 'Software')->where('work_station_id', $workStationID)->get();
+        $video_card = AssetTag::where('component_type', 'Video Card')->where('work_station_id', $workStationID)->get();
+
+        foreach ($hard_disk as $key => $value) {
+            $value->status = 'active';
+            $value->save();
+        }
+        foreach ($memory as $key => $value) {
+            $value->status = 'active';
+            $value->save();
+        }
+        foreach ($software as $key => $value) {
+            $value->status = 'active';
+            $value->save();
+        }
+        foreach ($video_card as $key => $value) {
+            $value->status = 'active';
+            $value->save();
+        }
+    }
     /**
      * Search database for records
      *
@@ -409,6 +434,8 @@ class AssetTagController extends Controller
         $log->state = 'main.units';
 
         $log->save();
+
+        return $asset_tag;
     }
 
     /**

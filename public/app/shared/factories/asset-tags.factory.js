@@ -156,6 +156,9 @@ sharedModule
 			disposeComponents: function(id){
 				return $http.put(urlBase + '-dispose-components/' + id);
 			},
+			activeComponents: function(id){
+				return $http.put(urlBase + '-active-components/' + id);
+			},
 			searchBarcode: function(data){
 				return $http.post(urlBase + '-search-barcode', data);
 			},

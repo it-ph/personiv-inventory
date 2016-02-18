@@ -54,6 +54,24 @@ class WorkStationController extends Controller
             ->whereNull('deleted_at')
             ->get();
     }
+    /**
+     * Search for workstation according to department id except the exisiting workstation
+     *
+     * @return \Illuminate\Http\Response
+    */
+
+    public function departmentPaginate($departmentID, $workstationID)
+    {
+        return DB::table('work_stations')
+            ->join('work_station_tags', 'work_station_tags.work_station_id', '=', 'work_stations.id')
+            ->join('departments', 'departments.id', '=', 'work_station_tags.department_id')
+            ->select('work_stations.*')
+            ->where('work_station_tags.department_id', $departmentID)
+            ->whereNotIn('work_stations.id', [$workstationID])
+            ->orderBy('work_stations.name')
+            ->paginate(25);
+        // return Workstation::where('department_id', $departmentID)->whereNotIn('id', [$workstationID])->get();
+    }
 
     /**
      * Search for workstation according to department id except the exisiting workstation

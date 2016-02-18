@@ -73,6 +73,9 @@ sharedModule
 				return $http.get(urlBase + '-department/' + departmentID + '/station/' + workstationID);
 			},
 
+			departmentPaginate: function(departmentID, workstationID, page){
+				return $http.get(urlBase + '-department/' + departmentID + '/station/' + workstationID + '/paginate' + '?page=' + page);
+			},
 			floors: function(departmentID){
 				return $http.get(urlBase + '-floors/' + departmentID);
 			},

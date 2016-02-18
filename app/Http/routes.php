@@ -90,6 +90,7 @@ Route::get('projector-paginate', 'ProjectorController@paginate');
 Route::get('employee-paginate', 'EmployeeController@paginate');
 Route::get('work-station-paginate', 'WorkStationController@paginate');
 Route::get('log-paginate', 'LogController@paginate');
+Route::get('work-station-department/{departmentID}/station/{workstationID}/paginate', 'WorkStationController@departmentPaginate');
 // paginate by department
 Route::get('employee-paginate/{departmentID}', 'EmployeeController@paginateDepartment');
 Route::get('work-station-paginate/{departmentID}', 'WorkStationController@paginateDepartment');
@@ -247,6 +248,7 @@ Route::get('work-station-divisions/{departmentID}/floor/{floor}', 'WorkStationCo
 Route::post('work-station-available-transfer/{workStationID}', 'WorkStationController@availableTransfer');
 Route::put('asset-tag-repair-components/{workStationID}', 'AssetTagController@repairComponents');
 Route::put('asset-tag-dispose-components/{workStationID}', 'AssetTagController@disposeComponents');
+Route::put('asset-tag-active-components/{workStationID}', 'AssetTagController@activeComponents');
 Route::post('asset-tag-search-barcode', 'AssetTagController@searchBarcode');
 Route::post('work-station-tag-search-barcode', 'WorkStationTagController@searchBarcode');
 Route::post('asset-tag-available-swap', 'AssetTagController@availableSwap');
