@@ -13371,7 +13371,7 @@ adminModule
 			$mdDialog.show({
 		      	controller: 'transferWorkStationDialogController',
 			    templateUrl: '/app/components/admin/templates/dialogs/transfer-work-station-dialog.template.html',
-		      	parent: angular.element($('body')),
+		      	parent: angular.element($('body'))
 		    })
 		};
 
@@ -13509,6 +13509,9 @@ adminModule
 			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
+			.then(function(){
+		    	$scope.subheader.refresh();
+		    });
 		};
 
 		$scope.swapAsset = function(id){
@@ -13518,6 +13521,9 @@ adminModule
 			    templateUrl: '/app/components/admin/templates/dialogs/swap-asset-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
+		    .then(function(){
+		    	$scope.subheader.refresh();
+		    });
 		};
 
 		$scope.pullOutAsset = function(id){
@@ -13527,6 +13533,9 @@ adminModule
 			    templateUrl: '/app/components/admin/templates/dialogs/pull-out-asset-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
+		    .then(function(){
+		    	$scope.subheader.refresh();
+		    });
 		};
 
 		$scope.removeAsset = function(id){

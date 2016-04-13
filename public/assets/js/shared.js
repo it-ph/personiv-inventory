@@ -30,6 +30,12 @@ sharedModule
 			})
 	}]);
 sharedModule
+	.controller('homePageController', ['$scope', function($scope){
+		$scope.show = function(){
+			angular.element(document.querySelector('.main-view')).removeClass('hidden-custom');
+		};
+	}]);
+sharedModule
 	.factory('AssetTag', ['$http', function($http){
 		var urlBase = '/asset-tag';
 
@@ -2093,12 +2099,6 @@ sharedModule
 			}
 		};
 	}])
-sharedModule
-	.controller('homePageController', ['$scope', function($scope){
-		$scope.show = function(){
-			angular.element(document.querySelector('.main-view')).removeClass('hidden-custom');
-		};
-	}]);
 sharedModule
 	.service('Preloader', ['$mdDialog', function($mdDialog){
 		var dataHolder = null;
