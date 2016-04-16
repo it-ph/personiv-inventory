@@ -542,7 +542,7 @@ class AssetTagController extends Controller
         else if ($asset_tag->component_type == 'Video Card') { $table_name = 'video_cards'; }
         else if ($asset_tag->component_type == 'Other Component') { $table_name = 'other_components'; }
 
-        $first_letter = $asset_tag->component_type == 'Software' ? '.name' : '.brand';
+        $first_letter = $asset_tag->component_type == 'Software' ? '.name' : ($asset_tag->component_type == 'Mac' ? '.type' : '.brand') ;
 
         // execute a query that will join the correct asset table
         $asset = DB::table('asset_tags')
