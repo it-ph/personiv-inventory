@@ -166,9 +166,9 @@ adminModule
 			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
-			.then(function(){
-		    	$scope.subheader.refresh();
-		    });
+			// .then(function(){
+		 //    	$scope.subheader.refresh();
+		 //    });
 		};
 
 		$scope.swapAsset = function(id){
