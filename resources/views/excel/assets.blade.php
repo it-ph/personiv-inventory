@@ -1,4 +1,21 @@
 <tr>
+	<th>Label</th>
+	<th>Count</th>
+</tr>
+<tr>
+	<td>Active</td>
+	<td>{{ $active }}</td>
+</tr>
+<tr>
+	<td>Repair</td>
+	<td>{{ $repair }}</td>
+</tr>
+<tr>
+	<td>Dispose</td>
+	<td>{{ $dispose }}</td>
+</tr>
+<br>
+<tr>
 	<th>Work Station</th>
 	<th>Brand</th>
 	<th>Model</th>

@@ -1,4 +1,21 @@
 <tr>
+	<th>Label</th>
+	<th>Count</th>
+</tr>
+<tr>
+	<td>Active</td>
+	<td>{{ $active }}</td>
+</tr>
+<tr>
+	<td>Under Repair</td>
+	<td>{{ $repair }}</td>
+</tr>
+<tr>
+	<td>Disposed</td>
+	<td>{{ $dispose }}</td>
+</tr>
+<br>
+<tr>
 	<th>Work Station</th>
 	<th>Brand</th>
 	<th>Form</th>
@@ -25,3 +42,4 @@
 		<td>{{ $item->status }}</td>
 	</tr>
 @endforeach
+
