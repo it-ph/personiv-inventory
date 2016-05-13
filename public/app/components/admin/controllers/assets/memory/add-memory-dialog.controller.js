@@ -7,6 +7,8 @@ adminModule
 			{'type': 'DDR2 / SO-DIMM'},
 			{'type': 'DDR3 / DIMM'},
 			{'type': 'DDR3 / SO-DIMM'},
+			{'type': 'DDR4 / DIMM'},
+			{'type': 'DDR4 / SO-DIMM'},
 		];
 
 		$scope.memory.sizes = [
@@ -25,6 +27,15 @@ adminModule
 		];
 
 		$scope.memory.DDR3_speeds = [
+			{'speed':'800MHz'},
+			{'speed':'1066MHz'},
+			{'speed':'1333MHz'},
+			{'speed':'1600MHz'},
+			{'speed':'1866MHz'},
+			{'speed':'2133MHz'},
+		];
+
+		$scope.memory.DDR4_speeds = [
 			{'speed':'800MHz'},
 			{'speed':'1066MHz'},
 			{'speed':'1333MHz'},

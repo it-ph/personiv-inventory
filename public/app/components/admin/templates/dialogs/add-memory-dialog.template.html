@@ -56,6 +56,9 @@
 							<md-option ng-if="memory.type == 'DDR3 / DIMM' || memory.type =='DDR3 / SO-DIMM'" ng-repeat="speed in memory.DDR3_speeds" value="{{ speed.speed }}">
 								{{ speed.speed }}
 							</md-option>
+							<md-option ng-if="memory.type == 'DDR4 / DIMM' || memory.type =='DDR4 / SO-DIMM'" ng-repeat="speed in memory.DDR4_speeds" value="{{ speed.speed }}">
+								{{ speed.speed }}
+							</md-option>
 						</md-select>
 						<div ng-messages="addMemoryForm.Speed.$error" ng-if="addMemoryForm.Speed.$touched">
 							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>

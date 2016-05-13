@@ -1046,489 +1046,6 @@ adminModule
 		$scope.toolbar.parentState = 'Home';
 	}]);
 adminModule
-	.controller('analysisContentController', ['$scope', function($scope){
-		/**
-		 * Object for content view
-		 *
-		*/
-		$scope.content = {};
-
-		$scope.content.title = 'Analysis Content Initialized';
-	}]);
-adminModule
-	.controller('analysisRightSidenavController', ['$scope', function($scope){
-		/**
-		 * Object for content view
-		 *
-		*/
-		$scope.sidenav = {};
-
-		$scope.sidenav.title = 'Analysis Right Sidenav Initialized';
-	}]);
-adminModule
-	.controller('analysisToolbarController', ['$scope', function($scope){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-
-		/**
-		 * Properties and method of toolbar.
-		 *
-		*/
-		$scope.toolbar.parentState = 'Dashboard';
-		$scope.toolbar.childState = 'Analysis';
-
-		/**
-		 * Search database and look for user input depending on state.
-		 *
-		*/
-		$scope.searchUserInput = function(){
-			return;
-		};
-	}]);
-adminModule
-	.controller('addWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
-		$scope.workStation = {};
-		$scope.floors = [
-			{'pattern':6, 'value':'06'},
-			{'pattern':10, 'value': '10'},
-		];
-		$scope.divisions = ['A','B'];
-		$scope.types = [
-			{'pattern':'Admin', 'value':'A'},
-			{'pattern':'Production', 'value': 'P'},
-		];
-
-
-
-		$scope.patterns = [
-			{
-				'pattern' : 'A06-A-A***',
-				'value' :  'A06-A-A',
-				'meaning': 'Aeon 6th Floor - Division A - Admin Station Number',
-			},
-
-			{
-				'pattern' : 'A06-A-P***',
-				'value' :  'A06-A-P',
-				'meaning': 'Aeon 6th Floor - Division A - Production Station Number',
-			},
-
-			{
-				'pattern' : 'A10-A-P***',
-				'value' :  'A10-A-P',
-				'meaning': 'Aeon 10th Floor - Division A - Production Station Number',
-			},
-
-			{
-				'pattern' : 'A06-B-A***',
-				'value' :  'A06-B-A',
-				'meaning': 'Aeon 6th Floor - Division B - Admin Station Number',
-			},
-
-
-			{
-				'pattern' : 'A06-B-P***',
-				'value' :  'A06-B-P',
-				'meaning': 'Aeon 6th Floor - Division B - Production Station Number',
-			},
-		];
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		};
-
-		$scope.submit = function(){
-			/* Starts Preloader */
-			Preloader.preload();
-			/**
-			 * Stores Single Record
-			*/
-			WorkStation.store($scope.workStation)
-				.success(function(){
-					// Stops Preloader 
-					Preloader.stop();
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		};
-
-	}]);
-adminModule
-	.controller('floorPlanContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'WorkStationTag', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, WorkStationTag){
-		/**
-		 * Object for subheader
-		 *
-		*/
-		var departmentID = $stateParams.departmentID;
-
-		$scope.subheader = {};
-		$scope.subheader.state = 'floor-plan';
-
-		/* Refreshes the list */
-		$scope.subheader.refresh = function(){
-			// start preloader
-			Preloader.preload();
-			// clear desktop
-			$scope.workStation.paginated = {};
-			$scope.workStation.page = 2;
-			$scope.workStation.type = '';
-			$scope.workStation.division = '';
-			if(departmentID){
-				WorkStation.paginateDepartment(departmentID)
-					.then(function(data){
-						$scope.subheader.count = data.total;
-						$scope.workStation.paginated = data.data;
-						$scope.workStation.paginated.show = true;
-						// stop preload
-						Preloader.stop();
-					}, function(){
-						Preloader.error();
-					});
-			}
-			else{
-				WorkStation.paginate()
-				.then(function(data){
-					$scope.subheader.count = data.total;
-					$scope.workStation.paginated = data.data;
-					$scope.workStation.paginated.show = true;
-					// stop preload
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-			}
-		};
-
-		/**
-		 * Object for fab
-		 *
-		*/
-		$scope.fab = {};
-
-		$scope.fab.icon = 'mdi-plus';
-		$scope.fab.label = 'Add';
-		$scope.fab.tooltip = 'Add Work Station';
-		$scope.fab.show = true;
-
-		$scope.fab.action = function(){
-			if(!departmentID){
-			    $mdDialog.show({
-			      	controller: 'addWorkStationDialogController',
-				    templateUrl: '/app/components/admin/templates/dialogs/add-work-station-dialog.template.html',
-			      	parent: angular.element($('body')),
-			    })
-			    .then(function(){
-			    	/* Refreshes the list */
-			    	$scope.subheader.refresh();
-			    });
-			}
-			else{
-				$mdDialog.show({
-			      	controller: 'tagWorkStationDialogController',
-				    templateUrl: '/app/components/admin/templates/dialogs/tag-work-station-dialog.template.html',
-			      	parent: angular.element($('body')),
-			    })
-			    .then(function(){
-			    	/* Refreshes the list */
-			    	$scope.subheader.refresh();
-			    });
-			}
-		};
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = true;
-
-		/**
-		 * Object for Desktop
-		 *
-		*/
-		$scope.workStation = {};
-		// 2 is default so the next page to be loaded will be page 2 
-		$scope.workStation.page = 2;
-		//
-
-		if(departmentID){
-			WorkStation.paginateDepartment(departmentID)
-				.then(function(data){
-					$scope.subheader.count = data.data.total;
-					$scope.workStation.paginated = data.data;
-					$scope.workStation.paginated.show = true;
-
-					$scope.workStation.paginateLoad = function(){
-						// kills the function if ajax is busy or pagination reaches last page
-						if($scope.workStation.busy || ($scope.workStation.page > $scope.workStation.paginated.last_page)){
-							return;
-						}
-						/**
-						 * Executes pagination call
-						 *
-						*/
-						// sets to true to disable pagination call if still busy.
-						$scope.workStation.busy = true;
-
-						// Calls the next page of pagination.
-						WorkStation.paginateDepartment(departmentID, $scope.workStation.page)
-							.then(function(data){
-								// increment the page to set up next page for next AJAX Call
-								$scope.workStation.page++;
-
-								// iterate over each data then splice it to the data array
-								angular.forEach(data.data.data, function(item, key){
-									$scope.workStation.paginated.data.push(item);
-								});
-
-								// Enables again the pagination call for next call.
-								$scope.workStation.busy = false;
-							});
-					}
-				}, function(){
-					Preloader.error();
-				});
-		}
-		else{
-			WorkStation.paginate()
-				.then(function(data){
-					$scope.subheader.count = data.data.total;
-					$scope.workStation.paginated = data.data;
-					$scope.workStation.paginated.show = true;
-
-					$scope.workStation.paginateLoad = function(){
-						// kills the function if ajax is busy or pagination reaches last page
-						if($scope.workStation.busy || ($scope.workStation.page > $scope.workStation.paginated.last_page)){
-							return;
-						}
-						/**
-						 * Executes pagination call
-						 *
-						*/
-						// sets to true to disable pagination call if still busy.
-						$scope.workStation.busy = true;
-
-						// Calls the next page of pagination.
-						WorkStation.paginate($scope.workStation.page)
-							.then(function(data){
-								// increment the page to set up next page for next AJAX Call
-								$scope.workStation.page++;
-
-								// iterate over each data then splice it to the data array
-								angular.forEach(data.data.data, function(item, key){
-									$scope.workStation.paginated.data.push(item);
-								});
-
-								// Enables again the pagination call for next call.
-								$scope.workStation.busy = false;
-							});
-					}
-				}, function(){
-					Preloader.error();
-				});
-		}
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.workStation.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			$scope.workStation.paginated.show = false;
-			Preloader.preload()
-			if(departmentID){			
-				WorkStation.searchDepartment(departmentID, $scope.workStation)
-					.success(function(data){
-						$scope.workStation.results = data;
-						Preloader.stop();
-					})
-					.error(function(data){
-						Preloader.error();
-					});
-			}
-			else{
-				WorkStation.search($scope.workStation)
-					.success(function(data){
-						$scope.workStation.results = data;
-						Preloader.stop();
-					})
-					.error(function(data){
-						Preloader.error();
-					});
-			}
-		};
-
-		// onclick of 
-		$scope.show = function(workStationID){
-			if($stateParams.departmentID){
-				$state.go('main.work-station', {'departmentID':$stateParams.departmentID, 'workStationID': workStationID});
-			}
-			else{
-				Preloader.preload();
-				WorkStationTag.workstation(workStationID)
-					.success(function(data){
-						if(data.department_id){
-							$state.go('main.work-station', {'departmentID':data.department_id, 'workStationID': workStationID});
-							Preloader.stop();
-						}
-						else{
-							$mdDialog.show(
-						      	$mdDialog.alert()
-							        .parent(angular.element($('body')))
-							        .clickOutsideToClose(true)
-							        .title('Vacant Work Station')
-							        .content('This work station is vacant and not under any department.')
-							        .ariaLabel('Vacant Work Station')
-							        .ok('Got it!')
-						    );
-						}
-					})
-					.error(function(){
-						Preloader.error();
-					});
-			}
-		};
-
-	}]);
-
-adminModule
-	.controller('floorPlanContentController', ['$scope', '$state', '$stateParams', function($scope, $state, $stateParams){
-		
-	}]);
-adminModule
-	.controller('floorPlanRightSidenavController', ['$scope', '$state', '$stateParams', 'departmentService', 'Department',  function($scope, $state, $stateParams, departmentService, Department){
-		/**
-		 * Object for content view
-		 *
-		*/
-		$scope.rightSidenav = {};
-
-		var departments = departmentService.get();
-		if(!departments.length){
-			Department.index()
-				.success(function(data){
-					departments = data;
-					$scope.rightSidenav.departments = data;
-				})
-				.error(function(data){
-					Preload.error();
-				});
-		}
-		else{
-			$scope.rightSidenav.departments = departments;
-		}
-
-	}]);
-adminModule
-	.controller('floorPlanToolbarController', ['$scope', '$stateParams', 'departmentService', 'Department', function($scope, $stateParams, departmentService, Department){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-
-		/**
-		 * Properties and method of toolbar.
-		 *
-		*/
-		$scope.toolbar.parentState = 'Floor Plan';
-
-		var index = $stateParams.departmentID - 1;
-		$scope.toolbar.parentState = 'Floor Plan';
-
-		var departments = departmentService.get();
-		if(!departments.length){
-			Department.index()
-				.success(function(data){
-					departments = data;
-					$scope.toolbar.childState = index > -1 ? departments[index].name : null;
-				})
-				.error(function(data){
-					Preload.error();
-				});
-		}
-		else{
-			$scope.toolbar.childState =  index > -1 ? departments[index].name : null;
-		}
-	}]);
-adminModule
-	.controller('tagWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'WorkStationTag', 'Department', function($scope, $stateParams, $mdDialog, Preloader, WorkStation, WorkStationTag, Department){
-		var departmentID = $stateParams.departmentID;
-		$scope.workStationTag = {};
-		$scope.workStationTag.department_id = $stateParams.departmentID;
-
-		$scope.divisions = [
-			{'name':'Block A', 'value':'A'},
-			{'name':'Block B', 'value':'B'},
-		];
-
-		$scope.types = [
-			{'name':'Admin', 'value':'admin'},
-			{'name':'Production', 'value':'production'},
-		];		
-
-		$scope.searchWorkStations = function(){
-
-			WorkStation.vacant($scope.workStationTag)
-				.success(function(data){
-					$scope.workStations = data;
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		}
-
-		Department.show(departmentID)
-			.success(function(data){
-				$scope.department = data;
-			});
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		};
-
-		$scope.submit = function(){
-			/* Starts Preloader */
-			Preloader.preload();
-			/**
-			 * Stores Single Record
-			*/
-			WorkStationTag.store($scope.workStationTag)
-				.success(function(){
-					// Stops Preloader 
-					Preloader.stop();
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		};
-
-	}]);
-adminModule
 	.controller('addDesktopDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Desktop', function($scope, $state, $mdDialog, Preloader, Desktop){
 		$scope.cpu = {};
 
@@ -4658,6 +4175,8 @@ adminModule
 			{'type': 'DDR2 / SO-DIMM'},
 			{'type': 'DDR3 / DIMM'},
 			{'type': 'DDR3 / SO-DIMM'},
+			{'type': 'DDR4 / DIMM'},
+			{'type': 'DDR4 / SO-DIMM'},
 		];
 
 		$scope.memory.sizes = [
@@ -4676,6 +4195,15 @@ adminModule
 		];
 
 		$scope.memory.DDR3_speeds = [
+			{'speed':'800MHz'},
+			{'speed':'1066MHz'},
+			{'speed':'1333MHz'},
+			{'speed':'1600MHz'},
+			{'speed':'1866MHz'},
+			{'speed':'2133MHz'},
+		];
+
+		$scope.memory.DDR4_speeds = [
 			{'speed':'800MHz'},
 			{'speed':'1066MHz'},
 			{'speed':'1333MHz'},
@@ -12384,6 +11912,489 @@ adminModule
 		 * Search database and look for user input depending on state.
 		 *
 		*/
+	}]);
+adminModule
+	.controller('analysisContentController', ['$scope', function($scope){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.content = {};
+
+		$scope.content.title = 'Analysis Content Initialized';
+	}]);
+adminModule
+	.controller('analysisRightSidenavController', ['$scope', function($scope){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.sidenav = {};
+
+		$scope.sidenav.title = 'Analysis Right Sidenav Initialized';
+	}]);
+adminModule
+	.controller('analysisToolbarController', ['$scope', function($scope){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+
+		/**
+		 * Properties and method of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Dashboard';
+		$scope.toolbar.childState = 'Analysis';
+
+		/**
+		 * Search database and look for user input depending on state.
+		 *
+		*/
+		$scope.searchUserInput = function(){
+			return;
+		};
+	}]);
+adminModule
+	.controller('addWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
+		$scope.workStation = {};
+		$scope.floors = [
+			{'pattern':6, 'value':'06'},
+			{'pattern':10, 'value': '10'},
+		];
+		$scope.divisions = ['A','B'];
+		$scope.types = [
+			{'pattern':'Admin', 'value':'A'},
+			{'pattern':'Production', 'value': 'P'},
+		];
+
+
+
+		$scope.patterns = [
+			{
+				'pattern' : 'A06-A-A***',
+				'value' :  'A06-A-A',
+				'meaning': 'Aeon 6th Floor - Division A - Admin Station Number',
+			},
+
+			{
+				'pattern' : 'A06-A-P***',
+				'value' :  'A06-A-P',
+				'meaning': 'Aeon 6th Floor - Division A - Production Station Number',
+			},
+
+			{
+				'pattern' : 'A10-A-P***',
+				'value' :  'A10-A-P',
+				'meaning': 'Aeon 10th Floor - Division A - Production Station Number',
+			},
+
+			{
+				'pattern' : 'A06-B-A***',
+				'value' :  'A06-B-A',
+				'meaning': 'Aeon 6th Floor - Division B - Admin Station Number',
+			},
+
+
+			{
+				'pattern' : 'A06-B-P***',
+				'value' :  'A06-B-P',
+				'meaning': 'Aeon 6th Floor - Division B - Production Station Number',
+			},
+		];
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			WorkStation.store($scope.workStation)
+				.success(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		};
+
+	}]);
+adminModule
+	.controller('floorPlanContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'WorkStationTag', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, WorkStationTag){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		var departmentID = $stateParams.departmentID;
+
+		$scope.subheader = {};
+		$scope.subheader.state = 'floor-plan';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.workStation.paginated = {};
+			$scope.workStation.page = 2;
+			$scope.workStation.type = '';
+			$scope.workStation.division = '';
+			if(departmentID){
+				WorkStation.paginateDepartment(departmentID)
+					.then(function(data){
+						$scope.subheader.count = data.total;
+						$scope.workStation.paginated = data.data;
+						$scope.workStation.paginated.show = true;
+						// stop preload
+						Preloader.stop();
+					}, function(){
+						Preloader.error();
+					});
+			}
+			else{
+				WorkStation.paginate()
+				.then(function(data){
+					$scope.subheader.count = data.total;
+					$scope.workStation.paginated = data.data;
+					$scope.workStation.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+			}
+		};
+
+		/**
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Work Station';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+			if(!departmentID){
+			    $mdDialog.show({
+			      	controller: 'addWorkStationDialogController',
+				    templateUrl: '/app/components/admin/templates/dialogs/add-work-station-dialog.template.html',
+			      	parent: angular.element($('body')),
+			    })
+			    .then(function(){
+			    	/* Refreshes the list */
+			    	$scope.subheader.refresh();
+			    });
+			}
+			else{
+				$mdDialog.show({
+			      	controller: 'tagWorkStationDialogController',
+				    templateUrl: '/app/components/admin/templates/dialogs/tag-work-station-dialog.template.html',
+			      	parent: angular.element($('body')),
+			    })
+			    .then(function(){
+			    	/* Refreshes the list */
+			    	$scope.subheader.refresh();
+			    });
+			}
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = true;
+
+		/**
+		 * Object for Desktop
+		 *
+		*/
+		$scope.workStation = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.workStation.page = 2;
+		//
+
+		if(departmentID){
+			WorkStation.paginateDepartment(departmentID)
+				.then(function(data){
+					$scope.subheader.count = data.data.total;
+					$scope.workStation.paginated = data.data;
+					$scope.workStation.paginated.show = true;
+
+					$scope.workStation.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.workStation.busy || ($scope.workStation.page > $scope.workStation.paginated.last_page)){
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.workStation.busy = true;
+
+						// Calls the next page of pagination.
+						WorkStation.paginateDepartment(departmentID, $scope.workStation.page)
+							.then(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.workStation.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data.data, function(item, key){
+									$scope.workStation.paginated.data.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.workStation.busy = false;
+							});
+					}
+				}, function(){
+					Preloader.error();
+				});
+		}
+		else{
+			WorkStation.paginate()
+				.then(function(data){
+					$scope.subheader.count = data.data.total;
+					$scope.workStation.paginated = data.data;
+					$scope.workStation.paginated.show = true;
+
+					$scope.workStation.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.workStation.busy || ($scope.workStation.page > $scope.workStation.paginated.last_page)){
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.workStation.busy = true;
+
+						// Calls the next page of pagination.
+						WorkStation.paginate($scope.workStation.page)
+							.then(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.workStation.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data.data, function(item, key){
+									$scope.workStation.paginated.data.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.workStation.busy = false;
+							});
+					}
+				}, function(){
+					Preloader.error();
+				});
+		}
+
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.workStation.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.workStation.paginated.show = false;
+			Preloader.preload()
+			if(departmentID){			
+				WorkStation.searchDepartment(departmentID, $scope.workStation)
+					.success(function(data){
+						$scope.workStation.results = data;
+						Preloader.stop();
+					})
+					.error(function(data){
+						Preloader.error();
+					});
+			}
+			else{
+				WorkStation.search($scope.workStation)
+					.success(function(data){
+						$scope.workStation.results = data;
+						Preloader.stop();
+					})
+					.error(function(data){
+						Preloader.error();
+					});
+			}
+		};
+
+		// onclick of 
+		$scope.show = function(workStationID){
+			if($stateParams.departmentID){
+				$state.go('main.work-station', {'departmentID':$stateParams.departmentID, 'workStationID': workStationID});
+			}
+			else{
+				Preloader.preload();
+				WorkStationTag.workstation(workStationID)
+					.success(function(data){
+						if(data.department_id){
+							$state.go('main.work-station', {'departmentID':data.department_id, 'workStationID': workStationID});
+							Preloader.stop();
+						}
+						else{
+							$mdDialog.show(
+						      	$mdDialog.alert()
+							        .parent(angular.element($('body')))
+							        .clickOutsideToClose(true)
+							        .title('Vacant Work Station')
+							        .content('This work station is vacant and not under any department.')
+							        .ariaLabel('Vacant Work Station')
+							        .ok('Got it!')
+						    );
+						}
+					})
+					.error(function(){
+						Preloader.error();
+					});
+			}
+		};
+
+	}]);
+
+adminModule
+	.controller('floorPlanContentController', ['$scope', '$state', '$stateParams', function($scope, $state, $stateParams){
+		
+	}]);
+adminModule
+	.controller('floorPlanRightSidenavController', ['$scope', '$state', '$stateParams', 'departmentService', 'Department',  function($scope, $state, $stateParams, departmentService, Department){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.rightSidenav = {};
+
+		var departments = departmentService.get();
+		if(!departments.length){
+			Department.index()
+				.success(function(data){
+					departments = data;
+					$scope.rightSidenav.departments = data;
+				})
+				.error(function(data){
+					Preload.error();
+				});
+		}
+		else{
+			$scope.rightSidenav.departments = departments;
+		}
+
+	}]);
+adminModule
+	.controller('floorPlanToolbarController', ['$scope', '$stateParams', 'departmentService', 'Department', function($scope, $stateParams, departmentService, Department){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+
+		/**
+		 * Properties and method of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Floor Plan';
+
+		var index = $stateParams.departmentID - 1;
+		$scope.toolbar.parentState = 'Floor Plan';
+
+		var departments = departmentService.get();
+		if(!departments.length){
+			Department.index()
+				.success(function(data){
+					departments = data;
+					$scope.toolbar.childState = index > -1 ? departments[index].name : null;
+				})
+				.error(function(data){
+					Preload.error();
+				});
+		}
+		else{
+			$scope.toolbar.childState =  index > -1 ? departments[index].name : null;
+		}
+	}]);
+adminModule
+	.controller('tagWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'WorkStationTag', 'Department', function($scope, $stateParams, $mdDialog, Preloader, WorkStation, WorkStationTag, Department){
+		var departmentID = $stateParams.departmentID;
+		$scope.workStationTag = {};
+		$scope.workStationTag.department_id = $stateParams.departmentID;
+
+		$scope.divisions = [
+			{'name':'Block A', 'value':'A'},
+			{'name':'Block B', 'value':'B'},
+		];
+
+		$scope.types = [
+			{'name':'Admin', 'value':'admin'},
+			{'name':'Production', 'value':'production'},
+		];		
+
+		$scope.searchWorkStations = function(){
+
+			WorkStation.vacant($scope.workStationTag)
+				.success(function(data){
+					$scope.workStations = data;
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+
+		Department.show(departmentID)
+			.success(function(data){
+				$scope.department = data;
+			});
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			WorkStationTag.store($scope.workStationTag)
+				.success(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		};
+
 	}]);
 adminModule
 	.controller('addAssetDialogController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', 'Desktop', 'HardDisk', 'Headset', 'Keyboard', 'Memory', 'Monitor', 'Mouse', 'Software', 'UPS', 'VideoCard', 'OtherComponent', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService, Desktop, HardDisk, Headset, Keyboard, Memory, Monitor, Mouse, Software, UPS, VideoCard, OtherComponent){
