@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAssetTagsTable extends Migration
+class CreatePurchaseOrdersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,14 +12,12 @@ class CreateAssetTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create('asset_tags', function (Blueprint $table) {
+        Schema::create('purchase_orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('asset_id');
-            $table->string('serial')->nullable();
-            $table->string('property_code')->unique();
-            $table->dateTime('warranty_end')->nullable();
+            $table->integer('vendor_id');
+            $table->dateTime('date_purchased');
+            $table->dateTime('date_arrival');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -30,6 +28,6 @@ class CreateAssetTagsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('asset_tags');
+        Schema::drop('purchase_orders');
     }
 }

@@ -18,7 +18,7 @@ class CreateWorkStationsTable extends Migration
             $table->integer('floor');
             $table->string('type');
             $table->string('division');
-            $table->boolean('occupied');
+            $table->string('ip_address')->unique()->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

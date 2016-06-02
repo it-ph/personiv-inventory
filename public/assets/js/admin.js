@@ -380,6 +380,242 @@ adminModule
 		}
 	});
 adminModule
+	.controller('addEmployeeDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Department', 'Employee', function($scope, $stateParams, $mdDialog, Preloader, Department, Employee){
+		$scope.employee = {};
+		$scope.employee.department_id = $stateParams.departmentID;
+
+		Department.show($stateParams.departmentID)
+			.success(function(data){
+				$scope.department = data;
+			});
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			Employee.store($scope.employee)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		}
+
+	}]);
+adminModule
+	.controller('departmentContentContainerController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Employee', 'UserService', function($scope, $stateParams, $mdDialog, Preloader, Employee, UserService){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		var departmentID = $stateParams.departmentID;
+
+		$scope.subheader = {};
+		$scope.subheader.state = 'departments';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.employee.paginated = {};
+			$scope.employee.page = 2;
+			Employee.paginateDepartment(departmentID)
+				.then(function(data){
+					$scope.employee.paginated = data.data;
+					$scope.employee.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addEmployeeDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-employee-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
+
+		/**
+		 * Object for Employee
+		 *
+		*/
+		$scope.employee = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.employee.page = 2;
+		//
+
+		Employee.paginateDepartment(departmentID)
+			.then(function(data){
+				$scope.employee.paginated = data.data;
+				$scope.employee.paginated.show = true;
+
+				$scope.employee.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.employee.busy || ($scope.employee.page > $scope.employee.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.employee.busy = true;
+
+					// Calls the next page of pagination.
+					Employee.paginateDepartment(departmentID, $scope.employee.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.employee.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.employee.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.employee.busy = false;
+
+							console.log('loaded');
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.employee.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.employee.paginated.show = false;
+			Preloader.preload()
+			Employee.search(departmentID, $scope.employee)
+				.success(function(data){
+					$scope.employee.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+
+		$scope.show = function(id){
+			UserService.set(id);
+			$mdDialog.show({
+		      	controller: 'showEmployeeDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/show-employee-dialog.template.html',
+		      	parent: angular.element($('body')),
+		      	clickOutsideToClose:true,
+		    });
+		};
+	}]);
+adminModule
+	.controller('departmentToolbarController', ['$scope', '$stateParams', 'Department', 'departmentService', function($scope, $stateParams, Department, departmentService){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+
+		/**
+		 * Properties and method of toolbar.
+		 *
+		*/
+
+		/**
+		 * Fetch the department data stored at deparments servce.
+		 *
+		*/
+		var index = $stateParams.departmentID - 1;
+		$scope.toolbar.parentState = 'Departments';
+
+		var departments = departmentService.get();
+		if(!departments.length){
+			Department.index()
+				.success(function(data){
+					departments = data;
+					$scope.toolbar.childState = departments[index].name;
+				})
+				.error(function(data){
+					Preload.error();
+				});
+		}
+		else{
+			$scope.toolbar.childState = departments[index].name;
+		}
+	}]);
+adminModule
+	.controller('showEmployeeDialogController', ['$scope', '$mdDialog', '$stateParams', 'UserService', 'EmployeeTag', 'Employee', function($scope, $mdDialog, $stateParams, UserService, EmployeeTag, Employee){
+		var employeeID = UserService.get();
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		Employee.show(employeeID)
+			.success(function(data){
+				$scope.employee = data;
+			});
+
+		EmployeeTag.employee(employeeID)
+			.success(function(data){
+				$scope.workstation = data;
+			});
+	}]);
+adminModule
 	.controller('barcodeDialogController', ['$scope', '$mdDialog', function($scope, $mdDialog){
 		$scope.cancel = function(){
 			$mdDialog.cancel();
@@ -808,761 +1044,6 @@ adminModule
 		$scope.toolbar = {};
 
 		$scope.toolbar.parentState = 'Home';
-	}]);
-adminModule
-	.controller('addEmployeeDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Department', 'Employee', function($scope, $stateParams, $mdDialog, Preloader, Department, Employee){
-		$scope.employee = {};
-		$scope.employee.department_id = $stateParams.departmentID;
-
-		Department.show($stateParams.departmentID)
-			.success(function(data){
-				$scope.department = data;
-			});
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			/* Starts Preloader */
-			Preloader.preload();
-			/**
-			 * Stores Single Record
-			*/
-			Employee.store($scope.employee)
-				.then(function(){
-					// Stops Preloader 
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-		}
-
-	}]);
-adminModule
-	.controller('departmentContentContainerController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Employee', 'UserService', function($scope, $stateParams, $mdDialog, Preloader, Employee, UserService){
-		/**
-		 * Object for subheader
-		 *
-		*/
-		var departmentID = $stateParams.departmentID;
-
-		$scope.subheader = {};
-		$scope.subheader.state = 'departments';
-
-		/* Refreshes the list */
-		$scope.subheader.refresh = function(){
-			// start preloader
-			Preloader.preload();
-			// clear desktop
-			$scope.employee.paginated = {};
-			$scope.employee.page = 2;
-			Employee.paginateDepartment(departmentID)
-				.then(function(data){
-					$scope.employee.paginated = data.data;
-					$scope.employee.paginated.show = true;
-					// stop preload
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-		};
-
-		/**
-		 * Object for fab
-		 *
-		*/
-		$scope.fab = {};
-
-		$scope.fab.icon = 'mdi-plus';
-		$scope.fab.label = 'Add';
-		$scope.fab.show = true;
-
-		$scope.fab.action = function(){
-		    $mdDialog.show({
-		      	controller: 'addEmployeeDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-employee-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	/* Refreshes the list */
-		    	$scope.subheader.refresh();
-		    });
-		};
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = false;
-
-		/**
-		 * Object for Employee
-		 *
-		*/
-		$scope.employee = {};
-		// 2 is default so the next page to be loaded will be page 2 
-		$scope.employee.page = 2;
-		//
-
-		Employee.paginateDepartment(departmentID)
-			.then(function(data){
-				$scope.employee.paginated = data.data;
-				$scope.employee.paginated.show = true;
-
-				$scope.employee.paginateLoad = function(){
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.employee.busy || ($scope.employee.page > $scope.employee.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.employee.busy = true;
-
-					// Calls the next page of pagination.
-					Employee.paginateDepartment(departmentID, $scope.employee.page)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.employee.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.employee.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.employee.busy = false;
-
-							console.log('loaded');
-						});
-				}
-			}, function(){
-				Preloader.error();
-			});
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.employee.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			$scope.employee.paginated.show = false;
-			Preloader.preload()
-			Employee.search(departmentID, $scope.employee)
-				.success(function(data){
-					$scope.employee.results = data;
-					Preloader.stop();
-				})
-				.error(function(data){
-					Preloader.error();
-				});
-		};
-
-		$scope.show = function(id){
-			UserService.set(id);
-			$mdDialog.show({
-		      	controller: 'showEmployeeDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/show-employee-dialog.template.html',
-		      	parent: angular.element($('body')),
-		      	clickOutsideToClose:true,
-		    });
-		};
-	}]);
-adminModule
-	.controller('departmentToolbarController', ['$scope', '$stateParams', 'Department', 'departmentService', function($scope, $stateParams, Department, departmentService){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-
-		/**
-		 * Properties and method of toolbar.
-		 *
-		*/
-
-		/**
-		 * Fetch the department data stored at deparments servce.
-		 *
-		*/
-		var index = $stateParams.departmentID - 1;
-		$scope.toolbar.parentState = 'Departments';
-
-		var departments = departmentService.get();
-		if(!departments.length){
-			Department.index()
-				.success(function(data){
-					departments = data;
-					$scope.toolbar.childState = departments[index].name;
-				})
-				.error(function(data){
-					Preload.error();
-				});
-		}
-		else{
-			$scope.toolbar.childState = departments[index].name;
-		}
-	}]);
-adminModule
-	.controller('showEmployeeDialogController', ['$scope', '$mdDialog', '$stateParams', 'UserService', 'EmployeeTag', 'Employee', function($scope, $mdDialog, $stateParams, UserService, EmployeeTag, Employee){
-		var employeeID = UserService.get();
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		Employee.show(employeeID)
-			.success(function(data){
-				$scope.employee = data;
-			});
-
-		EmployeeTag.employee(employeeID)
-			.success(function(data){
-				$scope.workstation = data;
-			});
-	}]);
-adminModule
-	.controller('addHardDiskDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'HardDisk', function($scope, $state, $mdDialog, Preloader, HardDisk){
-		$scope.hardDisk = {};
-
-		$scope.hardDisk.capacities = [
-			{'capacity':'160GB'},
-			{'capacity':'320GB'},
-			{'capacity':'500GB'},
-			{'capacity':'650GB'},
-			{'capacity':'1.0TB'},
-			{'capacity':'2.0TB'},
-		];
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			/* Starts Preloader */
-			Preloader.preload();
-			/**
-			 * Stores Single Record
-			*/
-			HardDisk.store($scope.hardDisk)
-				.then(function(){
-					// Stops Preloader 
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-		}
-
-	}]);
-adminModule
-	.controller('hardDiskContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'HardDisk', function($scope, $state, $stateParams, $mdDialog, Preloader, HardDisk){
-		/**
-		 * Object for subheader
-		 *
-		*/
-		$scope.subheader = {};
-		$scope.subheader.state = 'assets';
-
-		/* Refreshes the list */
-		$scope.subheader.refresh = function(){
-			// start preloader
-			Preloader.preload();
-			// clear desktop
-			$scope.hardDisk.paginated = {};
-			$scope.hardDisk.page = 2;
-			HardDisk.paginate()
-				.then(function(data){
-					$scope.hardDisk.paginated = data.data;
-					$scope.hardDisk.paginated.show = true;
-					// stop preload
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-		};
-
-		/**
-		 * Object for content view
-		 *
-		*/
-		$scope.fab = {};
-
-		$scope.fab.icon = 'mdi-plus';
-		$scope.fab.label = 'Add';
-		$scope.fab.tooltip = 'Add Hard Disk';
-		$scope.fab.show = true;
-
-		$scope.fab.action = function(){
-		    $mdDialog.show({
-		      	controller: 'addHardDiskDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-hard-disk-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	/* Refreshes the list */
-		    	$scope.subheader.refresh();
-		    });
-		};
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = false;
-
-		/**
-		 * Object for Hard Disk
-		 *
-		*/
-		$scope.hardDisk = {};
-		// 2 is default so the next page to be loaded will be page 2 
-		$scope.hardDisk.page = 2;
-
-		HardDisk.paginate()
-			.then(function(data){
-				$scope.hardDisk.paginated = data.data;
-				$scope.hardDisk.paginated.show = true;
-
-				$scope.hardDisk.paginateLoad = function(){
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.hardDisk.busy || ($scope.hardDisk.page > $scope.hardDisk.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.hardDisk.busy = true;
-
-					// Calls the next page of pagination.
-					HardDisk.paginate($scope.hardDisk.page)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.hardDisk.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.hardDisk.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.hardDisk.busy = false;
-						});
-				}
-			}, function(){
-				Preloader.error();
-			});
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.hardDisk.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			$scope.hardDisk.paginated.show = false;
-			Preloader.preload();
-			HardDisk.search($scope.hardDisk)
-				.success(function(data){
-					$scope.hardDisk.results = data;
-					Preloader.stop();
-				})
-				.error(function(data){
-					Preloader.error();
-				});
-		};
-
-		$scope.show = function(id){
-			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
-		};
-	}]);
-adminModule
-	.controller('hardDiskToolbarController', ['$scope', 'HardDisk', function($scope, HardDisk){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-		
-		/**
-		 * Properties of toolbar.
-		 *
-		*/
-		$scope.toolbar.parentState = 'Assets';
-		$scope.toolbar.childState = 'Hard Disk';
-	}]);
-adminModule
-	.controller('hardDiskUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
-		var unitID = $stateParams.unitID;
-		var query = {};
-
-		query.component_id = unitID;
-		query.component_type = 'Headset';
-
-		/**
-		 * Object for subheader
-		 *
-		*/
-		$scope.subheader = {};
-		$scope.subheader.state = 'units';
-
-		/* Refreshes the list */
-		$scope.subheader.activeUnit = function(){
-			// start preloader
-			Preloader.preload();
-			// clear hardDisk
-			$scope.hardDisk.paginated = {};
-			$scope.hardDisk.results = null;
-			$scope.hardDisk.page = 2;
-			AssetTag.activeUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Active'
-				$scope.hardDisk.paginated = data.data;
-				$scope.hardDisk.paginated.show = true;
-
-				$scope.hardDisk.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.hardDisk.busy || ($scope.hardDisk.page > $scope.hardDisk.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.hardDisk.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.hardDisk.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.hardDisk.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.hardDisk.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.hardDisk.busy = false;
-						});
-				}
-				Preloader.stop();
-			}, function(){
-				Preloader.error();
-			});
-		};
-
-		/* Refreshes the list and change it to repair */
-		$scope.subheader.repairUnit = function(){
-			// start preloader
-			Preloader.preload();
-			// clear hardDisk
-			$scope.hardDisk.paginated = {};
-			$scope.hardDisk.results = null;
-			$scope.hardDisk.page = 2;
-			AssetTag.repairUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Under Repair'
-				$scope.hardDisk.paginated = data.data;
-				$scope.hardDisk.paginated.show = true;
-
-				$scope.hardDisk.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.hardDisk.busy || ($scope.hardDisk.page > $scope.hardDisk.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.hardDisk.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.repairUnit($scope.hardDisk.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.hardDisk.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.hardDisk.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.hardDisk.busy = false;
-						});
-				}
-				Preloader.stop();
-			}, function(){
-				Preloader.error();
-			});
-		};
-
-		/* Refreshes the list and change it to repair */
-		$scope.subheader.disposeUnit = function(){
-			// start preloader
-			Preloader.preload();
-			// clear hardDisk
-			$scope.hardDisk.paginated = {};
-			$scope.hardDisk.results = null;
-			$scope.hardDisk.page = 2;
-			AssetTag.disposeUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Disposed'
-				$scope.hardDisk.paginated = data.data;
-				$scope.hardDisk.paginated.show = true;
-
-				$scope.hardDisk.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.hardDisk.busy || ($scope.hardDisk.page > $scope.hardDisk.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.hardDisk.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.disposeUnit($scope.hardDisk.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.hardDisk.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.hardDisk.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.hardDisk.busy = false;
-						});
-				}
-				Preloader.stop();
-			}, function(){
-				Preloader.error();
-			});
-		};
-
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = true;
-
-		/**
-		 * Object for hardDisk
-		 *
-		*/
-		$scope.hardDisk = {};
-		// 2 is default so the next page to be loaded will be page 2 
-		$scope.hardDisk.page = 2;
-		// 
-		
-		AssetTag.activeUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Active'
-				$scope.hardDisk.paginated = data.data;
-				$scope.hardDisk.paginated.show = true;
-
-				$scope.hardDisk.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.hardDisk.busy || ($scope.hardDisk.page > $scope.hardDisk.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.hardDisk.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.hardDisk.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.hardDisk.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.hardDisk.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.hardDisk.busy = false;
-						});
-				}
-			}, function(){
-				Preloader.error();
-			});
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.hardDisk.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			$scope.hardDisk.paginated.show = false;
-			Preloader.preload();
-			var query = {};
-			query.userInput = $scope.hardDisk.userInput;
-			query.component_id = unitID;
-			query.component_type = 'Headset';
-			query.table_name = 'headsets';
-			query.property_code = 'PHDS';
-			AssetTag.search(query)
-				.success(function(data){
-					$scope.hardDisk.results = data;
-					Preloader.stop();
-				})
-				.error(function(data){
-					Preloader.error();
-				});
-		};
-
-		$scope.repaired = function(id){
-			AssetTag.active(id)
-				.success(function(){
-					$scope.subheader.repairUnit();
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		}
-
-		$scope.dispose = function(id){
-			AssetTag.dispose(id)
-				.success(function(){
-					$scope.subheader.repairUnit();
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		}
-		$scope.show = function(departmentID, workStationID){
-			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID':workStationID})
-		}
-	}]);
-
-adminModule
-	.controller('hardDiskUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'HardDisk', function($scope, $state, $stateParams, HardDisk){
-		$scope.asset = 'Hard Disk';
-
-		HardDisk.other($stateParams.unitID)
-			.success(function(data){
-				$scope.others = data;
-			});
-
-		$scope.show = function(id){
-			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID': id});
-		};
-	}]);
-adminModule
-	.controller('hardDiskUnitToolbarController', ['$scope', '$state', '$stateParams', 'HardDisk', function($scope, $state, $stateParams, HardDisk){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-		
-		/**
-		 * Properties of toolbar.
-		 *
-		*/
-
-		$scope.toolbar.showBack = true;
-
-		$scope.toolbar.back = function(){
-			$state.go('main.assets', {'assetID': $stateParams.assetID});
-		};
-
-		HardDisk.show($stateParams.unitID)
-			.success(function(data){
-				$scope.toolbar.parentState = data.model;
-				$scope.toolbar.childState = data.capacity;
-			})
-			.error(function(){
-				Preloader.error();
-			});
-
-		/**
-		 * Search database and look for user input depending on state.
-		 *
-		*/
 	}]);
 adminModule
 	.controller('addFirewallDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Firewall', function($scope, $state, $mdDialog, Preloader, Firewall){
@@ -2062,517 +1543,6 @@ adminModule
 		};
 
 		Firewall.show($stateParams.unitID)
-			.success(function(data){
-				$scope.toolbar.parentState = data.brand;
-				$scope.toolbar.childState = data.model;
-			})
-			.error(function(){
-				Preloader.error();
-			});
-
-		/**
-		 * Search database and look for user input depending on state.
-		 *
-		*/
-	}]);
-adminModule
-	.controller('addHeadsetDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Headset', function($scope, $state, $mdDialog, Preloader, Headset){
-		$scope.headset = {};
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			/* Starts Preloader */
-			Preloader.preload();
-			/**
-			 * Stores Single Record
-			*/
-			Headset.store($scope.headset)
-				.then(function(){
-					// Stops Preloader 
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-		}
-
-	}]);
-adminModule
-	.controller('headsetContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Headset', function($scope, $state, $stateParams, $mdDialog, Preloader, Headset){
-		/**
-		 * Object for subheader
-		 *
-		*/
-		$scope.subheader = {};
-		$scope.subheader.state = 'assets';
-
-		/* Refreshes the list */
-		$scope.subheader.refresh = function(){
-			// start preloader
-			Preloader.preload();
-			// clear desktop
-			$scope.headset.paginated = {};
-			$scope.headset.page = 2;
-			Headset.paginate()
-				.then(function(data){
-					$scope.headset.paginated = data.data;
-					$scope.headset.paginated.show = true;
-					// stop preload
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-		};
-
-		/**
-		 * Object for content view
-		 *
-		*/
-		$scope.fab = {};
-
-		$scope.fab.icon = 'mdi-plus';
-		$scope.fab.label = 'Add';
-		$scope.fab.tooltip = 'Add Headset';
-		$scope.fab.show = true;
-
-		$scope.fab.action = function(){
-		    $mdDialog.show({
-		      	controller: 'addHeadsetDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-headset-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	/* Refreshes the list */
-		    	$scope.subheader.refresh();
-		    });
-		};
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = false;
-
-		/**
-		 * Object for Headset
-		 *
-		*/
-		$scope.headset = {};
-		// 2 is default so the next page to be loaded will be page 2 
-		$scope.headset.page = 2;
-
-		Headset.paginate()
-			.then(function(data){
-				$scope.headset.paginated = data.data;
-				$scope.headset.paginated.show = true;
-
-				$scope.headset.paginateLoad = function(){
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.headset.busy || ($scope.headset.page > $scope.headset.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.headset.busy = true;
-
-					// Calls the next page of pagination.
-					Headset.paginate($scope.headset.page)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.headset.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.headset.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.headset.busy = false;
-						});
-				}
-			}, function(){
-				Preloader.error();
-			});
-		
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.headset.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			$scope.headset.paginated.show = false;
-			Preloader.preload();
-			Headset.search($scope.headset)
-				.success(function(data){
-					$scope.headset.results = data;
-					Preloader.stop();
-				})
-				.error(function(data){
-					Preloader.error();
-				});
-		};
-
-		$scope.show = function(id){
-			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
-		};
-	}]);
-adminModule
-	.controller('headsetToolbarController', ['$scope', 'Headset', function($scope, Headset){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-		
-		/**
-		 * Properties of toolbar.
-		 *
-		*/
-		$scope.toolbar.parentState = 'Assets';
-		$scope.toolbar.childState = 'Headset';
-	}]);
-adminModule
-	.controller('headsetUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
-		var unitID = $stateParams.unitID;
-		var query = {};
-
-		query.component_id = unitID;
-		query.component_type = 'Headset';
-
-		/**
-		 * Object for subheader
-		 *
-		*/
-		$scope.subheader = {};
-		$scope.subheader.state = 'units';
-
-		/* Refreshes the list */
-		$scope.subheader.activeUnit = function(){
-			// start preloader
-			Preloader.preload();
-			// clear headset
-			$scope.headset.paginated = {};
-			$scope.headset.results = null;
-			$scope.headset.page = 2;
-			AssetTag.activeUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Active'
-				$scope.headset.paginated = data.data;
-				$scope.headset.paginated.show = true;
-
-				$scope.headset.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.headset.busy || ($scope.headset.page > $scope.headset.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.headset.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.headset.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.headset.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.headset.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.headset.busy = false;
-						});
-				}
-				Preloader.stop();
-			}, function(){
-				Preloader.error();
-			});
-		};
-
-		/* Refreshes the list and change it to repair */
-		$scope.subheader.repairUnit = function(){
-			// start preloader
-			Preloader.preload();
-			// clear headset
-			$scope.headset.paginated = {};
-			$scope.headset.results = null;
-			$scope.headset.page = 2;
-			AssetTag.repairUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Under Repair'
-				$scope.headset.paginated = data.data;
-				$scope.headset.paginated.show = true;
-
-				$scope.headset.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.headset.busy || ($scope.headset.page > $scope.headset.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.headset.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.repairUnit($scope.headset.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.headset.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.headset.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.headset.busy = false;
-						});
-				}
-				Preloader.stop();
-			}, function(){
-				Preloader.error();
-			});
-		};
-
-		/* Refreshes the list and change it to repair */
-		$scope.subheader.disposeUnit = function(){
-			// start preloader
-			Preloader.preload();
-			// clear headset
-			$scope.headset.paginated = {};
-			$scope.headset.results = null;
-			$scope.headset.page = 2;
-			AssetTag.disposeUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Disposed'
-				$scope.headset.paginated = data.data;
-				$scope.headset.paginated.show = true;
-
-				$scope.headset.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.headset.busy || ($scope.headset.page > $scope.headset.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.headset.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.disposeUnit($scope.headset.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.headset.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.headset.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.headset.busy = false;
-						});
-				}
-				Preloader.stop();
-			}, function(){
-				Preloader.error();
-			});
-		};
-
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = true;
-
-		/**
-		 * Object for headset
-		 *
-		*/
-		$scope.headset = {};
-		// 2 is default so the next page to be loaded will be page 2 
-		$scope.headset.page = 2;
-		// 
-		
-		AssetTag.activeUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Active'
-				$scope.headset.paginated = data.data;
-				$scope.headset.paginated.show = true;
-
-				$scope.headset.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.headset.busy || ($scope.headset.page > $scope.headset.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.headset.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.headset.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.headset.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.headset.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.headset.busy = false;
-						});
-				}
-			}, function(){
-				Preloader.error();
-			});
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.headset.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			$scope.headset.paginated.show = false;
-			Preloader.preload();
-			var query = {};
-			query.userInput = $scope.headset.userInput;
-			query.component_id = unitID;
-			query.component_type = 'Headset';
-			query.table_name = 'headsets';
-			query.property_code = 'PHDS';
-			AssetTag.search(query)
-				.success(function(data){
-					$scope.headset.results = data;
-					Preloader.stop();
-				})
-				.error(function(data){
-					Preloader.error();
-				});
-		};
-
-		$scope.repaired = function(id){
-			AssetTag.active(id)
-				.success(function(){
-					$scope.subheader.repairUnit();
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		}
-
-		$scope.dispose = function(id){
-			AssetTag.dispose(id)
-				.success(function(){
-					$scope.subheader.repairUnit();
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		}
-		
-		$scope.show = function(departmentID, workStationID){
-			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID':workStationID})
-		}
-	}]);
-
-adminModule
-	.controller('headsetUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'Headset', function($scope, $state, $stateParams, Headset){
-		$scope.asset = 'Headset';
-
-		Headset.other($stateParams.unitID)
-			.success(function(data){
-				$scope.others = data;
-			});
-
-		$scope.show = function(id){
-			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID': id});
-		};
-	}]);
-adminModule
-	.controller('headsetUnitToolbarController', ['$scope', '$state', '$stateParams', 'Headset', function($scope, $state, $stateParams, Headset){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-		
-		/**
-		 * Properties of toolbar.
-		 *
-		*/
-
-		$scope.toolbar.showBack = true;
-
-		$scope.toolbar.back = function(){
-			$state.go('main.assets', {'assetID': $stateParams.assetID});
-		};
-
-		Headset.show($stateParams.unitID)
 			.success(function(data){
 				$scope.toolbar.parentState = data.brand;
 				$scope.toolbar.childState = data.model;
@@ -3141,12 +2111,16 @@ adminModule
 		*/
 	}]);
 adminModule
-	.controller('addMacDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Mac', function($scope, $state, $mdDialog, Preloader, Mac){
-		$scope.mac = {};
+	.controller('addHardDiskDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'HardDisk', function($scope, $state, $mdDialog, Preloader, HardDisk){
+		$scope.hardDisk = {};
 
-		$scope.types = [
-			{'name':'iMac'},
-			{'name':'Mac Mini'},
+		$scope.hardDisk.capacities = [
+			{'capacity':'160GB'},
+			{'capacity':'320GB'},
+			{'capacity':'500GB'},
+			{'capacity':'650GB'},
+			{'capacity':'1.0TB'},
+			{'capacity':'2.0TB'},
 		];
 
 		$scope.cancel = function(){
@@ -3159,7 +2133,7 @@ adminModule
 			/**
 			 * Stores Single Record
 			*/
-			Mac.store($scope.mac)
+			HardDisk.store($scope.hardDisk)
 				.then(function(){
 					// Stops Preloader 
 					Preloader.stop();
@@ -3170,7 +2144,7 @@ adminModule
 
 	}]);
 adminModule
-	.controller('macContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Mac', function($scope, $state, $stateParams, $mdDialog, Preloader, Mac){
+	.controller('hardDiskContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'HardDisk', function($scope, $state, $stateParams, $mdDialog, Preloader, HardDisk){
 		/**
 		 * Object for subheader
 		 *
@@ -3183,12 +2157,12 @@ adminModule
 			// start preloader
 			Preloader.preload();
 			// clear desktop
-			$scope.mac.paginated = {};
-			$scope.mac.page = 2;
-			Mac.paginate()
+			$scope.hardDisk.paginated = {};
+			$scope.hardDisk.page = 2;
+			HardDisk.paginate()
 				.then(function(data){
-					$scope.mac.paginated = data.data;
-					$scope.mac.paginated.show = true;
+					$scope.hardDisk.paginated = data.data;
+					$scope.hardDisk.paginated.show = true;
 					// stop preload
 					Preloader.stop();
 				}, function(){
@@ -3204,13 +2178,13 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
-		$scope.fab.tooltip = 'Add Mac';
+		$scope.fab.tooltip = 'Add Hard Disk';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
 		    $mdDialog.show({
-		      	controller: 'addMacDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-mac-dialog.template.html',
+		      	controller: 'addHardDiskDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-hard-disk-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
@@ -3228,21 +2202,21 @@ adminModule
 		$scope.rightSidenav.show = false;
 
 		/**
-		 * Object for mac
+		 * Object for Hard Disk
 		 *
 		*/
-		$scope.mac = {};
+		$scope.hardDisk = {};
 		// 2 is default so the next page to be loaded will be page 2 
-		$scope.mac.page = 2;
+		$scope.hardDisk.page = 2;
 
-		Mac.paginate()
+		HardDisk.paginate()
 			.then(function(data){
-				$scope.mac.paginated = data.data;
-				$scope.mac.paginated.show = true;
+				$scope.hardDisk.paginated = data.data;
+				$scope.hardDisk.paginated.show = true;
 
-				$scope.mac.paginateLoad = function(){
+				$scope.hardDisk.paginateLoad = function(){
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.mac.busy || ($scope.mac.page > $scope.mac.paginated.last_page)){
+					if($scope.hardDisk.busy || ($scope.hardDisk.page > $scope.hardDisk.paginated.last_page)){
 						return;
 					}
 					/**
@@ -3250,27 +2224,27 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.mac.busy = true;
+					$scope.hardDisk.busy = true;
 
 					// Calls the next page of pagination.
-					Mac.paginate($scope.mac.page)
+					HardDisk.paginate($scope.hardDisk.page)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.mac.page++;
+							$scope.hardDisk.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.mac.paginated.data.push(item);
+								$scope.hardDisk.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.mac.busy = false;
+							$scope.hardDisk.busy = false;
 						});
 				}
 			}, function(){
 				Preloader.error();
 			});
-		
+
 		/**
 		 * Status of search bar.
 		 *
@@ -3290,17 +2264,17 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.mac.userInput = '';
+			$scope.hardDisk.userInput = '';
 			$scope.searchBar = false;
 		};
 		
 		
 		$scope.searchUserInput = function(){
-			$scope.mac.paginated.show = false;
+			$scope.hardDisk.paginated.show = false;
 			Preloader.preload();
-			Mac.search($scope.mac)
+			HardDisk.search($scope.hardDisk)
 				.success(function(data){
-					$scope.mac.results = data;
+					$scope.hardDisk.results = data;
 					Preloader.stop();
 				})
 				.error(function(data){
@@ -3313,7 +2287,7 @@ adminModule
 		};
 	}]);
 adminModule
-	.controller('macToolbarController', ['$scope', 'Mac', function($scope, Mac){
+	.controller('hardDiskToolbarController', ['$scope', 'HardDisk', function($scope, HardDisk){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -3325,15 +2299,15 @@ adminModule
 		 *
 		*/
 		$scope.toolbar.parentState = 'Assets';
-		$scope.toolbar.childState = 'Mac';
+		$scope.toolbar.childState = 'Hard Disk';
 	}]);
 adminModule
-	.controller('macUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
+	.controller('hardDiskUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
 		var unitID = $stateParams.unitID;
 		var query = {};
 
 		query.component_id = unitID;
-		query.component_type = 'Mac';
+		query.component_type = 'Headset';
 
 		/**
 		 * Object for subheader
@@ -3346,20 +2320,20 @@ adminModule
 		$scope.subheader.activeUnit = function(){
 			// start preloader
 			Preloader.preload();
-			// clear mac
-			$scope.mac.paginated = {};
-			$scope.mac.results = null;
-			$scope.mac.page = 2;
+			// clear hardDisk
+			$scope.hardDisk.paginated = {};
+			$scope.hardDisk.results = null;
+			$scope.hardDisk.page = 2;
 			AssetTag.activeUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Active'
-				$scope.mac.paginated = data.data;
-				$scope.mac.paginated.show = true;
+				$scope.hardDisk.paginated = data.data;
+				$scope.hardDisk.paginated.show = true;
 
-				$scope.mac.paginateLoad = function(){
+				$scope.hardDisk.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.mac.busy || ($scope.mac.page > $scope.mac.paginated.last_page)){
+					if($scope.hardDisk.busy || ($scope.hardDisk.page > $scope.hardDisk.paginated.last_page)){
 						return;
 					}
 					/**
@@ -3367,21 +2341,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.mac.busy = true;
+					$scope.hardDisk.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.mac.page, query)
+					AssetTag.activeUnit($scope.hardDisk.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.mac.page++;
+							$scope.hardDisk.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.mac.paginated.data.push(item);
+								$scope.hardDisk.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.mac.busy = false;
+							$scope.hardDisk.busy = false;
 						});
 				}
 				Preloader.stop();
@@ -3394,20 +2368,20 @@ adminModule
 		$scope.subheader.repairUnit = function(){
 			// start preloader
 			Preloader.preload();
-			// clear mac
-			$scope.mac.paginated = {};
-			$scope.mac.results = null;
-			$scope.mac.page = 2;
+			// clear hardDisk
+			$scope.hardDisk.paginated = {};
+			$scope.hardDisk.results = null;
+			$scope.hardDisk.page = 2;
 			AssetTag.repairUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Under Repair'
-				$scope.mac.paginated = data.data;
-				$scope.mac.paginated.show = true;
+				$scope.hardDisk.paginated = data.data;
+				$scope.hardDisk.paginated.show = true;
 
-				$scope.mac.paginateLoad = function(){
+				$scope.hardDisk.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.mac.busy || ($scope.mac.page > $scope.mac.paginated.last_page)){
+					if($scope.hardDisk.busy || ($scope.hardDisk.page > $scope.hardDisk.paginated.last_page)){
 						return;
 					}
 					/**
@@ -3415,21 +2389,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.mac.busy = true;
+					$scope.hardDisk.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.repairUnit($scope.mac.page, query)
+					AssetTag.repairUnit($scope.hardDisk.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.mac.page++;
+							$scope.hardDisk.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.mac.paginated.data.push(item);
+								$scope.hardDisk.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.mac.busy = false;
+							$scope.hardDisk.busy = false;
 						});
 				}
 				Preloader.stop();
@@ -3442,20 +2416,20 @@ adminModule
 		$scope.subheader.disposeUnit = function(){
 			// start preloader
 			Preloader.preload();
-			// clear mac
-			$scope.mac.paginated = {};
-			$scope.mac.results = null;
-			$scope.mac.page = 2;
+			// clear hardDisk
+			$scope.hardDisk.paginated = {};
+			$scope.hardDisk.results = null;
+			$scope.hardDisk.page = 2;
 			AssetTag.disposeUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Disposed'
-				$scope.mac.paginated = data.data;
-				$scope.mac.paginated.show = true;
+				$scope.hardDisk.paginated = data.data;
+				$scope.hardDisk.paginated.show = true;
 
-				$scope.mac.paginateLoad = function(){
+				$scope.hardDisk.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.mac.busy || ($scope.mac.page > $scope.mac.paginated.last_page)){
+					if($scope.hardDisk.busy || ($scope.hardDisk.page > $scope.hardDisk.paginated.last_page)){
 						return;
 					}
 					/**
@@ -3463,21 +2437,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.mac.busy = true;
+					$scope.hardDisk.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.disposeUnit($scope.mac.page, query)
+					AssetTag.disposeUnit($scope.hardDisk.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.mac.page++;
+							$scope.hardDisk.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.mac.paginated.data.push(item);
+								$scope.hardDisk.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.mac.busy = false;
+							$scope.hardDisk.busy = false;
 						});
 				}
 				Preloader.stop();
@@ -3496,24 +2470,24 @@ adminModule
 		$scope.rightSidenav.show = true;
 
 		/**
-		 * Object for mac
+		 * Object for hardDisk
 		 *
 		*/
-		$scope.mac = {};
+		$scope.hardDisk = {};
 		// 2 is default so the next page to be loaded will be page 2 
-		$scope.mac.page = 2;
+		$scope.hardDisk.page = 2;
 		// 
 		
 		AssetTag.activeUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Active'
-				$scope.mac.paginated = data.data;
-				$scope.mac.paginated.show = true;
+				$scope.hardDisk.paginated = data.data;
+				$scope.hardDisk.paginated.show = true;
 
-				$scope.mac.paginateLoad = function(){
+				$scope.hardDisk.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.mac.busy || ($scope.mac.page > $scope.mac.paginated.last_page)){
+					if($scope.hardDisk.busy || ($scope.hardDisk.page > $scope.hardDisk.paginated.last_page)){
 						return;
 					}
 					/**
@@ -3521,21 +2495,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.mac.busy = true;
+					$scope.hardDisk.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.mac.page, query)
+					AssetTag.activeUnit($scope.hardDisk.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.mac.page++;
+							$scope.hardDisk.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.mac.paginated.data.push(item);
+								$scope.hardDisk.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.mac.busy = false;
+							$scope.hardDisk.busy = false;
 						});
 				}
 			}, function(){
@@ -3561,23 +2535,23 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.mac.userInput = '';
+			$scope.hardDisk.userInput = '';
 			$scope.searchBar = false;
 		};
 		
 		
 		$scope.searchUserInput = function(){
-			$scope.mac.paginated.show = false;
+			$scope.hardDisk.paginated.show = false;
 			Preloader.preload();
 			var query = {};
-			query.userInput = $scope.mac.userInput;
+			query.userInput = $scope.hardDisk.userInput;
 			query.component_id = unitID;
-			query.component_type = 'Mac';
-			query.table_name = 'macs';
-			query.property_code = 'PMAC';
+			query.component_type = 'Headset';
+			query.table_name = 'headsets';
+			query.property_code = 'PHDS';
 			AssetTag.search(query)
 				.success(function(data){
-					$scope.mac.results = data;
+					$scope.hardDisk.results = data;
 					Preloader.stop();
 				})
 				.error(function(data){
@@ -3604,17 +2578,16 @@ adminModule
 					Preloader.error();
 				});
 		}
-
 		$scope.show = function(departmentID, workStationID){
 			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID':workStationID})
 		}
 	}]);
 
 adminModule
-	.controller('macUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'Mac', function($scope, $state, $stateParams, Mac){
-		$scope.asset = 'Mac';
+	.controller('hardDiskUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'HardDisk', function($scope, $state, $stateParams, HardDisk){
+		$scope.asset = 'Hard Disk';
 
-		Mac.other($stateParams.unitID)
+		HardDisk.other($stateParams.unitID)
 			.success(function(data){
 				$scope.others = data;
 			});
@@ -3624,7 +2597,7 @@ adminModule
 		};
 	}]);
 adminModule
-	.controller('macUnitToolbarController', ['$scope', '$state', '$stateParams', 'Mac', function($scope, $state, $stateParams, Mac){
+	.controller('hardDiskUnitToolbarController', ['$scope', '$state', '$stateParams', 'HardDisk', function($scope, $state, $stateParams, HardDisk){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -3642,10 +2615,521 @@ adminModule
 			$state.go('main.assets', {'assetID': $stateParams.assetID});
 		};
 
-		Mac.show($stateParams.unitID)
+		HardDisk.show($stateParams.unitID)
 			.success(function(data){
-				$scope.toolbar.parentState = data.type;
-				$scope.toolbar.childState = data.processor;
+				$scope.toolbar.parentState = data.model;
+				$scope.toolbar.childState = data.capacity;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		/**
+		 * Search database and look for user input depending on state.
+		 *
+		*/
+	}]);
+adminModule
+	.controller('addHeadsetDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Headset', function($scope, $state, $mdDialog, Preloader, Headset){
+		$scope.headset = {};
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			Headset.store($scope.headset)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		}
+
+	}]);
+adminModule
+	.controller('headsetContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Headset', function($scope, $state, $stateParams, $mdDialog, Preloader, Headset){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'assets';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.headset.paginated = {};
+			$scope.headset.page = 2;
+			Headset.paginate()
+				.then(function(data){
+					$scope.headset.paginated = data.data;
+					$scope.headset.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Headset';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addHeadsetDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-headset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
+
+		/**
+		 * Object for Headset
+		 *
+		*/
+		$scope.headset = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.headset.page = 2;
+
+		Headset.paginate()
+			.then(function(data){
+				$scope.headset.paginated = data.data;
+				$scope.headset.paginated.show = true;
+
+				$scope.headset.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.headset.busy || ($scope.headset.page > $scope.headset.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.headset.busy = true;
+
+					// Calls the next page of pagination.
+					Headset.paginate($scope.headset.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.headset.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.headset.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.headset.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+		
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.headset.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.headset.paginated.show = false;
+			Preloader.preload();
+			Headset.search($scope.headset)
+				.success(function(data){
+					$scope.headset.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
+		};
+	}]);
+adminModule
+	.controller('headsetToolbarController', ['$scope', 'Headset', function($scope, Headset){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'Headset';
+	}]);
+adminModule
+	.controller('headsetUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
+		var unitID = $stateParams.unitID;
+		var query = {};
+
+		query.component_id = unitID;
+		query.component_type = 'Headset';
+
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'units';
+
+		/* Refreshes the list */
+		$scope.subheader.activeUnit = function(){
+			// start preloader
+			Preloader.preload();
+			// clear headset
+			$scope.headset.paginated = {};
+			$scope.headset.results = null;
+			$scope.headset.page = 2;
+			AssetTag.activeUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Active'
+				$scope.headset.paginated = data.data;
+				$scope.headset.paginated.show = true;
+
+				$scope.headset.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.headset.busy || ($scope.headset.page > $scope.headset.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.headset.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.activeUnit($scope.headset.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.headset.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.headset.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.headset.busy = false;
+						});
+				}
+				Preloader.stop();
+			}, function(){
+				Preloader.error();
+			});
+		};
+
+		/* Refreshes the list and change it to repair */
+		$scope.subheader.repairUnit = function(){
+			// start preloader
+			Preloader.preload();
+			// clear headset
+			$scope.headset.paginated = {};
+			$scope.headset.results = null;
+			$scope.headset.page = 2;
+			AssetTag.repairUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Under Repair'
+				$scope.headset.paginated = data.data;
+				$scope.headset.paginated.show = true;
+
+				$scope.headset.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.headset.busy || ($scope.headset.page > $scope.headset.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.headset.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.repairUnit($scope.headset.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.headset.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.headset.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.headset.busy = false;
+						});
+				}
+				Preloader.stop();
+			}, function(){
+				Preloader.error();
+			});
+		};
+
+		/* Refreshes the list and change it to repair */
+		$scope.subheader.disposeUnit = function(){
+			// start preloader
+			Preloader.preload();
+			// clear headset
+			$scope.headset.paginated = {};
+			$scope.headset.results = null;
+			$scope.headset.page = 2;
+			AssetTag.disposeUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Disposed'
+				$scope.headset.paginated = data.data;
+				$scope.headset.paginated.show = true;
+
+				$scope.headset.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.headset.busy || ($scope.headset.page > $scope.headset.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.headset.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.disposeUnit($scope.headset.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.headset.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.headset.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.headset.busy = false;
+						});
+				}
+				Preloader.stop();
+			}, function(){
+				Preloader.error();
+			});
+		};
+
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = true;
+
+		/**
+		 * Object for headset
+		 *
+		*/
+		$scope.headset = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.headset.page = 2;
+		// 
+		
+		AssetTag.activeUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Active'
+				$scope.headset.paginated = data.data;
+				$scope.headset.paginated.show = true;
+
+				$scope.headset.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.headset.busy || ($scope.headset.page > $scope.headset.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.headset.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.activeUnit($scope.headset.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.headset.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.headset.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.headset.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.headset.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.headset.paginated.show = false;
+			Preloader.preload();
+			var query = {};
+			query.userInput = $scope.headset.userInput;
+			query.component_id = unitID;
+			query.component_type = 'Headset';
+			query.table_name = 'headsets';
+			query.property_code = 'PHDS';
+			AssetTag.search(query)
+				.success(function(data){
+					$scope.headset.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+
+		$scope.repaired = function(id){
+			AssetTag.active(id)
+				.success(function(){
+					$scope.subheader.repairUnit();
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+
+		$scope.dispose = function(id){
+			AssetTag.dispose(id)
+				.success(function(){
+					$scope.subheader.repairUnit();
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+		
+		$scope.show = function(departmentID, workStationID){
+			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID':workStationID})
+		}
+	}]);
+
+adminModule
+	.controller('headsetUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'Headset', function($scope, $state, $stateParams, Headset){
+		$scope.asset = 'Headset';
+
+		Headset.other($stateParams.unitID)
+			.success(function(data){
+				$scope.others = data;
+			});
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID': id});
+		};
+	}]);
+adminModule
+	.controller('headsetUnitToolbarController', ['$scope', '$state', '$stateParams', 'Headset', function($scope, $state, $stateParams, Headset){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+
+		$scope.toolbar.showBack = true;
+
+		$scope.toolbar.back = function(){
+			$state.go('main.assets', {'assetID': $stateParams.assetID});
+		};
+
+		Headset.show($stateParams.unitID)
+			.success(function(data){
+				$scope.toolbar.parentState = data.brand;
+				$scope.toolbar.childState = data.model;
 			})
 			.error(function(){
 				Preloader.error();
@@ -4167,19 +3651,12 @@ adminModule
 		*/
 	}]);
 adminModule
-	.controller('addMonitorDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Monitor', function($scope, $state, $mdDialog, Preloader, Monitor){
-		$scope.monitor = {};
+	.controller('addMacDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Mac', function($scope, $state, $mdDialog, Preloader, Mac){
+		$scope.mac = {};
 
-		$scope.monitor.sizes = [
-			{'size':'16"'},
-			{'size':'16.5"'},
-			{'size':'17"'},
-			{'size':'17.5"'},
-			{'size':'18"'},
-			{'size':'18.5"'},
-			{'size':'19"'},
-			{'size':'19.5"'},
-			{'size':'20"'},
+		$scope.types = [
+			{'name':'iMac'},
+			{'name':'Mac Mini'},
 		];
 
 		$scope.cancel = function(){
@@ -4192,7 +3669,7 @@ adminModule
 			/**
 			 * Stores Single Record
 			*/
-			Monitor.store($scope.monitor)
+			Mac.store($scope.mac)
 				.then(function(){
 					// Stops Preloader 
 					Preloader.stop();
@@ -4200,9 +3677,10 @@ adminModule
 					Preloader.error();
 				});
 		}
+
 	}]);
 adminModule
-	.controller('monitorContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Monitor', function($scope, $state, $stateParams, $mdDialog, Preloader, Monitor){
+	.controller('macContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Mac', function($scope, $state, $stateParams, $mdDialog, Preloader, Mac){
 		/**
 		 * Object for subheader
 		 *
@@ -4215,12 +3693,12 @@ adminModule
 			// start preloader
 			Preloader.preload();
 			// clear desktop
-			$scope.monitor.paginated = {};
-			$scope.monitor.page = 2;
-			Monitor.paginate()
+			$scope.mac.paginated = {};
+			$scope.mac.page = 2;
+			Mac.paginate()
 				.then(function(data){
-					$scope.monitor.paginated = data.data;
-					$scope.monitor.paginated.show = true;
+					$scope.mac.paginated = data.data;
+					$scope.mac.paginated.show = true;
 					// stop preload
 					Preloader.stop();
 				}, function(){
@@ -4236,13 +3714,13 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
-		$scope.fab.tooltip = 'Add Monitor';		
+		$scope.fab.tooltip = 'Add Mac';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
 		    $mdDialog.show({
-		      	controller: 'addMonitorDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-monitor-dialog.template.html',
+		      	controller: 'addMacDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-mac-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
@@ -4260,21 +3738,21 @@ adminModule
 		$scope.rightSidenav.show = false;
 
 		/**
-		 * Object for Headset
+		 * Object for mac
 		 *
 		*/
-		$scope.monitor = {};
+		$scope.mac = {};
 		// 2 is default so the next page to be loaded will be page 2 
-		$scope.monitor.page = 2;
+		$scope.mac.page = 2;
 
-		Monitor.paginate()
+		Mac.paginate()
 			.then(function(data){
-				$scope.monitor.paginated = data.data;
-				$scope.monitor.paginated.show = true;
+				$scope.mac.paginated = data.data;
+				$scope.mac.paginated.show = true;
 
-				$scope.monitor.paginateLoad = function(){
+				$scope.mac.paginateLoad = function(){
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.monitor.busy || ($scope.monitor.page > $scope.monitor.paginated.last_page)){
+					if($scope.mac.busy || ($scope.mac.page > $scope.mac.paginated.last_page)){
 						return;
 					}
 					/**
@@ -4282,21 +3760,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.monitor.busy = true;
+					$scope.mac.busy = true;
 
 					// Calls the next page of pagination.
-					Monitor.paginate($scope.monitor.page)
+					Mac.paginate($scope.mac.page)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.monitor.page++;
+							$scope.mac.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.monitor.paginated.data.push(item);
+								$scope.mac.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.monitor.busy = false;
+							$scope.mac.busy = false;
 						});
 				}
 			}, function(){
@@ -4322,17 +3800,17 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.monitor.userInput = '';
+			$scope.mac.userInput = '';
 			$scope.searchBar = false;
 		};
 		
 		
 		$scope.searchUserInput = function(){
-			$scope.monitor.paginated.show = false;
+			$scope.mac.paginated.show = false;
 			Preloader.preload();
-			Monitor.search($scope.monitor)
+			Mac.search($scope.mac)
 				.success(function(data){
-					$scope.monitor.results = data;
+					$scope.mac.results = data;
 					Preloader.stop();
 				})
 				.error(function(data){
@@ -4345,7 +3823,7 @@ adminModule
 		};
 	}]);
 adminModule
-	.controller('monitorToolbarController', ['$scope', '$stateParams', 'Monitor', function($scope, $stateParams, Monitor){
+	.controller('macToolbarController', ['$scope', 'Mac', function($scope, Mac){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -4357,15 +3835,15 @@ adminModule
 		 *
 		*/
 		$scope.toolbar.parentState = 'Assets';
-		$scope.toolbar.childState = 'Monitor';
+		$scope.toolbar.childState = 'Mac';
 	}]);
 adminModule
-	.controller('monitorUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
+	.controller('macUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
 		var unitID = $stateParams.unitID;
 		var query = {};
 
 		query.component_id = unitID;
-		query.component_type = 'Monitor';
+		query.component_type = 'Mac';
 
 		/**
 		 * Object for subheader
@@ -4378,20 +3856,20 @@ adminModule
 		$scope.subheader.activeUnit = function(){
 			// start preloader
 			Preloader.preload();
-			// clear monitor
-			$scope.monitor.paginated = {};
-			$scope.monitor.results = null;
-			$scope.monitor.page = 2;
+			// clear mac
+			$scope.mac.paginated = {};
+			$scope.mac.results = null;
+			$scope.mac.page = 2;
 			AssetTag.activeUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Active'
-				$scope.monitor.paginated = data.data;
-				$scope.monitor.paginated.show = true;
+				$scope.mac.paginated = data.data;
+				$scope.mac.paginated.show = true;
 
-				$scope.monitor.paginateLoad = function(){
+				$scope.mac.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.monitor.busy || ($scope.monitor.page > $scope.monitor.paginated.last_page)){
+					if($scope.mac.busy || ($scope.mac.page > $scope.mac.paginated.last_page)){
 						return;
 					}
 					/**
@@ -4399,21 +3877,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.monitor.busy = true;
+					$scope.mac.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.monitor.page, query)
+					AssetTag.activeUnit($scope.mac.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.monitor.page++;
+							$scope.mac.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.monitor.paginated.data.push(item);
+								$scope.mac.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.monitor.busy = false;
+							$scope.mac.busy = false;
 						});
 				}
 				Preloader.stop();
@@ -4426,20 +3904,20 @@ adminModule
 		$scope.subheader.repairUnit = function(){
 			// start preloader
 			Preloader.preload();
-			// clear monitor
-			$scope.monitor.paginated = {};
-			$scope.monitor.results = null;
-			$scope.monitor.page = 2;
+			// clear mac
+			$scope.mac.paginated = {};
+			$scope.mac.results = null;
+			$scope.mac.page = 2;
 			AssetTag.repairUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Under Repair'
-				$scope.monitor.paginated = data.data;
-				$scope.monitor.paginated.show = true;
+				$scope.mac.paginated = data.data;
+				$scope.mac.paginated.show = true;
 
-				$scope.monitor.paginateLoad = function(){
+				$scope.mac.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.monitor.busy || ($scope.monitor.page > $scope.monitor.paginated.last_page)){
+					if($scope.mac.busy || ($scope.mac.page > $scope.mac.paginated.last_page)){
 						return;
 					}
 					/**
@@ -4447,21 +3925,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.monitor.busy = true;
+					$scope.mac.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.repairUnit($scope.monitor.page, query)
+					AssetTag.repairUnit($scope.mac.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.monitor.page++;
+							$scope.mac.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.monitor.paginated.data.push(item);
+								$scope.mac.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.monitor.busy = false;
+							$scope.mac.busy = false;
 						});
 				}
 				Preloader.stop();
@@ -4474,20 +3952,20 @@ adminModule
 		$scope.subheader.disposeUnit = function(){
 			// start preloader
 			Preloader.preload();
-			// clear monitor
-			$scope.monitor.paginated = {};
-			$scope.monitor.results = null;
-			$scope.monitor.page = 2;
+			// clear mac
+			$scope.mac.paginated = {};
+			$scope.mac.results = null;
+			$scope.mac.page = 2;
 			AssetTag.disposeUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Disposed'
-				$scope.monitor.paginated = data.data;
-				$scope.monitor.paginated.show = true;
+				$scope.mac.paginated = data.data;
+				$scope.mac.paginated.show = true;
 
-				$scope.monitor.paginateLoad = function(){
+				$scope.mac.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.monitor.busy || ($scope.monitor.page > $scope.monitor.paginated.last_page)){
+					if($scope.mac.busy || ($scope.mac.page > $scope.mac.paginated.last_page)){
 						return;
 					}
 					/**
@@ -4495,21 +3973,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.monitor.busy = true;
+					$scope.mac.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.disposeUnit($scope.monitor.page, query)
+					AssetTag.disposeUnit($scope.mac.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.monitor.page++;
+							$scope.mac.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.monitor.paginated.data.push(item);
+								$scope.mac.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.monitor.busy = false;
+							$scope.mac.busy = false;
 						});
 				}
 				Preloader.stop();
@@ -4528,24 +4006,24 @@ adminModule
 		$scope.rightSidenav.show = true;
 
 		/**
-		 * Object for monitor
+		 * Object for mac
 		 *
 		*/
-		$scope.monitor = {};
+		$scope.mac = {};
 		// 2 is default so the next page to be loaded will be page 2 
-		$scope.monitor.page = 2;
+		$scope.mac.page = 2;
 		// 
 		
 		AssetTag.activeUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Active'
-				$scope.monitor.paginated = data.data;
-				$scope.monitor.paginated.show = true;
+				$scope.mac.paginated = data.data;
+				$scope.mac.paginated.show = true;
 
-				$scope.monitor.paginateLoad = function(){
+				$scope.mac.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.monitor.busy || ($scope.monitor.page > $scope.monitor.paginated.last_page)){
+					if($scope.mac.busy || ($scope.mac.page > $scope.mac.paginated.last_page)){
 						return;
 					}
 					/**
@@ -4553,21 +4031,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.monitor.busy = true;
+					$scope.mac.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.monitor.page, query)
+					AssetTag.activeUnit($scope.mac.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.monitor.page++;
+							$scope.mac.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.monitor.paginated.data.push(item);
+								$scope.mac.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.monitor.busy = false;
+							$scope.mac.busy = false;
 						});
 				}
 			}, function(){
@@ -4593,23 +4071,23 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.monitor.userInput = '';
+			$scope.mac.userInput = '';
 			$scope.searchBar = false;
 		};
 		
 		
 		$scope.searchUserInput = function(){
-			$scope.monitor.paginated.show = false;
+			$scope.mac.paginated.show = false;
 			Preloader.preload();
 			var query = {};
-			query.userInput = $scope.monitor.userInput;
+			query.userInput = $scope.mac.userInput;
 			query.component_id = unitID;
-			query.component_type = 'Monitor';
-			query.table_name = 'monitors';
-			query.property_code = 'PMON';
+			query.component_type = 'Mac';
+			query.table_name = 'macs';
+			query.property_code = 'PMAC';
 			AssetTag.search(query)
 				.success(function(data){
-					$scope.monitor.results = data;
+					$scope.mac.results = data;
 					Preloader.stop();
 				})
 				.error(function(data){
@@ -4636,16 +4114,17 @@ adminModule
 					Preloader.error();
 				});
 		}
+
 		$scope.show = function(departmentID, workStationID){
 			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID':workStationID})
 		}
 	}]);
 
 adminModule
-	.controller('monitorUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'Monitor', function($scope, $state, $stateParams, Monitor){
-		$scope.asset = 'Monitor';
+	.controller('macUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'Mac', function($scope, $state, $stateParams, Mac){
+		$scope.asset = 'Mac';
 
-		Monitor.other($stateParams.unitID)
+		Mac.other($stateParams.unitID)
 			.success(function(data){
 				$scope.others = data;
 			});
@@ -4655,7 +4134,7 @@ adminModule
 		};
 	}]);
 adminModule
-	.controller('monitorUnitToolbarController', ['$scope', '$state', '$stateParams', 'Monitor', function($scope, $state, $stateParams, Monitor){
+	.controller('macUnitToolbarController', ['$scope', '$state', '$stateParams', 'Mac', function($scope, $state, $stateParams, Mac){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -4673,10 +4152,10 @@ adminModule
 			$state.go('main.assets', {'assetID': $stateParams.assetID});
 		};
 
-		Monitor.show($stateParams.unitID)
+		Mac.show($stateParams.unitID)
 			.success(function(data){
-				$scope.toolbar.parentState = data.brand;
-				$scope.toolbar.childState = data.model;
+				$scope.toolbar.parentState = data.type;
+				$scope.toolbar.childState = data.processor;
 			})
 			.error(function(){
 				Preloader.error();
@@ -5229,6 +4708,527 @@ adminModule
 			.success(function(data){
 				$scope.toolbar.parentState = data.brand;
 				$scope.toolbar.childState = data.size;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		/**
+		 * Search database and look for user input depending on state.
+		 *
+		*/
+	}]);
+adminModule
+	.controller('addMonitorDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Monitor', function($scope, $state, $mdDialog, Preloader, Monitor){
+		$scope.monitor = {};
+
+		$scope.monitor.sizes = [
+			{'size':'16"'},
+			{'size':'16.5"'},
+			{'size':'17"'},
+			{'size':'17.5"'},
+			{'size':'18"'},
+			{'size':'18.5"'},
+			{'size':'19"'},
+			{'size':'19.5"'},
+			{'size':'20"'},
+		];
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			Monitor.store($scope.monitor)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		}
+	}]);
+adminModule
+	.controller('monitorContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Monitor', function($scope, $state, $stateParams, $mdDialog, Preloader, Monitor){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'assets';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.monitor.paginated = {};
+			$scope.monitor.page = 2;
+			Monitor.paginate()
+				.then(function(data){
+					$scope.monitor.paginated = data.data;
+					$scope.monitor.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Monitor';		
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addMonitorDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-monitor-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
+
+		/**
+		 * Object for Headset
+		 *
+		*/
+		$scope.monitor = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.monitor.page = 2;
+
+		Monitor.paginate()
+			.then(function(data){
+				$scope.monitor.paginated = data.data;
+				$scope.monitor.paginated.show = true;
+
+				$scope.monitor.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.monitor.busy || ($scope.monitor.page > $scope.monitor.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.monitor.busy = true;
+
+					// Calls the next page of pagination.
+					Monitor.paginate($scope.monitor.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.monitor.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.monitor.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.monitor.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+		
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.monitor.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.monitor.paginated.show = false;
+			Preloader.preload();
+			Monitor.search($scope.monitor)
+				.success(function(data){
+					$scope.monitor.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
+		};
+	}]);
+adminModule
+	.controller('monitorToolbarController', ['$scope', '$stateParams', 'Monitor', function($scope, $stateParams, Monitor){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'Monitor';
+	}]);
+adminModule
+	.controller('monitorUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
+		var unitID = $stateParams.unitID;
+		var query = {};
+
+		query.component_id = unitID;
+		query.component_type = 'Monitor';
+
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'units';
+
+		/* Refreshes the list */
+		$scope.subheader.activeUnit = function(){
+			// start preloader
+			Preloader.preload();
+			// clear monitor
+			$scope.monitor.paginated = {};
+			$scope.monitor.results = null;
+			$scope.monitor.page = 2;
+			AssetTag.activeUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Active'
+				$scope.monitor.paginated = data.data;
+				$scope.monitor.paginated.show = true;
+
+				$scope.monitor.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.monitor.busy || ($scope.monitor.page > $scope.monitor.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.monitor.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.activeUnit($scope.monitor.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.monitor.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.monitor.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.monitor.busy = false;
+						});
+				}
+				Preloader.stop();
+			}, function(){
+				Preloader.error();
+			});
+		};
+
+		/* Refreshes the list and change it to repair */
+		$scope.subheader.repairUnit = function(){
+			// start preloader
+			Preloader.preload();
+			// clear monitor
+			$scope.monitor.paginated = {};
+			$scope.monitor.results = null;
+			$scope.monitor.page = 2;
+			AssetTag.repairUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Under Repair'
+				$scope.monitor.paginated = data.data;
+				$scope.monitor.paginated.show = true;
+
+				$scope.monitor.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.monitor.busy || ($scope.monitor.page > $scope.monitor.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.monitor.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.repairUnit($scope.monitor.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.monitor.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.monitor.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.monitor.busy = false;
+						});
+				}
+				Preloader.stop();
+			}, function(){
+				Preloader.error();
+			});
+		};
+
+		/* Refreshes the list and change it to repair */
+		$scope.subheader.disposeUnit = function(){
+			// start preloader
+			Preloader.preload();
+			// clear monitor
+			$scope.monitor.paginated = {};
+			$scope.monitor.results = null;
+			$scope.monitor.page = 2;
+			AssetTag.disposeUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Disposed'
+				$scope.monitor.paginated = data.data;
+				$scope.monitor.paginated.show = true;
+
+				$scope.monitor.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.monitor.busy || ($scope.monitor.page > $scope.monitor.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.monitor.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.disposeUnit($scope.monitor.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.monitor.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.monitor.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.monitor.busy = false;
+						});
+				}
+				Preloader.stop();
+			}, function(){
+				Preloader.error();
+			});
+		};
+
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = true;
+
+		/**
+		 * Object for monitor
+		 *
+		*/
+		$scope.monitor = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.monitor.page = 2;
+		// 
+		
+		AssetTag.activeUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Active'
+				$scope.monitor.paginated = data.data;
+				$scope.monitor.paginated.show = true;
+
+				$scope.monitor.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.monitor.busy || ($scope.monitor.page > $scope.monitor.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.monitor.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.activeUnit($scope.monitor.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.monitor.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.monitor.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.monitor.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.monitor.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.monitor.paginated.show = false;
+			Preloader.preload();
+			var query = {};
+			query.userInput = $scope.monitor.userInput;
+			query.component_id = unitID;
+			query.component_type = 'Monitor';
+			query.table_name = 'monitors';
+			query.property_code = 'PMON';
+			AssetTag.search(query)
+				.success(function(data){
+					$scope.monitor.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+
+		$scope.repaired = function(id){
+			AssetTag.active(id)
+				.success(function(){
+					$scope.subheader.repairUnit();
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+
+		$scope.dispose = function(id){
+			AssetTag.dispose(id)
+				.success(function(){
+					$scope.subheader.repairUnit();
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+		$scope.show = function(departmentID, workStationID){
+			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID':workStationID})
+		}
+	}]);
+
+adminModule
+	.controller('monitorUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'Monitor', function($scope, $state, $stateParams, Monitor){
+		$scope.asset = 'Monitor';
+
+		Monitor.other($stateParams.unitID)
+			.success(function(data){
+				$scope.others = data;
+			});
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID': id});
+		};
+	}]);
+adminModule
+	.controller('monitorUnitToolbarController', ['$scope', '$state', '$stateParams', 'Monitor', function($scope, $state, $stateParams, Monitor){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+
+		$scope.toolbar.showBack = true;
+
+		$scope.toolbar.back = function(){
+			$state.go('main.assets', {'assetID': $stateParams.assetID});
+		};
+
+		Monitor.show($stateParams.unitID)
+			.success(function(data){
+				$scope.toolbar.parentState = data.brand;
+				$scope.toolbar.childState = data.model;
 			})
 			.error(function(){
 				Preloader.error();
@@ -6261,6 +6261,521 @@ adminModule
 		*/
 	}]);
 adminModule
+	.controller('addOtherComponentDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'OtherComponent', function($scope, $state, $mdDialog, Preloader, OtherComponent){
+		$scope.otherComponent = {};
+
+		$scope.otherComponent.sizes = [
+			{'size':'1GB'},
+			{'size':'2GB'},
+		];
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			OtherComponent.store($scope.otherComponent)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		}
+	}]);
+adminModule
+	.controller('otherComponentContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'OtherComponent', function($scope, $state, $stateParams, $mdDialog, Preloader, OtherComponent){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'assets';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.otherComponent.paginated = {};
+			$scope.otherComponent.page = 2;
+			OtherComponent.paginate()
+				.then(function(data){
+					$scope.otherComponent.paginated = data.data;
+					$scope.otherComponent.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Other Component';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addOtherComponentDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-other-component-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
+
+		/**
+		 * Object for otherComponent
+		 *
+		*/
+		$scope.otherComponent = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.otherComponent.page = 2;
+
+		OtherComponent.paginate()
+			.then(function(data){
+				$scope.otherComponent.paginated = data.data;
+				$scope.otherComponent.paginated.show = true;
+
+				$scope.otherComponent.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.otherComponent.busy || ($scope.otherComponent.page > $scope.otherComponent.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.otherComponent.busy = true;
+
+					// Calls the next page of pagination.
+					OtherComponent.paginate($scope.otherComponent.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.otherComponent.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.otherComponent.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.otherComponent.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+		
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.otherComponent.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.otherComponent.paginated.show = false;
+			Preloader.preload();
+			OtherComponent.search($scope.otherComponent)
+				.success(function(data){
+					$scope.otherComponent.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
+		};
+	}]);
+adminModule
+	.controller('otherComponentToolbarController', ['$scope', '$stateParams', 'OtherComponent', function($scope, $stateParams, OtherComponent){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'Other Component';
+	}]);
+adminModule
+	.controller('otherComponentUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
+		var unitID = $stateParams.unitID;
+		var query = {};
+
+		query.component_id = unitID;
+		query.component_type = 'Other Component';
+
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'units';
+
+		/* Refreshes the list */
+		$scope.subheader.activeUnit = function(){
+			// start preloader
+			Preloader.preload();
+			// clear otherComponent
+			$scope.otherComponent.paginated = {};
+			$scope.otherComponent.results = null;
+			$scope.otherComponent.page = 2;
+			AssetTag.activeUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Active'
+				$scope.otherComponent.paginated = data.data;
+				$scope.otherComponent.paginated.show = true;
+
+				$scope.otherComponent.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.otherComponent.busy || ($scope.otherComponent.page > $scope.otherComponent.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.otherComponent.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.activeUnit($scope.otherComponent.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.otherComponent.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.otherComponent.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.otherComponent.busy = false;
+						});
+				}
+				Preloader.stop();
+			}, function(){
+				Preloader.error();
+			});
+		};
+
+		/* Refreshes the list and change it to repair */
+		$scope.subheader.repairUnit = function(){
+			// start preloader
+			Preloader.preload();
+			// clear otherComponent
+			$scope.otherComponent.paginated = {};
+			$scope.otherComponent.results = null;
+			$scope.otherComponent.page = 2;
+			AssetTag.repairUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Under Repair'
+				$scope.otherComponent.paginated = data.data;
+				$scope.otherComponent.paginated.show = true;
+
+				$scope.otherComponent.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.otherComponent.busy || ($scope.otherComponent.page > $scope.otherComponent.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.otherComponent.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.repairUnit($scope.otherComponent.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.otherComponent.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.otherComponent.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.otherComponent.busy = false;
+						});
+				}
+				Preloader.stop();
+			}, function(){
+				Preloader.error();
+			});
+		};
+
+		/* Refreshes the list and change it to repair */
+		$scope.subheader.disposeUnit = function(){
+			// start preloader
+			Preloader.preload();
+			// clear otherComponent
+			$scope.otherComponent.paginated = {};
+			$scope.otherComponent.results = null;
+			$scope.otherComponent.page = 2;
+			AssetTag.disposeUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Disposed'
+				$scope.otherComponent.paginated = data.data;
+				$scope.otherComponent.paginated.show = true;
+
+				$scope.otherComponent.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.otherComponent.busy || ($scope.otherComponent.page > $scope.otherComponent.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.otherComponent.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.disposeUnit($scope.otherComponent.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.otherComponent.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.otherComponent.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.otherComponent.busy = false;
+						});
+				}
+				Preloader.stop();
+			}, function(){
+				Preloader.error();
+			});
+		};
+
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = true;
+
+		/**
+		 * Object for otherComponent
+		 *
+		*/
+		$scope.otherComponent = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.otherComponent.page = 2;
+		// 
+		
+		AssetTag.activeUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Active'
+				$scope.otherComponent.paginated = data.data;
+				$scope.otherComponent.paginated.show = true;
+
+				$scope.otherComponent.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.otherComponent.busy || ($scope.otherComponent.page > $scope.otherComponent.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.otherComponent.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.activeUnit($scope.otherComponent.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.otherComponent.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.otherComponent.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.otherComponent.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.otherComponent.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.otherComponent.paginated.show = false;
+			Preloader.preload();
+			var query = {};
+			query.userInput = $scope.otherComponent.userInput;
+			query.component_id = unitID;
+			query.component_type = 'Other Component';
+			query.table_name = 'other_components';
+			query.property_code = 'POTH';
+			AssetTag.search(query)
+				.success(function(data){
+					$scope.otherComponent.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+
+		$scope.repaired = function(id){
+			AssetTag.active(id)
+				.success(function(){
+					$scope.subheader.repairUnit();
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+
+		$scope.dispose = function(id){
+			AssetTag.dispose(id)
+				.success(function(){
+					$scope.subheader.repairUnit();
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+
+		$scope.show = function(departmentID, workStationID){
+			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID':workStationID})
+		}
+	}]);
+
+adminModule
+	.controller('otherComponentUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'OtherComponent', function($scope, $state, $stateParams, OtherComponent){
+		$scope.asset = 'Component';
+
+		OtherComponent.other($stateParams.unitID)
+			.success(function(data){
+				$scope.others = data;
+			});
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID': id});
+		};
+	}]);
+adminModule
+	.controller('otherComponentUnitToolbarController', ['$scope', '$state', '$stateParams', 'OtherComponent', function($scope, $state, $stateParams, OtherComponent){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+
+		$scope.toolbar.showBack = true;
+
+		$scope.toolbar.back = function(){
+			$state.go('main.assets', {'assetID': $stateParams.assetID});
+		};
+
+		OtherComponent.show($stateParams.unitID)
+			.success(function(data){
+				$scope.toolbar.parentState = data.brand;
+				$scope.toolbar.childState = data.model;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		/**
+		 * Search database and look for user input depending on state.
+		 *
+		*/
+	}]);
+adminModule
 	.controller('addPortableHardDiskDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'PortableHardDisk', function($scope, $state, $mdDialog, Preloader, PortableHardDisk){
 		$scope.portableHardDisk = {};
 
@@ -6779,13 +7294,8 @@ adminModule
 		*/
 	}]);
 adminModule
-	.controller('addOtherComponentDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'OtherComponent', function($scope, $state, $mdDialog, Preloader, OtherComponent){
-		$scope.otherComponent = {};
-
-		$scope.otherComponent.sizes = [
-			{'size':'1GB'},
-			{'size':'2GB'},
-		];
+	.controller('addProjectorDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Projector', function($scope, $state, $mdDialog, Preloader, Projector){
+		$scope.projector = {};
 
 		$scope.cancel = function(){
 			$mdDialog.cancel();
@@ -6797,7 +7307,7 @@ adminModule
 			/**
 			 * Stores Single Record
 			*/
-			OtherComponent.store($scope.otherComponent)
+			Projector.store($scope.projector)
 				.then(function(){
 					// Stops Preloader 
 					Preloader.stop();
@@ -6805,9 +7315,10 @@ adminModule
 					Preloader.error();
 				});
 		}
+
 	}]);
 adminModule
-	.controller('otherComponentContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'OtherComponent', function($scope, $state, $stateParams, $mdDialog, Preloader, OtherComponent){
+	.controller('projectorContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Projector', function($scope, $state, $stateParams, $mdDialog, Preloader, Projector){
 		/**
 		 * Object for subheader
 		 *
@@ -6820,12 +7331,12 @@ adminModule
 			// start preloader
 			Preloader.preload();
 			// clear desktop
-			$scope.otherComponent.paginated = {};
-			$scope.otherComponent.page = 2;
-			OtherComponent.paginate()
+			$scope.projector.paginated = {};
+			$scope.projector.page = 2;
+			Projector.paginate()
 				.then(function(data){
-					$scope.otherComponent.paginated = data.data;
-					$scope.otherComponent.paginated.show = true;
+					$scope.projector.paginated = data.data;
+					$scope.projector.paginated.show = true;
 					// stop preload
 					Preloader.stop();
 				}, function(){
@@ -6841,13 +7352,13 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
-		$scope.fab.tooltip = 'Add Other Component';
+		$scope.fab.tooltip = 'Add projector';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
 		    $mdDialog.show({
-		      	controller: 'addOtherComponentDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-other-component-dialog.template.html',
+		      	controller: 'addProjectorDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-projector-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
@@ -6865,21 +7376,21 @@ adminModule
 		$scope.rightSidenav.show = false;
 
 		/**
-		 * Object for otherComponent
+		 * Object for projector
 		 *
 		*/
-		$scope.otherComponent = {};
+		$scope.projector = {};
 		// 2 is default so the next page to be loaded will be page 2 
-		$scope.otherComponent.page = 2;
+		$scope.projector.page = 2;
 
-		OtherComponent.paginate()
+		Projector.paginate()
 			.then(function(data){
-				$scope.otherComponent.paginated = data.data;
-				$scope.otherComponent.paginated.show = true;
+				$scope.projector.paginated = data.data;
+				$scope.projector.paginated.show = true;
 
-				$scope.otherComponent.paginateLoad = function(){
+				$scope.projector.paginateLoad = function(){
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.otherComponent.busy || ($scope.otherComponent.page > $scope.otherComponent.paginated.last_page)){
+					if($scope.projector.busy || ($scope.projector.page > $scope.projector.paginated.last_page)){
 						return;
 					}
 					/**
@@ -6887,21 +7398,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.otherComponent.busy = true;
+					$scope.projector.busy = true;
 
 					// Calls the next page of pagination.
-					OtherComponent.paginate($scope.otherComponent.page)
+					Projector.paginate($scope.projector.page)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.otherComponent.page++;
+							$scope.projector.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.otherComponent.paginated.data.push(item);
+								$scope.projector.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.otherComponent.busy = false;
+							$scope.projector.busy = false;
 						});
 				}
 			}, function(){
@@ -6927,17 +7438,17 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.otherComponent.userInput = '';
+			$scope.projector.userInput = '';
 			$scope.searchBar = false;
 		};
 		
 		
 		$scope.searchUserInput = function(){
-			$scope.otherComponent.paginated.show = false;
+			$scope.projector.paginated.show = false;
 			Preloader.preload();
-			OtherComponent.search($scope.otherComponent)
+			Projector.search($scope.projector)
 				.success(function(data){
-					$scope.otherComponent.results = data;
+					$scope.projector.results = data;
 					Preloader.stop();
 				})
 				.error(function(data){
@@ -6950,7 +7461,7 @@ adminModule
 		};
 	}]);
 adminModule
-	.controller('otherComponentToolbarController', ['$scope', '$stateParams', 'OtherComponent', function($scope, $stateParams, OtherComponent){
+	.controller('projectorToolbarController', ['$scope', 'Projector', function($scope, Projector){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -6962,15 +7473,15 @@ adminModule
 		 *
 		*/
 		$scope.toolbar.parentState = 'Assets';
-		$scope.toolbar.childState = 'Other Component';
+		$scope.toolbar.childState = 'Projector';
 	}]);
 adminModule
-	.controller('otherComponentUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
+	.controller('projectorUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
 		var unitID = $stateParams.unitID;
 		var query = {};
 
 		query.component_id = unitID;
-		query.component_type = 'Other Component';
+		query.component_type = 'Projector';
 
 		/**
 		 * Object for subheader
@@ -6983,20 +7494,20 @@ adminModule
 		$scope.subheader.activeUnit = function(){
 			// start preloader
 			Preloader.preload();
-			// clear otherComponent
-			$scope.otherComponent.paginated = {};
-			$scope.otherComponent.results = null;
-			$scope.otherComponent.page = 2;
+			// clear projector
+			$scope.projector.paginated = {};
+			$scope.projector.results = null;
+			$scope.projector.page = 2;
 			AssetTag.activeUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Active'
-				$scope.otherComponent.paginated = data.data;
-				$scope.otherComponent.paginated.show = true;
+				$scope.projector.paginated = data.data;
+				$scope.projector.paginated.show = true;
 
-				$scope.otherComponent.paginateLoad = function(){
+				$scope.projector.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.otherComponent.busy || ($scope.otherComponent.page > $scope.otherComponent.paginated.last_page)){
+					if($scope.projector.busy || ($scope.projector.page > $scope.projector.paginated.last_page)){
 						return;
 					}
 					/**
@@ -7004,21 +7515,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.otherComponent.busy = true;
+					$scope.projector.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.otherComponent.page, query)
+					AssetTag.activeUnit($scope.projector.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.otherComponent.page++;
+							$scope.projector.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.otherComponent.paginated.data.push(item);
+								$scope.projector.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.otherComponent.busy = false;
+							$scope.projector.busy = false;
 						});
 				}
 				Preloader.stop();
@@ -7031,20 +7542,20 @@ adminModule
 		$scope.subheader.repairUnit = function(){
 			// start preloader
 			Preloader.preload();
-			// clear otherComponent
-			$scope.otherComponent.paginated = {};
-			$scope.otherComponent.results = null;
-			$scope.otherComponent.page = 2;
+			// clear projector
+			$scope.projector.paginated = {};
+			$scope.projector.results = null;
+			$scope.projector.page = 2;
 			AssetTag.repairUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Under Repair'
-				$scope.otherComponent.paginated = data.data;
-				$scope.otherComponent.paginated.show = true;
+				$scope.projector.paginated = data.data;
+				$scope.projector.paginated.show = true;
 
-				$scope.otherComponent.paginateLoad = function(){
+				$scope.projector.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.otherComponent.busy || ($scope.otherComponent.page > $scope.otherComponent.paginated.last_page)){
+					if($scope.projector.busy || ($scope.projector.page > $scope.projector.paginated.last_page)){
 						return;
 					}
 					/**
@@ -7052,21 +7563,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.otherComponent.busy = true;
+					$scope.projector.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.repairUnit($scope.otherComponent.page, query)
+					AssetTag.repairUnit($scope.projector.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.otherComponent.page++;
+							$scope.projector.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.otherComponent.paginated.data.push(item);
+								$scope.projector.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.otherComponent.busy = false;
+							$scope.projector.busy = false;
 						});
 				}
 				Preloader.stop();
@@ -7079,20 +7590,20 @@ adminModule
 		$scope.subheader.disposeUnit = function(){
 			// start preloader
 			Preloader.preload();
-			// clear otherComponent
-			$scope.otherComponent.paginated = {};
-			$scope.otherComponent.results = null;
-			$scope.otherComponent.page = 2;
+			// clear projector
+			$scope.projector.paginated = {};
+			$scope.projector.results = null;
+			$scope.projector.page = 2;
 			AssetTag.disposeUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Disposed'
-				$scope.otherComponent.paginated = data.data;
-				$scope.otherComponent.paginated.show = true;
+				$scope.projector.paginated = data.data;
+				$scope.projector.paginated.show = true;
 
-				$scope.otherComponent.paginateLoad = function(){
+				$scope.projector.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.otherComponent.busy || ($scope.otherComponent.page > $scope.otherComponent.paginated.last_page)){
+					if($scope.projector.busy || ($scope.projector.page > $scope.projector.paginated.last_page)){
 						return;
 					}
 					/**
@@ -7100,21 +7611,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.otherComponent.busy = true;
+					$scope.projector.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.disposeUnit($scope.otherComponent.page, query)
+					AssetTag.disposeUnit($scope.projector.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.otherComponent.page++;
+							$scope.projector.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.otherComponent.paginated.data.push(item);
+								$scope.projector.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.otherComponent.busy = false;
+							$scope.projector.busy = false;
 						});
 				}
 				Preloader.stop();
@@ -7133,24 +7644,24 @@ adminModule
 		$scope.rightSidenav.show = true;
 
 		/**
-		 * Object for otherComponent
+		 * Object for projector
 		 *
 		*/
-		$scope.otherComponent = {};
+		$scope.projector = {};
 		// 2 is default so the next page to be loaded will be page 2 
-		$scope.otherComponent.page = 2;
+		$scope.projector.page = 2;
 		// 
 		
 		AssetTag.activeUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Active'
-				$scope.otherComponent.paginated = data.data;
-				$scope.otherComponent.paginated.show = true;
+				$scope.projector.paginated = data.data;
+				$scope.projector.paginated.show = true;
 
-				$scope.otherComponent.paginateLoad = function(){
+				$scope.projector.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.otherComponent.busy || ($scope.otherComponent.page > $scope.otherComponent.paginated.last_page)){
+					if($scope.projector.busy || ($scope.projector.page > $scope.projector.paginated.last_page)){
 						return;
 					}
 					/**
@@ -7158,21 +7669,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.otherComponent.busy = true;
+					$scope.projector.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.otherComponent.page, query)
+					AssetTag.activeUnit($scope.projector.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.otherComponent.page++;
+							$scope.projector.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.otherComponent.paginated.data.push(item);
+								$scope.projector.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.otherComponent.busy = false;
+							$scope.projector.busy = false;
 						});
 				}
 			}, function(){
@@ -7198,23 +7709,23 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.otherComponent.userInput = '';
+			$scope.projector.userInput = '';
 			$scope.searchBar = false;
 		};
 		
 		
 		$scope.searchUserInput = function(){
-			$scope.otherComponent.paginated.show = false;
+			$scope.projector.paginated.show = false;
 			Preloader.preload();
 			var query = {};
-			query.userInput = $scope.otherComponent.userInput;
+			query.userInput = $scope.projector.userInput;
 			query.component_id = unitID;
-			query.component_type = 'Other Component';
-			query.table_name = 'other_components';
-			query.property_code = 'POTH';
+			query.component_type = 'Projector';
+			query.table_name = 'projectors';
+			query.property_code = 'PPRJ';
 			AssetTag.search(query)
 				.success(function(data){
-					$scope.otherComponent.results = data;
+					$scope.projector.results = data;
 					Preloader.stop();
 				})
 				.error(function(data){
@@ -7248,10 +7759,10 @@ adminModule
 	}]);
 
 adminModule
-	.controller('otherComponentUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'OtherComponent', function($scope, $state, $stateParams, OtherComponent){
-		$scope.asset = 'Component';
+	.controller('projectorUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'Projector', function($scope, $state, $stateParams, Projector){
+		$scope.asset = 'Projector';
 
-		OtherComponent.other($stateParams.unitID)
+		Projector.other($stateParams.unitID)
 			.success(function(data){
 				$scope.others = data;
 			});
@@ -7261,7 +7772,7 @@ adminModule
 		};
 	}]);
 adminModule
-	.controller('otherComponentUnitToolbarController', ['$scope', '$state', '$stateParams', 'OtherComponent', function($scope, $state, $stateParams, OtherComponent){
+	.controller('projectorUnitToolbarController', ['$scope', '$state', '$stateParams', 'Projector', function($scope, $state, $stateParams, Projector){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -7279,7 +7790,7 @@ adminModule
 			$state.go('main.assets', {'assetID': $stateParams.assetID});
 		};
 
-		OtherComponent.show($stateParams.unitID)
+		Projector.show($stateParams.unitID)
 			.success(function(data){
 				$scope.toolbar.parentState = data.brand;
 				$scope.toolbar.childState = data.model;
@@ -8315,1028 +8826,6 @@ adminModule
 		*/
 	}]);
 adminModule
-	.controller('addProjectorDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Projector', function($scope, $state, $mdDialog, Preloader, Projector){
-		$scope.projector = {};
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			/* Starts Preloader */
-			Preloader.preload();
-			/**
-			 * Stores Single Record
-			*/
-			Projector.store($scope.projector)
-				.then(function(){
-					// Stops Preloader 
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-		}
-
-	}]);
-adminModule
-	.controller('projectorContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Projector', function($scope, $state, $stateParams, $mdDialog, Preloader, Projector){
-		/**
-		 * Object for subheader
-		 *
-		*/
-		$scope.subheader = {};
-		$scope.subheader.state = 'assets';
-
-		/* Refreshes the list */
-		$scope.subheader.refresh = function(){
-			// start preloader
-			Preloader.preload();
-			// clear desktop
-			$scope.projector.paginated = {};
-			$scope.projector.page = 2;
-			Projector.paginate()
-				.then(function(data){
-					$scope.projector.paginated = data.data;
-					$scope.projector.paginated.show = true;
-					// stop preload
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-		};
-
-		/**
-		 * Object for content view
-		 *
-		*/
-		$scope.fab = {};
-
-		$scope.fab.icon = 'mdi-plus';
-		$scope.fab.label = 'Add';
-		$scope.fab.tooltip = 'Add projector';
-		$scope.fab.show = true;
-
-		$scope.fab.action = function(){
-		    $mdDialog.show({
-		      	controller: 'addProjectorDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-projector-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	/* Refreshes the list */
-		    	$scope.subheader.refresh();
-		    });
-		};
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = false;
-
-		/**
-		 * Object for projector
-		 *
-		*/
-		$scope.projector = {};
-		// 2 is default so the next page to be loaded will be page 2 
-		$scope.projector.page = 2;
-
-		Projector.paginate()
-			.then(function(data){
-				$scope.projector.paginated = data.data;
-				$scope.projector.paginated.show = true;
-
-				$scope.projector.paginateLoad = function(){
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.projector.busy || ($scope.projector.page > $scope.projector.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.projector.busy = true;
-
-					// Calls the next page of pagination.
-					Projector.paginate($scope.projector.page)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.projector.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.projector.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.projector.busy = false;
-						});
-				}
-			}, function(){
-				Preloader.error();
-			});
-		
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.projector.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			$scope.projector.paginated.show = false;
-			Preloader.preload();
-			Projector.search($scope.projector)
-				.success(function(data){
-					$scope.projector.results = data;
-					Preloader.stop();
-				})
-				.error(function(data){
-					Preloader.error();
-				});
-		};
-
-		$scope.show = function(id){
-			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
-		};
-	}]);
-adminModule
-	.controller('projectorToolbarController', ['$scope', 'Projector', function($scope, Projector){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-		
-		/**
-		 * Properties of toolbar.
-		 *
-		*/
-		$scope.toolbar.parentState = 'Assets';
-		$scope.toolbar.childState = 'Projector';
-	}]);
-adminModule
-	.controller('projectorUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
-		var unitID = $stateParams.unitID;
-		var query = {};
-
-		query.component_id = unitID;
-		query.component_type = 'Projector';
-
-		/**
-		 * Object for subheader
-		 *
-		*/
-		$scope.subheader = {};
-		$scope.subheader.state = 'units';
-
-		/* Refreshes the list */
-		$scope.subheader.activeUnit = function(){
-			// start preloader
-			Preloader.preload();
-			// clear projector
-			$scope.projector.paginated = {};
-			$scope.projector.results = null;
-			$scope.projector.page = 2;
-			AssetTag.activeUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Active'
-				$scope.projector.paginated = data.data;
-				$scope.projector.paginated.show = true;
-
-				$scope.projector.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.projector.busy || ($scope.projector.page > $scope.projector.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.projector.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.projector.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.projector.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.projector.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.projector.busy = false;
-						});
-				}
-				Preloader.stop();
-			}, function(){
-				Preloader.error();
-			});
-		};
-
-		/* Refreshes the list and change it to repair */
-		$scope.subheader.repairUnit = function(){
-			// start preloader
-			Preloader.preload();
-			// clear projector
-			$scope.projector.paginated = {};
-			$scope.projector.results = null;
-			$scope.projector.page = 2;
-			AssetTag.repairUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Under Repair'
-				$scope.projector.paginated = data.data;
-				$scope.projector.paginated.show = true;
-
-				$scope.projector.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.projector.busy || ($scope.projector.page > $scope.projector.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.projector.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.repairUnit($scope.projector.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.projector.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.projector.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.projector.busy = false;
-						});
-				}
-				Preloader.stop();
-			}, function(){
-				Preloader.error();
-			});
-		};
-
-		/* Refreshes the list and change it to repair */
-		$scope.subheader.disposeUnit = function(){
-			// start preloader
-			Preloader.preload();
-			// clear projector
-			$scope.projector.paginated = {};
-			$scope.projector.results = null;
-			$scope.projector.page = 2;
-			AssetTag.disposeUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Disposed'
-				$scope.projector.paginated = data.data;
-				$scope.projector.paginated.show = true;
-
-				$scope.projector.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.projector.busy || ($scope.projector.page > $scope.projector.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.projector.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.disposeUnit($scope.projector.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.projector.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.projector.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.projector.busy = false;
-						});
-				}
-				Preloader.stop();
-			}, function(){
-				Preloader.error();
-			});
-		};
-
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = true;
-
-		/**
-		 * Object for projector
-		 *
-		*/
-		$scope.projector = {};
-		// 2 is default so the next page to be loaded will be page 2 
-		$scope.projector.page = 2;
-		// 
-		
-		AssetTag.activeUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Active'
-				$scope.projector.paginated = data.data;
-				$scope.projector.paginated.show = true;
-
-				$scope.projector.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.projector.busy || ($scope.projector.page > $scope.projector.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.projector.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.projector.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.projector.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.projector.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.projector.busy = false;
-						});
-				}
-			}, function(){
-				Preloader.error();
-			});
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.projector.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			$scope.projector.paginated.show = false;
-			Preloader.preload();
-			var query = {};
-			query.userInput = $scope.projector.userInput;
-			query.component_id = unitID;
-			query.component_type = 'Projector';
-			query.table_name = 'projectors';
-			query.property_code = 'PPRJ';
-			AssetTag.search(query)
-				.success(function(data){
-					$scope.projector.results = data;
-					Preloader.stop();
-				})
-				.error(function(data){
-					Preloader.error();
-				});
-		};
-
-		$scope.repaired = function(id){
-			AssetTag.active(id)
-				.success(function(){
-					$scope.subheader.repairUnit();
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		}
-
-		$scope.dispose = function(id){
-			AssetTag.dispose(id)
-				.success(function(){
-					$scope.subheader.repairUnit();
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		}
-
-		$scope.show = function(departmentID, workStationID){
-			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID':workStationID})
-		}
-	}]);
-
-adminModule
-	.controller('projectorUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'Projector', function($scope, $state, $stateParams, Projector){
-		$scope.asset = 'Projector';
-
-		Projector.other($stateParams.unitID)
-			.success(function(data){
-				$scope.others = data;
-			});
-
-		$scope.show = function(id){
-			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID': id});
-		};
-	}]);
-adminModule
-	.controller('projectorUnitToolbarController', ['$scope', '$state', '$stateParams', 'Projector', function($scope, $state, $stateParams, Projector){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-		
-		/**
-		 * Properties of toolbar.
-		 *
-		*/
-
-		$scope.toolbar.showBack = true;
-
-		$scope.toolbar.back = function(){
-			$state.go('main.assets', {'assetID': $stateParams.assetID});
-		};
-
-		Projector.show($stateParams.unitID)
-			.success(function(data){
-				$scope.toolbar.parentState = data.brand;
-				$scope.toolbar.childState = data.model;
-			})
-			.error(function(){
-				Preloader.error();
-			});
-
-		/**
-		 * Search database and look for user input depending on state.
-		 *
-		*/
-	}]);
-adminModule
-	.controller('addSpeakerDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Speaker', function($scope, $state, $mdDialog, Preloader, Speaker){
-		$scope.speaker = {};
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			/* Starts Preloader */
-			Preloader.preload();
-			/**
-			 * Stores Single Record
-			*/
-			Speaker.store($scope.speaker)
-				.then(function(){
-					// Stops Preloader 
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-		}
-
-	}]);
-adminModule
-	.controller('speakerContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Speaker', function($scope, $state, $stateParams, $mdDialog, Preloader, Speaker){
-		/**
-		 * Object for subheader
-		 *
-		*/
-		$scope.subheader = {};
-		$scope.subheader.state = 'assets';
-
-		/* Refreshes the list */
-		$scope.subheader.refresh = function(){
-			// start preloader
-			Preloader.preload();
-			// clear desktop
-			$scope.speaker.paginated = {};
-			$scope.speaker.page = 2;
-			Speaker.paginate()
-				.then(function(data){
-					$scope.speaker.paginated = data.data;
-					$scope.speaker.paginated.show = true;
-					// stop preload
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-		};
-
-		/**
-		 * Object for content view
-		 *
-		*/
-		$scope.fab = {};
-
-		$scope.fab.icon = 'mdi-plus';
-		$scope.fab.label = 'Add';
-		$scope.fab.tooltip = 'Add Speaker';
-		$scope.fab.show = true;
-
-		$scope.fab.action = function(){
-		    $mdDialog.show({
-		      	controller: 'addSpeakerDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-speaker-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	/* Refreshes the list */
-		    	$scope.subheader.refresh();
-		    });
-		};
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = false;
-
-		/**
-		 * Object for speaker
-		 *
-		*/
-		$scope.speaker = {};
-		// 2 is default so the next page to be loaded will be page 2 
-		$scope.speaker.page = 2;
-
-		Speaker.paginate()
-			.then(function(data){
-				$scope.speaker.paginated = data.data;
-				$scope.speaker.paginated.show = true;
-
-				$scope.speaker.paginateLoad = function(){
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.speaker.busy || ($scope.speaker.page > $scope.speaker.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.speaker.busy = true;
-
-					// Calls the next page of pagination.
-					Speaker.paginate($scope.speaker.page)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.speaker.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.speaker.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.speaker.busy = false;
-						});
-				}
-			}, function(){
-				Preloader.error();
-			});
-		
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.speaker.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			$scope.speaker.paginated.show = false;
-			Preloader.preload();
-			Speaker.search($scope.speaker)
-				.success(function(data){
-					$scope.speaker.results = data;
-					Preloader.stop();
-				})
-				.error(function(data){
-					Preloader.error();
-				});
-		};
-
-		$scope.show = function(id){
-			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
-		};
-	}]);
-adminModule
-	.controller('speakerToolbarController', ['$scope', 'Speaker', function($scope, Speaker){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-		
-		/**
-		 * Properties of toolbar.
-		 *
-		*/
-		$scope.toolbar.parentState = 'Assets';
-		$scope.toolbar.childState = 'Speaker';
-	}]);
-adminModule
-	.controller('speakerUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
-		var unitID = $stateParams.unitID;
-		var query = {};
-
-		query.component_id = unitID;
-		query.component_type = 'Speaker';
-
-		/**
-		 * Object for subheader
-		 *
-		*/
-		$scope.subheader = {};
-		$scope.subheader.state = 'units';
-
-		/* Refreshes the list */
-		$scope.subheader.activeUnit = function(){
-			// start preloader
-			Preloader.preload();
-			// clear speaker
-			$scope.speaker.paginated = {};
-			$scope.speaker.results = null;
-			$scope.speaker.page = 2;
-			AssetTag.activeUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Active'
-				$scope.speaker.paginated = data.data;
-				$scope.speaker.paginated.show = true;
-
-				$scope.speaker.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.speaker.busy || ($scope.speaker.page > $scope.speaker.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.speaker.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.speaker.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.speaker.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.speaker.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.speaker.busy = false;
-						});
-				}
-				Preloader.stop();
-			}, function(){
-				Preloader.error();
-			});
-		};
-
-		/* Refreshes the list and change it to repair */
-		$scope.subheader.repairUnit = function(){
-			// start preloader
-			Preloader.preload();
-			// clear speaker
-			$scope.speaker.paginated = {};
-			$scope.speaker.results = null;
-			$scope.speaker.page = 2;
-			AssetTag.repairUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Under Repair'
-				$scope.speaker.paginated = data.data;
-				$scope.speaker.paginated.show = true;
-
-				$scope.speaker.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.speaker.busy || ($scope.speaker.page > $scope.speaker.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.speaker.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.repairUnit($scope.speaker.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.speaker.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.speaker.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.speaker.busy = false;
-						});
-				}
-				Preloader.stop();
-			}, function(){
-				Preloader.error();
-			});
-		};
-
-		/* Refreshes the list and change it to repair */
-		$scope.subheader.disposeUnit = function(){
-			// start preloader
-			Preloader.preload();
-			// clear speaker
-			$scope.speaker.paginated = {};
-			$scope.speaker.results = null;
-			$scope.speaker.page = 2;
-			AssetTag.disposeUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Disposed'
-				$scope.speaker.paginated = data.data;
-				$scope.speaker.paginated.show = true;
-
-				$scope.speaker.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.speaker.busy || ($scope.speaker.page > $scope.speaker.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.speaker.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.disposeUnit($scope.speaker.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.speaker.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.speaker.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.speaker.busy = false;
-						});
-				}
-				Preloader.stop();
-			}, function(){
-				Preloader.error();
-			});
-		};
-
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = true;
-
-		/**
-		 * Object for speaker
-		 *
-		*/
-		$scope.speaker = {};
-		// 2 is default so the next page to be loaded will be page 2 
-		$scope.speaker.page = 2;
-		// 
-		
-		AssetTag.activeUnit(1, query)
-			.then(function(data){
-				$scope.listType = 'Active'
-				$scope.speaker.paginated = data.data;
-				$scope.speaker.paginated.show = true;
-
-				$scope.speaker.paginateLoad = function(){
-
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.speaker.busy || ($scope.speaker.page > $scope.speaker.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.speaker.busy = true;
-
-					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.speaker.page, query)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.speaker.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.speaker.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.speaker.busy = false;
-						});
-				}
-			}, function(){
-				Preloader.error();
-			});
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.speaker.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			$scope.speaker.paginated.show = false;
-			Preloader.preload();
-			var query = {};
-			query.userInput = $scope.speaker.userInput;
-			query.component_id = unitID;
-			query.component_type = 'Speaker';
-			query.table_name = 'speakers';
-			query.property_code = 'PSPK';
-			AssetTag.search(query)
-				.success(function(data){
-					$scope.speaker.results = data;
-					Preloader.stop();
-				})
-				.error(function(data){
-					Preloader.error();
-				});
-		};
-
-		$scope.repaired = function(id){
-			AssetTag.active(id)
-				.success(function(){
-					$scope.subheader.repairUnit();
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		}
-
-		$scope.dispose = function(id){
-			AssetTag.dispose(id)
-				.success(function(){
-					$scope.subheader.repairUnit();
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		}
-
-		$scope.show = function(departmentID, workStationID){
-			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID':workStationID})
-		}
-	}]);
-
-adminModule
-	.controller('speakerUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'Speaker', function($scope, $state, $stateParams, Speaker){
-		$scope.asset = 'Speaker';
-
-		Speaker.other($stateParams.unitID)
-			.success(function(data){
-				$scope.others = data;
-			});
-
-		$scope.show = function(id){
-			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID': id});
-		};
-	}]);
-adminModule
-	.controller('speakerUnitToolbarController', ['$scope', '$state', '$stateParams', 'Speaker', function($scope, $state, $stateParams, Speaker){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-		
-		/**
-		 * Properties of toolbar.
-		 *
-		*/
-
-		$scope.toolbar.showBack = true;
-
-		$scope.toolbar.back = function(){
-			$state.go('main.assets', {'assetID': $stateParams.assetID});
-		};
-
-		Speaker.show($stateParams.unitID)
-			.success(function(data){
-				$scope.toolbar.parentState = data.brand;
-				$scope.toolbar.childState = data.model;
-			})
-			.error(function(){
-				Preloader.error();
-			});
-
-		/**
-		 * Search database and look for user input depending on state.
-		 *
-		*/
-	}]);
-adminModule
 	.controller('addScannerDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Scanner', function($scope, $state, $mdDialog, Preloader, Scanner){
 		$scope.scanner = {};
 
@@ -10357,453 +9846,8 @@ adminModule
 		*/
 	}]);
 adminModule
-	.controller('addWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
-		$scope.workStation = {};
-		$scope.floors = [
-			{'pattern':6, 'value':'06'},
-			{'pattern':10, 'value': '10'},
-		];
-		$scope.divisions = ['A','B'];
-		$scope.types = [
-			{'pattern':'Admin', 'value':'A'},
-			{'pattern':'Production', 'value': 'P'},
-		];
-
-
-
-		$scope.patterns = [
-			{
-				'pattern' : 'A06-A-A***',
-				'value' :  'A06-A-A',
-				'meaning': 'Aeon 6th Floor - Division A - Admin Station Number',
-			},
-
-			{
-				'pattern' : 'A06-A-P***',
-				'value' :  'A06-A-P',
-				'meaning': 'Aeon 6th Floor - Division A - Production Station Number',
-			},
-
-			{
-				'pattern' : 'A10-A-P***',
-				'value' :  'A10-A-P',
-				'meaning': 'Aeon 10th Floor - Division A - Production Station Number',
-			},
-
-			{
-				'pattern' : 'A06-B-A***',
-				'value' :  'A06-B-A',
-				'meaning': 'Aeon 6th Floor - Division B - Admin Station Number',
-			},
-
-
-			{
-				'pattern' : 'A06-B-P***',
-				'value' :  'A06-B-P',
-				'meaning': 'Aeon 6th Floor - Division B - Production Station Number',
-			},
-		];
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		};
-
-		$scope.submit = function(){
-			/* Starts Preloader */
-			Preloader.preload();
-			/**
-			 * Stores Single Record
-			*/
-			WorkStation.store($scope.workStation)
-				.success(function(){
-					// Stops Preloader 
-					Preloader.stop();
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		};
-
-	}]);
-adminModule
-	.controller('floorPlanContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'WorkStationTag', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, WorkStationTag){
-		/**
-		 * Object for subheader
-		 *
-		*/
-		var departmentID = $stateParams.departmentID;
-
-		$scope.subheader = {};
-		$scope.subheader.state = 'floor-plan';
-
-		/* Refreshes the list */
-		$scope.subheader.refresh = function(){
-			// start preloader
-			Preloader.preload();
-			// clear desktop
-			$scope.workStation.paginated = {};
-			$scope.workStation.page = 2;
-			$scope.workStation.type = '';
-			$scope.workStation.division = '';
-			if(departmentID){
-				WorkStation.paginateDepartment(departmentID)
-					.then(function(data){
-						$scope.subheader.count = data.total;
-						$scope.workStation.paginated = data.data;
-						$scope.workStation.paginated.show = true;
-						// stop preload
-						Preloader.stop();
-					}, function(){
-						Preloader.error();
-					});
-			}
-			else{
-				WorkStation.paginate()
-				.then(function(data){
-					$scope.subheader.count = data.total;
-					$scope.workStation.paginated = data.data;
-					$scope.workStation.paginated.show = true;
-					// stop preload
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-			}
-		};
-
-		/**
-		 * Object for fab
-		 *
-		*/
-		$scope.fab = {};
-
-		$scope.fab.icon = 'mdi-plus';
-		$scope.fab.label = 'Add';
-		$scope.fab.tooltip = 'Add Work Station';
-		$scope.fab.show = true;
-
-		$scope.fab.action = function(){
-			if(!departmentID){
-			    $mdDialog.show({
-			      	controller: 'addWorkStationDialogController',
-				    templateUrl: '/app/components/admin/templates/dialogs/add-work-station-dialog.template.html',
-			      	parent: angular.element($('body')),
-			    })
-			    .then(function(){
-			    	/* Refreshes the list */
-			    	$scope.subheader.refresh();
-			    });
-			}
-			else{
-				$mdDialog.show({
-			      	controller: 'tagWorkStationDialogController',
-				    templateUrl: '/app/components/admin/templates/dialogs/tag-work-station-dialog.template.html',
-			      	parent: angular.element($('body')),
-			    })
-			    .then(function(){
-			    	/* Refreshes the list */
-			    	$scope.subheader.refresh();
-			    });
-			}
-		};
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = true;
-
-		/**
-		 * Object for Desktop
-		 *
-		*/
-		$scope.workStation = {};
-		// 2 is default so the next page to be loaded will be page 2 
-		$scope.workStation.page = 2;
-		//
-
-		if(departmentID){
-			WorkStation.paginateDepartment(departmentID)
-				.then(function(data){
-					$scope.subheader.count = data.data.total;
-					$scope.workStation.paginated = data.data;
-					$scope.workStation.paginated.show = true;
-
-					$scope.workStation.paginateLoad = function(){
-						// kills the function if ajax is busy or pagination reaches last page
-						if($scope.workStation.busy || ($scope.workStation.page > $scope.workStation.paginated.last_page)){
-							return;
-						}
-						/**
-						 * Executes pagination call
-						 *
-						*/
-						// sets to true to disable pagination call if still busy.
-						$scope.workStation.busy = true;
-
-						// Calls the next page of pagination.
-						WorkStation.paginateDepartment(departmentID, $scope.workStation.page)
-							.then(function(data){
-								// increment the page to set up next page for next AJAX Call
-								$scope.workStation.page++;
-
-								// iterate over each data then splice it to the data array
-								angular.forEach(data.data.data, function(item, key){
-									$scope.workStation.paginated.data.push(item);
-								});
-
-								// Enables again the pagination call for next call.
-								$scope.workStation.busy = false;
-							});
-					}
-				}, function(){
-					Preloader.error();
-				});
-		}
-		else{
-			WorkStation.paginate()
-				.then(function(data){
-					$scope.subheader.count = data.data.total;
-					$scope.workStation.paginated = data.data;
-					$scope.workStation.paginated.show = true;
-
-					$scope.workStation.paginateLoad = function(){
-						// kills the function if ajax is busy or pagination reaches last page
-						if($scope.workStation.busy || ($scope.workStation.page > $scope.workStation.paginated.last_page)){
-							return;
-						}
-						/**
-						 * Executes pagination call
-						 *
-						*/
-						// sets to true to disable pagination call if still busy.
-						$scope.workStation.busy = true;
-
-						// Calls the next page of pagination.
-						WorkStation.paginate($scope.workStation.page)
-							.then(function(data){
-								// increment the page to set up next page for next AJAX Call
-								$scope.workStation.page++;
-
-								// iterate over each data then splice it to the data array
-								angular.forEach(data.data.data, function(item, key){
-									$scope.workStation.paginated.data.push(item);
-								});
-
-								// Enables again the pagination call for next call.
-								$scope.workStation.busy = false;
-							});
-					}
-				}, function(){
-					Preloader.error();
-				});
-		}
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.workStation.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			$scope.workStation.paginated.show = false;
-			Preloader.preload()
-			if(departmentID){			
-				WorkStation.searchDepartment(departmentID, $scope.workStation)
-					.success(function(data){
-						$scope.workStation.results = data;
-						Preloader.stop();
-					})
-					.error(function(data){
-						Preloader.error();
-					});
-			}
-			else{
-				WorkStation.search($scope.workStation)
-					.success(function(data){
-						$scope.workStation.results = data;
-						Preloader.stop();
-					})
-					.error(function(data){
-						Preloader.error();
-					});
-			}
-		};
-
-		// onclick of 
-		$scope.show = function(workStationID){
-			if($stateParams.departmentID){
-				$state.go('main.work-station', {'departmentID':$stateParams.departmentID, 'workStationID': workStationID});
-			}
-			else{
-				Preloader.preload();
-				WorkStationTag.workstation(workStationID)
-					.success(function(data){
-						if(data.department_id){
-							$state.go('main.work-station', {'departmentID':data.department_id, 'workStationID': workStationID});
-							Preloader.stop();
-						}
-						else{
-							$mdDialog.show(
-						      	$mdDialog.alert()
-							        .parent(angular.element($('body')))
-							        .clickOutsideToClose(true)
-							        .title('Vacant Work Station')
-							        .content('This work station is vacant and not under any department.')
-							        .ariaLabel('Vacant Work Station')
-							        .ok('Got it!')
-						    );
-						}
-					})
-					.error(function(){
-						Preloader.error();
-					});
-			}
-		};
-
-	}]);
-
-adminModule
-	.controller('floorPlanContentController', ['$scope', '$state', '$stateParams', function($scope, $state, $stateParams){
-		
-	}]);
-adminModule
-	.controller('floorPlanRightSidenavController', ['$scope', '$state', '$stateParams', 'departmentService', 'Department',  function($scope, $state, $stateParams, departmentService, Department){
-		/**
-		 * Object for content view
-		 *
-		*/
-		$scope.rightSidenav = {};
-
-		var departments = departmentService.get();
-		if(!departments.length){
-			Department.index()
-				.success(function(data){
-					departments = data;
-					$scope.rightSidenav.departments = data;
-				})
-				.error(function(data){
-					Preload.error();
-				});
-		}
-		else{
-			$scope.rightSidenav.departments = departments;
-		}
-
-	}]);
-adminModule
-	.controller('floorPlanToolbarController', ['$scope', '$stateParams', 'departmentService', 'Department', function($scope, $stateParams, departmentService, Department){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-
-		/**
-		 * Properties and method of toolbar.
-		 *
-		*/
-		$scope.toolbar.parentState = 'Floor Plan';
-
-		var index = $stateParams.departmentID - 1;
-		$scope.toolbar.parentState = 'Floor Plan';
-
-		var departments = departmentService.get();
-		if(!departments.length){
-			Department.index()
-				.success(function(data){
-					departments = data;
-					$scope.toolbar.childState = index > -1 ? departments[index].name : null;
-				})
-				.error(function(data){
-					Preload.error();
-				});
-		}
-		else{
-			$scope.toolbar.childState =  index > -1 ? departments[index].name : null;
-		}
-	}]);
-adminModule
-	.controller('tagWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'WorkStationTag', 'Department', function($scope, $stateParams, $mdDialog, Preloader, WorkStation, WorkStationTag, Department){
-		var departmentID = $stateParams.departmentID;
-		$scope.workStationTag = {};
-		$scope.workStationTag.department_id = $stateParams.departmentID;
-
-		$scope.divisions = [
-			{'name':'Block A', 'value':'A'},
-			{'name':'Block B', 'value':'B'},
-		];
-
-		$scope.types = [
-			{'name':'Admin', 'value':'admin'},
-			{'name':'Production', 'value':'production'},
-		];		
-
-		$scope.searchWorkStations = function(){
-
-			WorkStation.vacant($scope.workStationTag)
-				.success(function(data){
-					$scope.workStations = data;
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		}
-
-		Department.show(departmentID)
-			.success(function(data){
-				$scope.department = data;
-			});
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		};
-
-		$scope.submit = function(){
-			/* Starts Preloader */
-			Preloader.preload();
-			/**
-			 * Stores Single Record
-			*/
-			WorkStationTag.store($scope.workStationTag)
-				.success(function(){
-					// Stops Preloader 
-					Preloader.stop();
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		};
-
-	}]);
-adminModule
-	.controller('addVideoCardDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'VideoCard', function($scope, $state, $mdDialog, Preloader, VideoCard){
-		$scope.videoCard = {};
-
-		$scope.videoCard.sizes = [
-			{'size':'1GB'},
-			{'size':'2GB'},
-		];
+	.controller('addSpeakerDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Speaker', function($scope, $state, $mdDialog, Preloader, Speaker){
+		$scope.speaker = {};
 
 		$scope.cancel = function(){
 			$mdDialog.cancel();
@@ -10815,7 +9859,7 @@ adminModule
 			/**
 			 * Stores Single Record
 			*/
-			VideoCard.store($scope.videoCard)
+			Speaker.store($scope.speaker)
 				.then(function(){
 					// Stops Preloader 
 					Preloader.stop();
@@ -10823,9 +9867,10 @@ adminModule
 					Preloader.error();
 				});
 		}
+
 	}]);
 adminModule
-	.controller('videoCardContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'VideoCard', function($scope, $state, $stateParams, $mdDialog, Preloader, VideoCard){
+	.controller('speakerContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'Speaker', function($scope, $state, $stateParams, $mdDialog, Preloader, Speaker){
 		/**
 		 * Object for subheader
 		 *
@@ -10838,12 +9883,12 @@ adminModule
 			// start preloader
 			Preloader.preload();
 			// clear desktop
-			$scope.videoCard.paginated = {};
-			$scope.videoCard.page = 2;
-			VideoCard.paginate()
+			$scope.speaker.paginated = {};
+			$scope.speaker.page = 2;
+			Speaker.paginate()
 				.then(function(data){
-					$scope.videoCard.paginated = data.data;
-					$scope.videoCard.paginated.show = true;
+					$scope.speaker.paginated = data.data;
+					$scope.speaker.paginated.show = true;
 					// stop preload
 					Preloader.stop();
 				}, function(){
@@ -10859,13 +9904,13 @@ adminModule
 
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
-		$scope.fab.tooltip = 'Add Video Card';
+		$scope.fab.tooltip = 'Add Speaker';
 		$scope.fab.show = true;
 
 		$scope.fab.action = function(){
 		    $mdDialog.show({
-		      	controller: 'addVideoCardDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-video-card-dialog.template.html',
+		      	controller: 'addSpeakerDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-speaker-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
@@ -10883,21 +9928,21 @@ adminModule
 		$scope.rightSidenav.show = false;
 
 		/**
-		 * Object for videoCard
+		 * Object for speaker
 		 *
 		*/
-		$scope.videoCard = {};
+		$scope.speaker = {};
 		// 2 is default so the next page to be loaded will be page 2 
-		$scope.videoCard.page = 2;
+		$scope.speaker.page = 2;
 
-		VideoCard.paginate()
+		Speaker.paginate()
 			.then(function(data){
-				$scope.videoCard.paginated = data.data;
-				$scope.videoCard.paginated.show = true;
+				$scope.speaker.paginated = data.data;
+				$scope.speaker.paginated.show = true;
 
-				$scope.videoCard.paginateLoad = function(){
+				$scope.speaker.paginateLoad = function(){
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.videoCard.busy || ($scope.videoCard.page > $scope.videoCard.paginated.last_page)){
+					if($scope.speaker.busy || ($scope.speaker.page > $scope.speaker.paginated.last_page)){
 						return;
 					}
 					/**
@@ -10905,21 +9950,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.videoCard.busy = true;
+					$scope.speaker.busy = true;
 
 					// Calls the next page of pagination.
-					VideoCard.paginate($scope.videoCard.page)
+					Speaker.paginate($scope.speaker.page)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.videoCard.page++;
+							$scope.speaker.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.videoCard.paginated.data.push(item);
+								$scope.speaker.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.videoCard.busy = false;
+							$scope.speaker.busy = false;
 						});
 				}
 			}, function(){
@@ -10945,17 +9990,17 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.videoCard.userInput = '';
+			$scope.speaker.userInput = '';
 			$scope.searchBar = false;
 		};
 		
 		
 		$scope.searchUserInput = function(){
-			$scope.videoCard.paginated.show = false;
+			$scope.speaker.paginated.show = false;
 			Preloader.preload();
-			VideoCard.search($scope.videoCard)
+			Speaker.search($scope.speaker)
 				.success(function(data){
-					$scope.videoCard.results = data;
+					$scope.speaker.results = data;
 					Preloader.stop();
 				})
 				.error(function(data){
@@ -10968,15 +10013,7 @@ adminModule
 		};
 	}]);
 adminModule
-	.controller('videoCardContentController', ['$scope', function($scope){
-		//
-	}])
-adminModule
-	.controller('videoCardRightSidenavController', ['$scope', function($scope){
-		//
-	}])
-adminModule
-	.controller('videoCardToolbarController', ['$scope', '$stateParams', 'VideoCard', function($scope, $stateParams, VideoCard){
+	.controller('speakerToolbarController', ['$scope', 'Speaker', function($scope, Speaker){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -10988,15 +10025,15 @@ adminModule
 		 *
 		*/
 		$scope.toolbar.parentState = 'Assets';
-		$scope.toolbar.childState = 'Video Card';
+		$scope.toolbar.childState = 'Speaker';
 	}]);
 adminModule
-	.controller('videoCardUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
+	.controller('speakerUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
 		var unitID = $stateParams.unitID;
 		var query = {};
 
 		query.component_id = unitID;
-		query.component_type = 'Video Card';
+		query.component_type = 'Speaker';
 
 		/**
 		 * Object for subheader
@@ -11009,20 +10046,20 @@ adminModule
 		$scope.subheader.activeUnit = function(){
 			// start preloader
 			Preloader.preload();
-			// clear videoCard
-			$scope.videoCard.paginated = {};
-			$scope.videoCard.results = null;
-			$scope.videoCard.page = 2;
+			// clear speaker
+			$scope.speaker.paginated = {};
+			$scope.speaker.results = null;
+			$scope.speaker.page = 2;
 			AssetTag.activeUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Active'
-				$scope.videoCard.paginated = data.data;
-				$scope.videoCard.paginated.show = true;
+				$scope.speaker.paginated = data.data;
+				$scope.speaker.paginated.show = true;
 
-				$scope.videoCard.paginateLoad = function(){
+				$scope.speaker.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.videoCard.busy || ($scope.videoCard.page > $scope.videoCard.paginated.last_page)){
+					if($scope.speaker.busy || ($scope.speaker.page > $scope.speaker.paginated.last_page)){
 						return;
 					}
 					/**
@@ -11030,21 +10067,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.videoCard.busy = true;
+					$scope.speaker.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.videoCard.page, query)
+					AssetTag.activeUnit($scope.speaker.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.videoCard.page++;
+							$scope.speaker.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.videoCard.paginated.data.push(item);
+								$scope.speaker.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.videoCard.busy = false;
+							$scope.speaker.busy = false;
 						});
 				}
 				Preloader.stop();
@@ -11057,20 +10094,20 @@ adminModule
 		$scope.subheader.repairUnit = function(){
 			// start preloader
 			Preloader.preload();
-			// clear videoCard
-			$scope.videoCard.paginated = {};
-			$scope.videoCard.results = null;
-			$scope.videoCard.page = 2;
+			// clear speaker
+			$scope.speaker.paginated = {};
+			$scope.speaker.results = null;
+			$scope.speaker.page = 2;
 			AssetTag.repairUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Under Repair'
-				$scope.videoCard.paginated = data.data;
-				$scope.videoCard.paginated.show = true;
+				$scope.speaker.paginated = data.data;
+				$scope.speaker.paginated.show = true;
 
-				$scope.videoCard.paginateLoad = function(){
+				$scope.speaker.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.videoCard.busy || ($scope.videoCard.page > $scope.videoCard.paginated.last_page)){
+					if($scope.speaker.busy || ($scope.speaker.page > $scope.speaker.paginated.last_page)){
 						return;
 					}
 					/**
@@ -11078,21 +10115,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.videoCard.busy = true;
+					$scope.speaker.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.repairUnit($scope.videoCard.page, query)
+					AssetTag.repairUnit($scope.speaker.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.videoCard.page++;
+							$scope.speaker.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.videoCard.paginated.data.push(item);
+								$scope.speaker.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.videoCard.busy = false;
+							$scope.speaker.busy = false;
 						});
 				}
 				Preloader.stop();
@@ -11105,20 +10142,20 @@ adminModule
 		$scope.subheader.disposeUnit = function(){
 			// start preloader
 			Preloader.preload();
-			// clear videoCard
-			$scope.videoCard.paginated = {};
-			$scope.videoCard.results = null;
-			$scope.videoCard.page = 2;
+			// clear speaker
+			$scope.speaker.paginated = {};
+			$scope.speaker.results = null;
+			$scope.speaker.page = 2;
 			AssetTag.disposeUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Disposed'
-				$scope.videoCard.paginated = data.data;
-				$scope.videoCard.paginated.show = true;
+				$scope.speaker.paginated = data.data;
+				$scope.speaker.paginated.show = true;
 
-				$scope.videoCard.paginateLoad = function(){
+				$scope.speaker.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.videoCard.busy || ($scope.videoCard.page > $scope.videoCard.paginated.last_page)){
+					if($scope.speaker.busy || ($scope.speaker.page > $scope.speaker.paginated.last_page)){
 						return;
 					}
 					/**
@@ -11126,21 +10163,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.videoCard.busy = true;
+					$scope.speaker.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.disposeUnit($scope.videoCard.page, query)
+					AssetTag.disposeUnit($scope.speaker.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.videoCard.page++;
+							$scope.speaker.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.videoCard.paginated.data.push(item);
+								$scope.speaker.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.videoCard.busy = false;
+							$scope.speaker.busy = false;
 						});
 				}
 				Preloader.stop();
@@ -11159,24 +10196,24 @@ adminModule
 		$scope.rightSidenav.show = true;
 
 		/**
-		 * Object for videoCard
+		 * Object for speaker
 		 *
 		*/
-		$scope.videoCard = {};
+		$scope.speaker = {};
 		// 2 is default so the next page to be loaded will be page 2 
-		$scope.videoCard.page = 2;
+		$scope.speaker.page = 2;
 		// 
 		
 		AssetTag.activeUnit(1, query)
 			.then(function(data){
 				$scope.listType = 'Active'
-				$scope.videoCard.paginated = data.data;
-				$scope.videoCard.paginated.show = true;
+				$scope.speaker.paginated = data.data;
+				$scope.speaker.paginated.show = true;
 
-				$scope.videoCard.paginateLoad = function(){
+				$scope.speaker.paginateLoad = function(){
 
 					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.videoCard.busy || ($scope.videoCard.page > $scope.videoCard.paginated.last_page)){
+					if($scope.speaker.busy || ($scope.speaker.page > $scope.speaker.paginated.last_page)){
 						return;
 					}
 					/**
@@ -11184,21 +10221,21 @@ adminModule
 					 *
 					*/
 					// sets to true to disable pagination call if still busy.
-					$scope.videoCard.busy = true;
+					$scope.speaker.busy = true;
 
 					// Calls the next page of pagination.
-					AssetTag.activeUnit($scope.videoCard.page, query)
+					AssetTag.activeUnit($scope.speaker.page, query)
 						.then(function(data){
 							// increment the page to set up next page for next AJAX Call
-							$scope.videoCard.page++;
+							$scope.speaker.page++;
 
 							// iterate over each data then splice it to the data array
 							angular.forEach(data.data.data, function(item, key){
-								$scope.videoCard.paginated.data.push(item);
+								$scope.speaker.paginated.data.push(item);
 							});
 
 							// Enables again the pagination call for next call.
-							$scope.videoCard.busy = false;
+							$scope.speaker.busy = false;
 						});
 				}
 			}, function(){
@@ -11224,23 +10261,23 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.videoCard.userInput = '';
+			$scope.speaker.userInput = '';
 			$scope.searchBar = false;
 		};
 		
 		
 		$scope.searchUserInput = function(){
-			$scope.videoCard.paginated.show = false;
+			$scope.speaker.paginated.show = false;
 			Preloader.preload();
 			var query = {};
-			query.userInput = $scope.videoCard.userInput;
+			query.userInput = $scope.speaker.userInput;
 			query.component_id = unitID;
-			query.component_type = 'Video Card';
-			query.table_name = 'video_cards';
-			query.property_code = 'PVDC';
+			query.component_type = 'Speaker';
+			query.table_name = 'speakers';
+			query.property_code = 'PSPK';
 			AssetTag.search(query)
 				.success(function(data){
-					$scope.videoCard.results = data;
+					$scope.speaker.results = data;
 					Preloader.stop();
 				})
 				.error(function(data){
@@ -11274,10 +10311,10 @@ adminModule
 	}]);
 
 adminModule
-	.controller('videoCardUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'VideoCard', function($scope, $state, $stateParams, VideoCard){
-		$scope.asset = 'VideoCard';
+	.controller('speakerUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'Speaker', function($scope, $state, $stateParams, Speaker){
+		$scope.asset = 'Speaker';
 
-		VideoCard.other($stateParams.unitID)
+		Speaker.other($stateParams.unitID)
 			.success(function(data){
 				$scope.others = data;
 			});
@@ -11287,7 +10324,7 @@ adminModule
 		};
 	}]);
 adminModule
-	.controller('videoCardUnitToolbarController', ['$scope', '$state', '$stateParams', 'VideoCard', function($scope, $state, $stateParams, VideoCard){
+	.controller('speakerUnitToolbarController', ['$scope', '$state', '$stateParams', 'Speaker', function($scope, $state, $stateParams, Speaker){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -11305,10 +10342,10 @@ adminModule
 			$state.go('main.assets', {'assetID': $stateParams.assetID});
 		};
 
-		VideoCard.show($stateParams.unitID)
+		Speaker.show($stateParams.unitID)
 			.success(function(data){
-				$scope.toolbar.parentState = data.model;
-				$scope.toolbar.childState = data.size;
+				$scope.toolbar.parentState = data.brand;
+				$scope.toolbar.childState = data.model;
 			})
 			.error(function(){
 				Preloader.error();
@@ -11843,6 +10880,572 @@ adminModule
 		*/
 	}]);
 adminModule
+	.controller('analysisContentController', ['$scope', function($scope){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.content = {};
+
+		$scope.content.title = 'Analysis Content Initialized';
+	}]);
+adminModule
+	.controller('analysisRightSidenavController', ['$scope', function($scope){
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.sidenav = {};
+
+		$scope.sidenav.title = 'Analysis Right Sidenav Initialized';
+	}]);
+adminModule
+	.controller('analysisToolbarController', ['$scope', function($scope){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+
+		/**
+		 * Properties and method of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Dashboard';
+		$scope.toolbar.childState = 'Analysis';
+
+		/**
+		 * Search database and look for user input depending on state.
+		 *
+		*/
+		$scope.searchUserInput = function(){
+			return;
+		};
+	}]);
+adminModule
+	.controller('addVideoCardDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'VideoCard', function($scope, $state, $mdDialog, Preloader, VideoCard){
+		$scope.videoCard = {};
+
+		$scope.videoCard.sizes = [
+			{'size':'1GB'},
+			{'size':'2GB'},
+		];
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			VideoCard.store($scope.videoCard)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		}
+	}]);
+adminModule
+	.controller('videoCardContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'VideoCard', function($scope, $state, $stateParams, $mdDialog, Preloader, VideoCard){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'assets';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.videoCard.paginated = {};
+			$scope.videoCard.page = 2;
+			VideoCard.paginate()
+				.then(function(data){
+					$scope.videoCard.paginated = data.data;
+					$scope.videoCard.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		 * Object for content view
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Video Card';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addVideoCardDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-video-card-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
+
+		/**
+		 * Object for videoCard
+		 *
+		*/
+		$scope.videoCard = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.videoCard.page = 2;
+
+		VideoCard.paginate()
+			.then(function(data){
+				$scope.videoCard.paginated = data.data;
+				$scope.videoCard.paginated.show = true;
+
+				$scope.videoCard.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.videoCard.busy || ($scope.videoCard.page > $scope.videoCard.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.videoCard.busy = true;
+
+					// Calls the next page of pagination.
+					VideoCard.paginate($scope.videoCard.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.videoCard.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.videoCard.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.videoCard.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+		
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.videoCard.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.videoCard.paginated.show = false;
+			Preloader.preload();
+			VideoCard.search($scope.videoCard)
+				.success(function(data){
+					$scope.videoCard.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID':id});
+		};
+	}]);
+adminModule
+	.controller('videoCardContentController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('videoCardRightSidenavController', ['$scope', function($scope){
+		//
+	}])
+adminModule
+	.controller('videoCardToolbarController', ['$scope', '$stateParams', 'VideoCard', function($scope, $stateParams, VideoCard){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+		$scope.toolbar.parentState = 'Assets';
+		$scope.toolbar.childState = 'Video Card';
+	}]);
+adminModule
+	.controller('videoCardUnitContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Preloader, AssetTag){
+		var unitID = $stateParams.unitID;
+		var query = {};
+
+		query.component_id = unitID;
+		query.component_type = 'Video Card';
+
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.state = 'units';
+
+		/* Refreshes the list */
+		$scope.subheader.activeUnit = function(){
+			// start preloader
+			Preloader.preload();
+			// clear videoCard
+			$scope.videoCard.paginated = {};
+			$scope.videoCard.results = null;
+			$scope.videoCard.page = 2;
+			AssetTag.activeUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Active'
+				$scope.videoCard.paginated = data.data;
+				$scope.videoCard.paginated.show = true;
+
+				$scope.videoCard.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.videoCard.busy || ($scope.videoCard.page > $scope.videoCard.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.videoCard.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.activeUnit($scope.videoCard.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.videoCard.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.videoCard.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.videoCard.busy = false;
+						});
+				}
+				Preloader.stop();
+			}, function(){
+				Preloader.error();
+			});
+		};
+
+		/* Refreshes the list and change it to repair */
+		$scope.subheader.repairUnit = function(){
+			// start preloader
+			Preloader.preload();
+			// clear videoCard
+			$scope.videoCard.paginated = {};
+			$scope.videoCard.results = null;
+			$scope.videoCard.page = 2;
+			AssetTag.repairUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Under Repair'
+				$scope.videoCard.paginated = data.data;
+				$scope.videoCard.paginated.show = true;
+
+				$scope.videoCard.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.videoCard.busy || ($scope.videoCard.page > $scope.videoCard.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.videoCard.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.repairUnit($scope.videoCard.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.videoCard.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.videoCard.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.videoCard.busy = false;
+						});
+				}
+				Preloader.stop();
+			}, function(){
+				Preloader.error();
+			});
+		};
+
+		/* Refreshes the list and change it to repair */
+		$scope.subheader.disposeUnit = function(){
+			// start preloader
+			Preloader.preload();
+			// clear videoCard
+			$scope.videoCard.paginated = {};
+			$scope.videoCard.results = null;
+			$scope.videoCard.page = 2;
+			AssetTag.disposeUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Disposed'
+				$scope.videoCard.paginated = data.data;
+				$scope.videoCard.paginated.show = true;
+
+				$scope.videoCard.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.videoCard.busy || ($scope.videoCard.page > $scope.videoCard.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.videoCard.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.disposeUnit($scope.videoCard.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.videoCard.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.videoCard.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.videoCard.busy = false;
+						});
+				}
+				Preloader.stop();
+			}, function(){
+				Preloader.error();
+			});
+		};
+
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = true;
+
+		/**
+		 * Object for videoCard
+		 *
+		*/
+		$scope.videoCard = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.videoCard.page = 2;
+		// 
+		
+		AssetTag.activeUnit(1, query)
+			.then(function(data){
+				$scope.listType = 'Active'
+				$scope.videoCard.paginated = data.data;
+				$scope.videoCard.paginated.show = true;
+
+				$scope.videoCard.paginateLoad = function(){
+
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.videoCard.busy || ($scope.videoCard.page > $scope.videoCard.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.videoCard.busy = true;
+
+					// Calls the next page of pagination.
+					AssetTag.activeUnit($scope.videoCard.page, query)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.videoCard.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.videoCard.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.videoCard.busy = false;
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.videoCard.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.videoCard.paginated.show = false;
+			Preloader.preload();
+			var query = {};
+			query.userInput = $scope.videoCard.userInput;
+			query.component_id = unitID;
+			query.component_type = 'Video Card';
+			query.table_name = 'video_cards';
+			query.property_code = 'PVDC';
+			AssetTag.search(query)
+				.success(function(data){
+					$scope.videoCard.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+
+		$scope.repaired = function(id){
+			AssetTag.active(id)
+				.success(function(){
+					$scope.subheader.repairUnit();
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+
+		$scope.dispose = function(id){
+			AssetTag.dispose(id)
+				.success(function(){
+					$scope.subheader.repairUnit();
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+
+		$scope.show = function(departmentID, workStationID){
+			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID':workStationID})
+		}
+	}]);
+
+adminModule
+	.controller('videoCardUnitRightSidenavController', ['$scope', '$state', '$stateParams', 'VideoCard', function($scope, $state, $stateParams, VideoCard){
+		$scope.asset = 'VideoCard';
+
+		VideoCard.other($stateParams.unitID)
+			.success(function(data){
+				$scope.others = data;
+			});
+
+		$scope.show = function(id){
+			$state.go('main.units', {'assetID': $stateParams.assetID, 'unitID': id});
+		};
+	}]);
+adminModule
+	.controller('videoCardUnitToolbarController', ['$scope', '$state', '$stateParams', 'VideoCard', function($scope, $state, $stateParams, VideoCard){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/**
+		 * Properties of toolbar.
+		 *
+		*/
+
+		$scope.toolbar.showBack = true;
+
+		$scope.toolbar.back = function(){
+			$state.go('main.assets', {'assetID': $stateParams.assetID});
+		};
+
+		VideoCard.show($stateParams.unitID)
+			.success(function(data){
+				$scope.toolbar.parentState = data.model;
+				$scope.toolbar.childState = data.size;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		/**
+		 * Search database and look for user input depending on state.
+		 *
+		*/
+	}]);
+adminModule
 	.controller('addTelephoneDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Telephone', function($scope, $state, $mdDialog, Preloader, Telephone){
 		$scope.telephone = {};
 
@@ -12354,27 +11957,362 @@ adminModule
 		*/
 	}]);
 adminModule
-	.controller('analysisContentController', ['$scope', function($scope){
+	.controller('addWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
+		$scope.workStation = {};
+		$scope.floors = [
+			{'pattern':6, 'value':'06'},
+			{'pattern':10, 'value': '10'},
+		];
+		$scope.divisions = ['A','B'];
+		$scope.types = [
+			{'pattern':'Admin', 'value':'A'},
+			{'pattern':'Production', 'value': 'P'},
+		];
+
+
+
+		$scope.patterns = [
+			{
+				'pattern' : 'A06-A-A***',
+				'value' :  'A06-A-A',
+				'meaning': 'Aeon 6th Floor - Division A - Admin Station Number',
+			},
+
+			{
+				'pattern' : 'A06-A-P***',
+				'value' :  'A06-A-P',
+				'meaning': 'Aeon 6th Floor - Division A - Production Station Number',
+			},
+
+			{
+				'pattern' : 'A10-A-P***',
+				'value' :  'A10-A-P',
+				'meaning': 'Aeon 10th Floor - Division A - Production Station Number',
+			},
+
+			{
+				'pattern' : 'A06-B-A***',
+				'value' :  'A06-B-A',
+				'meaning': 'Aeon 6th Floor - Division B - Admin Station Number',
+			},
+
+
+			{
+				'pattern' : 'A06-B-P***',
+				'value' :  'A06-B-P',
+				'meaning': 'Aeon 6th Floor - Division B - Production Station Number',
+			},
+		];
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			WorkStation.store($scope.workStation)
+				.success(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		};
+
+	}]);
+adminModule
+	.controller('floorPlanContentContainerController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'WorkStationTag', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, WorkStationTag){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		var departmentID = $stateParams.departmentID;
+
+		$scope.subheader = {};
+		$scope.subheader.state = 'floor-plan';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.workStation.paginated = {};
+			$scope.workStation.page = 2;
+			$scope.workStation.type = '';
+			$scope.workStation.division = '';
+			if(departmentID){
+				WorkStation.paginateDepartment(departmentID)
+					.then(function(data){
+						$scope.subheader.count = data.total;
+						$scope.workStation.paginated = data.data;
+						$scope.workStation.paginated.show = true;
+						// stop preload
+						Preloader.stop();
+					}, function(){
+						Preloader.error();
+					});
+			}
+			else{
+				WorkStation.paginate()
+				.then(function(data){
+					$scope.subheader.count = data.total;
+					$scope.workStation.paginated = data.data;
+					$scope.workStation.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+			}
+		};
+
+		/**
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.tooltip = 'Add Work Station';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+			if(!departmentID){
+			    $mdDialog.show({
+			      	controller: 'addWorkStationDialogController',
+				    templateUrl: '/app/components/admin/templates/dialogs/add-work-station-dialog.template.html',
+			      	parent: angular.element($('body')),
+			    })
+			    .then(function(){
+			    	/* Refreshes the list */
+			    	$scope.subheader.refresh();
+			    });
+			}
+			else{
+				$mdDialog.show({
+			      	controller: 'tagWorkStationDialogController',
+				    templateUrl: '/app/components/admin/templates/dialogs/tag-work-station-dialog.template.html',
+			      	parent: angular.element($('body')),
+			    })
+			    .then(function(){
+			    	/* Refreshes the list */
+			    	$scope.subheader.refresh();
+			    });
+			}
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = true;
+
+		/**
+		 * Object for Desktop
+		 *
+		*/
+		$scope.workStation = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.workStation.page = 2;
+		//
+
+		if(departmentID){
+			WorkStation.paginateDepartment(departmentID)
+				.then(function(data){
+					$scope.subheader.count = data.data.total;
+					$scope.workStation.paginated = data.data;
+					$scope.workStation.paginated.show = true;
+
+					$scope.workStation.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.workStation.busy || ($scope.workStation.page > $scope.workStation.paginated.last_page)){
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.workStation.busy = true;
+
+						// Calls the next page of pagination.
+						WorkStation.paginateDepartment(departmentID, $scope.workStation.page)
+							.then(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.workStation.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data.data, function(item, key){
+									$scope.workStation.paginated.data.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.workStation.busy = false;
+							});
+					}
+				}, function(){
+					Preloader.error();
+				});
+		}
+		else{
+			WorkStation.paginate()
+				.then(function(data){
+					$scope.subheader.count = data.data.total;
+					$scope.workStation.paginated = data.data;
+					$scope.workStation.paginated.show = true;
+
+					$scope.workStation.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.workStation.busy || ($scope.workStation.page > $scope.workStation.paginated.last_page)){
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.workStation.busy = true;
+
+						// Calls the next page of pagination.
+						WorkStation.paginate($scope.workStation.page)
+							.then(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.workStation.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data.data, function(item, key){
+									$scope.workStation.paginated.data.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.workStation.busy = false;
+							});
+					}
+				}, function(){
+					Preloader.error();
+				});
+		}
+
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.workStation.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.workStation.paginated.show = false;
+			Preloader.preload()
+			if(departmentID){			
+				WorkStation.searchDepartment(departmentID, $scope.workStation)
+					.success(function(data){
+						$scope.workStation.results = data;
+						Preloader.stop();
+					})
+					.error(function(data){
+						Preloader.error();
+					});
+			}
+			else{
+				WorkStation.search($scope.workStation)
+					.success(function(data){
+						$scope.workStation.results = data;
+						Preloader.stop();
+					})
+					.error(function(data){
+						Preloader.error();
+					});
+			}
+		};
+
+		// onclick of 
+		$scope.show = function(workStationID){
+			if($stateParams.departmentID){
+				$state.go('main.work-station', {'departmentID':$stateParams.departmentID, 'workStationID': workStationID});
+			}
+			else{
+				Preloader.preload();
+				WorkStationTag.workstation(workStationID)
+					.success(function(data){
+						if(data.department_id){
+							$state.go('main.work-station', {'departmentID':data.department_id, 'workStationID': workStationID});
+							Preloader.stop();
+						}
+						else{
+							$mdDialog.show(
+						      	$mdDialog.alert()
+							        .parent(angular.element($('body')))
+							        .clickOutsideToClose(true)
+							        .title('Vacant Work Station')
+							        .content('This work station is vacant and not under any department.')
+							        .ariaLabel('Vacant Work Station')
+							        .ok('Got it!')
+						    );
+						}
+					})
+					.error(function(){
+						Preloader.error();
+					});
+			}
+		};
+
+	}]);
+
+adminModule
+	.controller('floorPlanContentController', ['$scope', '$state', '$stateParams', function($scope, $state, $stateParams){
+		
+	}]);
+adminModule
+	.controller('floorPlanRightSidenavController', ['$scope', '$state', '$stateParams', 'departmentService', 'Department',  function($scope, $state, $stateParams, departmentService, Department){
 		/**
 		 * Object for content view
 		 *
 		*/
-		$scope.content = {};
+		$scope.rightSidenav = {};
 
-		$scope.content.title = 'Analysis Content Initialized';
+		var departments = departmentService.get();
+		if(!departments.length){
+			Department.index()
+				.success(function(data){
+					departments = data;
+					$scope.rightSidenav.departments = data;
+				})
+				.error(function(data){
+					Preload.error();
+				});
+		}
+		else{
+			$scope.rightSidenav.departments = departments;
+		}
+
 	}]);
 adminModule
-	.controller('analysisRightSidenavController', ['$scope', function($scope){
-		/**
-		 * Object for content view
-		 *
-		*/
-		$scope.sidenav = {};
-
-		$scope.sidenav.title = 'Analysis Right Sidenav Initialized';
-	}]);
-adminModule
-	.controller('analysisToolbarController', ['$scope', function($scope){
+	.controller('floorPlanToolbarController', ['$scope', '$stateParams', 'departmentService', 'Department', function($scope, $stateParams, departmentService, Department){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -12385,16 +12323,78 @@ adminModule
 		 * Properties and method of toolbar.
 		 *
 		*/
-		$scope.toolbar.parentState = 'Dashboard';
-		$scope.toolbar.childState = 'Analysis';
+		$scope.toolbar.parentState = 'Floor Plan';
 
-		/**
-		 * Search database and look for user input depending on state.
-		 *
-		*/
-		$scope.searchUserInput = function(){
-			return;
+		var index = $stateParams.departmentID - 1;
+		$scope.toolbar.parentState = 'Floor Plan';
+
+		var departments = departmentService.get();
+		if(!departments.length){
+			Department.index()
+				.success(function(data){
+					departments = data;
+					$scope.toolbar.childState = index > -1 ? departments[index].name : null;
+				})
+				.error(function(data){
+					Preload.error();
+				});
+		}
+		else{
+			$scope.toolbar.childState =  index > -1 ? departments[index].name : null;
+		}
+	}]);
+adminModule
+	.controller('tagWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'WorkStationTag', 'Department', function($scope, $stateParams, $mdDialog, Preloader, WorkStation, WorkStationTag, Department){
+		var departmentID = $stateParams.departmentID;
+		$scope.workStationTag = {};
+		$scope.workStationTag.department_id = $stateParams.departmentID;
+
+		$scope.divisions = [
+			{'name':'Block A', 'value':'A'},
+			{'name':'Block B', 'value':'B'},
+		];
+
+		$scope.types = [
+			{'name':'Admin', 'value':'admin'},
+			{'name':'Production', 'value':'production'},
+		];		
+
+		$scope.searchWorkStations = function(){
+
+			WorkStation.vacant($scope.workStationTag)
+				.success(function(data){
+					$scope.workStations = data;
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+
+		Department.show(departmentID)
+			.success(function(data){
+				$scope.department = data;
+			});
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
 		};
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			WorkStationTag.store($scope.workStationTag)
+				.success(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		};
+
 	}]);
 adminModule
 	.controller('addAssetDialogController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', 'Desktop', 'HardDisk', 'Headset', 'Keyboard', 'Memory', 'Monitor', 'Mouse', 'Software', 'UPS', 'VideoCard', 'OtherComponent', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService, Desktop, HardDisk, Headset, Keyboard, Memory, Monitor, Mouse, Software, UPS, VideoCard, OtherComponent){

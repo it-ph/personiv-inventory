@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateEmployeesTable extends Migration
+class CreateAssetStatusesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,12 +12,10 @@ class CreateEmployeesTable extends Migration
      */
     public function up()
     {
-        Schema::create('employees', function (Blueprint $table) {
+        Schema::create('asset_statuses', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('employee_number')->unsigned()->unique();
-            $table->string('full_name');
-            $table->integer('department_id')->unsigned();
-            $table->integer('work_station_id')->unsigned()->nullable();
+            $table->integer('asset_tag_id')->unsigned();
+            $table->text('remarks');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -30,6 +28,6 @@ class CreateEmployeesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('employees');
+        Schema::drop('asset_statuses');
     }
 }

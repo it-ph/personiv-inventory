@@ -9,4 +9,14 @@ class Department extends Model
 {
 	use SoftDeletes;
     protected $dates = ['deleted_at'];
+
+    public function work_stations()
+    {
+    	return $this->belongsToMany('App\WorkStation');
+    }
+
+    public function employees()
+    {
+    	return $this->hasMany('App\Employee');
+    }
 }

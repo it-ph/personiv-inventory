@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAssetTagsTable extends Migration
+class CreateAssetDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,14 +12,12 @@ class CreateAssetTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create('asset_tags', function (Blueprint $table) {
+        Schema::create('asset_details', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('asset_id');
-            $table->string('serial')->nullable();
-            $table->string('property_code')->unique();
-            $table->dateTime('warranty_end')->nullable();
+            $table->integer('asset_id')->unsigned();
+            $table->string('label');
+            $table->string('value');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -30,6 +28,6 @@ class CreateAssetTagsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('asset_tags');
+        Schema::drop('asset_details');
     }
 }
