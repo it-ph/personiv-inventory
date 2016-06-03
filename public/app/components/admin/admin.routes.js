@@ -22,7 +22,6 @@ adminModule
 					},
 					'toolbar@main': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controller: 'mainToolbarController',
 					},
 					'content-container@main': {
 						templateUrl: '/app/components/admin/views/content-container.view.html',
@@ -30,11 +29,6 @@ adminModule
 					},
 					'content@main': {
 						templateUrl: '/app/components/admin/templates/content/main.content.template.html',
-						// controller: 'mainContentController',	
-					},
-					'right-sidenav@main': {
-						templateUrl : '/app/components/admin/templates/sidenavs/logs-right.sidenav.html',
-						controller: 'mainRightSidenavController',
 					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
@@ -45,6 +39,30 @@ adminModule
 					$mdSidenav('left').toggle();
 				}],
 			})
+
+			.state('main.settings', {
+				url: 'settings',
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'settingsContentContainerController',
+					},
+					'toolbar@main.settings': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.settings': {
+						templateUrl: '/app/components/admin/templates/content/settings.content.template.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+
 			/**
 			 * Dashboard Routes
 			 * 

@@ -29,4 +29,9 @@ class AssetTag extends Model
     {
     	return $this->hasManyThrough('App\AssetDetail', 'App\Asset');
     }
+
+    public function activities()
+    {
+        return $this->hasMany('App\Activity', 'event_id');
+    }
 }

@@ -10,4 +10,9 @@ class AssetStatus extends Model
     {
     	return $this->belongsTo('App\AssetTag');
     }
+
+    public function activities()
+    {
+        return $this->hasMany('App\Activity', 'event_id');
+    }
 }

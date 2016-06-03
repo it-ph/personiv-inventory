@@ -19,4 +19,9 @@ class PurchaseOrder extends Model
     {
     	return $this->belongsToMany('App\AssetPurchaseOrder');
     }
+
+    public function activities()
+    {
+        return $this->hasMany('App\Activity', 'event_id');
+    }
 }

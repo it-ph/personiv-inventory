@@ -29,4 +29,9 @@ class Asset extends Model
     {
         return $this->belongsToMany('App\AssetPurchaseOrder');
     }
+
+    public function activity()
+    {
+        return $this->hasMany('App\Activity', 'event_id');
+    }
 }

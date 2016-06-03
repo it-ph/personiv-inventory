@@ -19,4 +19,9 @@ class Employee extends Model
     {
     	return $this->belongsTo('App\WorkStation');
     }
+
+    public function activities()
+    {
+        return $this->hasMany('App\Activity', 'event_id');
+    }
 }

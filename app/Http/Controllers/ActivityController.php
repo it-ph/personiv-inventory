@@ -1,16 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Department;
-use App\Activity;
-use DB;
+
 use Illuminate\Http\Request;
+
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class DepartmentController extends Controller
+class ActivityController extends Controller
 {
-
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +16,7 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        return Department::all();
+        //
     }
 
     /**
@@ -39,16 +37,7 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required'
-        ]);
-
-        $department = new Department;
-
-        $department->name = $request->name;
-
-        $department->save();
-
+        //
     }
 
     /**
@@ -59,7 +48,7 @@ class DepartmentController extends Controller
      */
     public function show($id)
     {
-        return Department::where('id', $id)->first();
+        //
     }
 
     /**

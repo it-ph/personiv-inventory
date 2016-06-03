@@ -24,4 +24,9 @@ class WorkStation extends Model
     {
     	return $this->hasMany('App\Employee');
     }
+
+    public function activities()
+    {
+        return $this->hasMany('App\Activity', 'event_id');
+    }
 }

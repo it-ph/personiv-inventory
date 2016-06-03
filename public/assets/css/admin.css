@@ -107,8 +107,8 @@ md-toolbar.white-toolbar {
   background-color: white; }
 
 .site-logo img {
-  max-width: 60%;
-  max-height: 100%; }
+  max-width: 50px;
+  /*max-height: 100%;*/ }
 
 .personiv-logo {
   height: 110px; }
@@ -200,6 +200,9 @@ md-content.blue-bg {
   font-size: 12px;
   color: #F44336;
   line-height: 24px; }
+
+.hide-overflow {
+  overflow: hidden; }
 
 /* transition duration */
 .transition, .fade-transition, .main-view {

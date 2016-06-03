@@ -1,6 +1,6 @@
 sharedModule
-	.factory('Department', ['$http', function($http){
-		var urlBase = '/department';
+	.factory('AssetType', ['$http', function($http){
+		var urlBase = '/asset-type';
 
 		return {
 			index: function(){

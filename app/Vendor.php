@@ -14,4 +14,9 @@ class Vendor extends Model
     {
     	return $this->hasMany('App\PurchaseOrder');
     }
+
+    public function activities()
+    {
+        return $this->hasMany('App\Activity', 'event_id');
+    }
 }

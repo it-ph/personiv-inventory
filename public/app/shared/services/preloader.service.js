@@ -1,11 +1,19 @@
 sharedModule
-	.service('Preloader', ['$mdDialog', function($mdDialog){
+	.service('Preloader', ['$mdDialog', '$mdToast', function($mdDialog, $mdToast){
 		var dataHolder = null;
+		var user = null;
+
 		return {
 			/* Starts the preloader */
-			preload: function(){
+			loading: function(){
 				return $mdDialog.show({
-					templateUrl: '/app/shared/templates/preloader.html',
+					templateUrl: '/app/shared/templates/loading.html',
+				    parent: angular.element(document.body),
+				});
+			},
+			saving: function(){
+				return $mdDialog.show({
+					templateUrl: '/app/shared/templates/saving.html',
 				    parent: angular.element(document.body),
 				});
 			},
@@ -25,6 +33,14 @@ sharedModule
 				        .ok('Got it!')
 				);
 			},
+			errorMessage: function(data){
+				return $mdDialog.show({
+				    controller: 'errorMessageController',
+				    templateUrl: '/app/shared/templates/dialogs/error-message.template.html',
+				    parent: angular.element(document.body),
+				    clickOutsideToClose:true,
+				});
+			},
 			/* Send temporary data for retrival */
 			set: function(data){
 				dataHolder = data;
@@ -32,6 +48,22 @@ sharedModule
 			/* Retrieves data */
 			get: function(){
 				return dataHolder;
-			}
+			},
+			/* Set User */
+			setUser: function(data){
+				user = data;
+			},
+			/* Get User */
+			getUser: function(data){
+				return user;
+			},
+			toastChangesSaved: function(){
+				return $mdToast.show(
+			    	$mdToast.simple()
+				        .textContent('Changes Saved')
+				        .position('bottom right')
+				        .hideDelay(3000)
+			    );
+			},
 		};
 	}]);

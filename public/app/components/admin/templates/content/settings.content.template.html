@@ -1,0 +1,91 @@
+<div layout="column" layout-padding>
+	<div ng-if="departments.length">
+		<md-subheader class="md-primary" layout="row" layout-align="space-between center" flex>
+			<span>Departments</span>
+		</md-subheader>
+		<md-list layout="row" layout-wrap layout-padding>
+			<md-list-item class="md-2-line fade-transition" flex="100" flex-gt-sm="25" ng-repeat="department in departments | filter:toolbar.searchText | orderBy:'name'" ng-mouseenter="department.hover = true" ng-mouseleave="department.hover = false">
+				<h2 class="md-avatar md-headline primary-bg" layout="row" layout-align="center center">
+					<span class="white-text">{{department.first_letter}}</span>
+				</h2>
+				<div class="md-list-item-text" layout="column">
+					<h3>{{department.name}}</h3>
+					<p>
+						<span am-time-ago="department.created_at"></span>
+						<md-tooltip>{{ department.created_at | date: 'EEEE, MMMM d, yyyy'}} at {{ department.created_at | date:'hh:mma'}}</md-tooltip>
+					</p>
+				</div>
+				<md-menu class="fade-transition hide" ng-class="{show:department.hover}">
+			    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+				        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
+				        <md-tooltip>Menu</md-tooltip>
+				    </md-button>
+				    <md-menu-content width="2">
+				        <md-menu-item>
+				          	<!-- Edit -->
+							<md-button ng-click="editDepartment(department.id)">
+								<md-icon class="mdi mdi-24px mdi-pencil grey"></md-icon>
+								Edit
+							</md-button>
+				        </md-menu-item>
+				        <md-menu-item>
+							<md-button ng-click="deleteDepartment(department.id)">
+								<md-icon class="mdi mdi-24px mdi-delete grey"></md-icon>
+								Delete
+							</md-button>
+				        </md-menu-item>
+				    </md-menu-content>
+			    </md-menu>
+			</md-list-item>
+		</md-list>
+	</div>
+	<!-- Program -->
+	<div ng-if="programs.length">
+		<md-subheader class="md-no-sticky md-primary">
+			<span>Program</span>
+		</md-subheader>
+		<md-list layout="row" layout-wrap layout-padding>
+			<md-list-item class="md-2-line fade-transition" flex="100" flex-gt-sm="25" ng-repeat="program in programs | filter:toolbar.searchText | orderBy:'name'" ng-mouseenter="program.hover = true" ng-mouseleave="program.hover = false">
+				<h2 class="md-avatar md-headline primary-bg" layout="row" layout-align="center center">
+					<span class="white-text">{{program.first_letter}}</span>
+				</h2>
+				<div class="md-list-item-text" layout="column">
+					<h3>{{program.name}}</h3>
+					<p>
+						<span am-time-ago="program.created_at"></span>
+						<md-tooltip>{{ program.created_at | date: 'EEEE, MMMM d, yyyy' }} at {{ program.created_at | date:'hh:mma'}}</md-tooltip>
+					</p>
+				</div>
+				<md-menu class="fade-transition hide" ng-class="{show:program.hover}">
+			    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+				        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
+				        <md-tooltip>Menu</md-tooltip>
+				    </md-button>
+				    <md-menu-content width="2">
+				        <md-menu-item>
+				          	<!-- Edit -->
+							<md-button ng-click="editProgram(program.id)">
+								<md-icon class="mdi mdi-24px mdi-pencil grey"></md-icon>
+								Edit
+							</md-button>
+				        </md-menu-item>
+				        <md-menu-item>
+							<md-button ng-click="deleteProgram(program.id)">
+								<md-icon class="mdi mdi-24px mdi-delete grey"></md-icon>
+								Delete
+							</md-button>
+				        </md-menu-item>
+				    </md-menu-content>
+			    </md-menu>
+			</md-list-item>
+		</md-list>
+	</div>
+</div>
+
+<div layout="column" layout-align="center center" flex ng-if="(!programs.length && show.program) && (!departments.length && show.department)">
+	<h3 class="md-subhead  ">No respondents to display</h3>
+	<md-button class="md-fab md-primary" aria-label="Create Program" ng-click="fab.action()">
+		<md-icon class="mdi mdi-24px mdi-plus"></md-icon>
+	</md-button>
+	<p class="secondary-text">Tap to create</p>
+</div>
