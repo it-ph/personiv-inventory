@@ -1,5 +1,5 @@
 adminModule
-	.controller('settingsContentContainerController', ['$scope', '$filter', '$mdDialog', 'Preloader', 'Department', 'AssetType', function($scope, $filter, $mdDialog, Preloader, Department, AssetType){
+	.controller('settingsContentContainerController', ['$scope', '$state', '$filter', '$mdDialog', 'Preloader', 'Department', 'AssetType', function($scope, $state, $filter, $mdDialog, Preloader, Department, AssetType){
 		/**
 		  *
 		  * Object for toolbar
@@ -30,9 +30,9 @@ adminModule
 		$scope.subheader.refresh = function(){
 			/* Reset the data */
 			$scope.departments = [];
-			$scope.programs = [];
+			$scope.asset_types = [];
 			$scope.show.department = false;
-			$scope.show.program = false;
+			$scope.show.asset_type = false;
 			/* Starts the loading */
 			Preloader.loading();
 			$scope.init(true);
@@ -108,6 +108,7 @@ adminModule
 		    })
 	        .then(function() {
 	        	$scope.subheader.refresh();
+	        	$state.go($state.current, {}, {reload:true});
 	        }, function() {
 	        	return;
 	        });
@@ -122,6 +123,7 @@ adminModule
 		    })
 	        .then(function() {
 	        	$scope.subheader.refresh();
+	        	$state.go($state.current, {}, {reload:true});
 	        	Preloader.toastChangesSaved();
 	        }, function() {
 	        	return;
@@ -132,7 +134,7 @@ adminModule
 			var confirm = $mdDialog.confirm()
 		        .title('Delete')
 		        .textContent('This asset will be removed from the list.')
-		        .ariaLabel('Delete program')
+		        .ariaLabel('Delete Asset Type')
 		        .ok('Delete')
 		        .cancel('Cancel');
 
@@ -141,6 +143,7 @@ adminModule
 			    	AssetType.delete(id)
 			    		.success(function(){
 			    			$scope.subheader.refresh();
+			    			$state.go($state.current, {}, {reload:true});
 			    			Preloader.toastChangesSaved();
 			    		})
 			    		.error(function(){
@@ -190,7 +193,7 @@ adminModule
 		var formatData = function(data)
 		{
 			angular.forEach(data, function(item){
-				item.first_letter = item.name.charAt(0).toUpperCase();
+				item.first_letter = item.name ? item.name.charAt(0).toUpperCase() :item.type.charAt(0).toUpperCase();
 				item.created_at = new Date(item.created_at);
 			});
 		}
@@ -211,7 +214,7 @@ adminModule
 
 					$scope.show.department = true;
 
-					angular.forEach(data, function(item){
+					angular.forEach(data.data, function(item){
 						var toolbarItem = {};
 						toolbarItem.display = item.name;
 						$scope.toolbar.items.push(toolbarItem);
@@ -225,13 +228,13 @@ adminModule
 							// formats the data;
 							formatData(data);
 
-							$scope.programs = data;
+							$scope.asset_types = data;
 
-							$scope.show.program = true;
+							$scope.show.asset_type = true;
 
 							angular.forEach(data, function(item){
 								var toolbarItem = {};
-								toolbarItem.display = item.name;
+								toolbarItem.display = item.type;
 								$scope.toolbar.items.push(toolbarItem);
 							});
 
@@ -243,7 +246,7 @@ adminModule
 								Preloader.stop();
 							}
 
-							if($scope.departments.length || $scope.programs.length)
+							if($scope.departments.length || $scope.asset_types.length)
 							{
 								$scope.fab.show = true;
 							}
@@ -258,6 +261,4 @@ adminModule
 
 		/* execute initial data fetching */
 		$scope.init();
-
-		console.log('done');
 	}]);

@@ -5,7 +5,7 @@
 </div>
 <md-divider></md-divider>
 <ul>
-	<li layout="row" flex ng-repeat="page in menu.static" ng-class="  'active'">
+	<li layout="row" flex ng-repeat="page in menu.static" ng-class="'active'">
 		<md-button flex ui-sref="{{page.state}}">
 			<div layout="row" flex>
 				<md-icon class="mdi {{page.icon}} grey"></md-icon>
@@ -34,7 +34,7 @@
 				<md-button flex ui-sref="main.assets({'assetID': {{ page.id }} })">
 					<div layout="row" flex>
 						<span flex="5"></span>
-						<span class="secondary-text">{{ page.name }}</span>
+						<span class="secondary-text">{{ page.type }}</span>
 						<span flex></span>
 					</div>
 				</md-button>

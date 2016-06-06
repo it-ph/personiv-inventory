@@ -109,7 +109,7 @@ md-content.blue-bg{
 	background: $primary500;
 }
 
-.blue-bg{
+.blue-bg, .primary-bg{
 	background: $primary500;
 }
 
@@ -196,13 +196,47 @@ md-content.blue-bg{
   }
 }
 
-.pattern{
-	position: absolute;
-	font-size: 12px;
-	color: $red500;
-	line-height: 24px;
-}
-
 .hide-overflow{
 	overflow: hidden;
+}
+
+.hint{
+    /* Position the hint */
+    position: absolute;
+    left: 2px;
+    right: auto;
+    bottom: 7px;
+    /* Copy styles from ng-messages */
+    font-size: 12px;
+    line-height: 14px;
+    transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
+    /* Set our own color */
+    color: grey;
+}
+
+.not-absolute{
+	position:relative;
+}
+
+.pattern{
+	@extend .hint;
+	color: $red500;
+}
+
+.hint.ng-hide, .hint.ng-enter, .hint.ng-leave.ng-leave-active {
+    bottom: 26px;
+    opacity: 0;
+}
+.hint.ng-leave, .hint.ng-enter.ng-enter-active {
+    bottom: 7px;
+    opacity: 1;
+}
+
+.pattern.ng-hide, .pattern.ng-enter, .pattern.ng-leave.ng-leave-active {
+    bottom: 26px;
+    opacity: 0;
+}
+.pattern.ng-leave, .pattern.ng-enter.ng-enter-active {
+    bottom: 7px;
+    opacity: 1;
 }

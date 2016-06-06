@@ -14,8 +14,8 @@
 				<!-- Name -->
 				<md-input-container>
 					<label>Name</label>
-					<input type="text" name="AssetTypeName" required ng-model="assetType.name" ng-pattern="/^[a-zA-Z]+$/">
-					<div ng-messages="assetTypeForm.AssetTypeName.$error" ng-if="assetTypeForm.AssetTypeName.$touched">
+					<input type="text" name="Type" required ng-model="assetType.type" ng-pattern="/^[a-zA-Z- ]+$/">
+					<div ng-messages="assetTypeForm.Type.$error" ng-if="assetTypeForm.Type.$touched">
 						<div ng-message="required">Name is required.</div>
 						<div ng-message="pattern">Characters only.</div>
 					</div>

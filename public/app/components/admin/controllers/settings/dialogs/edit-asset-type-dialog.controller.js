@@ -32,7 +32,7 @@ adminModule
 				*/
 				if(!busy){
 					busy = true;
-					Program.update(assetTypeID, $scope.assetType)
+					AssetType.update(assetTypeID, $scope.assetType)
 						.success(function(){
 							// Stops Preloader 
 							Preloader.stop();

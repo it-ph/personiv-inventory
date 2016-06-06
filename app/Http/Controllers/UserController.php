@@ -5,9 +5,27 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Hash;
+use Auth;
+use App\User;
 
 class UserController extends Controller
 {
+    public function changePassword(Request $request)
+    {
+        $user = $request->user();
+
+        if($request->new == $request->confirm && $request->old != $request->new)
+        {
+            $user->password = Hash::make($request->new);
+        }
+
+        $user->save();
+    }
+    public function checkPassword(Request $request)
+    {
+        return response()->json(Hash::check($request->old, $request->user()->password));
+    }
     /**
      * Display a listing of the resource.
      *

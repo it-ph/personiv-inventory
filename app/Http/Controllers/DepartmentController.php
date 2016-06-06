@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Department;
 use App\Activity;
+use App\ActivityType;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -49,6 +50,17 @@ class DepartmentController extends Controller
 
         $department->save();
 
+        // Search the activity type
+        $activity_type = ActivityType::where('type', 'department')->where('action', 'create')->first();
+
+        // create an activity log
+        $activity = new Activity;
+
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $department->id;
+
+        $activity->save();
     }
 
     /**
@@ -82,7 +94,27 @@ class DepartmentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required'
+        ]);
+
+        $department = Department::where('id', $id)->first();
+
+        $department->name = $request->name;
+
+        $department->save();
+
+        // Search the activity type
+        $activity_type = ActivityType::where('type', 'department')->where('action', 'update')->first();
+
+        // create an activity log
+        $activity = new Activity;
+
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $department->id;
+
+        $activity->save();
     }
 
     /**
@@ -93,6 +125,20 @@ class DepartmentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $asset_type = AssetType::where('id', $id)->first();
+        
+        // Search the activity type
+        $activity_type = ActivityType::where('type', 'asset_type')->where('action', 'delete')->first();
+
+        // create an activity log
+        $activity = new Activity;
+
+        $activity->user_id = Auth::user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $asset_type->id;
+
+        $activity->save();
+
+        $asset_type->delete();
     }
 }

@@ -2,7 +2,6 @@ adminModule
 	.controller('leftSidenavController', ['$scope', '$state', '$mdSidenav', 'AssetType', function($scope, $state, $mdSidenav, AssetType){
 		$scope.menu = {};
 		$scope.state = $state.current.name;
-		console.log($scope.state);
 
 		$scope.menu.static = [
 			{
@@ -34,9 +33,11 @@ adminModule
 			},
 		];
 
+		$scope.menu.pages = [];
+
 		AssetType.index()
 			.success(function(data){
-				$scope.menu.pages = data;
+				$scope.menu.pages.push(data);
 			})
 
 
