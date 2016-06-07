@@ -102,7 +102,7 @@ md-toolbar.white-toolbar {
 
 /* Background colors */
 md-content.dirty-white{
-	background: #eeeeee;
+	background: #fafafa;
 }
 
 md-content.blue-bg{
@@ -239,4 +239,8 @@ md-content.blue-bg{
 .pattern.ng-leave, .pattern.ng-enter.ng-enter-active {
     bottom: 7px;
     opacity: 1;
+}
+
+.circle{
+	border-radius: 50%;
 }

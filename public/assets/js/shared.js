@@ -19,6 +19,11 @@ sharedModule
 			.accentPalette('light-blue')
 			.dark();
 
+		$mdThemingProvider.theme('dark-teal').backgroundPalette('teal').dark();
+		$mdThemingProvider.theme('dark-orange').backgroundPalette('orange').dark();
+		$mdThemingProvider.theme('dark-purple').backgroundPalette('deep-purple').dark();
+		$mdThemingProvider.theme('dark-blue').backgroundPalette('blue').dark();
+
 		$urlRouterProvider
 			.otherwise('/page-not-found')
 			.when('', '/');
@@ -232,6 +237,31 @@ sharedModule
 			},
 			delete: function(id){
 				return $http.delete(urlBase + '/' + id);
+			},
+		};
+	}]);
+sharedModule
+	.factory('Asset', ['$http', function($http){
+		var urlBase = '/asset';
+
+		return {
+			index: function(){
+				return $http.get(urlBase);
+			},
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
+			},
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
+			paginate: function(assetTypeID, page){
+				return $http.get(urlBase + '-paginate/' + assetTypeID + '?page=' + page);
 			},
 		};
 	}]);

@@ -126,7 +126,7 @@ md-toolbar.white-toolbar {
 
 /* Background colors */
 md-content.dirty-white {
-  background: #eeeeee; }
+  background: #fafafa; }
 
 md-content.blue-bg {
   background: #2196F3; }
@@ -232,6 +232,9 @@ md-content.blue-bg {
 .pattern.ng-leave, .pattern.ng-enter.ng-enter-active {
   bottom: 7px;
   opacity: 1; }
+
+.circle {
+  border-radius: 50%; }
 
 /* transition duration */
 .transition, .fade-transition, .main-view {

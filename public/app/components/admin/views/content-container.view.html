@@ -10,7 +10,7 @@
 			<div class="md-toolbar-tools" ng-include="'/app/components/admin/templates/subheader.template.html'"></div>
 		</md-toolbar>
 		<!-- Content -->
-		<md-content flex layout="column" ui-view="content"></md-content>
+		<md-content flex layout="column" ui-view="content" id="main-content"></md-content>
 	</div>
 	<!-- Right Sidenav -->
 	<md-sidenav ng-if="rightSidenav.show" class="md-sidenav-right" md-component-id="right" md-is-locked-open="$mdMedia('gt-md')" ui-view="right-sidenav"></md-sidenav>

@@ -64,28 +64,25 @@ adminModule
 			})
 
 			/**
-			 * Dashboard Routes
-			 * 
+			 * Assets Routes
+			 *
 			*/
-
-			/**
-			 * Displays charts of inventory
-			 * 
-			*/
-			.state('main.analysis', {
-				url: 'dashboard/analysis',
+			.state('main.asset', {
+				url: 'asset/{assetTypeID}',
+				params: {'assetTypeID':null},
 				views: {
-					'toolbar': {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'assetTypeContentController'
+					},
+					'toolbar@main.asset': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controller: 'analysisToolbarController',
 					},
-					'content': {
-						templateUrl: '/app/components/admin/templates/content/analysis.content.template.html',
-						controller: 'analysisContentController',
+					'content@main.asset': {
+						templateUrl: '/app/components/admin/templates/content/assets.content.template.html',
 					},
-					'right-sidenav': {
-						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
-						controller: 'analysisRightSidenavController',
+					'right-sidenav@main.asset': {
+						templateUrl: '/app/components/admin/templates/sidenavs/assets-right-sidenav.template.html',
 					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
@@ -163,44 +160,6 @@ adminModule
 				}],
 			})
 
-			/**
-			 * Assets Routes
-			 *
-			*/
-			.state('main.assets', {
-				url: 'assets/{assetID}',
-				params: {'assetID':null},
-				views: {
-					'content-container': {
-						templateUrl: '/app/components/admin/views/content-container.view.html',
-						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
-							var index = $stateParams.assetID - 1;
-							return assetService.contentContainerController(index);
-						}]
-					},
-					'toolbar@main.assets': {
-						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
-							var index = $stateParams.assetID - 1;
-							return assetService.toolbarController(index);
-						}]
-					},
-					'content@main.assets': {
-						templateUrl: '/app/components/admin/templates/content/assets.content.template.html',
-						// controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
-						// 	var index = $stateParams.assetID - 1;
-						// 	return assetService.contentController(index);
-						// }]
-					},
-				},
-				onExit: ['$mdSidenav', function($mdSidenav){
-					var leftSidenav = $('[md-component-id="left"]');
-					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
-						return;
-					}
-					$mdSidenav('left').toggle();
-				}],
-			})
 			/**
 			 * Unit Routes
 			 *

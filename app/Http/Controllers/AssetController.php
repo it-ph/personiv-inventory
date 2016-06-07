@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Asset;
+use App\Activity;
+use Auth;
+use DB;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 class AssetController extends Controller
 {
+    public function paginate($id)
+    {
+        return $assets = Asset::where('asset_type_id', $id)->paginate(20);
+    }
     /**
      * Display a listing of the resource.
      *

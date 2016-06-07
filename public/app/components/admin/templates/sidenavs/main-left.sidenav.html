@@ -30,8 +30,8 @@
 		<!-- Child -->
 		<ul class="pages">
 			<!-- Assets -->
-			<li layout="row" ui-sref-active="active" ng-if="section.name == 'Assets'" ng-repeat="page in menu.pages[$index]">
-				<md-button flex ui-sref="main.assets({'assetID': {{ page.id }} })">
+			<li layout="row" ng-if="section.name == 'Assets'" ng-repeat="page in menu.pages[$index]">
+				<md-button ui-sref-active="active" flex ui-sref="main.asset({'assetTypeID': {{ page.id }} })">
 					<div layout="row" flex>
 						<span flex="5"></span>
 						<span class="secondary-text">{{ page.type }}</span>

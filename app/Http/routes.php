@@ -41,6 +41,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::resource('work-station', 'WorkStationController');
 	Route::resource('asset-tag', 'AssetTagController');
 	Route::resource('email-report', 'EmailReportController');
+	Route::resource('asset', 'AssetController');
 	Route::resource('asset-detail', 'AssetDetailController');
 	Route::resource('asset-status', 'AssetStatusController');
 	Route::resource('asset-type', 'AssetTypeController');
@@ -54,6 +55,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('user-check-password', 'UserController@checkPassword');
 	Route::post('user-change-password', 'UserController@changePassword');
 
+	Route::get('asset-paginate/{assetTypeID}', 'AssetController@paginate');
 	// Route Resource Paginations
 	Route::get('work-station-paginate', 'WorkStationController@paginate');
 	// paginate by department
