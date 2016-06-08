@@ -5,8 +5,8 @@
 </div>
 <md-divider></md-divider>
 <ul>
-	<li layout="row" flex ng-repeat="page in menu.static" ng-class="'active'">
-		<md-button flex ui-sref="{{page.state}}">
+	<li layout="row" flex ng-repeat="page in menu.static">
+		<md-button class="static" ui-sref-active="active" flex ui-sref="{{page.state}}">
 			<div layout="row" flex>
 				<md-icon class="mdi {{page.icon}} grey"></md-icon>
 				<span flex="5"></span>

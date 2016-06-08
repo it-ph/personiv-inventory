@@ -1,0 +1,67 @@
+<md-dialog layout="column" flex flex-gt-sm="50" flex-gt-lg="40"  aria-label="Program" ng-cloak>
+	<form name="assetForm" novalidate>
+		<md-toolbar class="white-toolbar">
+			<div class="md-toolbar-tools">
+				<h2 class="primary-text">{{ label }}</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close mdi-24px grey" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content layout="column" flex layout-padding layout-wrap>
+			<div layout="column">
+				<!-- Brand -->
+				<md-input-container>
+					<label>Brand</label>
+					<input type="text" name="Brand" required ng-model="asset.brand">
+					<div ng-messages="assetForm.Type.$error" ng-if="assetForm.Type.$touched">
+						<div ng-message="required">Brand is required.</div>
+					</div>
+				</md-input-container>
+				
+				<!-- Model -->
+				<md-input-container>
+					<label>Model</label>
+					<input type="text" name="Model" required ng-model="asset.model">
+					<div ng-messages="assetForm.Model.$error" ng-if="assetForm.Model.$touched">
+						<div ng-message="required">Model is required.</div>
+					</div>
+				</md-input-container>
+
+				<md-subheader class="md-no-sticky">Specs</md-subheader>
+				<div layout="row" flex ng-repeat="detail in details">
+					<!-- Label -->
+					<md-input-container flex>
+						<label>Label</label>
+						<input type="text" name="Label{{$index}}" required ng-model="detail.label">
+						<div ng-messages="assetForm['Label' + $index].$error" ng-if="assetForm['Label' + $index].$touched">
+							<div ng-message="required">Label is required.</div>
+						</div>
+					</md-input-container>
+					<!-- Value -->
+					<md-input-container flex>
+						<label>Value</label>
+						<input type="text" name="Value{{$index}}" required ng-model="detail.value">
+						<div ng-messages="assetForm['Value' + $index].$error" ng-if="assetForm['Value' + $index].$touched">
+							<div ng-message="required">Value is required.</div>
+						</div>
+					</md-input-container>
+
+					<md-button class="md-fab md-warn md-mini" aria-label="Remove Specs" ng-click="removeDetail($index)">
+						<md-icon class="mdi mdi-close"></md-icon>
+					</md-button>
+				</div>
+
+				<md-button class="md-fab md-primary md-mini" aria-label="Add Specs" ng-click="addDetail()">
+					<md-icon class="mdi mdi-plus"></md-icon>
+				</md-button>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-button md-primary" aria-label="Submit" ng-click="submit()">
+			Submit
+		</md-button>
+	</div>
+</md-dialog>

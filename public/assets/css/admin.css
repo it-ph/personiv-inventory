@@ -233,8 +233,18 @@ md-content.blue-bg {
   bottom: 7px;
   opacity: 1; }
 
+.card-image-bg {
+  background: url("/assets/img/bg.png");
+  background-size: cover; }
+
 .circle {
   border-radius: 50%; }
+
+.shadow-bg {
+  background: rgba(0, 0, 0, 0.5); }
+
+.static.active .secondary-text, .static.active .grey {
+  color: #2196F3; }
 
 /* transition duration */
 .transition, .fade-transition, .main-view {
@@ -268,15 +278,13 @@ md-content.blue-bg {
   overflow: hidden;
   max-height: 0;
   transition: max-height 0.75s cubic-bezier(0.35, 0, 0.25, 1); }
-  .pages .active {
-    background: rgba(255, 255, 255, 0.1); }
+  .pages .active .secondary-text {
+    /*background: rgba(white,0.1);*/
+    color: #2196F3; }
 
 .rotate-icon {
   transition: -webkit-transform 0.3s ease-in-out;
   transition: transform 0.3s ease-in-out; }
-
-.active .section-button-container {
-  background: rgba(255, 255, 255, 0.1); }
 
 .active .pages {
   height: auto;

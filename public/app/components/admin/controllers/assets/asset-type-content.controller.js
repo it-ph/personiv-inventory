@@ -1,5 +1,5 @@
 adminModule
-	.controller('assetTypeContentController', ['$scope', '$filter', '$state', '$stateParams', 'AssetType', 'Asset', 'Preloader', function($scope, $filter, $state, $stateParams, AssetType, Asset, Preloader){
+	.controller('assetTypeContentController', ['$scope', '$filter', '$mdDialog', '$state', '$stateParams', 'AssetType', 'Asset', 'AssetTag', 'Preloader', function($scope, $filter, $mdDialog, $state, $stateParams, AssetType, Asset, AssetTag, Preloader){
 		var assetTypeID = $stateParams.assetTypeID;
 
 		/**
@@ -28,6 +28,19 @@ adminModule
 	    	}
 	    }
 
+	    var pushItem = function(data, type){
+	    	if(type == 'asset'){
+			    var item = {};
+				item.display = data.brand;
+				item.subItem = data.model;
+				// format
+				data.first_letter = data.brand.charAt(0).toUpperCase();
+				data.updated_at = new Date(data.updated_at);
+	    	}
+
+			$scope.toolbar.items.push(item);
+	    }
+
 	    $scope.toolbar.searchAll = true;
 	    $scope.toolbar.getItems = function(query){
 	    	var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items = [];
@@ -41,7 +54,7 @@ adminModule
 			Asset.search($scope.toolbar)
 				.success(function(data){
 					angular.forEach(data, function(item){
-						pushItem(item);
+						// pushItem(item);
 					});
 					
 					$scope.asset.results = data;
@@ -81,12 +94,17 @@ adminModule
 		$scope.fab.label = "Create";
 		$scope.fab.icon = "mdi-plus";
 		$scope.fab.action = function(){    
-	        
-	        // $('#main-content').animate({
-	        //     scrollTop: 0
-	        // }, 700);
+	        $mdDialog.show({
+		    	controller: 'createAssetDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/asset-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
+	        .then(function() {
+	        	$scope.toolbar.refresh();
+	        }, function() {
+	        	return;
+	        });
 		}
-		$scope.fab.show = true;
 
 		/**
 		  *
@@ -119,8 +137,10 @@ adminModule
 							if(data.data.length){
 								// iterate over each record and set the updated_at date and first letter
 								angular.forEach(data.data, function(item){
-									pushItem(item);
+									pushItem(item, 'asset');
 								});
+
+								$scope.fab.show = true;
 							}
 
 							$scope.asset.paginateLoad = function(){
@@ -141,9 +161,11 @@ adminModule
 										$scope.asset.page++;
 										// iterate over the paginated data and push it to the original array
 										angular.forEach(data.data, function(item){
-											pushItem(item);
+											pushItem(item, 'asset');
 											$scope.asset.paginated.push(item);
 										});
+										// enables next call
+										$scope.asset.busy = false;
 									})
 									.error(function(){
 										Preloader.error();

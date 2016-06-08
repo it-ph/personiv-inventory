@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\AssetDetail;
+use App\Activity;
+use App\ActivityType;
+use Auth;
+use DB;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -37,7 +41,21 @@ class AssetDetailController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        for ($i=0; $i < count($request->all()); $i++) { 
+            $this->validate($request, [
+                $i.'.asset_id' => 'required|numeric',
+                $i.'.label' => 'required',
+                $i.'.value' => 'required',
+            ]);
+
+            $asset_detail = new AssetDetail;
+
+            $asset_detail->asset_id = $request->input($i.'.asset_id');
+            $asset_detail->label = $request->input($i.'.label');
+            $asset_detail->value = $request->input($i.'.value');
+
+            $asset_detail->save();
+        }
     }
 
     /**

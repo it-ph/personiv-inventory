@@ -233,8 +233,18 @@ md-content.blue-bg {
   bottom: 7px;
   opacity: 1; }
 
+.card-image-bg {
+  background: url("/assets/img/bg.png");
+  background-size: cover; }
+
 .circle {
   border-radius: 50%; }
+
+.shadow-bg {
+  background: rgba(0, 0, 0, 0.5); }
+
+.static.active .secondary-text, .static.active .grey {
+  color: #2196F3; }
 
 /* transition duration */
 .transition, .fade-transition, .main-view {

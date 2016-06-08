@@ -241,6 +241,20 @@ md-content.blue-bg{
     opacity: 1;
 }
 
+.card-image-bg {
+	background: url('/assets/img/bg.png');
+	background-size: cover;
+}
 .circle{
 	border-radius: 50%;
+}
+
+.shadow-bg{
+	background: rgba(0,0,0,0.5);
+}
+
+.static.active{
+	.secondary-text, .grey{
+		color: $primary500;
+	}
 }

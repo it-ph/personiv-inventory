@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\AssetType;
+use App\AssetTag;
 use App\Activity;
 use App\ActivityType;
 use Auth;
@@ -74,7 +75,30 @@ class AssetTypeController extends Controller
      */
     public function show($id)
     {
-        return AssetType::where('id', $id)->first();
+        $asset_type = AssetType::where('id', $id)->with('assets')->first();
+        $asset_type->deployed = 0;
+        $asset_type->pulled_out = 0;
+        $asset_type->stocks = 0;
+
+        foreach ($asset_type->assets as $asset_key => $asset_value) {
+            $asset_tags = AssetTag::where('asset_id', $asset_value->id)->with('status')->orderBy('created_at', 'desc')->get();
+
+            foreach ($asset_tags as $asset_tag_key => $asset_tag_value) {
+                $asset_type->last_property_code = $asset_tag_key == 0 ? $asset_tag_value->property_code : null;
+
+                if(!$asset_tag_value->status->deleted_at){
+                    $asset_type->pulled_out += 1;
+                }
+            }
+
+            $deployed_count = AssetTag::where('asset_id', $asset_value->id)->whereNotNull('work_station_id')->count();
+            $stock_count = AssetTag::where('asset_id', $asset_value->id)->whereNull('work_station_id')->count();
+
+            $asset_type->deployed += $deployed_count;
+            $asset_type->stocks += $stock_count;
+        }
+
+        return $asset_type;
     }
 
     /**

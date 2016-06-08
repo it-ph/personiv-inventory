@@ -1,7 +1,7 @@
 <div layout="row" layout-align="start center" flex flex-gt-md="80">
 	<div layout="row" ng-if="!searchBar" layout-align="start center">
 		<!-- Toggle Left Sidenav Button -->
-		<md-button class="md-icon-button" ng-click="toggleSidenav('left')" hide-gt-md>
+		<md-button class="md-icon-button" ng-click="toggleSidenav('left')" hide-gt-sm>
 			<md-icon class="mdi mdi-24px mdi-menu grey" aria-label="Toogle Sidenav"></md-icon>
 		</md-button>
 		<md-button class="md-icon-button" ng-click="toolbar.back()" hide-md hide-sm hide-xs ng-if="toolbar.showBack">
@@ -40,6 +40,18 @@
 			<md-button class="md-icon-button" ng-click="showSearchBar()" ng-if="!toolbar.hideSearchIcon">
 				<md-icon class="mdi mdi-24px mdi-magnify grey" aria-label="Search"></md-icon>
 			</md-button>
+			<md-menu>
+				<md-button class="md-icon-button" ng-click="$mdOpenMenu($event)">
+					<md-icon class="mdi grey mdi-dots-vertical"></md-icon>
+				</md-button>
+				<md-menu-content width="4">
+					<md-menu-item>
+						<md-button ng-click="toolbar.refresh()">
+							Refresh
+						</md-button>
+					</md-menu-item>
+				</md-menu-content>
+			</md-menu>
 			<span flex="5"></span>
 		</div>
 	</div>

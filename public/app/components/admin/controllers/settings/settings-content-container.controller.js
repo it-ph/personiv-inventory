@@ -27,7 +27,7 @@ adminModule
 		  *
 		*/
 		$scope.subheader = {};
-		$scope.subheader.refresh = function(){
+		$scope.toolbar.refresh = function(){
 			/* Reset the data */
 			$scope.departments = [];
 			$scope.asset_types = [];
@@ -50,7 +50,7 @@ adminModule
 		      	parent: angular.element(document.body),
 		    })
 	        .then(function() {
-	        	$scope.subheader.refresh();
+	        	$scope.toolbar.refresh();
 	        }, function() {
 	        	return;
 	        });
@@ -64,7 +64,7 @@ adminModule
 		      	parent: angular.element(document.body),
 		    })
 	        .then(function() {
-	        	$scope.subheader.refresh();
+	        	$scope.toolbar.refresh();
 	        	Preloader.toastChangesSaved();
 	        }, function() {
 	        	return;
@@ -83,7 +83,7 @@ adminModule
 		    	.then(function() {
 			    	Department.delete(id)
 			    		.success(function(){
-			    			$scope.subheader.refresh();
+			    			$scope.toolbar.refresh();
 			    			Preloader.toastChangesSaved();
 			    		})
 			    		.error(function(){
@@ -107,7 +107,7 @@ adminModule
 		      	parent: angular.element(document.body),
 		    })
 	        .then(function() {
-	        	$scope.subheader.refresh();
+	        	$scope.toolbar.refresh();
 	        	$state.go($state.current, {}, {reload:true});
 	        }, function() {
 	        	return;
@@ -122,7 +122,7 @@ adminModule
 		      	parent: angular.element(document.body),
 		    })
 	        .then(function() {
-	        	$scope.subheader.refresh();
+	        	$scope.toolbar.refresh();
 	        	$state.go($state.current, {}, {reload:true});
 	        	Preloader.toastChangesSaved();
 	        }, function() {
@@ -142,7 +142,7 @@ adminModule
 		    	.then(function() {
 			    	AssetType.delete(id)
 			    		.success(function(){
-			    			$scope.subheader.refresh();
+			    			$scope.toolbar.refresh();
 			    			$state.go($state.current, {}, {reload:true});
 			    			Preloader.toastChangesSaved();
 			    		})

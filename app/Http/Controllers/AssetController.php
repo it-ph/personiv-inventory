@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Asset;
 use App\Activity;
+use App\ActivityType;
 use Auth;
 use DB;
 use App\Http\Requests;
@@ -14,7 +15,7 @@ class AssetController extends Controller
 {
     public function paginate($id)
     {
-        return $assets = Asset::where('asset_type_id', $id)->paginate(20);
+        return $assets = Asset::where('asset_type_id', $id)->paginate(10);
     }
     /**
      * Display a listing of the resource.
@@ -44,7 +45,33 @@ class AssetController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'brand' => 'required',
+            'model' => 'required',
+            'asset_type_id' => 'required|numeric',
+        ]);
+
+        $asset = new Asset;
+
+        $asset->brand = $request->brand;
+        $asset->model = $request->model;
+        $asset->asset_type_id = $request->asset_type_id;
+
+        $asset->save();
+
+        // Search the activity type
+        $activity_type = ActivityType::where('type', 'asset')->where('action', 'create')->first();
+
+        // create an activity log
+        $activity = new Activity;
+
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $asset->id;
+
+        $activity->save();
+
+        return $asset->id;
     }
 
     /**

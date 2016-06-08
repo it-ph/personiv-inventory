@@ -84,6 +84,9 @@ adminModule
 					'right-sidenav@main.asset': {
 						templateUrl: '/app/components/admin/templates/sidenavs/assets-right-sidenav.template.html',
 					},
+					'subheader@main.asset':{
+						templateUrl: '/app/components/admin/templates/subheader/asset-subheader-template.html',
+					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
 					var leftSidenav = $('[md-component-id="left"]');
