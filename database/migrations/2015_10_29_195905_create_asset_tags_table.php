@@ -18,6 +18,8 @@ class CreateAssetTagsTable extends Migration
             $table->integer('work_station_id')->unsigned()->nullable();
             $table->string('computer_name')->nullable();
             $table->string('serial')->nullable();
+            $table->string('prefix');
+            $table->integer('sequence')->unsigned();
             $table->string('property_code')->unique();
             $table->text('remarks')->nullable();
             $table->dateTime('warranty_end')->nullable();

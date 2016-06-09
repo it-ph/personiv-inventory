@@ -376,6 +376,13 @@ adminModule
 			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
 			return results;
 		}
+
+		$scope.toolbar.refresh = function(){
+			/* Starts the loading */
+			Preloader.loading();
+			$scope.init(true);
+		}
+
 		$scope.showSearchBar = function(){
 	    	$scope.searchBar = true;
 	    }
@@ -384,9 +391,18 @@ adminModule
 	    	$scope.searchBar = false;
 	    	$scope.toolbar.searchText = '';
 	    	if($scope.asset.searched){
-	    		$scope.subheader.refresh();
+	    		$scope.toolbar.refresh();
 	    		$scope.asset.searched = false;
 	    	}
+	    }
+
+	    $scope.showAssetDetails = function(id){
+	    	Preloader.set(id);
+	    	$mdDialog.show({
+		    	controller: 'assetDetailsDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/asset-details-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
 	    }
 
 	    var pushItem = function(data, type){
@@ -429,28 +445,9 @@ adminModule
 
 		/**
 		  *
-		  * Object for subheader
+		  * Object for fab
 		  *
 		*/
-		$scope.subheader = {};
-		$scope.subheader.refresh = function(){
-			/* Starts the loading */
-			Preloader.loading();
-			$scope.init(true);
-		}
-
-		/**
-		  *
-		  * Object for subheader
-		  *
-		*/
-		$scope.subheader = {};
-		$scope.subheader.refresh = function(){
-			/* Starts the loading */
-			Preloader.loading();
-			$scope.init(true);
-		}
-
 		$scope.fab = {};
 		$scope.fab.label = "Create";
 		$scope.fab.icon = "mdi-plus";
@@ -460,8 +457,11 @@ adminModule
 		      	templateUrl: '/app/components/admin/templates/dialogs/asset-dialog.template.html',
 		      	parent: angular.element(document.body),
 		    })
-	        .then(function() {
-	        	$scope.toolbar.refresh();
+	        .then(function(data) {
+	        	console.log(data);
+	        	if(data){
+		        	$scope.toolbar.refresh();
+	        	}
 	        }, function() {
 	        	return;
 	        });
@@ -469,7 +469,7 @@ adminModule
 
 		/**
 		  *
-		  * Object for subheader
+		  * Object for rightSidenav
 		  *
 		*/
 		$scope.rightSidenav = {};
@@ -546,197 +546,6 @@ adminModule
 		}
 
 		$scope.init();
-	}]);
-adminModule
-	.controller('barcodeDialogController', ['$scope', '$mdDialog', function($scope, $mdDialog){
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-		
-		$scope.barcode = {};
-		$scope.barcode.category = 'assets';
-		$scope.max = 99999;
-		$scope.floors = ['06', '10'];
-		$scope.divisions = ['A', 'B'];
-		$scope.types = [
-			{'name':'Admin', 'value':'A'},
-			{'name':'Production', 'value':'P'}
-		];
-
-		$scope.checkMax = function(){
-			if($scope.barcode.category == 'workstation')
-				$scope.max = 999;
-			else
-				$scope.max = 99999;
-		}
-
-		$scope.submit = function(){
-			if($scope.detailsForm.$invalid){
-				angular.forEach($scope.detailsForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				if($scope.barcode.category == 'assets'){				
-					var win = window.open('/barcode-assets/' + $scope.barcode.format + '/starting-point/' + $scope.barcode.starting_point + '/quantity/' + $scope.barcode.quantity , '_blank');
-					win.focus();
-				}
-				else{
-					var win = window.open('/barcode-work-station/' + $scope.barcode.floor + '/division/' + $scope.barcode.division + '/type/' + $scope.barcode.type + '/starting-point/' + $scope.barcode.starting_point + '/quantity/' + $scope.barcode.quantity , '_blank');
-					win.focus();	
-				}
-				$mdDialog.hide();
-			}
-		}
-	}]);
-adminModule
-	.controller('leftSidenavController', ['$scope', '$state', '$mdSidenav', 'AssetType', function($scope, $state, $mdSidenav, AssetType){
-		$scope.menu = {};
-		$scope.state = $state.current.name;
-
-		$scope.menu.static = [
-			{
-				'state':'main',
-				'icon':'mdi-view-dashboard',
-				'label':'Dashboard',
-			},
-			{
-				'state':'main.purchase-orders',
-				'icon':'mdi-format-list-numbers',
-				'label':'Purchase Orders',
-			},
-			{
-				'state':'main.work-stations',
-				'icon':'mdi-desktop-tower',
-				'label':'Work Stations',
-			},
-			{
-				'state':'main.settings',
-				'icon':'mdi-settings',
-				'label':'Settings',
-			},
-		];
-
-		$scope.menu.section = [
-			{
-				'name':'Assets',
-				'icon':'mdi-desktop-mac',
-			},
-		];
-
-		$scope.menu.pages = [];
-
-		AssetType.index()
-			.success(function(data){
-				$scope.menu.pages.push(data);
-			})
-
-
-		// set section as active
-		$scope.setActive = function(index){
-		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').toggleClass('active'));
-		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').siblings().removeClass('active'));
-		};
-	}]);
-adminModule
-	.controller('mainContentContainerController', ['$scope', '$state', '$mdDialog', 'Preloader', function($scope, $state, $mdDialog, Preloader){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-
-		/**
-		 * Properties and method of toolbar.
-		 *
-		*/
-		$scope.toolbar.childState = 'Dashboard';
-
-		/**
-		 * Object for subheader
-		 *
-		*/
-		$scope.subheader = {};
-
-		$scope.subheader.download = function(){
-			// start preloader
-			Preloader.preload();
-
-			EmailReport.index()
-				.success(function(){
-					Preloader.stop();
-				});
-		};
-
-		$scope.subheader.barcode = function(){
-			$mdDialog.show({
-		    	controller: 'barcodeDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/barcode-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    });
-		}
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.toolbar.searchText = '';
-			$scope.searchBar = false;
-		};
-	}]);
-adminModule
-	.controller('mainViewController', ['$scope', '$mdDialog', '$mdSidenav', 'User', 'Preloader', function($scope, $mdDialog, $mdSidenav, User, Preloader){
-		/**
-		 * Fetch authenticated user information
-		 *
-		*/
-		User.index()
-			.success(function(data){
-				$scope.user = data;
-				Preloader.setUser(data);
-			});
-
-		/**
-		 * Toggles Left Sidenav
-		 *
-		*/
-		$scope.toggleSidenav = function(menuId) {
-		    $mdSidenav(menuId).toggle();
-		};
-
-		$scope.changePassword = function()
-		{
-			$mdDialog.show({
-		      controller: 'changePasswordDialogController',
-		      templateUrl: '/app/components/admin/templates/dialogs/change-password-dialog.template.html',
-		      parent: angular.element(document.body),
-		    })
-		    .then(function(){
-		    	$mdToast.show(
-		    		$mdToast.simple()
-				        .content('Password changed.')
-				        .position('bottom right')
-				        .hideDelay(3000)
-		    	);
-		    });
-		}
 	}]);
 adminModule
 	.controller('addEmployeeDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Department', 'Employee', function($scope, $stateParams, $mdDialog, Preloader, Department, Employee){
@@ -1237,6 +1046,197 @@ adminModule
 
 		/* execute initial data fetching */
 		$scope.init();
+	}]);
+adminModule
+	.controller('barcodeDialogController', ['$scope', '$mdDialog', function($scope, $mdDialog){
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+		
+		$scope.barcode = {};
+		$scope.barcode.category = 'assets';
+		$scope.max = 99999;
+		$scope.floors = ['06', '10'];
+		$scope.divisions = ['A', 'B'];
+		$scope.types = [
+			{'name':'Admin', 'value':'A'},
+			{'name':'Production', 'value':'P'}
+		];
+
+		$scope.checkMax = function(){
+			if($scope.barcode.category == 'workstation')
+				$scope.max = 999;
+			else
+				$scope.max = 99999;
+		}
+
+		$scope.submit = function(){
+			if($scope.detailsForm.$invalid){
+				angular.forEach($scope.detailsForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				if($scope.barcode.category == 'assets'){				
+					var win = window.open('/barcode-assets/' + $scope.barcode.format + '/starting-point/' + $scope.barcode.starting_point + '/quantity/' + $scope.barcode.quantity , '_blank');
+					win.focus();
+				}
+				else{
+					var win = window.open('/barcode-work-station/' + $scope.barcode.floor + '/division/' + $scope.barcode.division + '/type/' + $scope.barcode.type + '/starting-point/' + $scope.barcode.starting_point + '/quantity/' + $scope.barcode.quantity , '_blank');
+					win.focus();	
+				}
+				$mdDialog.hide();
+			}
+		}
+	}]);
+adminModule
+	.controller('leftSidenavController', ['$scope', '$state', '$mdSidenav', 'AssetType', function($scope, $state, $mdSidenav, AssetType){
+		$scope.menu = {};
+		$scope.state = $state.current.name;
+
+		$scope.menu.static = [
+			{
+				'state':'main',
+				'icon':'mdi-view-dashboard',
+				'label':'Dashboard',
+			},
+			{
+				'state':'main.purchase-orders',
+				'icon':'mdi-format-list-numbers',
+				'label':'Purchase Orders',
+			},
+			{
+				'state':'main.work-stations',
+				'icon':'mdi-desktop-tower',
+				'label':'Work Stations',
+			},
+			{
+				'state':'main.settings',
+				'icon':'mdi-settings',
+				'label':'Settings',
+			},
+		];
+
+		$scope.menu.section = [
+			{
+				'name':'Assets',
+				'icon':'mdi-desktop-mac',
+			},
+		];
+
+		$scope.menu.pages = [];
+
+		AssetType.index()
+			.success(function(data){
+				$scope.menu.pages.push(data);
+			})
+
+
+		// set section as active
+		$scope.setActive = function(index){
+		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').toggleClass('active'));
+		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').siblings().removeClass('active'));
+		};
+	}]);
+adminModule
+	.controller('mainContentContainerController', ['$scope', '$state', '$mdDialog', 'Preloader', function($scope, $state, $mdDialog, Preloader){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+
+		/**
+		 * Properties and method of toolbar.
+		 *
+		*/
+		$scope.toolbar.childState = 'Dashboard';
+
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+
+		$scope.subheader.download = function(){
+			// start preloader
+			Preloader.preload();
+
+			EmailReport.index()
+				.success(function(){
+					Preloader.stop();
+				});
+		};
+
+		$scope.subheader.barcode = function(){
+			$mdDialog.show({
+		    	controller: 'barcodeDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/barcode-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    });
+		}
+
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.toolbar.searchText = '';
+			$scope.searchBar = false;
+		};
+	}]);
+adminModule
+	.controller('mainViewController', ['$scope', '$mdDialog', '$mdSidenav', 'User', 'Preloader', function($scope, $mdDialog, $mdSidenav, User, Preloader){
+		/**
+		 * Fetch authenticated user information
+		 *
+		*/
+		User.index()
+			.success(function(data){
+				$scope.user = data;
+				Preloader.setUser(data);
+			});
+
+		/**
+		 * Toggles Left Sidenav
+		 *
+		*/
+		$scope.toggleSidenav = function(menuId) {
+		    $mdSidenav(menuId).toggle();
+		};
+
+		$scope.changePassword = function()
+		{
+			$mdDialog.show({
+		      controller: 'changePasswordDialogController',
+		      templateUrl: '/app/components/admin/templates/dialogs/change-password-dialog.template.html',
+		      parent: angular.element(document.body),
+		    })
+		    .then(function(){
+		    	$mdToast.show(
+		    		$mdToast.simple()
+				        .content('Password changed.')
+				        .position('bottom right')
+				        .hideDelay(3000)
+		    	);
+		    });
+		}
 	}]);
 adminModule
 	.controller('addDesktopDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Desktop', function($scope, $state, $mdDialog, Preloader, Desktop){
@@ -1793,76 +1793,6 @@ adminModule
 		*/
 	}]);
 adminModule
-	.controller('createAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Asset', 'Preloader', function($scope, $stateParams, $mdDialog, Asset, Preloader){
-		$scope.asset = {};
-		$scope.asset.asset_type_id = $stateParams.assetTypeID;
-		
-		$scope.details = [];
-		$scope.label = "New";
-		var busy = false;
-
-		$scope.addDetail = function(){
-			$scope.details.push(
-				{
-					'label':null,
-					'value':null,
-				}
-			);
-		}
-
-		$scope.removeDetail = function(idx){
-			$scope.details.splice(idx, 1);
-		}
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			if($scope.assetForm.$invalid){
-				angular.forEach($scope.assetForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				/* Starts Preloader */
-				Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy){
-					busy = true;
-					Asset.store($scope.asset)
-						.then(function(data){
-							return data.data;
-						})
-						.then(function(assetID){
-							angular.forEach($scope.details, function(item){
-								item.asset_id = assetID;
-							});
-
-							AssetDetail.store($scope.details)
-								.success(function(){
-									// Stops Preloader 
-									Preloader.stop();
-									busy = false;
-								})
-								.error(function(){
-									Preloader.error()
-									busy = false;
-								});
-
-						}, function(){
-							Preloader.error();
-							busy = false;
-						})
-				}
-			}
-		}
-	}]);
-adminModule
 	.controller('analysisContentController', ['$scope', function($scope){
 		/**
 		 * Object for content view
@@ -1904,6 +1834,341 @@ adminModule
 		$scope.searchUserInput = function(){
 			return;
 		};
+	}]);
+adminModule
+	.controller('assetDetailsDialogController', ['$scope', '$mdDialog', 'Asset', 'Preloader', function($scope, $mdDialog, Asset, Preloader){
+		var assetID = Preloader.get();
+		
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		Asset.show(assetID)
+			.success(function(data){
+				$scope.asset = data;
+				$scope.label = data.type.type;
+				$scope.asset.first_letter = data.brand[0].toUpperCase();
+			})
+			.error(function(){
+				Preloader.error();
+			});
+	}]);
+adminModule
+	.controller('createAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Asset', 'AssetDetail', 'Preloader', function($scope, $stateParams, $mdDialog, Asset, AssetDetail, Preloader){
+		$scope.asset = {};
+		$scope.asset.asset_type_id = $stateParams.assetTypeID;
+		
+		$scope.details = [];
+		$scope.label = "New";
+		var busy = false;
+
+		$scope.addDetail = function(){
+			$scope.details.push(
+				{
+					'label':null,
+					'value':null,
+				}
+			);
+		}
+
+		$scope.removeDetail = function(idx){
+			$scope.details.splice(idx, 1);
+		}
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			if($scope.assetForm.$invalid){
+				angular.forEach($scope.assetForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				// Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy){
+					busy = true;
+					Asset.store($scope.asset)
+						.then(function(data){
+							if(data.data == 0){
+								$mdDialog.show(
+									$mdDialog.alert()
+										.parent(angular.element(document.body))
+										.clickOutsideToClose(true)
+								        .title('Duplicate Entry')
+								        .textContent('The item you entered asset already exists.')
+								        .ariaLabel('Error')
+								        .ok('Got it!')
+								)
+							}
+							else{
+								return data.data;
+							}
+						})
+						.then(function(assetID){
+							if($scope.details.length){
+								angular.forEach($scope.details, function(item){
+									item.asset_id = assetID;
+								});
+
+								AssetDetail.store($scope.details)
+									.success(function(){
+										// Stops Preloader
+										busy = false;
+									})
+									.error(function(){
+										Preloader.error()
+										busy = false;
+									});
+							}
+							/* Stops the loading and returns 1 if needs to reload */
+							$mdDialog.hide(1);
+						}, function(){
+							Preloader.error();
+							busy = false;
+						})
+				}
+			}
+		}
+	}]);
+adminModule
+	.controller('createAssetTypeDialogController', ['$scope', '$mdDialog', 'AssetType', 'Preloader', function($scope, $mdDialog, AssetType, Preloader){
+		$scope.assetType = {};
+		$scope.label = "New Asset";
+		var busy = false;
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			if($scope.assetTypeForm.$invalid){
+				angular.forEach($scope.assetTypeForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy){
+					busy = true;
+					AssetType.store($scope.assetType)
+						.success(function(){
+							// Stops Preloader 
+							Preloader.stop();
+							busy = false;
+						})
+						.error(function(data){
+							Preloader.error();
+							busy = false;
+						});
+				}
+			}
+		}
+	}]);
+adminModule
+	.controller('createDepartmentDialogController', ['$scope', '$mdDialog', 'Department', 'Preloader', function($scope, $mdDialog, Department, Preloader){
+		$scope.department = {};
+		$scope.label = "New Department";
+		var busy = false;
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			if($scope.departmentForm.$invalid){
+				angular.forEach($scope.departmentForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy){
+					busy = true;
+					Department.store($scope.department)
+						.success(function(){
+							// Stops Preloader 
+							Preloader.stop();
+							busy = false;
+						})
+						.error(function(data){
+							Preloader.error();
+							busy = false;
+						});
+				}
+			}
+		}
+	}]);
+adminModule
+	.controller('departmentOrAssetTypeDialogController', ['$scope', '$mdDialog', function($scope, $mdDialog){
+		$scope.category = 'Department';
+		$scope.label = "Choose one to create";
+		
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			$mdDialog.hide($scope.category);
+		}
+	}]);
+adminModule
+	.controller('editAssetTypeDialogController', ['$scope', '$mdDialog', 'AssetType', 'Preloader', function($scope, $mdDialog, AssetType, Preloader){
+		var assetTypeID = Preloader.get();	
+		var busy = false;
+		$scope.label = "Edit Asset";
+
+		AssetType.show(assetTypeID)
+			.success(function(data){
+				$scope.assetType = data;
+			})
+			.error(function(){
+				Preloader.error();
+			})
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			if($scope.assetTypeForm.$invalid){
+				angular.forEach($scope.assetTypeForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy){
+					busy = true;
+					AssetType.update(assetTypeID, $scope.assetType)
+						.success(function(){
+							// Stops Preloader 
+							Preloader.stop();
+							busy = false;
+						})
+						.error(function(){
+							Preloader.error()
+							busy = false;
+						});
+				}
+			}
+		}
+	}]);
+adminModule
+	.controller('editDepartmentDialogController', ['$scope', '$mdDialog', 'Department', 'Preloader', function($scope, $mdDialog, Department, Preloader){
+		var departmentID = Preloader.get();	
+		var busy = false;
+		$scope.label = "Edit Department";
+
+		Department.show(departmentID)
+			.success(function(data){
+				$scope.department = data;
+			})
+			.error(function(){
+				Preloader.error();
+			})
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			if($scope.departmentForm.$invalid){
+				angular.forEach($scope.departmentForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy){
+					busy = true;
+					Department.update(departmentID, $scope.department)
+						.success(function(){
+							// Stops Preloader 
+							Preloader.stop();
+							busy = false;
+						})
+						.error(function(){
+							Preloader.error();
+							busy = false;
+						});
+				}
+			}
+		}
+	}]);
+adminModule
+	.controller('changePasswordDialogController', ['$scope', '$mdDialog', 'User', 'Preloader', function($scope, $mdDialog, User, Preloader){
+		$scope.password = {};
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.checkPassword = function(){
+			User.checkPassword($scope.password)
+				.success(function(data){
+					$scope.match = data;
+					$scope.show = true;
+					console.log($scope.match);
+				});
+		}
+
+		$scope.submit = function(){
+			$scope.showErrors = true;
+			if($scope.changePasswordForm.$invalid){
+				angular.forEach($scope.changePasswordForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else if($scope.password.old == $scope.password.new || $scope.password.new != $scope.password.confirm)
+			{
+				return;
+			}
+			else {
+				Preloader.saving();
+
+				User.changePassword($scope.password)
+					.success(function(){
+						Preloader.stop();
+					})
+					.error(function(){
+						Preloader.error();
+					});
+			}
+		}
 	}]);
 adminModule
 	.controller('addWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
@@ -2344,238 +2609,6 @@ adminModule
 				})
 		};
 
-	}]);
-adminModule
-	.controller('changePasswordDialogController', ['$scope', '$mdDialog', 'User', 'Preloader', function($scope, $mdDialog, User, Preloader){
-		$scope.password = {};
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.checkPassword = function(){
-			User.checkPassword($scope.password)
-				.success(function(data){
-					$scope.match = data;
-					$scope.show = true;
-					console.log($scope.match);
-				});
-		}
-
-		$scope.submit = function(){
-			$scope.showErrors = true;
-			if($scope.changePasswordForm.$invalid){
-				angular.forEach($scope.changePasswordForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else if($scope.password.old == $scope.password.new || $scope.password.new != $scope.password.confirm)
-			{
-				return;
-			}
-			else {
-				Preloader.saving();
-
-				User.changePassword($scope.password)
-					.success(function(){
-						Preloader.stop();
-					})
-					.error(function(){
-						Preloader.error();
-					});
-			}
-		}
-	}]);
-adminModule
-	.controller('createAssetTypeDialogController', ['$scope', '$mdDialog', 'AssetType', 'Preloader', function($scope, $mdDialog, AssetType, Preloader){
-		$scope.assetType = {};
-		$scope.label = "New Asset";
-		var busy = false;
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			if($scope.assetTypeForm.$invalid){
-				angular.forEach($scope.assetTypeForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				/* Starts Preloader */
-				Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy){
-					busy = true;
-					AssetType.store($scope.assetType)
-						.success(function(){
-							// Stops Preloader 
-							Preloader.stop();
-							busy = false;
-						})
-						.error(function(data){
-							Preloader.error();
-							busy = false;
-						});
-				}
-			}
-		}
-	}]);
-adminModule
-	.controller('createDepartmentDialogController', ['$scope', '$mdDialog', 'Department', 'Preloader', function($scope, $mdDialog, Department, Preloader){
-		$scope.department = {};
-		$scope.label = "New Department";
-		var busy = false;
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			if($scope.departmentForm.$invalid){
-				angular.forEach($scope.departmentForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				/* Starts Preloader */
-				Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy){
-					busy = true;
-					Department.store($scope.department)
-						.success(function(){
-							// Stops Preloader 
-							Preloader.stop();
-							busy = false;
-						})
-						.error(function(data){
-							Preloader.error();
-							busy = false;
-						});
-				}
-			}
-		}
-	}]);
-adminModule
-	.controller('departmentOrAssetTypeDialogController', ['$scope', '$mdDialog', function($scope, $mdDialog){
-		$scope.category = 'Department';
-		$scope.label = "Choose one to create";
-		
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			$mdDialog.hide($scope.category);
-		}
-	}]);
-adminModule
-	.controller('editAssetTypeDialogController', ['$scope', '$mdDialog', 'AssetType', 'Preloader', function($scope, $mdDialog, AssetType, Preloader){
-		var assetTypeID = Preloader.get();	
-		var busy = false;
-		$scope.label = "Edit Asset";
-
-		AssetType.show(assetTypeID)
-			.success(function(data){
-				$scope.assetType = data;
-			})
-			.error(function(){
-				Preloader.error();
-			})
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			if($scope.assetTypeForm.$invalid){
-				angular.forEach($scope.assetTypeForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				/* Starts Preloader */
-				Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy){
-					busy = true;
-					AssetType.update(assetTypeID, $scope.assetType)
-						.success(function(){
-							// Stops Preloader 
-							Preloader.stop();
-							busy = false;
-						})
-						.error(function(){
-							Preloader.error()
-							busy = false;
-						});
-				}
-			}
-		}
-	}]);
-adminModule
-	.controller('editDepartmentDialogController', ['$scope', '$mdDialog', 'Department', 'Preloader', function($scope, $mdDialog, Department, Preloader){
-		var departmentID = Preloader.get();	
-		var busy = false;
-		$scope.label = "Edit Department";
-
-		Department.show(departmentID)
-			.success(function(data){
-				$scope.department = data;
-			})
-			.error(function(){
-				Preloader.error();
-			})
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			if($scope.departmentForm.$invalid){
-				angular.forEach($scope.departmentForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				/* Starts Preloader */
-				Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy){
-					busy = true;
-					Department.update(departmentID, $scope.department)
-						.success(function(){
-							// Stops Preloader 
-							Preloader.stop();
-							busy = false;
-						})
-						.error(function(){
-							Preloader.error();
-							busy = false;
-						});
-				}
-			}
-		}
 	}]);
 adminModule
 	.controller('addAssetDialogController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', 'Desktop', 'HardDisk', 'Headset', 'Keyboard', 'Memory', 'Monitor', 'Mouse', 'Software', 'UPS', 'VideoCard', 'OtherComponent', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService, Desktop, HardDisk, Headset, Keyboard, Memory, Monitor, Mouse, Software, UPS, VideoCard, OtherComponent){

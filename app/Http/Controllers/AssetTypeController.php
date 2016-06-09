@@ -21,7 +21,7 @@ class AssetTypeController extends Controller
      */
     public function index()
     {
-        return AssetType::all();
+        return AssetType::with('assets')->get();
     }
 
     /**
@@ -132,6 +132,41 @@ class AssetTypeController extends Controller
         $asset_type->prefix = strtoupper($request->prefix);
 
         $asset_type->save();
+
+        // fetch all the assets and update the prefix
+        $assets = DB::table('assets')->where('asset_type_id', $asset_type->id)->get();
+
+        foreach ($assets as $asset_key => $asset_value) {
+            $asset_tags = DB::table('asset_tags')->where('asset_id', $asset_value->id)->get();
+
+            foreach ($asset_tags as $asset_tag_key => $asset_tag_value) {
+                $asset_tag_value->prefix = $asset_type->prefx;
+
+                if($asset_tag_value->sequence > 0 && $asset_tag_value->sequence < 10)
+                {
+                    $fill = '0000';
+                }
+                else if($asset_tag_value->sequence > 9 && $asset_tag_value->sequence < 100)
+                {
+                    $fill = '000';
+                }
+                else if($asset_tag_value->sequence > 99 && $asset_tag_value->sequence < 1000)
+                {
+                    $fill = '00';
+                }
+                else if($asset_tag_value->sequence > 999 && $asset_tag_value->sequence < 10000)
+                {
+                    $fill = '0';
+                }
+                else{
+                    $fill = null;
+                }
+
+                $asset_tag_value->property_code = $asset_type->prefx . $fill . $asset_tag_value->sequence;
+
+                $asset_tag_value->save();
+            } 
+        }
 
         // Search the activity type
         $activity_type = ActivityType::where('type', 'asset_type')->where('action', 'update')->first();

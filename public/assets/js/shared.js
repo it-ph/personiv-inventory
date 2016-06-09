@@ -61,7 +61,7 @@ sharedModule
 			},
 			/* Stops the preloader */
 			stop: function(data){
-				$mdDialog.hide(data);
+				return $mdDialog.hide(data);
 			},
 			/* Shows error message if AJAX failed */
 			error: function(){

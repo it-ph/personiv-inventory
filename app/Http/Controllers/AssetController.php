@@ -51,6 +51,12 @@ class AssetController extends Controller
             'asset_type_id' => 'required|numeric',
         ]);
 
+        $same_asset = Asset::where('brand', $request->brand)->where('model', $request->model)->first();
+
+        if($same_asset){
+            return 0;
+        }
+
         $asset = new Asset;
 
         $asset->brand = $request->brand;
@@ -82,7 +88,7 @@ class AssetController extends Controller
      */
     public function show($id)
     {
-        //
+        return Asset::where('id', $id)->with('type', 'details')->first();
     }
 
     /**

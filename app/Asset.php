@@ -12,7 +12,7 @@ class Asset extends Model
 
     public function type()
     {
-    	return $this->belongsTo('App\AssetType');
+    	return $this->belongsTo('App\AssetType', 'asset_type_id');
     }
 
     public function details()

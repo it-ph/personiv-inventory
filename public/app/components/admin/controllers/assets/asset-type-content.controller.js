@@ -15,6 +15,13 @@ adminModule
 			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
 			return results;
 		}
+
+		$scope.toolbar.refresh = function(){
+			/* Starts the loading */
+			Preloader.loading();
+			$scope.init(true);
+		}
+
 		$scope.showSearchBar = function(){
 	    	$scope.searchBar = true;
 	    }
@@ -23,9 +30,18 @@ adminModule
 	    	$scope.searchBar = false;
 	    	$scope.toolbar.searchText = '';
 	    	if($scope.asset.searched){
-	    		$scope.subheader.refresh();
+	    		$scope.toolbar.refresh();
 	    		$scope.asset.searched = false;
 	    	}
+	    }
+
+	    $scope.showAssetDetails = function(id){
+	    	Preloader.set(id);
+	    	$mdDialog.show({
+		    	controller: 'assetDetailsDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/asset-details-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
 	    }
 
 	    var pushItem = function(data, type){
@@ -68,28 +84,9 @@ adminModule
 
 		/**
 		  *
-		  * Object for subheader
+		  * Object for fab
 		  *
 		*/
-		$scope.subheader = {};
-		$scope.subheader.refresh = function(){
-			/* Starts the loading */
-			Preloader.loading();
-			$scope.init(true);
-		}
-
-		/**
-		  *
-		  * Object for subheader
-		  *
-		*/
-		$scope.subheader = {};
-		$scope.subheader.refresh = function(){
-			/* Starts the loading */
-			Preloader.loading();
-			$scope.init(true);
-		}
-
 		$scope.fab = {};
 		$scope.fab.label = "Create";
 		$scope.fab.icon = "mdi-plus";
@@ -99,8 +96,11 @@ adminModule
 		      	templateUrl: '/app/components/admin/templates/dialogs/asset-dialog.template.html',
 		      	parent: angular.element(document.body),
 		    })
-	        .then(function() {
-	        	$scope.toolbar.refresh();
+	        .then(function(data) {
+	        	console.log(data);
+	        	if(data){
+		        	$scope.toolbar.refresh();
+	        	}
 	        }, function() {
 	        	return;
 	        });
@@ -108,7 +108,7 @@ adminModule
 
 		/**
 		  *
-		  * Object for subheader
+		  * Object for rightSidenav
 		  *
 		*/
 		$scope.rightSidenav = {};

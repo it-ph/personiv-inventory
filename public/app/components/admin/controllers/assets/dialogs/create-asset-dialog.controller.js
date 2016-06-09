@@ -1,5 +1,5 @@
 adminModule
-	.controller('createAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Asset', 'Preloader', function($scope, $stateParams, $mdDialog, Asset, Preloader){
+	.controller('createAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Asset', 'AssetDetail', 'Preloader', function($scope, $stateParams, $mdDialog, Asset, AssetDetail, Preloader){
 		$scope.asset = {};
 		$scope.asset.asset_type_id = $stateParams.assetTypeID;
 		
@@ -34,7 +34,7 @@ adminModule
 			}
 			else{
 				/* Starts Preloader */
-				Preloader.loading();
+				// Preloader.loading();
 				/**
 				 * Stores Single Record
 				*/
@@ -42,24 +42,39 @@ adminModule
 					busy = true;
 					Asset.store($scope.asset)
 						.then(function(data){
-							return data.data;
+							if(data.data == 0){
+								$mdDialog.show(
+									$mdDialog.alert()
+										.parent(angular.element(document.body))
+										.clickOutsideToClose(true)
+								        .title('Duplicate Entry')
+								        .textContent('The item you entered asset already exists.')
+								        .ariaLabel('Error')
+								        .ok('Got it!')
+								)
+							}
+							else{
+								return data.data;
+							}
 						})
 						.then(function(assetID){
-							angular.forEach($scope.details, function(item){
-								item.asset_id = assetID;
-							});
-
-							AssetDetail.store($scope.details)
-								.success(function(){
-									// Stops Preloader 
-									Preloader.stop();
-									busy = false;
-								})
-								.error(function(){
-									Preloader.error()
-									busy = false;
+							if($scope.details.length){
+								angular.forEach($scope.details, function(item){
+									item.asset_id = assetID;
 								});
 
+								AssetDetail.store($scope.details)
+									.success(function(){
+										// Stops Preloader
+										busy = false;
+									})
+									.error(function(){
+										Preloader.error()
+										busy = false;
+									});
+							}
+							/* Stops the loading and returns 1 if needs to reload */
+							$mdDialog.hide(1);
 						}, function(){
 							Preloader.error();
 							busy = false;

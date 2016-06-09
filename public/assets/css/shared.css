@@ -243,9 +243,6 @@ md-content.blue-bg {
 .shadow-bg {
   background: rgba(0, 0, 0, 0.5); }
 
-.static.active .secondary-text, .static.active .grey {
-  color: #2196F3; }
-
 /* transition duration */
 .transition, .fade-transition, .main-view {
   transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2); }
