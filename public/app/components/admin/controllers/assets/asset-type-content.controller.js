@@ -42,6 +42,43 @@ adminModule
 		      	templateUrl: '/app/components/admin/templates/dialogs/asset-details-dialog.template.html',
 		      	parent: angular.element(document.body),
 		    })
+		    .then(function(data){
+		    	if(data == 'edit'){
+			    	$mdDialog.show({
+				    	controller: 'editAssetDialogController',
+				      	templateUrl: '/app/components/admin/templates/dialogs/asset-dialog.template.html',
+				      	parent: angular.element(document.body),
+				    })
+				    .then(function(){
+				    	Preloader.toastChangesSaved();
+				    	$scope.toolbar.refresh();
+				    })
+		    	}
+		    	else{
+		    		var confirm = $mdDialog.confirm()
+				        .title('Delete')
+				        .textContent('This asset will be removed.')
+				        .ariaLabel('Delete')
+				        .ok('Delete')
+				        .cancel('Cancel');
+				    $mdDialog.show(confirm).then(function() {
+				    	var assetID = Preloader.get();
+				    	Asset.delete(assetID)
+				    		.success(function(){
+				    			$scope.toolbar.refresh();
+				    			Preloader.deleted();
+				    		})
+				    		.error(function(){
+				    			Preloader.error();
+				    		})
+				    }, function() {
+				    	return;
+				    });
+		    	}
+
+		    },function(){
+		    	return;
+		    })
 	    }
 
 	    var pushItem = function(data, type){
@@ -97,10 +134,9 @@ adminModule
 		      	parent: angular.element(document.body),
 		    })
 	        .then(function(data) {
-	        	console.log(data);
-	        	if(data){
+	        	// if(data){
 		        	$scope.toolbar.refresh();
-	        	}
+	        	// }
 	        }, function() {
 	        	return;
 	        });

@@ -65,6 +65,9 @@ Route::group(['middleware' => 'auth'], function () {
 	// Route resource models
 	// Route resource others
 	// Other routes
+	Route::post('asset-check-duplicate/{assetID}', 'AssetController@checkDuplicate');
+	Route::get('user-others', 'UserController@others');
+	Route::get('user-reset-password/{userID}', 'UserController@resetPassword');
 
 	// Route resource store multiple
 	Route::post('asset-tag-multiple', 'AssetTagController@storeMultiple');

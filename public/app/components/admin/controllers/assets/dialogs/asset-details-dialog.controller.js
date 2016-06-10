@@ -15,4 +15,15 @@ adminModule
 			.error(function(){
 				Preloader.error();
 			});
+
+		$scope.edit = function(){
+			Preloader.set($scope.asset);
+			$mdDialog.hide('edit');
+		};
+
+		$scope.delete = function(){
+			Preloader.set(assetID);		
+			$mdDialog.hide('delete');
+		};
+
 	}]);

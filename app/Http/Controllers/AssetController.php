@@ -13,6 +13,18 @@ use App\Http\Controllers\Controller;
 
 class AssetController extends Controller
 {
+    public function checkDuplicate(Request $request, $id)
+    {
+        $this->validate($request, [
+            'brand' => 'required|string',
+            'model' => 'required|string',
+        ]);
+
+        $asset = $id ? Asset::where('brand', $request->brand)->where('model', $request->model)->whereNotIn('id', [$id])->first() : Asset::where('brand', $request->brand)->where('model', $request->model)->first();
+
+        return response()->json($asset ? true : false);
+    }
+
     public function paginate($id)
     {
         return $assets = Asset::where('asset_type_id', $id)->paginate(10);
@@ -51,10 +63,10 @@ class AssetController extends Controller
             'asset_type_id' => 'required|numeric',
         ]);
 
-        $same_asset = Asset::where('brand', $request->brand)->where('model', $request->model)->first();
+        $duplicate = Asset::where('brand', $request->brand)->where('model', $request->model)->first();
 
-        if($same_asset){
-            return 0;
+        if($duplicate){
+            return response()->json(true);
         }
 
         $asset = new Asset;
@@ -88,7 +100,7 @@ class AssetController extends Controller
      */
     public function show($id)
     {
-        return Asset::where('id', $id)->with('type', 'details')->first();
+        return Asset::where('id', $id)->with('type', 'details', 'asset_tags')->first();
     }
 
     /**
@@ -111,7 +123,37 @@ class AssetController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'brand' => 'required',
+            'model' => 'required',
+        ]);
+
+        $duplicate = Asset::where('brand', $request->brand)->where('model', $request->model)->whereNotIn('id', [$id])->first();
+
+        if($duplicate){
+            return response()->json(true);
+        }
+
+        $asset = Asset::where('id', $id)->first();
+
+        $asset->brand = $request->brand;
+        $asset->model = $request->model;
+
+        $asset->save();
+
+        // Search the activity type
+        $activity_type = ActivityType::where('type', 'asset')->where('action', 'update')->first();
+
+        // create an activity log
+        $activity = new Activity;
+
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $asset->id;
+
+        $activity->save();
+
+        return $asset->id;
     }
 
     /**
@@ -122,6 +164,20 @@ class AssetController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $asset = Asset::where('id', $id)->first();
+        
+        // Search the activity type
+        $activity_type = ActivityType::where('type', 'asset')->where('action', 'delete')->first();
+
+        // create an activity log
+        $activity = new Activity;
+
+        $activity->user_id = Auth::user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $asset->id;
+
+        $activity->save();
+
+        $asset->delete();
     }
 }

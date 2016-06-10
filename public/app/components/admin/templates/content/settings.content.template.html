@@ -1,38 +1,6 @@
 <div layout="row" flex>
-	<div layout="column" layout-padding flex="50">
-		<div ng-if="departments.length">
-			<md-subheader class="md-no-sticky md-primary" layout="row" layout-align="space-between center" flex>
-				<span>Departments</span>
-			</md-subheader>
-			<md-list layout="column" layout-padding>
-				<md-list-item class="fade-transition" flex ng-repeat="department in departments | filter:toolbar.searchText | orderBy:'name'">
-					<p class="md-subhead" flex>{{department.name}}</p>
-					<md-menu class="fade-transition" ng-if="user.role == 'super-admin'">
-				    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
-					        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
-					        <md-tooltip>Menu</md-tooltip>
-					    </md-button>
-					    <md-menu-content width="2">
-					        <md-menu-item>
-					          	<!-- Edit -->
-								<md-button ng-click="editDepartment(department.id)">
-									<md-icon class="mdi mdi-24px mdi-pencil grey"></md-icon>
-									Edit
-								</md-button>
-					        </md-menu-item>
-					        <md-menu-item>
-								<md-button ng-click="deleteDepartment(department.id)">
-									<md-icon class="mdi mdi-24px mdi-delete grey"></md-icon>
-									Delete
-								</md-button>
-					        </md-menu-item>
-					    </md-menu-content>
-				    </md-menu>
-				</md-list-item>
-			</md-list>
-		</div>
+	<div layout-padding flex flex-gt-md="75">
 		<!-- Program -->
-		<md-divider></md-divider>
 		<div ng-if="asset_types.length">
 			<md-subheader class="md-no-sticky md-primary">
 				<span>Assets</span>
@@ -63,14 +31,91 @@
 				    </md-menu>
 				</md-list-item>
 			</md-list>
+			<div layout="row" layout-align="end center">
+				<md-button class="md-primary" ng-click="createAssetType()"> 
+					Create
+				</md-button>
+			</div>
+		</div>
+		<!-- Departments -->
+		<div ng-if="departments.length">
+			<md-divider></md-divider>
+			<md-subheader class="md-no-sticky md-primary" layout="row" layout-align="space-between center" flex>
+				<span>Departments</span>
+			</md-subheader>
+			<md-list layout="column" layout-padding>
+				<md-list-item class="fade-transition" flex ng-repeat="department in departments | filter:toolbar.searchText | orderBy:'name'">
+					<p class="md-subhead" flex>{{department.name}}</p>
+					<md-menu class="fade-transition" ng-if="user.role == 'super-admin'">
+				    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+					        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
+					        <md-tooltip>Menu</md-tooltip>
+					    </md-button>
+					    <md-menu-content width="2">
+					        <md-menu-item>
+					          	<!-- Edit -->
+								<md-button ng-click="editDepartment(department.id)">
+									<md-icon class="mdi mdi-24px mdi-pencil grey"></md-icon>
+									Edit
+								</md-button>
+					        </md-menu-item>
+					        <md-menu-item>
+								<md-button ng-click="deleteDepartment(department.id)">
+									<md-icon class="mdi mdi-24px mdi-delete grey"></md-icon>
+									Delete
+								</md-button>
+					        </md-menu-item>
+					    </md-menu-content>
+				    </md-menu>
+				</md-list-item>
+			</md-list>
+			<div layout="row" layout-align="end center">
+				<md-button class="md-primary" ng-click="createDepartment()"> 
+					Create
+				</md-button>
+			</div>
+		</div>
+		<!-- User -->
+		<md-divider></md-divider>
+		<div ng-if="user.role == 'super-admin'">
+			<md-subheader class="md-no-sticky md-primary">
+				<span>Users</span>
+			</md-subheader>
+			<md-list layout="column" layout-padding>
+				<md-list-item class="md-2-line fade-transition" flex ng-repeat="user in users | filter:toolbar.searchText | orderBy:'name'">
+					<div class="md-list-item-text" layout="column">
+			          	<h3>{{user.first_name}}</h3>
+						<p class="md-subhead" flex>{{user.email}}</p>
+			        </div>
+					<md-menu class="fade-transition">
+				    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+					        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
+					        <md-tooltip>Menu</md-tooltip>
+					    </md-button>
+					    <md-menu-content width="2">
+					        <md-menu-item>
+					          	<!-- Reset Password -->
+								<md-button ng-click="resetPassword(user.id)">
+									<md-icon class="mdi mdi-key-minus grey"></md-icon>
+									Reset Password
+								</md-button>
+					        </md-menu-item>
+					        <md-menu-item ng-if="!user.assets.length">
+								<md-button ng-click="deleteAccount(user.id)">
+									<md-icon class="mdi mdi-account-remove grey"></md-icon>
+									Delete Account
+								</md-button>
+					        </md-menu-item>
+					    </md-menu-content>
+				    </md-menu>
+				</md-list-item>
+			</md-list>
+			<p ng-if="!users.length">No users to display.</p>
+			<div layout="row" layout-align="end center">
+				<md-button class="md-primary" ng-click="createUser()"> 
+					Create
+				</md-button>
+			</div>
 		</div>
 	</div>
-</div>
-
-<div layout="column" layout-align="center center" flex ng-if="(!asset_types.length && show.asset_type) && (!departments.length && show.department)">
-	<!-- <h3 class="md-subhead  ">Setup the setting for this app</h3> -->
-	<md-button class="md-fab md-primary" aria-label="Create" ng-click="fab.action()">
-		<md-icon class="mdi mdi-24px mdi-settings"></md-icon>
-	</md-button>
-	<p class="secondary-text">Tap to setup</p>
 </div>

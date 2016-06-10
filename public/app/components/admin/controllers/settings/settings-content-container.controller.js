@@ -1,5 +1,5 @@
 adminModule
-	.controller('settingsContentContainerController', ['$scope', '$state', '$filter', '$mdDialog', 'Preloader', 'Department', 'AssetType', function($scope, $state, $filter, $mdDialog, Preloader, Department, AssetType){
+	.controller('settingsContentContainerController', ['$scope', '$state', '$filter', '$mdDialog', 'Preloader', 'Department', 'AssetType', 'User', function($scope, $state, $filter, $mdDialog, Preloader, Department, AssetType, User){
 		/**
 		  *
 		  * Object for toolbar
@@ -31,8 +31,6 @@ adminModule
 			/* Reset the data */
 			$scope.departments = [];
 			$scope.asset_types = [];
-			$scope.show.department = false;
-			$scope.show.asset_type = false;
 			/* Starts the loading */
 			Preloader.loading();
 			$scope.init(true);
@@ -73,8 +71,8 @@ adminModule
 
 		$scope.deleteDepartment = function(id){
 			var confirm = $mdDialog.confirm()
-		        .title('Delete department')
-		        .textContent('This department will be removed from the respondents list.')
+		        .title('Delete')
+		        .textContent('This department will be removed from the list.')
 		        .ariaLabel('Delete department')
 		        .ok('Delete')
 		        .cancel('Cancel');
@@ -84,7 +82,7 @@ adminModule
 			    	Department.delete(id)
 			    		.success(function(){
 			    			$scope.toolbar.refresh();
-			    			Preloader.toastChangesSaved();
+			    			Preloader.deleted();
 			    		})
 			    		.error(function(){
 			    			Preloader.error();
@@ -144,7 +142,7 @@ adminModule
 			    		.success(function(){
 			    			$scope.toolbar.refresh();
 			    			$state.go($state.current, {}, {reload:true});
-			    			Preloader.toastChangesSaved();
+			    			Preloader.deleted();
 			    		})
 			    		.error(function(){
 			    			Preloader.error();
@@ -155,31 +153,68 @@ adminModule
 		}
 
 		/**
-		 *
-		 * Object for FAB
-		 *
+		  *
+		  * Users Actions
+		  *
 		*/
-
-		$scope.fab = {};
-		$scope.fab.label = "Create";
-		$scope.fab.icon = "mdi-plus";
-		$scope.fab.action = function(){
+		$scope.createUser = function(){
 			$mdDialog.show({
-		    	controller: 'departmentOrAssetTypeDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/department-or-asset-type-dialog.template.html',
+		    	controller: 'createUserDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/user-dialog.template.html',
 		      	parent: angular.element(document.body),
-		      	clickOutsideToClose:true,
 		    })
-		    .then(function(answer){
-		    	if(answer == 'Department'){
-		    		$scope.createDepartment();
-		    	}
-		    	else{
-		    		$scope.createAssetType();
-		    	}
-		    }, function(){
-		    	return;
-		    });
+	        .then(function(){
+	        	$scope.toolbar.refresh();
+	        	$state.go($state.current, {}, {reload:true});
+	        }, function() {
+	        	return;
+	        });
+		}
+
+		$scope.resetPassword = function(id){
+			var confirm = $mdDialog.confirm()
+		        .title('Reset Password')
+		        .textContent('Reset the password for this account?')
+		        .ariaLabel('Reset Password')
+		        .ok('Reset')
+		        .cancel('Cancel');
+
+		    $mdDialog.show(confirm)
+		    	.then(function() {
+			    	User.resetPassword(id)
+			    		.success(function(){
+			    			Preloader.toastChangesSaved();
+			    		})
+			    		.error(function(){
+			    			Preloader.error();
+			    		});
+			    }, function() {
+			    	return;
+			    });
+		}
+
+		$scope.deleteAccount = function(id){
+			var confirm = $mdDialog.confirm()
+		        .title('Delete Account')
+		        .textContent('This account will be removed permanently.')
+		        .ariaLabel('Delete Account')
+		        .ok('Delete')
+		        .cancel('Cancel');
+
+		    $mdDialog.show(confirm)
+		    	.then(function() {
+			    	User.delete(id)
+			    		.success(function(){
+			    			$scope.toolbar.refresh();
+			    			$state.go($state.current, {}, {reload:true});
+			    			Preloader.deleted();
+			    		})
+			    		.error(function(){
+			    			Preloader.error();
+			    		});
+			    }, function() {
+			    	return;
+			    });
 		}
 
 		/**
@@ -187,15 +222,16 @@ adminModule
 		  * Object for show
 		  *
 		*/
-		$scope.show = {};
 
 		/* sets the first letter and format the date to date object */
 		var formatData = function(data)
 		{
 			angular.forEach(data, function(item){
-				item.first_letter = item.name ? item.name.charAt(0).toUpperCase() :item.type.charAt(0).toUpperCase();
+				item.first_letter = item.name ? item.name.charAt(0).toUpperCase() : (item .type ? item.type.charAt(0).toUpperCase() : item.first_name.charAt(0).toUpperCase());
 				item.created_at = new Date(item.created_at);
 			});
+
+			return data;
 		}
 
 		/**
@@ -204,15 +240,12 @@ adminModule
 		  *
 		*/
 		$scope.init = function(refresh){
-			$scope.fab.show = false;
 			Department.index()
 				.then(function(data){
 					// formats the data;
 					formatData(data.data);
 					
 					$scope.departments = data.data;
-
-					$scope.show.department = true;
 
 					angular.forEach(data.data, function(item){
 						var toolbarItem = {};
@@ -226,13 +259,11 @@ adminModule
 					AssetType.index()
 						.success(function(data){
 							// formats the data;
-							formatData(data);
+							formatData(data.data);
 
 							$scope.asset_types = data;
 
-							$scope.show.asset_type = true;
-
-							angular.forEach(data, function(item){
+							angular.forEach(data.data, function(item){
 								var toolbarItem = {};
 								toolbarItem.display = item.type;
 								$scope.toolbar.items.push(toolbarItem);
@@ -240,19 +271,32 @@ adminModule
 
 							$scope.toolbar.getItems();
 
+							return;
+						})
+
+				})
+				.then(function(){
+					User.others()
+						.success(function(data){
+							formatData(data.data);
+
+							$scope.users = data;
+
+							angular.forEach(data.data, function(item){
+								var toolbarItem = {};
+								toolbarItem.display = item.first_name;
+								$scope.toolbar.items.push(toolbarItem);
+							});
+
 							if(refresh)
 							{
 								Preloader.stop();
 								Preloader.stop();
 							}
-
-							if($scope.departments.length || $scope.asset_types.length)
-							{
-								$scope.fab.show = true;
-							}
-
-							return;
 						})
+						.error(function(){
+							Preloader.error();
+						});
 
 				}, function(){
 					Preloader.error();

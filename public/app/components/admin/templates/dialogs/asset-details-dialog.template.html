@@ -27,8 +27,11 @@
 			</md-list>
 		</div>
 		<div layout="row" layout-align="end center">		
-			<md-button class="md-button md-primary" aria-label="Submit" ng-click="submit()">
+			<md-button class="md-button" aria-label="Submit" ng-click="edit()">
 				Edit
+			</md-button>
+			<md-button class="md-button" aria-label="Delete" ng-click="delete()" ng-if="!asset.asset_tags.length">
+				Delete
 			</md-button>
 		</div>
 	</md-dialog-content>

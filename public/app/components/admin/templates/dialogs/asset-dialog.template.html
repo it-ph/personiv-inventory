@@ -23,10 +23,11 @@
 				<!-- Model -->
 				<md-input-container>
 					<label>Model</label>
-					<input type="text" name="Model" required ng-model="asset.model">
+					<input type="text" name="Model" required ng-model="asset.model" ng-blur="checkDuplicate()">
 					<div ng-messages="assetForm.Model.$error" ng-if="assetForm.Model.$touched">
 						<div ng-message="required">Model is required.</div>
 					</div>
+					<div class="pattern" ng-if="duplicate">This item already exists.</div>
 				</md-input-container>
 
 				<md-subheader class="md-no-sticky">Specs</md-subheader>

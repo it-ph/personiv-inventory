@@ -1,10 +1,9 @@
 adminModule
-	.controller('createAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Asset', 'AssetDetail', 'Preloader', function($scope, $stateParams, $mdDialog, Asset, AssetDetail, Preloader){
-		$scope.asset = {};
-		$scope.asset.asset_type_id = $stateParams.assetTypeID;
-		
-		$scope.details = [];
-		$scope.label = "New";
+	.controller('editAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Asset', 'AssetDetail', 'Preloader', function($scope, $stateParams, $mdDialog, Asset, AssetDetail, Preloader){
+		$scope.asset = Preloader.get();
+		$scope.details = $scope.asset.details;
+
+		$scope.label = "Edit";
 		var busy = false;
 
 		$scope.addDetail = function(){
@@ -26,7 +25,7 @@ adminModule
 
 		$scope.checkDuplicate = function(){
 			$scope.duplicate = false;
-			Asset.checkDuplicate($scope.asset)
+			Asset.checkDuplicate($scope.asset, $scope.asset.id)
 				.success(function(data){
 					$scope.duplicate = data;
 				})
@@ -49,7 +48,7 @@ adminModule
 				if(!busy && !$scope.duplicate){
 					busy = true;
 
-					Asset.store($scope.asset)
+					Asset.update($scope.asset.id, $scope.asset)
 						.then(function(data){
 							return data.data;
 						})
@@ -67,7 +66,7 @@ adminModule
 									item.asset_id = assetID;
 								});
 
-								AssetDetail.store($scope.details)
+								AssetDetail.update($scope.asset.id, $scope.details)
 									.success(function(){
 										// Stops Preloader
 										Preloader.stop();

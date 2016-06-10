@@ -6,7 +6,7 @@
 <md-divider></md-divider>
 <ul>
 	<li layout="row" flex ng-repeat="page in menu.static">
-		<md-button class="static" ui-sref-active="active" flex ui-sref="{{page.state}}">
+		<md-button class="static" flex ui-sref="{{page.state}}">
 			<div layout="row" flex>
 				<md-icon class="mdi {{page.icon}} grey"></md-icon>
 				<span flex="5"></span>
@@ -30,7 +30,7 @@
 		<!-- Child -->
 		<ul class="pages">
 			<!-- Assets -->
-			<li layout="row" ng-if="section.name == 'Assets'" ng-repeat="page in menu.pages[$index]">
+			<li layout="row" ng-if="section.name == 'Assets'" ng-repeat="page in menu.pages[$index] | orderBy: 'type'">
 				<md-button ui-sref-active="active" flex ui-sref="main.asset({'assetTypeID': {{ page.id }} })">
 					<div layout="row" flex>
 						<span flex="5"></span>

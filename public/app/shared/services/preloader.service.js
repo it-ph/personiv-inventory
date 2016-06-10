@@ -60,7 +60,15 @@ sharedModule
 			toastChangesSaved: function(){
 				return $mdToast.show(
 			    	$mdToast.simple()
-				        .textContent('Changes Saved')
+				        .textContent('Changes saved.')
+				        .position('bottom right')
+				        .hideDelay(3000)
+			    );
+			},
+			deleted: function(){
+				return $mdToast.show(
+			    	$mdToast.simple()
+				        .textContent('Deleted')
 				        .position('bottom right')
 				        .hideDelay(3000)
 			    );

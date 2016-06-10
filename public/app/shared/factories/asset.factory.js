@@ -21,5 +21,8 @@ sharedModule
 			paginate: function(assetTypeID, page){
 				return $http.get(urlBase + '-paginate/' + assetTypeID + '?page=' + page);
 			},
+			checkDuplicate: function(data, id){
+				return $http.post(urlBase + '-check-duplicate/' + id, data);
+			},
 		};
 	}]);

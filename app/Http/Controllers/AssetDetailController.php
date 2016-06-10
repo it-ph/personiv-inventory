@@ -89,7 +89,23 @@ class AssetDetailController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $asset_details = AssetDetail::where('asset_id', $id)->delete();
+
+        for ($i=0; $i < count($request->all()); $i++) { 
+            $this->validate($request, [
+                $i.'.asset_id' => 'required|numeric',
+                $i.'.label' => 'required',
+                $i.'.value' => 'required',
+            ]);
+
+            $asset_detail = new AssetDetail;
+
+            $asset_detail->asset_id = $request->input($i.'.asset_id');
+            $asset_detail->label = $request->input($i.'.label');
+            $asset_detail->value = $request->input($i.'.value');
+
+            $asset_detail->save();
+        }
     }
 
     /**
