@@ -100,25 +100,25 @@ adminModule
 			 * Displays floor plan of the building
 			 * 
 			*/
-			.state('main.floor-plan', {
-				url: 'dashboard/floor-plan/{departmentID}',
+			.state('main.work-stations', {
+				url: 'work-stations',
 				params: {'departmentID': null},
 				views: {
 					'content-container': {
 						templateUrl: '/app/components/admin/views/content-container.view.html',
-						controller: 'floorPlanContentContainerController',
+						controller: 'workStationsContentContainerController',
 					},
-					'toolbar@main.floor-plan': {
+					'toolbar@main.work-stations': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controller: 'floorPlanToolbarController',
 					},
-					'content@main.floor-plan': {
-						templateUrl: '/app/components/admin/templates/content/floor-plan.content.template.html',
-						// controller: 'floorPlanContentController',
+					'content@main.work-stations': {
+						templateUrl: '/app/components/admin/templates/content/work-stations.content.template.html',
 					},
-					'right-sidenav@main.floor-plan': {
-						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
-						controller: 'floorPlanRightSidenavController',
+					'right-sidenav@main.work-stations': {
+						templateUrl : '/app/components/admin/templates/sidenavs/work-stations.sidenav.html',
+					},
+					'subheader@main.work-stations':{
+						templateUrl: '/app/components/admin/templates/subheader/work-stations-subheader.template.html',
 					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){

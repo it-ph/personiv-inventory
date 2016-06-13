@@ -7,7 +7,7 @@
 <md-content layout="column">
 	<div class="fade-transition" ng-if="asset.show" flex infinite-scroll='asset.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="asset.busy" infinite-scroll-parent>
 		<md-list flex layout="column">
-			<md-list-item class="md-2-line" layout="row" ng-repeat="asset in asset.paginated | filter: toolbar.searchText" ng-click="showAssetDetails(asset.id)">
+			<md-list-item class="md-2-line" ng-repeat="asset in asset.paginated | filter: toolbar.searchText" ng-click="showAssetDetails(asset.id)">
 				<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
 					<span class="white-text">{{asset.first_letter}}</span>
 				</h2>

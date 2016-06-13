@@ -1,0 +1,19 @@
+<md-divider></md-divider>
+<md-toolbar class="white-toolbar">
+	<div class="md-toolbar-tools">
+		<h2 class="primary-text">Departments</h2>
+	</div>
+</md-toolbar>
+<md-content layout="column" flex>
+	<md-list>
+		<md-list-item class="md-2-line" ng-repeat="department in departments" ng-click="filterWorkStation(department.name)">
+			<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+				<span class="white-text">{{department.first_letter}}</span>
+			</h2>
+			<div class="md-list-item-text" layout="column" flex>
+				<h3>{{department.name}}</h3>
+			</div>
+			<md-divider></md-divider>
+		</md-list-item>
+	</md-list>
+</md-content>

@@ -4,7 +4,8 @@ var sharedModule = angular.module('sharedModule', [
 	'ngMaterial',
 	'ngMessages',
 	'infinite-scroll',
-	'mgcrea.ngStrap'
+	'mgcrea.ngStrap',
+	'chart.js'
 ]);
 sharedModule
 	.config(['$urlRouterProvider', '$stateProvider', '$mdThemingProvider', function($urlRouterProvider, $stateProvider, $mdThemingProvider){

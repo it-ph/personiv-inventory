@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\WorkStation;
-use App\Log;
+use App\Activity;
+use App\ActivityType;
 use DB;
+use Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -130,11 +132,7 @@ class WorkStationController extends Controller
     */
     public function paginate()
     {
-        return DB::table('work_stations')
-            ->select('work_stations.*', DB::raw('SUBSTRING(work_stations.name, 7, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
-            ->whereNull('work_stations.deleted_at')
-            // ->groupBy('work_stations.id')
-            ->paginate(25);
+        return WorkStation::with('departments')->paginate(25);
     }
 
     /**
@@ -161,13 +159,7 @@ class WorkStationController extends Controller
      */
     public function index()
     {
-        $work_stations = Workstation::all();
-
-        // foreach ($work_stations as $key => $value) {
-        //     $work_station_sbstr = substr($value->name, 1);
-        //     $value->name = 'A0' . $work_station_sbstr;
-        //     $value->save();
-        // }
+        // $work_stations = Workstation::all();
     }
 
     /**
@@ -195,6 +187,7 @@ class WorkStationController extends Controller
             'quantity' =>'required|numeric',
         ]);
 
+        $activity_type = ActivityType::where('type', 'work_station')->where('action', 'create')->first();
         $type = $request->type == 'A' ? 'admin' : 'production';
 
         // gets the last station
@@ -236,20 +229,19 @@ class WorkStationController extends Controller
             $work_station->floor = $request->floor;
             $work_station->division = $request->division;
             $work_station->type = $type;
-            $work_station->occupied = false;
 
             $work_station->save();
+            
+            $activity = new Activity;
+            $activity->user_id = $request->user()->id;
+            $activity->activity_type_id = $activity_type->id;
+            $activity->event_id = $work_station->id;
+
+            $activity->save();
         }
 
-        // create a Log record
-        $log = new Log;
 
-        $log->user_id = $request->user()->id;
-        $log->activity_id = $work_station->id;
-        $log->activity = 'added '. $request->quantity . ' new work station(s).';
-        $log->state = 'main.floor-plan';
 
-        $log->save();
     }
 
     /**

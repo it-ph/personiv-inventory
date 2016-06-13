@@ -1,5 +1,6 @@
 adminModule
 	.controller('addWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
+		var busy = false;
 		$scope.workStation = {};
 		$scope.floors = [
 			{'pattern':6, 'value':'06'},
@@ -10,8 +11,6 @@ adminModule
 			{'pattern':'Admin', 'value':'A'},
 			{'pattern':'Production', 'value': 'P'},
 		];
-
-
 
 		$scope.patterns = [
 			{
@@ -51,19 +50,33 @@ adminModule
 		};
 
 		$scope.submit = function(){
-			/* Starts Preloader */
-			Preloader.preload();
-			/**
-			 * Stores Single Record
-			*/
-			WorkStation.store($scope.workStation)
-				.success(function(){
-					// Stops Preloader 
-					Preloader.stop();
-				})
-				.error(function(){
-					Preloader.error();
-				})
+			if($scope.addWorkStationForm.$invalid){
+				angular.forEach($scope.addWorkStationForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				Preloader.saving();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy){
+					busy = true;
+					WorkStation.store($scope.workStation)
+						.success(function(){
+							// Stops Preloader 
+							busy = false;
+							Preloader.stop();
+						})
+						.error(function(){
+							busy = false;
+							Preloader.error();
+						})
+				}
+			}
 		};
 
 	}]);

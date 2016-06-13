@@ -15,18 +15,24 @@ class WorkStation extends Model
     	return $this->hasMany('App\AssetTag');
     }
 
+    public function assets()
+    {
+        return $this->hasManyThrough('App\Asset', 'App\AssetTag');
+    }
+    
     public function departments()
     {
-    	return $this->belongsToMany('App\Department');
+        return $this->belongsToMany('App\Department');
     }
 
     public function employees()
     {
-    	return $this->hasMany('App\Employee');
+        return $this->hasMany('App\Employee');
     }
 
     public function activities()
     {
         return $this->hasMany('App\Activity', 'event_id');
     }
+
 }

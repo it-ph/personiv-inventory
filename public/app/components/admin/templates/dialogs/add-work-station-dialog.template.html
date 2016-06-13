@@ -1,40 +1,26 @@
-<md-dialog layout="column" flex="50"  aria-label="Add Work Station" ng-cloak>
+<md-dialog layout="column" flex flex-gt-sm="50" flex-gt-lg="40" aria-label="Add Work Station" ng-cloak>
 	<form name="addWorkStationForm" novalidate>
-		<md-toolbar>
+		<md-toolbar class="white-toolbar">
 			<div class="md-toolbar-tools">
-				<h2>Add Work Station</h2>
+				<h2 class="primary-text">Work Station</h2>
 				<span flex></span>
 				<md-button class="md-icon-button" ng-click="cancel()">
-					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
+					<md-icon class="mdi mdi-close grey" aria-label="cancel"></md-icon>
 				</md-button>
 			</div>
 		</md-toolbar>
 		<md-dialog-content flex layout-padding>
 			<div layout="column" flex>
-				<!-- Station Name -->
-				<!-- <md-input-container flex>
-					<label>Station Name</label>
-					<md-select name="Name" required ng-model="workStation.name">
-						<md-option ng-repeat="pattern in patterns" value="{{ pattern.value }}">
-							<span class="primary-text">{{ pattern.pattern }}</span>
-							<span class="md-caption secondary-text">({{ pattern.meaning }})</span>
-						</md-option>
-					</md-select>
-					<div ng-messages="addWorkStationForm.Name.$error" ng-if="addWorkStationForm.Name.$touched">
-						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
-					</div>
-				</md-input-container> -->
-
 				<div layout="row" flex>
 					<md-input-container flex>
 						<label>Floor</label>
 						<md-select name="Floor" required ng-model="workStation.floor">
 							<md-option ng-repeat="floor in floors" value="{{ floor.value }}">
-								<span class="primary-text">{{ floor.pattern }}</span>
+								<span>{{ floor.pattern }}</span>
 							</md-option>
 						</md-select>
 						<div ng-messages="addWorkStationForm.Floor.$error" ng-if="addWorkStationForm.Floor.$touched">
-							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+							<div ng-message="required">Floor is required.</div>
 						</div>
 					</md-input-container>
 
@@ -42,13 +28,13 @@
 						<label>Division</label>
 						<md-select name="Division" required ng-model="workStation.division">
 							<md-option ng-repeat="division in divisions" value="{{ division }}">
-								<p class="primary-text">
+								<span>
 									{{ division }}
-								</p>
+								</span>
 							</md-option>
 						</md-select>
 						<div ng-messages="addWorkStationForm.Division.$error" ng-if="addWorkStationForm.Division.$touched">
-							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+							<div ng-message="required">Division is required.</div>
 						</div>
 					</md-input-container>
 
@@ -56,13 +42,13 @@
 						<label>Type</label>
 						<md-select name="Type" required ng-model="workStation.type">
 							<md-option ng-repeat="type in types" value="{{ type.value }}">
-								<p class="primary-text">
+								<span>
 									{{ type.pattern }}
-								</p>
+								</span>
 							</md-option>
 						</md-select>
 						<div ng-messages="addWorkStationForm.Type.$error" ng-if="addWorkStationForm.Type.$touched">
-							<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+							<div ng-message="required">Type is required.</div>
 						</div>
 					</md-input-container>					
 				</div>
@@ -72,15 +58,15 @@
 					<label>Quantity</label>
 					<input type="number" name="Quantity" required ng-model="workStation.quantity" min="1" max="999">
 					<div ng-messages="addWorkStationForm.Quantity.$error" ng-if="addWorkStationForm.Quantity.$touched">
-						<div ng-messages-include="/app/shared/templates/validation-message.html"></div>
+						<div ng-message="required">Quantity is required.</div>
 					</div>
 				</md-input-container>
 			</div>
 		</md-dialog-content>
 	</form>
 	<div layout="row" layout-align="end center">		
-		<md-button class="md-fab md-primary" ng-disabled="addWorkStationForm.$invalid" aria-label="Submit" ng-click="submit()">
-			<md-icon class="mdi mdi-check"></md-icon>
+		<md-button class="md-primary" aria-label="Submit" ng-click="submit()">
+			Submit
 		</md-button>
 	</div>
 </md-dialog>
