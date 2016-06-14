@@ -58,13 +58,13 @@ adminModule
 				});
 			}
 			else{
-				/* Starts Preloader */
-				Preloader.saving();
-				/**
-				 * Stores Single Record
-				*/
 				if(!busy){
 					busy = true;
+					/* Starts Preloader */
+					Preloader.saving();
+					/**
+					 * Stores Single Record
+					*/
 					WorkStation.store($scope.workStation)
 						.success(function(){
 							// Stops Preloader 

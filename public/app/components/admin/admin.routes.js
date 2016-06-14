@@ -85,7 +85,7 @@ adminModule
 						templateUrl: '/app/components/admin/templates/sidenavs/assets-right-sidenav.template.html',
 					},
 					'subheader@main.asset':{
-						templateUrl: '/app/components/admin/templates/subheader/asset-subheader-template.html',
+						templateUrl: '/app/components/admin/templates/subheader/asset-subheader.template.html',
 					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
@@ -117,9 +117,6 @@ adminModule
 					'right-sidenav@main.work-stations': {
 						templateUrl : '/app/components/admin/templates/sidenavs/work-stations.sidenav.html',
 					},
-					'subheader@main.work-stations':{
-						templateUrl: '/app/components/admin/templates/subheader/work-stations-subheader.template.html',
-					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
 					var leftSidenav = $('[md-component-id="left"]');
@@ -134,8 +131,8 @@ adminModule
 			 *
 			*/
 			.state('main.work-station', {
-				url: 'dashboard/floor-plan/{departmentID}/work-station/{workStationID}',
-				params: {'departmentID':null, 'workStationID': null},
+				url: 'work-station/{workStationID}',
+				params: {'workStationID': null},
 				views: {
 					'content-container': {
 						templateUrl: '/app/components/admin/views/content-container.view.html',
@@ -143,15 +140,9 @@ adminModule
 					},
 					'toolbar@main.work-station': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controller: 'workStationToolbarController',
 					},
 					'content@main.work-station': {
 						templateUrl: '/app/components/admin/templates/content/work-station.content.template.html',
-						// controller: 'workStationContentController',
-					},
-					'right-sidenav@main.work-station': {
-						templateUrl : '/app/components/admin/templates/sidenavs/work-station-right.sidenav.html',
-						controller: 'workStationRightSidenavController',
 					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){

@@ -54,49 +54,14 @@ adminModule
 			$scope.toolbar.items.push(item);
 	    }
 
-	    var chartItem = function(data){
-	    	// check if work station belongs to 6th floor division A and currently occupied
-			if(data.floor == 6 && data.division == 'A' && data.departments.length){
-				$scope.charts[0].data[0] += 1; 
-			}
-			// check if work station belongs to 6th floor division A and currently vacant
-			else if(data.floor == 6 && data.division == 'A' && !data.departments.length){
-				$scope.charts[0].data[1] += 1; 
-			}
-			// check if work station belongs to 6th floor division B and currently occupied
-			else if(data.floor == 6 && data.division == 'B' && data.departments.length){
-				$scope.charts[1].data[0] += 1; 
-			}
-			// check if work station belongs to 6th floor division B and currently vacant
-			else if(data.floor == 6 && data.division == 'B' && !data.departments.length){
-				$scope.charts[1].data[1] += 1; 
-			}
-			// check if work station belongs to 10th floor division A and currently occupied
-			else if(data.floor == 10 && data.division == 'A' && data.departments.length){
-				$scope.charts[2].data[0] += 1; 
-			}
-			// check if work station belongs to 10th floor division A and currently vacant
-			else if(data.floor == 10 && data.division == 'A' && !data.departments.length){
-				$scope.charts[2].data[1] += 1; 
-			}
-			// check if work station belongs to 10th floor division B and currently occupied
-			else if(data.floor == 10 && data.division == 'B' && data.departments.length){
-				$scope.charts[3].data[0] += 1; 
-			}
-			// check if work station belongs to 10th floor division B and currently vacant
-			else if(data.floor == 10 && data.division == 'B' && !data.departments.length){
-				$scope.charts[3].data[1] += 1; 
-			}
-	    }
-
-
 		$scope.searchUserInput = function(){
 			$scope.workStation.paginated.show = false;
 			Preloader.loading();
-			WorkStation.search($scope.workStation)
+			WorkStation.search($scope.toolbar)
 				.success(function(data){
 					$scope.workStation.results = data;
 					Preloader.stop();
+					$scope.workStation.searched = true;
 				})
 				.error(function(data){
 					Preloader.error();
@@ -113,6 +78,23 @@ adminModule
 		    	/* Refreshes the list */
 		    	$scope.toolbar.refresh();
 		    });
+		}
+
+		$scope.show = function(id, count){
+			if(!count){
+				Preloader.set(id);
+				$mdDialog.show({
+			      	controller: 'createDepartmentWorkStationDialogController',
+				    templateUrl: '/app/components/admin/templates/dialogs/update-work-station-dialog.template.html',
+			      	parent: angular.element($('body')),
+			    })
+			    .then(function(){
+			    	$state.go('main.work-station', {'workStationID':id});
+			    });
+			}
+			else{
+				$state.go('main.work-station', {'workStationID':id});
+			}
 		}
 		/**
 		 * Object for fab
@@ -151,14 +133,6 @@ adminModule
 					return;
 				})
 				.then(function(){
-					/**
-					 * Object for Work Station
-					 *
-					*/
-					$scope.workStation = {};
-					// 2 is default so the next page to be loaded will be page 2 
-					$scope.workStation.page = 2;
-
 					$scope.charts = [
 						{
 							'labels': ['Occupied', 'Vacant'],
@@ -182,6 +156,30 @@ adminModule
 						},
 					];
 
+					WorkStation.index()
+						.success(function(data){
+							$scope.charts[0].data[0] = data.occupied_6FA_count;
+							$scope.charts[0].data[1] = data.vacant_6FA_count;
+							$scope.charts[1].data[0] = data.occupied_6FB_count;
+							$scope.charts[1].data[1] = data.vacant_6FB_count;
+							$scope.charts[2].data[0] = data.occupied_10FA_count;
+							$scope.charts[2].data[1] = data.vacant_10FA_count;
+							$scope.charts[3].data[0] = data.occupied_10FB_count;
+							$scope.charts[3].data[1] = data.vacant_10FB_count;
+						})
+						.error(function(){
+							Preloader.error();
+						})
+				})
+				.then(function(){
+					/**
+					 * Object for Work Station
+					 *
+					*/
+					$scope.workStation = {};
+					// 2 is default so the next page to be loaded will be page 2 
+					$scope.workStation.page = 2;
+
 					WorkStation.paginate()
 						.success(function(data){
 							$scope.workStation.details = data;
@@ -192,7 +190,6 @@ adminModule
 								// iterate over each record and set the updated_at date and first letter
 								angular.forEach(data.data, function(item){
 									pushItem(item);
-									chartItem(item);
 								});
 
 								$scope.fab.show = true;
@@ -219,7 +216,6 @@ adminModule
 										// iterate over each data then splice it to the data array
 										angular.forEach(data.data, function(item, key){
 											pushItem(item);
-											chartItem(item);
 											$scope.workStation.paginated.data.push(item);
 										});
 

@@ -89,7 +89,7 @@ adminModule
 						templateUrl: '/app/components/admin/templates/sidenavs/assets-right-sidenav.template.html',
 					},
 					'subheader@main.asset':{
-						templateUrl: '/app/components/admin/templates/subheader/asset-subheader-template.html',
+						templateUrl: '/app/components/admin/templates/subheader/asset-subheader.template.html',
 					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
@@ -121,9 +121,6 @@ adminModule
 					'right-sidenav@main.work-stations': {
 						templateUrl : '/app/components/admin/templates/sidenavs/work-stations.sidenav.html',
 					},
-					'subheader@main.work-stations':{
-						templateUrl: '/app/components/admin/templates/subheader/work-stations-subheader.template.html',
-					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
 					var leftSidenav = $('[md-component-id="left"]');
@@ -138,8 +135,8 @@ adminModule
 			 *
 			*/
 			.state('main.work-station', {
-				url: 'dashboard/floor-plan/{departmentID}/work-station/{workStationID}',
-				params: {'departmentID':null, 'workStationID': null},
+				url: 'work-station/{workStationID}',
+				params: {'workStationID': null},
 				views: {
 					'content-container': {
 						templateUrl: '/app/components/admin/views/content-container.view.html',
@@ -147,15 +144,9 @@ adminModule
 					},
 					'toolbar@main.work-station': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controller: 'workStationToolbarController',
 					},
 					'content@main.work-station': {
 						templateUrl: '/app/components/admin/templates/content/work-station.content.template.html',
-						// controller: 'workStationContentController',
-					},
-					'right-sidenav@main.work-station': {
-						templateUrl : '/app/components/admin/templates/sidenavs/work-station-right.sidenav.html',
-						controller: 'workStationRightSidenavController',
 					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
@@ -1378,13 +1369,13 @@ adminModule
 				});
 			}
 			else{
-				/* Starts Preloader */
-				Preloader.saving();
-				/**
-				 * Stores Single Record
-				*/
 				if(!busy){
 					busy = true;
+					/* Starts Preloader */
+					Preloader.saving();
+					/**
+					 * Stores Single Record
+					*/
 					WorkStation.store($scope.workStation)
 						.success(function(){
 							// Stops Preloader 
@@ -1394,6 +1385,77 @@ adminModule
 						.error(function(){
 							busy = false;
 							Preloader.error();
+						})
+				}
+			}
+		};
+
+	}]);
+adminModule
+	.controller('createDepartmentWorkStationDialogController', ['$scope', '$mdDialog', 'Preloader', 'WorkStation', 'DepartmentWorkStation', 'Department', function($scope, $mdDialog, Preloader, WorkStation, DepartmentWorkStation, Department){
+		var workStationID = Preloader.get();
+		var busy = false;
+
+		$scope.init = function(){
+			WorkStation.show(workStationID)
+				.success(function(data){
+					$scope.workStation = data;				
+				})
+				.error(function(){
+					Preloader.error();
+				});
+
+			Department.index()
+				.success(function(data){
+					$scope.departments = data;
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		}();
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		$scope.submit = function(){
+			if($scope.workStationForm.$invalid){
+				angular.forEach($scope.workStationForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				if(!busy)
+				{
+					busy = true;
+					/* Starts Preloader */
+					Preloader.preload();
+					/**
+					 * Stores Single Record
+					*/
+					WorkStation.update(workStationID, $scope.workStation)
+						.then(function(){
+							return;
+						})
+						.then(function(){
+							angular.forEach($scope.workStation.departments, function(item){
+								item.work_station_id = workStationID;
+							})
+
+							DepartmentWorkStation.store($scope.workStation.departments)
+								.success(function(){
+									busy = false;
+								})
+								.error(function(){
+									Preloader.error();
+									busy = false;
+								})
+
+						}, function(){
+							Preloader.error();
+							busy = false;
 						})
 				}
 			}
@@ -1509,49 +1571,14 @@ adminModule
 			$scope.toolbar.items.push(item);
 	    }
 
-	    var chartItem = function(data){
-	    	// check if work station belongs to 6th floor division A and currently occupied
-			if(data.floor == 6 && data.division == 'A' && data.departments.length){
-				$scope.charts[0].data[0] += 1; 
-			}
-			// check if work station belongs to 6th floor division A and currently vacant
-			else if(data.floor == 6 && data.division == 'A' && !data.departments.length){
-				$scope.charts[0].data[1] += 1; 
-			}
-			// check if work station belongs to 6th floor division B and currently occupied
-			else if(data.floor == 6 && data.division == 'B' && data.departments.length){
-				$scope.charts[1].data[0] += 1; 
-			}
-			// check if work station belongs to 6th floor division B and currently vacant
-			else if(data.floor == 6 && data.division == 'B' && !data.departments.length){
-				$scope.charts[1].data[1] += 1; 
-			}
-			// check if work station belongs to 10th floor division A and currently occupied
-			else if(data.floor == 10 && data.division == 'A' && data.departments.length){
-				$scope.charts[2].data[0] += 1; 
-			}
-			// check if work station belongs to 10th floor division A and currently vacant
-			else if(data.floor == 10 && data.division == 'A' && !data.departments.length){
-				$scope.charts[2].data[1] += 1; 
-			}
-			// check if work station belongs to 10th floor division B and currently occupied
-			else if(data.floor == 10 && data.division == 'B' && data.departments.length){
-				$scope.charts[3].data[0] += 1; 
-			}
-			// check if work station belongs to 10th floor division B and currently vacant
-			else if(data.floor == 10 && data.division == 'B' && !data.departments.length){
-				$scope.charts[3].data[1] += 1; 
-			}
-	    }
-
-
 		$scope.searchUserInput = function(){
 			$scope.workStation.paginated.show = false;
 			Preloader.loading();
-			WorkStation.search($scope.workStation)
+			WorkStation.search($scope.toolbar)
 				.success(function(data){
 					$scope.workStation.results = data;
 					Preloader.stop();
+					$scope.workStation.searched = true;
 				})
 				.error(function(data){
 					Preloader.error();
@@ -1568,6 +1595,23 @@ adminModule
 		    	/* Refreshes the list */
 		    	$scope.toolbar.refresh();
 		    });
+		}
+
+		$scope.show = function(id, count){
+			if(!count){
+				Preloader.set(id);
+				$mdDialog.show({
+			      	controller: 'createDepartmentWorkStationDialogController',
+				    templateUrl: '/app/components/admin/templates/dialogs/update-work-station-dialog.template.html',
+			      	parent: angular.element($('body')),
+			    })
+			    .then(function(){
+			    	$state.go('main.work-station', {'workStationID':id});
+			    });
+			}
+			else{
+				$state.go('main.work-station', {'workStationID':id});
+			}
 		}
 		/**
 		 * Object for fab
@@ -1606,14 +1650,6 @@ adminModule
 					return;
 				})
 				.then(function(){
-					/**
-					 * Object for Work Station
-					 *
-					*/
-					$scope.workStation = {};
-					// 2 is default so the next page to be loaded will be page 2 
-					$scope.workStation.page = 2;
-
 					$scope.charts = [
 						{
 							'labels': ['Occupied', 'Vacant'],
@@ -1637,6 +1673,30 @@ adminModule
 						},
 					];
 
+					WorkStation.index()
+						.success(function(data){
+							$scope.charts[0].data[0] = data.occupied_6FA_count;
+							$scope.charts[0].data[1] = data.vacant_6FA_count;
+							$scope.charts[1].data[0] = data.occupied_6FB_count;
+							$scope.charts[1].data[1] = data.vacant_6FB_count;
+							$scope.charts[2].data[0] = data.occupied_10FA_count;
+							$scope.charts[2].data[1] = data.vacant_10FA_count;
+							$scope.charts[3].data[0] = data.occupied_10FB_count;
+							$scope.charts[3].data[1] = data.vacant_10FB_count;
+						})
+						.error(function(){
+							Preloader.error();
+						})
+				})
+				.then(function(){
+					/**
+					 * Object for Work Station
+					 *
+					*/
+					$scope.workStation = {};
+					// 2 is default so the next page to be loaded will be page 2 
+					$scope.workStation.page = 2;
+
 					WorkStation.paginate()
 						.success(function(data){
 							$scope.workStation.details = data;
@@ -1647,7 +1707,6 @@ adminModule
 								// iterate over each record and set the updated_at date and first letter
 								angular.forEach(data.data, function(item){
 									pushItem(item);
-									chartItem(item);
 								});
 
 								$scope.fab.show = true;
@@ -1674,7 +1733,6 @@ adminModule
 										// iterate over each data then splice it to the data array
 										angular.forEach(data.data, function(item, key){
 											pushItem(item);
-											chartItem(item);
 											$scope.workStation.paginated.data.push(item);
 										});
 
@@ -3673,78 +3731,53 @@ adminModule
 		}
 	}]);
 adminModule
-	.controller('workStationContentContainerController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', 'UserService', function($scope, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService, UserService){
-		/**
-		 * Object for subheader
-		 *
-		*/
-		var departmentID = $stateParams.departmentID;
+	.controller('workStationContentContainerController', ['$scope', '$filter', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', function($scope, $filter, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag){
 		var workStationID = $stateParams.workStationID;
 
-		$scope.subheader = {};
-		$scope.subheader.state = 'work-station';
+		/**
+		  *
+		  * Object for toolbar
+		  *
+		*/
+		$scope.toolbar = {};
+		$scope.toolbar.parentState = 'Work Stations';
+	    // $scope.toolbar.searchAll = true;
+		$scope.toolbar.items = [];
+		$scope.toolbar.showBack = true;
+		$scope.toolbar.back = function(){
+			$state.go('main.work-stations');
+		}
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
 
-		$scope.subheader.refresh = function(){
-			Preloader.preload();
-			$scope.show = false;
-			AssetTag.workStation(workStationID)
-				.success(function(data){
-					$scope.assets = data;
-					Preloader.stop();
-					$scope.show = true;
-				})
-				.error(function(){
-					Preloader.error();
-				});
+		$scope.toolbar.refresh = function(){
+			Preloader.loading();
+			$scope.init(true);
 		};
 
-		$scope.subheader.transfer = function(){
-			$mdDialog.show({
-		      	controller: 'transferWorkStationDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/transfer-work-station-dialog.template.html',
-		      	parent: angular.element($('body'))
-		    })
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
 		};
 
-		$scope.subheader.users = function(){
-			$mdDialog.show({
-		      	controller: 'usersWorkStationDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/users-work-station-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(answer){
-		    	if(!answer){
-			    	$mdDialog.show({
-				      	controller: 'tagUsersWorkStationDialogController',
-					    templateUrl: '/app/components/admin/templates/dialogs/tag-users-work-station-dialog.template.html',
-				      	parent: angular.element($('body')),
-				    })
-				    .then(function(){
-				    	$scope.subheader.refresh();
-				    })
-		    	}
-		    	else{
-		    		UserService.set(answer);
-		    		$mdDialog.show({
-				      	controller: 'transferUsersDialogController',
-					    templateUrl: '/app/components/admin/templates/dialogs/transfer-users-dialog.template.html',
-				      	parent: angular.element($('body')),
-				    })
-				    .then(function(){
-				    	$scope.subheader.refresh();
-				    })
-		    	}
-		    })
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+	    	if($scope.workStation.searched){
+	    		$scope.toolbar.refresh();
+	    		$scope.workStation.searched = false;
+	    	}
 		};
 
-		AssetTag.workStation(workStationID)
-			.success(function(data){
-				$scope.assets = data;
-				$scope.show = true;
-			})
-			.error(function(){
-				Preloader.error();
-			});
 		/**
 		 * Object for fab
 		 *
@@ -3754,7 +3787,7 @@ adminModule
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
 		$scope.fab.tooltip = 'Add Asset';
-		$scope.fab.show = true;
+		// $scope.fab.show = true;
 
 		$scope.fab.action = function(){
 		    $mdDialog.show({
@@ -3774,52 +3807,6 @@ adminModule
 		    })
 		};
 
-		$scope.workStation = {};
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = true;
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.workStation.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			// $scope.workStation.paginated.show = false;
-			// Preloader.preload()
-			// WorkStation.search(departmentID, $scope.workStation)
-			// 	.success(function(data){
-			// 		$scope.workStation.results = data;
-			// 		Preloader.stop();
-			// 	})
-			// 	.error(function(data){
-			// 		Preloader.error();
-			// 	});
-		};
 
 		$scope.editAsset = function(id){
 			AssetTagService.setID(id);
@@ -3889,115 +3876,28 @@ adminModule
 		      	return;
 		    });
 		};
+
+		$scope.init = function(refresh){
+			WorkStation.show(workStationID)
+				.success(function(data){
+					$scope.workStation = data;
+
+					$scope.toolbar.childState = data.name;
+					if(refresh){
+						Preloader.stop();
+						Preloader.stop();
+					}
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		}
+
+		$scope.init();
 	}]);
 
 adminModule
 	.controller('workStationContentController', ['$scope', '$stateParams', 'WorkStation', function($scope, $stateParams, WorkStation){
 		
-	}]);
-adminModule
-	.controller('workStationRightSidenavController', ['$scope', '$state', '$stateParams', 'Preloader', 'WorkStation', 'Department', function($scope, $state, $stateParams, Preloader, WorkStation, Department){
-		/**
-		 * Object for content view
-		 *
-		*/
-		$scope.rightSidenav = {};
-
-		var departmentID = $stateParams.departmentID;
-
-		$scope.rightSidenav.page = 2;
-
-		// WorkStation.departmentPaginate(departmentID, $stateParams.workStationID)
-		// 	.success(function(data){
-		// 		$scope.rightSidenav.workStations = data;
-		// 	})
-		// 	.error(function(){
-		// 		Preloader.error();
-		// 	});
-
-		WorkStation.departmentPaginate(departmentID, $stateParams.workStationID)
-			.then(function(data){
-				$scope.rightSidenav.paginated = data.data;
-				$scope.rightSidenav.paginated.show = true;
-
-				$scope.rightSidenav.paginateLoad = function(){
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.rightSidenav.busy || ($scope.rightSidenav.page > $scope.rightSidenav.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.rightSidenav.busy = true;
-
-					// Calls the next page of pagination.
-					WorkStation.departmentPaginate(departmentID, $stateParams.workStationID, $scope.rightSidenav.page)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.rightSidenav.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.rightSidenav.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.rightSidenav.busy = false;
-						});
-				}
-			}, function(){
-				Preloader.error();
-			});
-
-		$scope.rightSidenav.show = function(workStationID){
-			$state.go('main.work-station', {'departmentID': departmentID, 'workStationID': workStationID});
-		};
-	}]);
-adminModule
-	.controller('workStationToolbarController', ['$scope', '$state', '$stateParams', 'departmentService', 'Department', 'WorkStation', 'AssetTagService', function($scope, $state, $stateParams, departmentService, Department, WorkStation, AssetTagService){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-
-		/**
-		 * Properties and method of toolbar.
-		 *
-		*/
-		var departmentID = $stateParams.departmentID;
-		var index = departmentID - 1;
-
-		$scope.toolbar.showBack = true;
-
-		$scope.toolbar.back = function(){
-			$state.go('main.floor-plan', {'departmentID': departmentID});
-		};
-
-		var departments = departmentService.get();
-		if(!departments.length){
-			Department.index()
-				.success(function(data){
-					departments = data;
-					$scope.toolbar.parentState = departments[index].name;
-				})
-				.error(function(){
-					Preload.error();
-				});
-		}
-		else{
-			$scope.toolbar.parentState = departments[index].name;
-		}
-
-		WorkStation.show($stateParams.workStationID)
-			.success(function(data){
-				$scope.toolbar.childState = data.name;
-				AssetTagService.setStation(data.name);
-			})
-			.error(function(){
-				Preload.error();
-			});
 	}]);
 //# sourceMappingURL=admin.js.map

@@ -100,12 +100,7 @@ class WorkStationController extends Controller
     */
     public function search(Request $request)
     {
-        return DB::table('work_stations')
-            ->select('*', DB::raw('SUBSTRING(work_stations.name, 7, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
-            ->where('work_stations.name', 'like', '%'. $request->userInput .'%')
-            ->whereNull('work_stations.deleted_at')
-            ->groupBy('work_stations.id')
-            ->get();
+        return Workstation::with('departments')->where('name', 'like', '%'. $request->searchText .'%')->orWhere('ip_address', 'like', '%'. $request->searchText .'%')->get();
     }
 
     /**
@@ -160,6 +155,71 @@ class WorkStationController extends Controller
     public function index()
     {
         // $work_stations = Workstation::all();
+
+        $work_station_6FA = Workstation::with('departments')->where('floor', 6)->where('division', 'A')->get();
+        $work_station_6FB = Workstation::with('departments')->where('floor', 6)->where('division', 'B')->get();
+        $work_station_10FA = Workstation::with('departments')->where('floor', 10)->where('division', 'A')->get();
+        $work_station_10FB = Workstation::with('departments')->where('floor', 10)->where('division', 'B')->get();
+
+        $occupied_6FA_count = 0;
+        $occupied_6FB_count = 0;
+        $occupied_10FA_count = 0;
+        $occupied_10FB_count = 0;
+
+        $vacant_6FA_count = 0;
+        $vacant_6FB_count = 0;
+        $vacant_10FA_count = 0;
+        $vacant_10FB_count = 0;
+
+        foreach ($work_station_6FA as $work_station_6FA_key => $work_station_6FA_value) {
+            if(count($work_station_6FA_value->departments)){
+                $occupied_6FA_count = $occupied_6FA_count + 1;
+            }
+            else{
+                $vacant_6FA_count = $vacant_6FA_count + 1;
+            }
+        }
+
+        foreach ($work_station_6FB as $work_station_6FB_key => $work_station_6FB_value) {
+            if(count($work_station_6FB_value->departments)){
+                $occupied_6FB_count = $occupied_6FB_count + 1;
+            }
+            else{
+                $vacant_6FB_count = $vacant_6FB_count + 1;
+            }
+        }
+
+        foreach ($work_station_10FA as $work_station_10FA_key => $work_station_10FA_value) {
+            if(count($work_station_10FA_value->departments)){
+                $occupied_10FA_count = $occupied_10FA_count + 1;
+            }
+            else{
+                $vacant_10FA_count = $vacant_10FA_count + 1;
+            }
+        }
+
+        foreach ($work_station_10FB as $work_station_10FB_key => $work_station_10FB_value) {
+            if(count($work_station_10FB_value->departments)){
+                $occupied_10FB_count = $occupied_10FB_count + 1;
+            }
+            else{
+                $vacant_10FB_count = $vacant_10FB_count + 1;
+            }
+        }
+
+        $user = Auth::user();
+
+        $user->occupied_6FA_count = $occupied_6FA_count;
+        $user->occupied_6FB_count = $occupied_6FB_count;
+        $user->occupied_10FA_count = $occupied_10FA_count;
+        $user->occupied_10FB_count = $occupied_10FB_count;
+
+        $user->vacant_6FA_count = $vacant_6FA_count;
+        $user->vacant_6FB_count = $vacant_6FB_count;
+        $user->vacant_10FA_count = $vacant_10FA_count;
+        $user->vacant_10FB_count = $vacant_10FB_count;
+
+        return $user;
     }
 
     /**
@@ -252,7 +312,7 @@ class WorkStationController extends Controller
      */
     public function show($id)
     {
-        return Workstation::where('id', $id)->first();
+        return Workstation::with('asset_tags')->where('id', $id)->first();
     }
 
     /**

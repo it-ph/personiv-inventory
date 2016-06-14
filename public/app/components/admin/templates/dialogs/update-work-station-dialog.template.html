@@ -1,0 +1,38 @@
+<md-dialog layout="column" flex flex-gt-sm="50" flex-gt-lg="40"  aria-label="Program" ng-cloak>
+	<form name="workStationForm" novalidate>
+		<md-toolbar class="white-toolbar">
+			<div class="md-toolbar-tools">
+				<h2 class="primary-text">{{ workStation.name }}</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close mdi-24px grey" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content layout="column" flex layout-padding layout-wrap>
+			<div layout="column">
+				<!-- IP Address -->
+				<md-input-container>
+					<label>IP Address</label>
+					<input type="text" name="IPAddress" required ng-model="workStation.ip_address" pattern="/^[0-9.]+$/">
+					<div ng-messages="workStationForm.IPAddress.$error" ng-if="workStationForm.IPAddress.$touched">
+						<div ng-message="required">IP Address is required.</div>
+						<div ng-pattern="Numeric and period only."></div>
+					</div>
+				</md-input-container>
+
+				<md-subheader class="md-no-sticky">Department(s) that occupies this station</md-subheader>
+				<div layout="row" layout-wrap flex layout-align="start center">
+					<md-checkbox ng-repeat="department in departments" ng-model="workStation.departments[$index]" ng-true-value="{{ department }}" ng-false-value="null" class="md-primary" flex-xs="100" flex-gt-xs="100" flex-gt-md="30">
+						{{ department.name }}
+					</md-checkbox>
+				</div>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-button md-primary" aria-label="Submit" ng-click="submit()">
+			Submit
+		</md-button>
+	</div>
+</md-dialog>

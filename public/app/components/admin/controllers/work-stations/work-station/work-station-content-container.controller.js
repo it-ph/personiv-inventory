@@ -1,76 +1,51 @@
 adminModule
-	.controller('workStationContentContainerController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', 'UserService', function($scope, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService, UserService){
-		/**
-		 * Object for subheader
-		 *
-		*/
-		var departmentID = $stateParams.departmentID;
+	.controller('workStationContentContainerController', ['$scope', '$filter', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', function($scope, $filter, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag){
 		var workStationID = $stateParams.workStationID;
 
-		$scope.subheader = {};
-		$scope.subheader.state = 'work-station';
+		/**
+		  *
+		  * Object for toolbar
+		  *
+		*/
+		$scope.toolbar = {};
+		$scope.toolbar.parentState = 'Work Stations';
+	    // $scope.toolbar.searchAll = true;
+		$scope.toolbar.items = [];
+		$scope.toolbar.showBack = true;
+		$scope.toolbar.back = function(){
+			$state.go('main.work-stations');
+		}
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
 
-		$scope.subheader.refresh = function(){
-			Preloader.preload();
-			$scope.show = false;
-			AssetTag.workStation(workStationID)
-				.success(function(data){
-					$scope.assets = data;
-					Preloader.stop();
-					$scope.show = true;
-				})
-				.error(function(){
-					Preloader.error();
-				});
+		$scope.toolbar.refresh = function(){
+			Preloader.loading();
+			$scope.init(true);
 		};
 
-		$scope.subheader.transfer = function(){
-			$mdDialog.show({
-		      	controller: 'transferWorkStationDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/transfer-work-station-dialog.template.html',
-		      	parent: angular.element($('body'))
-		    })
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
 		};
 
-		$scope.subheader.users = function(){
-			$mdDialog.show({
-		      	controller: 'usersWorkStationDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/users-work-station-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(answer){
-		    	if(!answer){
-			    	$mdDialog.show({
-				      	controller: 'tagUsersWorkStationDialogController',
-					    templateUrl: '/app/components/admin/templates/dialogs/tag-users-work-station-dialog.template.html',
-				      	parent: angular.element($('body')),
-				    })
-				    .then(function(){
-				    	$scope.subheader.refresh();
-				    })
-		    	}
-		    	else{
-		    		UserService.set(answer);
-		    		$mdDialog.show({
-				      	controller: 'transferUsersDialogController',
-					    templateUrl: '/app/components/admin/templates/dialogs/transfer-users-dialog.template.html',
-				      	parent: angular.element($('body')),
-				    })
-				    .then(function(){
-				    	$scope.subheader.refresh();
-				    })
-		    	}
-		    })
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+	    	if($scope.workStation.searched){
+	    		$scope.toolbar.refresh();
+	    		$scope.workStation.searched = false;
+	    	}
 		};
 
-		AssetTag.workStation(workStationID)
-			.success(function(data){
-				$scope.assets = data;
-				$scope.show = true;
-			})
-			.error(function(){
-				Preloader.error();
-			});
 		/**
 		 * Object for fab
 		 *
@@ -80,7 +55,7 @@ adminModule
 		$scope.fab.icon = 'mdi-plus';
 		$scope.fab.label = 'Add';
 		$scope.fab.tooltip = 'Add Asset';
-		$scope.fab.show = true;
+		// $scope.fab.show = true;
 
 		$scope.fab.action = function(){
 		    $mdDialog.show({
@@ -100,52 +75,6 @@ adminModule
 		    })
 		};
 
-		$scope.workStation = {};
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = true;
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.workStation.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			// $scope.workStation.paginated.show = false;
-			// Preloader.preload()
-			// WorkStation.search(departmentID, $scope.workStation)
-			// 	.success(function(data){
-			// 		$scope.workStation.results = data;
-			// 		Preloader.stop();
-			// 	})
-			// 	.error(function(data){
-			// 		Preloader.error();
-			// 	});
-		};
 
 		$scope.editAsset = function(id){
 			AssetTagService.setID(id);
@@ -215,4 +144,22 @@ adminModule
 		      	return;
 		    });
 		};
+
+		$scope.init = function(refresh){
+			WorkStation.show(workStationID)
+				.success(function(data){
+					$scope.workStation = data;
+
+					$scope.toolbar.childState = data.name;
+					if(refresh){
+						Preloader.stop();
+						Preloader.stop();
+					}
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		}
+
+		$scope.init();
 	}]);
