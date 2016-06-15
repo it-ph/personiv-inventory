@@ -1,7 +1,7 @@
 <div layout="row" flex>
 	<div layout-padding flex flex-gt-md="75">
-		<!-- Program -->
-		<div ng-if="asset_types.length">
+		<!-- Assets -->
+		<div ng-if="user.role != 'trainee'">
 			<md-subheader class="md-no-sticky md-primary">
 				<span>Assets</span>
 			</md-subheader>
@@ -31,6 +31,7 @@
 				    </md-menu>
 				</md-list-item>
 			</md-list>
+			<p ng-if="!assets.length">No assets to display.</p>
 			<div layout="row" layout-align="end center">
 				<md-button class="md-primary" ng-click="createAssetType()"> 
 					Create
@@ -38,8 +39,8 @@
 			</div>
 		</div>
 		<!-- Departments -->
-		<div ng-if="departments.length">
-			<md-divider></md-divider>
+		<md-divider></md-divider>
+		<div ng-if="user.role != 'trainee'">
 			<md-subheader class="md-no-sticky md-primary" layout="row" layout-align="space-between center" flex>
 				<span>Departments</span>
 			</md-subheader>
@@ -69,6 +70,7 @@
 				    </md-menu>
 				</md-list-item>
 			</md-list>
+			<p ng-if="!departments.length">No departments to display.</p>
 			<div layout="row" layout-align="end center">
 				<md-button class="md-primary" ng-click="createDepartment()"> 
 					Create
@@ -113,6 +115,49 @@
 			<p ng-if="!users.length">No users to display.</p>
 			<div layout="row" layout-align="end center">
 				<md-button class="md-primary" ng-click="createUser()"> 
+					Create
+				</md-button>
+			</div>
+		</div>
+		<!-- Vendors -->
+		<md-divider></md-divider>
+		<div ng-if="user.role != 'trainee'">
+			<md-subheader class="md-no-sticky md-primary" layout="row" layout-align="space-between center" flex>
+				<span>Vendors</span>
+			</md-subheader>
+			<md-list layout="column" layout-padding>
+				<md-list-item class="md-3-line fade-transition" flex ng-repeat="vendor in vendors | filter:toolbar.searchText | orderBy:'name'">
+					<div class="md-list-item-text">
+						<h3>{{vendor.company}}</h3>
+						<h4>{{vendor.contact_person}}</h4>
+						<p>{{vendor.contact_number}}</p>
+					</div>
+					<md-menu class="fade-transition" ng-if="user.role == 'super-admin'">
+				    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+					        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
+					        <md-tooltip>Menu</md-tooltip>
+					    </md-button>
+					    <md-menu-content width="2">
+					        <md-menu-item>
+					          	<!-- Edit -->
+								<md-button ng-click="editVendor(vendor.id)">
+									<md-icon class="mdi mdi-24px mdi-pencil grey"></md-icon>
+									Edit
+								</md-button>
+					        </md-menu-item>
+					        <md-menu-item>
+								<md-button ng-click="deleteVendor(vendor.id)" ng-if="!vendor.purchase_orders.length">
+									<md-icon class="mdi mdi-24px mdi-delete grey"></md-icon>
+									Delete
+								</md-button>
+					        </md-menu-item>
+					    </md-menu-content>
+				    </md-menu>
+				</md-list-item>
+			</md-list>
+			<p ng-if="!vendors.length">No vendors to display.</p>
+			<div layout="row" layout-align="end center">
+				<md-button class="md-primary" ng-click="createVendor()"> 
 					Create
 				</md-button>
 			</div>

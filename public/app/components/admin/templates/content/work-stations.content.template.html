@@ -24,10 +24,6 @@
 					</h4>
 					<p>{{ workStation.ip_address }}</p>
 				</div>
-				<md-button class="md-icon-button" aria-label="Edit" ng-if="workStation.departments.length" ng-click="editWorkStation(id)">
-					<md-icon class="mdi mdi-pencil grey"></md-icon>
-					<md-tooltip>Edit</md-tooltip>
-				</md-button>
 			</md-list-item>
 		</md-list>
 		<p ng-if="!workStation.results.length && !workStation.paginated.show">No results found matching <strong>"{{ toolbar.searchText }}"</strong></p>
@@ -49,10 +45,6 @@
 					</h4>
 					<p>{{ workStation.ip_address }}</p>
 				</div>
-				<md-button class="md-icon-button" aria-label="Edit" ng-if="workStation.departments.length" ng-click="editWorkStation(id)">
-					<md-icon class="mdi mdi-pencil grey"></md-icon>
-					<md-tooltip>Edit</md-tooltip>
-				</md-button>
 			</md-list-item>
 		</md-list>
 		<!-- Loading for paginate -->

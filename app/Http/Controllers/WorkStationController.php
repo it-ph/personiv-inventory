@@ -12,6 +12,13 @@ use App\Http\Controllers\Controller;
 
 class WorkStationController extends Controller
 {
+    public function checkIP(Request $request, $id)
+    {
+        $duplicate =  $id ? Workstation::where('ip_address', $request->ip_address)->whereNotNull('ip_address')->whereNotIn('id', [$id])->first() : Workstation::where('ip_address', $request->ip_address)->whereNotNull('ip_address')->first();
+
+        return response()->json($duplicate ? true : false);
+    }
+
     public function availableTransfer(Request $request, $workstationID)
     {
         return DB::table('work_stations')
@@ -299,9 +306,6 @@ class WorkStationController extends Controller
 
             $activity->save();
         }
-
-
-
     }
 
     /**
@@ -335,7 +339,30 @@ class WorkStationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'ip_address' => 'required',
+        ]);
+
+        $duplicate = Workstation::where('ip_address', $request->ip_address)->whereNotIn('id', [$id])->first();
+
+        if($duplicate){
+            return response()->json(true);
+        }
+
+        $work_station = Workstation::where('id', $id)->first();
+
+        $work_station->ip_address = $request->ip_address;
+
+        $work_station->save();
+
+        $activity_type = ActivityType::where('type', 'work_station')->where('action', 'update')->first();
+
+        $activity = new Activity;
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $work_station->id;
+
+        $activity->save();
     }
 
     /**

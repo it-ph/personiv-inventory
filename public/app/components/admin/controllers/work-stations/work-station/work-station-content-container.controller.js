@@ -1,5 +1,5 @@
 adminModule
-	.controller('workStationContentContainerController', ['$scope', '$filter', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', function($scope, $filter, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag){
+	.controller('workStationContentContainerController', ['$scope', '$filter', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetType', function($scope, $filter, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetType){
 		var workStationID = $stateParams.workStationID;
 
 		/**
@@ -146,6 +146,14 @@ adminModule
 		};
 
 		$scope.init = function(refresh){
+			AssetType.index()
+				.success(function(data){
+					$scope.asset_types = data;
+				})
+				.error(function(){
+					Preloader.error();
+				})
+
 			WorkStation.show(workStationID)
 				.success(function(data){
 					$scope.workStation = data;

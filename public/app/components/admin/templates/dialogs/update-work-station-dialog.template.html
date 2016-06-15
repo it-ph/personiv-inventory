@@ -14,19 +14,24 @@
 				<!-- IP Address -->
 				<md-input-container>
 					<label>IP Address</label>
-					<input type="text" name="IPAddress" required ng-model="workStation.ip_address" pattern="/^[0-9.]+$/">
+					<input type="text" name="IPAddress" ng-model="workStation.ip_address" ng-pattern="/^[0-9.]+$/" ng-blur="checkIP()" ng-minlength="10" ng-maxlength="13">
 					<div ng-messages="workStationForm.IPAddress.$error" ng-if="workStationForm.IPAddress.$touched">
-						<div ng-message="required">IP Address is required.</div>
-						<div ng-pattern="Numeric and period only."></div>
+						<!-- <div ng-message="required">IP Address is required.</div> -->
+						<div ng-message="pattern">Numeric and period only.</div>
+						<div ng-message="minlength">This is not a valid IP.</div>
+						<div ng-message="maxlength">This is not a valid IP.</div>
 					</div>
+					<div class="pattern" ng-if="duplicate">This IP Address is already in use.</div>
 				</md-input-container>
 
 				<md-subheader class="md-no-sticky">Department(s) that occupies this station</md-subheader>
-				<div layout="row" layout-wrap flex layout-align="start center">
+
+				<md-input-container layout="row" layout-wrap flex layout-align="start center">
 					<md-checkbox ng-repeat="department in departments" ng-model="workStation.departments[$index]" ng-true-value="{{ department }}" ng-false-value="null" class="md-primary" flex-xs="100" flex-gt-xs="100" flex-gt-md="30">
 						{{ department.name }}
 					</md-checkbox>
-				</div>
+					<div class="pattern" ng-if="!workStation.departments.length && show">Check at least one.</div>
+				</md-input-container>
 			</div>
 		</md-dialog-content>
 	</form>

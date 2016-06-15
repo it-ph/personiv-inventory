@@ -42,6 +42,83 @@ sharedModule
 		};
 	}]);
 sharedModule
+	.service('Preloader', ['$mdDialog', '$mdToast', function($mdDialog, $mdToast){
+		var dataHolder = null;
+		var user = null;
+
+		return {
+			/* Starts the preloader */
+			loading: function(){
+				return $mdDialog.show({
+					templateUrl: '/app/shared/templates/loading.html',
+				    parent: angular.element(document.body),
+				});
+			},
+			saving: function(){
+				return $mdDialog.show({
+					templateUrl: '/app/shared/templates/saving.html',
+				    parent: angular.element(document.body),
+				});
+			},
+			/* Stops the preloader */
+			stop: function(data){
+				return $mdDialog.hide(data);
+			},
+			/* Shows error message if AJAX failed */
+			error: function(){
+				return $mdDialog.show(
+			    	$mdDialog.alert()
+				        .parent(angular.element($('body')))
+				        .clickOutsideToClose(true)
+				        .title('Oops! Something went wrong!')
+				        .content('An error occured. Please contact administrator for assistance.')
+				        .ariaLabel('Error Message')
+				        .ok('Got it!')
+				);
+			},
+			errorMessage: function(data){
+				return $mdDialog.show({
+				    controller: 'errorMessageController',
+				    templateUrl: '/app/shared/templates/dialogs/error-message.template.html',
+				    parent: angular.element(document.body),
+				    clickOutsideToClose:true,
+				});
+			},
+			/* Send temporary data for retrival */
+			set: function(data){
+				dataHolder = data;
+			},
+			/* Retrieves data */
+			get: function(){
+				return dataHolder;
+			},
+			/* Set User */
+			setUser: function(data){
+				user = data;
+			},
+			/* Get User */
+			getUser: function(data){
+				return user;
+			},
+			toastChangesSaved: function(){
+				return $mdToast.show(
+			    	$mdToast.simple()
+				        .textContent('Changes saved.')
+				        .position('bottom right')
+				        .hideDelay(3000)
+			    );
+			},
+			deleted: function(){
+				return $mdToast.show(
+			    	$mdToast.simple()
+				        .textContent('Deleted')
+				        .position('bottom right')
+				        .hideDelay(3000)
+			    );
+			},
+		};
+	}]);
+sharedModule
 	.factory('AssetDetail', ['$http', function($http){
 		var urlBase = '/asset-detail';
 
@@ -479,6 +556,28 @@ sharedModule
 		};
 	}]);
 sharedModule
+	.factory('Vendor', ['$http', function($http){
+		var urlBase = '/vendor';
+
+		return {
+			index: function(){
+				return $http.get(urlBase);
+			},
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
+			},
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
+		};
+	}]);
+sharedModule
 	.factory('WorkStation', ['$http', function($http){
 		var urlBase = '/work-station';
 
@@ -529,6 +628,10 @@ sharedModule
 				return $http.post(urlBase, data);
 			},
 
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+
 			/**
 			 * Search database tables for data
 			 * @return Array
@@ -566,84 +669,10 @@ sharedModule
 
 			availableTransfer: function(data, id){
 				return $http.post(urlBase + '-available-transfer/' + id, data);
-			}
+			},
+			checkIP: function(id, data){
+				return $http.post(urlBase + '-check-ip/' + id, data);
+			},
 		};
 	}])
-sharedModule
-	.service('Preloader', ['$mdDialog', '$mdToast', function($mdDialog, $mdToast){
-		var dataHolder = null;
-		var user = null;
-
-		return {
-			/* Starts the preloader */
-			loading: function(){
-				return $mdDialog.show({
-					templateUrl: '/app/shared/templates/loading.html',
-				    parent: angular.element(document.body),
-				});
-			},
-			saving: function(){
-				return $mdDialog.show({
-					templateUrl: '/app/shared/templates/saving.html',
-				    parent: angular.element(document.body),
-				});
-			},
-			/* Stops the preloader */
-			stop: function(data){
-				return $mdDialog.hide(data);
-			},
-			/* Shows error message if AJAX failed */
-			error: function(){
-				return $mdDialog.show(
-			    	$mdDialog.alert()
-				        .parent(angular.element($('body')))
-				        .clickOutsideToClose(true)
-				        .title('Oops! Something went wrong!')
-				        .content('An error occured. Please contact administrator for assistance.')
-				        .ariaLabel('Error Message')
-				        .ok('Got it!')
-				);
-			},
-			errorMessage: function(data){
-				return $mdDialog.show({
-				    controller: 'errorMessageController',
-				    templateUrl: '/app/shared/templates/dialogs/error-message.template.html',
-				    parent: angular.element(document.body),
-				    clickOutsideToClose:true,
-				});
-			},
-			/* Send temporary data for retrival */
-			set: function(data){
-				dataHolder = data;
-			},
-			/* Retrieves data */
-			get: function(){
-				return dataHolder;
-			},
-			/* Set User */
-			setUser: function(data){
-				user = data;
-			},
-			/* Get User */
-			getUser: function(data){
-				return user;
-			},
-			toastChangesSaved: function(){
-				return $mdToast.show(
-			    	$mdToast.simple()
-				        .textContent('Changes saved.')
-				        .position('bottom right')
-				        .hideDelay(3000)
-			    );
-			},
-			deleted: function(){
-				return $mdToast.show(
-			    	$mdToast.simple()
-				        .textContent('Deleted')
-				        .position('bottom right')
-				        .hideDelay(3000)
-			    );
-			},
-		};
-	}]);
 //# sourceMappingURL=shared.js.map

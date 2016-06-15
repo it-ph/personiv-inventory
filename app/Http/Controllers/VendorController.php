@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Vendor;
+use App\Activity;
+use App\ActivityType;
+use Auth;
+use DB;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -16,7 +20,7 @@ class VendorController extends Controller
      */
     public function index()
     {
-        //
+        return Vendor::with('purchase_orders')->get();
     }
 
     /**
@@ -37,7 +41,30 @@ class VendorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'company' => 'required',
+            'contact_person' => 'required',
+            'contact_number' => 'required',
+        ]);
+
+        $vendor = new Vendor;
+
+        $vendor->company = $request->company;
+        $vendor->contact_person = $request->contact_person;
+        $vendor->contact_number = $request->contact_number;
+
+        $vendor->save();
+
+        $activity_type = ActivityType::where('type', 'vendor')->where('action', 'create')->first();
+        
+        $activity = new Activity;
+
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $vendor->id;
+
+        $activity->save();
+
     }
 
     /**
@@ -48,7 +75,7 @@ class VendorController extends Controller
      */
     public function show($id)
     {
-        //
+        return Vendor::with('purchase_orders')->where('id', $id)->first();
     }
 
     /**
@@ -71,7 +98,29 @@ class VendorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'company' => 'required',
+            'contact_person' => 'required',
+            'contact_number' => 'required',
+        ]);
+
+        $vendor = Vendor::where('id', $id)->first();
+
+        $vendor->company = $request->company;
+        $vendor->contact_person = $request->contact_person;
+        $vendor->contact_number = $request->contact_number;
+
+        $vendor->save();
+
+        $activity_type = ActivityType::where('type', 'vendor')->where('action', 'update')->first();
+        
+        $activity = new Activity;
+
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $vendor->id;
+
+        $activity->save();
     }
 
     /**
@@ -82,6 +131,18 @@ class VendorController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $vendor = Vendor::where('id', $id)->first();
+
+        $activity_type = ActivityType::where('type', 'vendor')->where('action', 'delete')->first();
+
+        $activity = new Activity;
+
+        $activity->user_id = Auth::user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $vendor->id;
+
+        $activity->save();
+
+        $vendor->delete();
     }
 }

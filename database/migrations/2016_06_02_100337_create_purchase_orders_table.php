@@ -18,6 +18,7 @@ class CreatePurchaseOrdersTable extends Migration
             $table->dateTime('date_purchased');
             $table->dateTime('date_arrival');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

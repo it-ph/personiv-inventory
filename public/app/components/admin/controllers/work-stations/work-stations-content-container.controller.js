@@ -84,11 +84,12 @@ adminModule
 			if(!count){
 				Preloader.set(id);
 				$mdDialog.show({
-			      	controller: 'createDepartmentWorkStationDialogController',
+			      	controller: 'departmentWorkStationDialogController',
 				    templateUrl: '/app/components/admin/templates/dialogs/update-work-station-dialog.template.html',
 			      	parent: angular.element($('body')),
 			    })
 			    .then(function(){
+			    	Preloader.toastChangesSaved();
 			    	$state.go('main.work-station', {'workStationID':id});
 			    });
 			}
@@ -96,6 +97,7 @@ adminModule
 				$state.go('main.work-station', {'workStationID':id});
 			}
 		}
+
 		/**
 		 * Object for fab
 		 *

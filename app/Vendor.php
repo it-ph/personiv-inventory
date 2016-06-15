@@ -10,7 +10,7 @@ class Vendor extends Model
     use SoftDeletes;
     protected $dates = ['deleted_at'];
 
-    public function purchace_orders()
+    public function purchase_orders()
     {
     	return $this->hasMany('App\PurchaseOrder');
     }

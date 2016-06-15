@@ -66,6 +66,7 @@ Route::group(['middleware' => 'auth'], function () {
 	// Route resource others
 	// Other routes
 	Route::post('asset-check-duplicate/{assetID}', 'AssetController@checkDuplicate');
+	Route::post('work-station-check-ip/{workStationID}', 'WorkStationController@checkIP');
 	Route::get('user-others', 'UserController@others');
 	Route::get('user-reset-password/{userID}', 'UserController@resetPassword');
 

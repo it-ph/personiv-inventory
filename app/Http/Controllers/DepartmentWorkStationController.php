@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\DepartmentWorkStation;
+use App\Activity;
+use App\ActivityType;
+use Auth;
+use DB;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -37,7 +41,21 @@ class DepartmentWorkStationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $department_work_stations = DepartmentWorkStation::where('work_station_id', $request->input('0.work_station_id'))->delete();
+
+        for ($i=0; $i < count($request->all()); $i++) { 
+            $this->validate($request, [
+                $i.'.id' => 'required',
+                $i.'.work_station_id' => 'required',
+            ]);
+
+            $department_work_station = new DepartmentWorkStation;
+
+            $department_work_station->work_station_id = $request->input($i.'.work_station_id');
+            $department_work_station->department_id = $request->input($i.'.id');
+
+            $department_work_station->save();
+        }
     }
 
     /**

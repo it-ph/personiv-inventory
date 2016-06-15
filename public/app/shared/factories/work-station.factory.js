@@ -49,6 +49,10 @@ sharedModule
 				return $http.post(urlBase, data);
 			},
 
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+
 			/**
 			 * Search database tables for data
 			 * @return Array
@@ -86,6 +90,9 @@ sharedModule
 
 			availableTransfer: function(data, id){
 				return $http.post(urlBase + '-available-transfer/' + id, data);
-			}
+			},
+			checkIP: function(id, data){
+				return $http.post(urlBase + '-check-ip/' + id, data);
+			},
 		};
 	}])

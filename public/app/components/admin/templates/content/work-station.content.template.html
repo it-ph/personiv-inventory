@@ -1,7 +1,67 @@
-<!-- If asset tag is empty -->
-<div layout="column" layout-align="center center" flex ng-if="!assetTag.paginated.length">
-	<div layout="column" layout-align="center center">
-		<md-icon class="mdi grey mdi-tag"></md-icon>
-		<h3 class="md-subhead">No asset tags yet.</h3>
+<div layout-padding layout="row" layout-align="center start">
+	<div flex flex-gt-lg="70" layout-margin>
+		<md-card flex ng-repeat="asset_tag in workStation.asset_tags">
+			<md-card-header>
+		      	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
+		        	<span class="md-headline white-text">{{ asset_tag.first_letter }}</span>
+		      	</md-card-avatar>
+		      	<md-card-header-text>
+		            <span class="md-title">{{ asset_tag.asset.brand }}</span>
+		            <span class="md-subhead">{{ asset_tag.asset.model }}</span>
+		      	</md-card-header-text>
+		    </md-card-header>
+		    <div class="card-image-bg" flex>
+		    	<div layout="row" layout-align="center center" class="shadow-bg">
+		        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>{{ asset_tag.property_code}}</h2>
+		        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>{{ asset_tag.property_code}}</h2>
+		        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>{{ asset_tag.property_code}}</h2>
+		    	</div>
+		    </div>
+		    <md-card-title>
+		      	<md-card-title-text>
+		        	<span class="md-headline">{{ asset_tag.computer_name}}</span>
+		      	</md-card-title-text>
+		    </md-card-title>
+		    <md-card-content>
+		    	<p>Serial Number: {{ asset_tag.serial_number }}</p>
+		    	<p>End of Warranty: {{ asset_tag.warranty_end | date: 'EEEE, MMMM d, yyyy'}}</p>
+		    </md-card-content>
+		    <md-divider></md-divider>
+			<md-card-actions layout="row" layout-align="start center">
+		    	<md-card-icon-actions>
+		            <md-button class="md-icon-button" aria-label="Favorite">
+		              	<md-icon class="mdi mdi-pencil grey"></md-icon>
+						<md-tooltip>Edit</md-tooltip>
+		            </md-button>
+		            <md-button class="md-icon-button" aria-label="Share">
+		              	<md-icon class="mdi grey mdi-transfer"></md-icon>
+						<md-tooltip>Transfer</md-tooltip>
+		            </md-button>
+		            <md-button class="md-icon-button">
+						<md-icon class="mdi grey mdi-swap-horizontal" ng-click="swapAsset(asset_tag.id)"></md-icon>
+						<md-tooltip>Swap</md-tooltip>
+					</md-button>
+					<md-button class="md-icon-button">
+						<md-icon class="mdi grey mdi-outbox" ng-click="pullOutAsset(asset_tag.id)"></md-icon>
+						<md-tooltip>Pull Out</md-tooltip>
+					</md-button>
+					<md-button class="md-icon-button" ng-if="user.role == 'marco.paco@personiv.com'">
+						<md-icon class="mdi grey mdi-delete" ng-click="removeAsset(asset_tag.id)"></md-icon>
+						<md-tooltip>Delete</md-tooltip>
+					</md-button>
+		      	</md-card-icon-actions>
+		        <md-button>Details</md-button>
+		        <md-button>Purchase Order</md-button>
+		    </md-card-actions>
+		</md-card>
 	</div>
+</div>
+
+<!-- If asset tag is empty -->
+<div layout="column" layout-align="center center" flex ng-if="!workStation.asset_tags.length">
+	<h3 class="md-subhead  ">No asset tags to display</h3>
+	<md-button class="md-fab md-primary" aria-label="Create Work Station" ng-click="createAssetTag()">
+		<md-icon class="mdi mdi-plus"></md-icon>
+	</md-button>
+	<p class="secondary-text">Tap to create</p>
 </div>

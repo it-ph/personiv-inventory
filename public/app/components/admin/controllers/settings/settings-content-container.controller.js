@@ -1,5 +1,5 @@
 adminModule
-	.controller('settingsContentContainerController', ['$scope', '$state', '$filter', '$mdDialog', 'Preloader', 'Department', 'AssetType', 'User', function($scope, $state, $filter, $mdDialog, Preloader, Department, AssetType, User){
+	.controller('settingsContentContainerController', ['$scope', '$state', '$filter', '$mdDialog', 'Preloader', 'Department', 'AssetType', 'User', 'Vendor', function($scope, $state, $filter, $mdDialog, Preloader, Department, AssetType, User, Vendor){
 		/**
 		  *
 		  * Object for toolbar
@@ -219,15 +219,66 @@ adminModule
 
 		/**
 		  *
-		  * Object for show
+		  * Vendor Actions
 		  *
 		*/
+
+		$scope.createVendor = function(){
+			$mdDialog.show({
+		    	controller: 'createVendorDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/vendor-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
+	        .then(function() {
+	        	$scope.toolbar.refresh();
+	        }, function() {
+	        	return;
+	        });
+		}
+
+		$scope.editVendor = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		    	controller: 'editVendorDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/vendor-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
+	        .then(function() {
+	        	$scope.toolbar.refresh();
+	        	Preloader.toastChangesSaved();
+	        }, function() {
+	        	return;
+	        });	
+		}
+
+		$scope.deleteVendor = function(id){
+			var confirm = $mdDialog.confirm()
+		        .title('Delete')
+		        .textContent('This vendor will be removed from the list.')
+		        .ariaLabel('Delete Vendor')
+		        .ok('Delete')
+		        .cancel('Cancel');
+
+		    $mdDialog.show(confirm)
+		    	.then(function() {
+			    	Vendor.delete(id)
+			    		.success(function(){
+			    			$scope.toolbar.refresh();
+			    			Preloader.deleted();
+			    		})
+			    		.error(function(){
+			    			Preloader.error();
+			    		});
+			    }, function() {
+			    	return;
+			    });
+		}
 
 		/* sets the first letter and format the date to date object */
 		var formatData = function(data)
 		{
 			angular.forEach(data, function(item){
-				item.first_letter = item.name ? item.name.charAt(0).toUpperCase() : (item .type ? item.type.charAt(0).toUpperCase() : item.first_name.charAt(0).toUpperCase());
+				item.first_letter = item.name ? item.name.charAt(0).toUpperCase() : (item.type ? item.type.charAt(0).toUpperCase() : (item.first_name ? item.first_name.charAt(0).toUpperCase() : item.company.charAt(0).toUpperCase()) );
 				item.created_at = new Date(item.created_at);
 			});
 
@@ -288,6 +339,8 @@ adminModule
 								$scope.toolbar.items.push(toolbarItem);
 							});
 
+							return;
+							
 							if(refresh)
 							{
 								Preloader.stop();
@@ -297,6 +350,27 @@ adminModule
 						.error(function(){
 							Preloader.error();
 						});
+
+				})
+				.then(function(){
+					Vendor.index()
+						.success(function(data){
+							formatData(data.data);
+
+							angular.forEach(data.data, function(item){
+								var toolbarItem = {};
+								toolbarItem.display = item.company;
+								$scope.toolbar.items.push(toolbarItem);
+							});
+
+							$scope.vendors = data;
+
+							if(refresh)
+							{
+								Preloader.stop();
+								Preloader.stop();
+							}
+						})
 
 				}, function(){
 					Preloader.error();
