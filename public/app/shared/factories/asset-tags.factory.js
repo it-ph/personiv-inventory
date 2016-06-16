@@ -174,5 +174,8 @@ sharedModule
 			swapComponents: function(id, swapID){
 				return $http.put(urlBase + '-swap-components/' + id + '/target/' + swapID);
 			},
+			checkSequence: function(data){
+				return $http.post(urlBase + '-check-sequence', data);
+			},
 		};
 	}]);

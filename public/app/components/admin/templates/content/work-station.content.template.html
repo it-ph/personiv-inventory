@@ -23,7 +23,7 @@
 		      	</md-card-title-text>
 		    </md-card-title>
 		    <md-card-content>
-		    	<p>Serial Number: {{ asset_tag.serial_number }}</p>
+		    	<p>Serial Number: {{ asset_tag.serial_number }} <span ng-if="!asset_tag.serial_number">N/A</span></p>
 		    	<p>End of Warranty: {{ asset_tag.warranty_end | date: 'EEEE, MMMM d, yyyy'}}</p>
 		    </md-card-content>
 		    <md-divider></md-divider>
@@ -58,7 +58,7 @@
 </div>
 
 <!-- If asset tag is empty -->
-<div layout="column" layout-align="center center" flex ng-if="!workStation.asset_tags.length">
+<div layout="column" layout-align="center center" flex ng-if="!workStation.asset_tags.length && show">
 	<h3 class="md-subhead  ">No asset tags to display</h3>
 	<md-button class="md-fab md-primary" aria-label="Create Work Station" ng-click="createAssetTag()">
 		<md-icon class="mdi mdi-plus"></md-icon>

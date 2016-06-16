@@ -34,4 +34,9 @@ class AssetTag extends Model
     {
         return $this->hasMany('App\Activity', 'event_id');
     }
+
+    public function type()
+    {
+        return $this->belongsTo('App\AssetType', 'asset_type_id');
+    }
 }

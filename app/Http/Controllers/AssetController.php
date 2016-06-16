@@ -13,6 +13,10 @@ use App\Http\Controllers\Controller;
 
 class AssetController extends Controller
 {
+    public function brands($id)
+    {
+        return Asset::where('asset_type_id', $id)->groupBy('brand')->get();
+    }
     public function checkDuplicate(Request $request, $id)
     {
         $this->validate($request, [

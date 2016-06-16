@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 use App\AssetTag;
+use App\Asset;
+use App\Activity;
+use App\ActivityType;
 use App\Log;
+use Auth;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -10,6 +15,20 @@ use App\Http\Controllers\Controller;
 
 class AssetTagController extends Controller
 {
+    public function checkSequence(Request $request)
+    {
+        // fetches the asset
+        $asset = Asset::where('id', $request->asset_id)->first();
+
+        if($asset){
+            // see if there is an asset tag with the same type and sequence of the asset
+            $duplicate = AssetTag::where('asset_type_id', $asset->asset_type_id)->where('sequence', $request->sequence)->first();
+
+            return response()->json($duplicate ? true: false);
+        }
+    }
+
+
     public function swap(Request $request, $id)
     {
         $this->validate($request, [
@@ -649,7 +668,64 @@ class AssetTagController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'asset_id' => 'required|numeric',
+            'sequence' => 'required|numeric',
+        ]);
+
+        // fetches the asset
+        $asset = Asset::with('type')->where('id', $request->asset_id)->first();
+
+        if($asset){
+            // see if there is an asset tag with the same type and sequence of the asset
+            $duplicate = AssetTag::where('asset_type_id', $asset->asset_type_id)->where('sequence', $request->sequence)->first();
+
+            if($duplicate){
+                return response()->json(true);
+            }
+        }
+
+        if($request->sequence < 10)
+        {
+            $filler = '0000';
+        }
+        else if($request->sequence >= 10 && $request->sequence < 100)
+        {
+            $filler = '000';
+        }
+        else if($request->sequence >= 100 && $request->sequence < 1000)
+        {
+            $filler = '00';
+        }
+        else if($request->sequence >= 1000 && $request->sequence < 10000)
+        {
+            $filler = '0';
+        }
+
+        $asset_tag = new AssetTag;
+
+        $asset_tag->asset_type_id = $asset->asset_type_id;
+        $asset_tag->asset_id = $request->asset_id;
+        $asset_tag->work_station_id = $request->work_station_id;
+        $asset_tag->computer_name = $request->computer_name;
+        $asset_tag->serial = $request->serial;
+        $asset_tag->prefix = $asset->type->prefix;
+        $asset_tag->sequence = $request->sequence;
+        $asset_tag->property_code = $asset->type->prefix . $filler . $request->sequence;
+        $asset_tag->remarks = $request->remarks;
+        $asset_tag->warranty_end = Carbon::parse($request->warranty_end)->toDateTimeString();
+
+        $asset_tag->save();
+
+        $activity_type = ActivityType::where('type', 'asset_tag')->where('action', 'create')->first();
+
+        $activity = new Activity;
+
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $asset_tag->id;
+
+        $activity->save();
     }
 
     /**

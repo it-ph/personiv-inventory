@@ -66,7 +66,7 @@ class AssetDetailController extends Controller
      */
     public function show($id)
     {
-        //
+        return AssetDetail::where('asset_id', $id)->get();
     }
 
     /**

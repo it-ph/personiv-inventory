@@ -316,7 +316,13 @@ class WorkStationController extends Controller
      */
     public function show($id)
     {
-        return Workstation::with('asset_tags')->where('id', $id)->first();
+        $work_station = Workstation::with('asset_tags')->where('id', $id)->first();
+
+        foreach ($work_station->asset_tags as $key => $value) {
+            $value->asset = DB::table('assets')->where('id', $value->asset_id)->whereNull('deleted_at')->first();
+        }
+
+        return $work_station;
     }
 
     /**

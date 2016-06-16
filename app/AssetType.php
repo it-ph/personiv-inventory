@@ -15,6 +15,11 @@ class AssetType extends Model
     	return $this->hasMany('App\Asset');
     }
 
+    public function asset_tags()
+    {
+        return $this->hasMany('App\AssetTag');
+    }
+
     public function activities()
     {
         return $this->hasMany('App\Activity', 'event_id');

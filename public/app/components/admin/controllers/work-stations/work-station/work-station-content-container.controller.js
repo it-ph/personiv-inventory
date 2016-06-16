@@ -1,5 +1,5 @@
 adminModule
-	.controller('workStationContentContainerController', ['$scope', '$filter', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetType', function($scope, $filter, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetType){
+	.controller('workStationContentContainerController', ['$scope', '$filter', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', function($scope, $filter, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag){
 		var workStationID = $stateParams.workStationID;
 
 		/**
@@ -46,6 +46,17 @@ adminModule
 	    	}
 		};
 
+		$scope.createAssetTag = function(){
+			$mdDialog.show({
+		      	controller: 'createAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/create-asset-tag-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		}
+
 		/**
 		 * Object for fab
 		 *
@@ -58,21 +69,7 @@ adminModule
 		// $scope.fab.show = true;
 
 		$scope.fab.action = function(){
-		    $mdDialog.show({
-		      	controller: 'addAssetDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-asset-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	$mdDialog.show({
-			      	controller: 'addAssetTagDialogController',
-				    templateUrl: '/app/components/admin/templates/dialogs/add-asset-tag-dialog.template.html',
-			      	parent: angular.element($('body')),
-			    })
-			    .then(function(){
-		    		$scope.subheader.refresh();
-			    });
-		    })
+		    $scope.createAssetTag();
 		};
 
 
@@ -84,7 +81,7 @@ adminModule
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
-		    	$scope.subheader.refresh();
+		    	$scope.toolbar.refresh();
 		    });
 		};
 
@@ -96,7 +93,7 @@ adminModule
 		      	parent: angular.element($('body')),
 		    })
 			// .then(function(){
-		 //    	$scope.subheader.refresh();
+		 //    	$scope.toolbar.refresh();
 		 //    });
 		};
 
@@ -108,7 +105,7 @@ adminModule
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
-		    	$scope.subheader.refresh();
+		    	$scope.toolbar.refresh();
 		    });
 		};
 
@@ -120,7 +117,7 @@ adminModule
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
-		    	$scope.subheader.refresh();
+		    	$scope.toolbar.refresh();
 		    });
 		};
 
@@ -135,7 +132,7 @@ adminModule
 	        $mdDialog.show(confirm).then(function() {
 		      	AssetTag.delete(id)
 		      		.success(function(){
-		      			$scope.subheader.refresh();
+		      			$scope.toolbar.refresh();
 		      		})
 		      		.error(function(){
 		      			Preloader.error();
@@ -146,23 +143,28 @@ adminModule
 		};
 
 		$scope.init = function(refresh){
-			AssetType.index()
-				.success(function(data){
-					$scope.asset_types = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-
 			WorkStation.show(workStationID)
 				.success(function(data){
+					angular.forEach(data.asset_tags , function(item){
+						item.warranty_end = new Date(item.warranty_end);
+						item.first_letter = item.asset.brand.charAt(0).toUpperCase();
+					})
+
 					$scope.workStation = data;
+
+					if(data.asset_tags.length)
+					{
+						$scope.fab.show = true;
+					}
 
 					$scope.toolbar.childState = data.name;
 					if(refresh){
 						Preloader.stop();
 						Preloader.stop();
 					}
+
+					$scope.show = true;
+
 				})
 				.error(function(){
 					Preloader.error();

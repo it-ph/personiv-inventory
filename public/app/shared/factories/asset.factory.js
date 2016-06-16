@@ -24,5 +24,8 @@ sharedModule
 			checkDuplicate: function(data, id){
 				return $http.post(urlBase + '-check-duplicate/' + id, data);
 			},
+			brands: function(id){
+				return $http.get(urlBase + '-brands/' + id);
+			},
 		};
 	}]);

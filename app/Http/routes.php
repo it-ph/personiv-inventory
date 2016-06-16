@@ -69,6 +69,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('work-station-check-ip/{workStationID}', 'WorkStationController@checkIP');
 	Route::get('user-others', 'UserController@others');
 	Route::get('user-reset-password/{userID}', 'UserController@resetPassword');
+	Route::get('asset-brands/{assetTypeID}', 'AssetController@brands');
+	Route::post('asset-tag-check-sequence', 'AssetTagController@checkSequence');
 
 	// Route resource store multiple
 	Route::post('asset-tag-multiple', 'AssetTagController@storeMultiple');
