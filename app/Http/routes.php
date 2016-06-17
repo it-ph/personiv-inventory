@@ -71,6 +71,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('user-reset-password/{userID}', 'UserController@resetPassword');
 	Route::get('asset-brands/{assetTypeID}', 'AssetController@brands');
 	Route::post('asset-tag-check-sequence', 'AssetTagController@checkSequence');
+	Route::get('work-station-dashboard', 'WorkStationController@dashboard');
+	Route::get('work-station-others/{workStationID}', 'WorkStationController@others');
 
 	// Route resource store multiple
 	Route::post('asset-tag-multiple', 'AssetTagController@storeMultiple');

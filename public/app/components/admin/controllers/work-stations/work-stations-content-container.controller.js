@@ -158,7 +158,7 @@ adminModule
 						},
 					];
 
-					WorkStation.index()
+					WorkStation.dashboard()
 						.success(function(data){
 							$scope.charts[0].data[0] = data.occupied_6FA_count;
 							$scope.charts[0].data[1] = data.vacant_6FA_count;

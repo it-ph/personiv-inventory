@@ -1,6 +1,6 @@
 <div layout-padding layout="row" layout-align="center start">
 	<div flex flex-gt-lg="70" layout-margin>
-		<md-card flex ng-repeat="asset_tag in workStation.asset_tags">
+		<md-card flex ng-repeat="asset_tag in workStation.asset_tags | filter: toolbar.searchText">
 			<md-card-header>
 		      	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
 		        	<span class="md-headline white-text">{{ asset_tag.first_letter }}</span>
@@ -24,34 +24,35 @@
 		    </md-card-title>
 		    <md-card-content>
 		    	<p>Serial Number: {{ asset_tag.serial_number }} <span ng-if="!asset_tag.serial_number">N/A</span></p>
-		    	<p>End of Warranty: {{ asset_tag.warranty_end | date: 'EEEE, MMMM d, yyyy'}}</p>
+		    	<p ng-if="asset_tag.warranty_end">End of Warranty: {{ asset_tag.warranty_end | date: 'EEEE, MMMM d, yyyy'}}</p>
+		    	<p ng-if="asset_tag.remarks">Remarks : {{ asset_tag.remarks }}</p>
 		    </md-card-content>
 		    <md-divider></md-divider>
 			<md-card-actions layout="row" layout-align="start center">
 		    	<md-card-icon-actions>
-		            <md-button class="md-icon-button" aria-label="Favorite">
+		            <md-button class="md-icon-button" aria-label="Edit" ng-click="editAssetTag(asset_tag.id)">
 		              	<md-icon class="mdi mdi-pencil grey"></md-icon>
 						<md-tooltip>Edit</md-tooltip>
 		            </md-button>
-		            <md-button class="md-icon-button" aria-label="Share">
+		            <md-button class="md-icon-button" aria-label="Transfer" ng-click="transferAssetTag(asset_tag.id)">
 		              	<md-icon class="mdi grey mdi-transfer"></md-icon>
 						<md-tooltip>Transfer</md-tooltip>
 		            </md-button>
-		            <md-button class="md-icon-button">
+		            <md-button class="md-icon-button" aria-label="Swap" ng-click="swapAssetTag(asset_tag.id)">
 						<md-icon class="mdi grey mdi-swap-horizontal" ng-click="swapAsset(asset_tag.id)"></md-icon>
 						<md-tooltip>Swap</md-tooltip>
 					</md-button>
-					<md-button class="md-icon-button">
+					<md-button class="md-icon-button" aria-label="Pull Out" ng-click="pullOutAssetTag(asset_tag.id)">
 						<md-icon class="mdi grey mdi-outbox" ng-click="pullOutAsset(asset_tag.id)"></md-icon>
 						<md-tooltip>Pull Out</md-tooltip>
 					</md-button>
-					<md-button class="md-icon-button" ng-if="user.role == 'marco.paco@personiv.com'">
+					<md-button class="md-icon-button" ng-if="user.role == 'super-admin'" ng-click="deleteAssetTag(asset_tag.id)">
 						<md-icon class="mdi grey mdi-delete" ng-click="removeAsset(asset_tag.id)"></md-icon>
 						<md-tooltip>Delete</md-tooltip>
 					</md-button>
 		      	</md-card-icon-actions>
-		        <md-button>Details</md-button>
-		        <md-button>Purchase Order</md-button>
+		        <md-button ng-if="asset_tag.asset.details.length" ng-click="showDetails(asset_tag.asset.id)">Details</md-button>
+		        <md-button ng-if="asset_tag.purchase_order">Purchase Order</md-button>
 		    </md-card-actions>
 		</md-card>
 	</div>

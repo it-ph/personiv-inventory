@@ -86,7 +86,7 @@ class AssetTypeController extends Controller
             foreach ($asset_tags as $asset_tag_key => $asset_tag_value) {
                 $asset_type->last_property_code = $asset_tag_key == 0 ? $asset_tag_value->property_code : null;
 
-                if(!$asset_tag_value->status->deleted_at){
+                if(count($asset_tag_value->status)){
                     $asset_type->pulled_out += 1;
                 }
             }

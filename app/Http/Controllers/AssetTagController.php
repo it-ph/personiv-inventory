@@ -22,7 +22,7 @@ class AssetTagController extends Controller
 
         if($asset){
             // see if there is an asset tag with the same type and sequence of the asset
-            $duplicate = AssetTag::where('asset_type_id', $asset->asset_type_id)->where('sequence', $request->sequence)->first();
+            $duplicate = $request->id ? AssetTag::where('asset_type_id', $asset->asset_type_id)->where('sequence', $request->sequence)->whereNotIn('id', [$request->id])->first() : AssetTag::where('asset_type_id', $asset->asset_type_id)->where('sequence', $request->sequence)->first();
 
             return response()->json($duplicate ? true: false);
         }
@@ -518,14 +518,15 @@ class AssetTagController extends Controller
 
         $asset_tag->save();
 
-        $log = new Log;
+        $activity_type = ActivityType::where('type', 'asset_tag')->where('action', 'transfer')->first();
 
-        $log->user_id = $request->user()->id;
-        $log->activity_id = $asset_tag->id;
-        $log->activity = 'transfered a unit to a different work station.';
-        $log->state = 'main.units';
+        $activity = new Activity;
 
-        $log->save();        
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $asset_tag->id;
+
+        $activity->save();
     }
 
     /**
@@ -729,76 +730,6 @@ class AssetTagController extends Controller
     }
 
     /**
-     * Store multiple newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function storeMultiple(Request $request)
-    {
-        //loop through the number of items in request
-        for ($i=0; $i < count($request->all()); $i++) { 
-            //validate the request
-            $this->validate($request, [
-                $i.'.component_id' => 'numeric',
-                $i.'.component_type' => 'required|string',
-                $i.'.work_station_id' => 'required|numeric',
-                $i.'.serial' => 'string',
-                $i.'.property_code' => 'required|numeric',
-                $i.'.date_purchase' => 'date',
-                $i.'.supplier' => 'string',
-            ]);
-
-            if ($request->input($i.'.component_type') == 'Desktop') { $property_code = 'PCPU'; }
-            else if ($request->input($i.'.component_type') == 'Firewall') { $property_code = 'PFWL'; }
-            else if ($request->input($i.'.component_type') == 'Hard Disk') { $property_code = 'PHDD'; }
-            else if ($request->input($i.'.component_type') == 'Headset') { $property_code = 'PHDS'; }
-            else if ($request->input($i.'.component_type') == 'Keyboard') { $property_code = 'PKBD'; }
-            else if ($request->input($i.'.component_type') == 'Mac') { $property_code = 'PMAC'; }
-            else if ($request->input($i.'.component_type') == 'Memory') { $property_code = 'PRAM'; }
-            else if ($request->input($i.'.component_type') == 'Monitor') { $property_code = 'PMON'; }
-            else if ($request->input($i.'.component_type') == 'Mouse') { $property_code = 'PMSE'; }
-            else if ($request->input($i.'.component_type') == 'Network Switch') { $property_code = 'PNSW'; }
-            else if ($request->input($i.'.component_type') == 'Portable Hard Disk') { $property_code = 'PPHD'; }
-            else if ($request->input($i.'.component_type') == 'Printer') { $property_code = 'PPRT'; }
-            else if ($request->input($i.'.component_type') == 'Projector') { $property_code = 'PPRJ'; }
-            else if ($request->input($i.'.component_type') == 'Router') { $property_code = 'PRTR'; }
-            else if ($request->input($i.'.component_type') == 'Scanner') { $property_code = 'PSCN'; }
-            else if ($request->input($i.'.component_type') == 'Software') { $property_code = 'PSFW'; }
-            else if ($request->input($i.'.component_type') == 'Speaker') { $property_code = 'PSPK'; }
-            else if ($request->input($i.'.component_type') == 'Telephone') { $property_code = 'PTEL'; }
-            else if ($request->input($i.'.component_type') == 'Uninterruptible Power Supply') { $property_code = 'PUPS'; }
-            else if ($request->input($i.'.component_type') == 'Video Card') { $property_code = 'PVDC'; }
-            else if ($request->input($i.'.component_type') == 'Other Component') { $property_code = 'POTH'; }
-
-            //create a new instance of Skill per loop
-            $asset_tag = new AssetTag;
-
-            //define skill properties
-            $asset_tag->component_id = $request->input($i.'.component_id');
-            $asset_tag->component_type = $request->input($i.'.component_type');
-            $asset_tag->work_station_id = $request->input($i.'.work_station_id');
-            $asset_tag->serial = $request->input($i.'.serial') ? $request->input($i.'.serial') : null;
-            $asset_tag->property_code =  $property_code . $request->input($i.'.property_code');
-            $asset_tag->status = 'active';
-            $asset_tag->date_purchase = $request->input($i.'.date_purchase') ? $request->input($i.'.date_purchase') : null;
-            $asset_tag->supplier = $request->input($i.'.supplier') ? $request->input($i.'.supplier') : null;
-
-            //save to database
-            $asset_tag->save();
-        };
-
-        $log = new Log;
-
-        $log->user_id = $request->user()->id;
-        $log->activity_id = $asset_tag->id;
-        $log->activity = 'added an asset tag.';
-        $log->state = 'main.work-station';
-
-        $log->save();
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -806,7 +737,7 @@ class AssetTagController extends Controller
      */
     public function show($id)
     {
-        //
+        return AssetTag::with('asset', 'type')->where('id', $id)->first();
     }
 
     /**
@@ -830,51 +761,59 @@ class AssetTagController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'date_purchase' => 'date',
-            'supplier' => 'string',
-            'serial' => 'string',
-            'property_code' => 'required|string',
+            'asset_id' => 'required|numeric',
+            'sequence' => 'required|numeric',
         ]);
 
-        if ($request->component_type == 'Desktop') { $property_code = 'PCPU'; }
-            else if ($request->component_type == 'Firewall') { $property_code = 'PFWL'; }
-            else if ($request->component_type == 'Hard Disk') { $property_code = 'PHDD'; }
-            else if ($request->component_type == 'Headset') { $property_code = 'PHDS'; }
-            else if ($request->component_type == 'Keyboard') { $property_code = 'PKBD'; }
-            else if ($request->component_type == 'Mac') { $property_code = 'PMAC'; }
-            else if ($request->component_type == 'Memory') { $property_code = 'PRAM'; }
-            else if ($request->component_type == 'Monitor') { $property_code = 'PMON'; }
-            else if ($request->component_type == 'Mouse') { $property_code = 'PMSE'; }
-            else if ($request->component_type == 'Network Switch') { $property_code = 'PNSW'; }
-            else if ($request->component_type == 'Portable Hard Disk') { $property_code = 'PPHD'; }
-            else if ($request->component_type == 'Printer') { $property_code = 'PPRT'; }
-            else if ($request->component_type == 'Projector') { $property_code = 'PPRJ'; }
-            else if ($request->component_type == 'Router') { $property_code = 'PRTR'; }
-            else if ($request->component_type == 'Scanner') { $property_code = 'PSCN'; }
-            else if ($request->component_type == 'Software') { $property_code = 'PSFW'; }
-            else if ($request->component_type == 'Speaker') { $property_code = 'PSPK'; }
-            else if ($request->component_type == 'Telephone') { $property_code = 'PTEL'; }
-            else if ($request->component_type == 'Uninterruptible Power Supply') { $property_code = 'PUPS'; }
-            else if ($request->component_type == 'Video Card') { $property_code = 'PVDC'; }
-            else if ($request->component_type == 'Other Component') { $property_code = 'POTH'; }
+        // fetches the asset
+        $asset = Asset::with('type')->where('id', $request->asset_id)->first();
+
+        if($asset){
+            // see if there is an asset tag with the same type and sequence of the asset
+            $duplicate = AssetTag::where('asset_type_id', $asset->asset_type_id)->where('sequence', $request->sequence)->whereNotIn('id', [$id])->first();
+
+            if($duplicate){
+                return response()->json(true);
+            }
+        }
+
+        if($request->sequence < 10)
+        {
+            $filler = '0000';
+        }
+        else if($request->sequence >= 10 && $request->sequence < 100)
+        {
+            $filler = '000';
+        }
+        else if($request->sequence >= 100 && $request->sequence < 1000)
+        {
+            $filler = '00';
+        }
+        else if($request->sequence >= 1000 && $request->sequence < 10000)
+        {
+            $filler = '0';
+        }
 
         $asset_tag = AssetTag::where('id', $id)->first();
 
-        $asset_tag->serial = $request->serial ? $request->serial : null;
-        $asset_tag->property_code = $property_code . $request->property_code;
-        $asset_tag->date_purchase = $request->date_purchase ? $request->date_purchase : null; 
-        $asset_tag->supplier = $request->supplier ? $request->supplier : null;
+        $asset_tag->computer_name = $request->computer_name;
+        $asset_tag->serial = $request->serial;
+        $asset_tag->sequence = $request->sequence;
+        $asset_tag->property_code = $asset->type->prefix . $filler . $request->sequence;
+        $asset_tag->remarks = $request->remarks;
+        $asset_tag->warranty_end = $request->warranty_end ? Carbon::parse($request->warranty_end)->toDateTimeString() : null;
 
         $asset_tag->save();
 
-        $log = new Log;
+        $activity_type = ActivityType::where('type', 'asset_tag')->where('action', 'update')->first();
 
-        $log->user_id = $request->user()->id;
-        $log->activity_id = $asset_tag->id;
-        $log->activity = 'updated an asset tag.';
-        $log->state = 'main.work-station';
+        $activity = new Activity;
 
-        $log->save(); 
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $asset_tag->id;
+
+        $activity->save();
     }
 
     /**

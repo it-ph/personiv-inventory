@@ -25,11 +25,6 @@ class AssetTag extends Model
     	return $this->belongsTo('App\WorkStation');
     }
 
-    public function details()
-    {
-    	return $this->hasManyThrough('App\AssetDetail', 'App\Asset');
-    }
-
     public function activities()
     {
         return $this->hasMany('App\Activity', 'event_id');
@@ -38,5 +33,10 @@ class AssetTag extends Model
     public function type()
     {
         return $this->belongsTo('App\AssetType', 'asset_type_id');
+    }
+
+    public function purchase_order()
+    {
+        return $this->belongsTo('App\PurchaseOrder');
     }
 }

@@ -55,6 +55,16 @@ class DepartmentWorkStationController extends Controller
             $department_work_station->department_id = $request->input($i.'.id');
 
             $department_work_station->save();
+
+            $activity_type = ActivityType::where('type', 'department_work_station')->where('action', 'create')->first();
+
+            $activity = new Activity;
+
+            $activity->user_id = $request->user()->id;
+            $activity->activity_type_id = $activity_type->id;
+            $activity->event_id = $department_work_station->id;
+
+            $activity->save();
         }
     }
 

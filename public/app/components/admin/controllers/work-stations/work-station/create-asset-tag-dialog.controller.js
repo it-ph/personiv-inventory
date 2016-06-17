@@ -71,7 +71,7 @@ adminModule
 				//  * Stores Single Record
 				
 				if(!busy && !$scope.duplicate){
-					$scope.assetTag.warranty_end = $scope.assetTag.warranty_end.toDateString();
+					$scope.assetTag.warranty_end = $scope.hasWarranty ? $scope.assetTag.warranty_end.toDateString() : null;
 					AssetTag.store($scope.assetTag)
 						.success(function(data){
 							if(!data){

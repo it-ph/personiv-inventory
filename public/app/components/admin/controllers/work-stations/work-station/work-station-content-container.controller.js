@@ -54,7 +54,7 @@ adminModule
 		    })
 		    .then(function(){
 		    	$scope.toolbar.refresh();
-		    });
+		    })
 		}
 
 		/**
@@ -73,11 +73,11 @@ adminModule
 		};
 
 
-		$scope.editAsset = function(id){
-			AssetTagService.setID(id);
+		$scope.editAssetTag = function(id){
+			Preloader.set(id);
 			$mdDialog.show({
-		      	controller: 'editAssetDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/edit-asset-dialog.template.html',
+		      	controller: 'editAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/edit-asset-tag-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
@@ -85,16 +85,16 @@ adminModule
 		    });
 		};
 
-		$scope.transferAsset = function(id){
-			AssetTagService.setID(id);
+		$scope.transferAssetTag = function(id){
+			Preloader.set(id);
 			$mdDialog.show({
-		      	controller: 'transferAssetDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-dialog.template.html',
+		      	controller: 'transferAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-tag-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
-			// .then(function(){
-		 //    	$scope.toolbar.refresh();
-		 //    });
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
 		};
 
 		$scope.swapAsset = function(id){
@@ -142,11 +142,21 @@ adminModule
 		    });
 		};
 
+		$scope.showDetails = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'assetTagDetailsDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/asset-tag-details-dialog.template.html',
+		      	parent: angular.element($('body')),
+		      	clickOutsideToClose:true,
+		    })
+		}
+
 		$scope.init = function(refresh){
 			WorkStation.show(workStationID)
 				.success(function(data){
 					angular.forEach(data.asset_tags , function(item){
-						item.warranty_end = new Date(item.warranty_end);
+						item.warranty_end =  item.warranty_end ? new Date(item.warranty_end) : null;
 						item.first_letter = item.asset.brand.charAt(0).toUpperCase();
 					})
 

@@ -24,4 +24,9 @@ class PurchaseOrder extends Model
     {
         return $this->hasMany('App\Activity', 'event_id');
     }
+
+    public function asset_tags()
+    {
+        return $this->hasMany('App\AssetTag');
+    }
 }

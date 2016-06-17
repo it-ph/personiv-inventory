@@ -3,6 +3,12 @@ sharedModule
 		var urlBase = '/work-station';
 
 		return {
+			others: function(id){
+				return $http.get(urlBase + '-others/' + id);
+			},
+			dashboard: function(){
+				return $http.get(urlBase + '-dashboard');
+			},
 			/**
 			 * Search for vacant work stations
 			 * @return : Array

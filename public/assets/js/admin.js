@@ -1769,7 +1769,7 @@ adminModule
 						},
 					];
 
-					WorkStation.index()
+					WorkStation.dashboard()
 						.success(function(data){
 							$scope.charts[0].data[0] = data.occupied_6FA_count;
 							$scope.charts[0].data[1] = data.vacant_6FA_count;
@@ -2959,6 +2959,24 @@ adminModule
 		}
 	}]);
 adminModule
+	.controller('assetTagDetailsDialogController', ['$scope', '$mdDialog', 'Asset', 'Preloader', function($scope, $mdDialog, Asset, Preloader){
+		var assetID = Preloader.get();
+		
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		Asset.show(assetID)
+			.success(function(data){
+				$scope.asset = data;
+				$scope.label = data.type.type;
+				$scope.asset.first_letter = data.brand[0].toUpperCase();
+			})
+			.error(function(){
+				Preloader.error();
+			});
+	}]);
+adminModule
 	.controller('createAssetTagDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', 'AssetType', 'Asset', 'AssetDetail', function($scope, $stateParams, $mdDialog, Preloader, AssetTag, AssetType, Asset, AssetDetail){
 		$scope.assetTag = {};
 		$scope.assetTag.warranty_end = new Date();
@@ -3031,7 +3049,7 @@ adminModule
 				//  * Stores Single Record
 				
 				if(!busy && !$scope.duplicate){
-					$scope.assetTag.warranty_end = $scope.assetTag.warranty_end.toDateString();
+					$scope.assetTag.warranty_end = $scope.hasWarranty ? $scope.assetTag.warranty_end.toDateString() : null;
 					AssetTag.store($scope.assetTag)
 						.success(function(data){
 							if(!data){
@@ -3045,35 +3063,61 @@ adminModule
 			}
 		}
 	}]);
-// adminModule
-// 	.controller('editAssetDialogController', ['$scope', '$mdDialog', 'Preloader', 'AssetTagService', 'AssetTag', function($scope, $mdDialog, Preloader, AssetTagService, AssetTag){
-// 		var assetTagID = AssetTagService.getID();
-// 		$scope.workStation = AssetTagService.getStation();
+adminModule
+	.controller('editAssetTagDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', 'Asset', 'AssetDetail', function($scope, $stateParams, $mdDialog, Preloader, AssetTag, Asset, AssetDetail){		
+		var assetTagID = Preloader.get();
+		$scope.hasWarranty = true;
 
-// 		$scope.cancel = function(){
-// 			$mdDialog.cancel();
-// 		};
+		var busy = false;
 
-// 		AssetTag.specific(assetTagID)
-// 			.success(function(data){
-// 				$scope.asset = data;
-// 			})
-// 			.error(function(){
-// 				Preloader.error();
-// 			})
+		AssetTag.show(assetTagID)
+			.success(function(data){
+				data.warranty_end = data.warranty_end ? new Date(data.warranty_end) : new Date();
+				$scope.minDate = new Date(data.warranty_end);
+				$scope.assetTag = data;
+			})
 
-// 		$scope.submit = function(){
-// 			// start preloader
-// 			Preloader.preload();
-// 			AssetTag.update(assetTagID, $scope.asset)
-// 				.success(function(){
-// 					$mdDialog.hide();
-// 				})
-// 				.error(function(){
-// 					Preloader.error();
-// 				});
-// 		}
-// 	}]);
+		$scope.checkSequence = function(){
+			$scope.duplicate = false;
+			AssetTag.checkSequence($scope.assetTag)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		}
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			if($scope.assetTagForm.$invalid){
+				angular.forEach($scope.assetTagForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				//  * Stores Single Record
+				
+				if(!busy && !$scope.duplicate){
+					$scope.assetTag.warranty_end = $scope.hasWarranty ? $scope.assetTag.warranty_end.toDateString() : null;
+					AssetTag.update(assetTagID, $scope.assetTag)
+						.success(function(data){
+							if(!data){
+								Preloader.stop();
+							}
+						})
+						.error(function(){
+							Preloader.error();
+						})
+				}
+			}
+		}
+	}]);
 adminModule
 	.controller('transferWorkStationDialogController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', 'Department', 'WorkStationTag', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService, Department, WorkStationTag){
 		var workStationID = $stateParams.workStationID;
@@ -3364,110 +3408,77 @@ adminModule
 		};
 	}]);
 adminModule
-	.controller('transferAssetDialogController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Department', 'WorkStation', 'Preloader', 'AssetTagService', 'AssetTag', function($scope, $state, $stateParams, $mdDialog, Department, WorkStation, Preloader, AssetTagService, AssetTag){
-		var assetTagID = AssetTagService.getID();
-		$scope.workStation = AssetTagService.getStation();
-		$scope.asset = {};
+	.controller('transferAssetTagDialogController', ['$scope', '$mdDialog', 'AssetTag', 'AssetDetail', 'Preloader', 'WorkStation', function($scope, $mdDialog, AssetTag, AssetDetail, Preloader, WorkStation){
+		var assetTagID = Preloader.get();
+		var busy = false;
+		$scope.transfer = {};
 
+		$scope.floors = [6,10];
+		$scope.divisions = ['A','B'];
+		$scope.types = ['Admin','Production'];
+
+		
 		$scope.cancel = function(){
 			$mdDialog.cancel();
 		};
 
-		AssetTag.specific(assetTagID)
-			.success(function(data){
-				$scope.assetTag = data;
+		
+		AssetTag.show(assetTagID)
+			.then(function(data){
+				$scope.assetTag = data.data;
+				$scope.assetTag.first_letter = data.data.asset.brand[0].toUpperCase();
+				$scope.label = data.data.property_code;
+				return data.data;
 			})
-			.error(function(){
-				Preloader.error();
-			});
-
-		Department.index()
-			.success(function(data){
-				$scope.departments = data
-			})
-			.error(function(){0
-				Preloader.error();
-			});
-
-
-		$scope.showFloors = function(){
-			$scope.workstations = [];
-			$scope.asset.work_station_id = null;
-			$scope.asset.floor = null;
-			$scope.asset.division = null;
-			WorkStation.floors($scope.asset.department)
-				.success(function(data){
-					$scope.floors = data;
-				})
-		}
-
-		$scope.showDivisions = function(){
-			$scope.asset.work_station_id = null;
-			$scope.asset.division = null;
-			$scope.workstations = [];
-			WorkStation.divisions($scope.asset.department, $scope.asset.floor)
-				.success(function(data){
-					$scope.divisions = data;
-				})
-		}
-
-		$scope.showWorkStations = function(){
-			$scope.asset.work_station_id = null;
-			$scope.workstations = [];
-			WorkStation.availableTransfer($scope.asset, $stateParams.workStationID)
-				.success(function(data){
-					$scope.workstations = data;
-				});
-		};
-
-
-		$scope.submit = function(){
-			if($scope.assetTag.component_type=='Desktop'){
-				var confirm = $mdDialog.confirm()
-			        .title('Would you like to include components under this unit?')
-			        .content('Hard disk(s), RAM(s), video card, and softwares will be transfered along with the unit.')
-			        .ok('Continue')
-			        .cancel('Keep it');
-			    $mdDialog.show(confirm)
-			    	.then(function() {
-				      	Preloader.preload();
-						AssetTag.transfer(assetTagID, $scope.asset)
-							.success(function(){
-								AssetTag.transferComponents($stateParams.workStationID, $scope.asset)
-									.success(function(){
-										$state.go('main.work-station', {}, {reload:true});
-										Preloader.stop();
-									})
-									.error(function(){
-										Preloader.error();
-									});
-							})
-							.error(function(){
-								Preloader.error();
-							});
-				    }, function() {
-				    	Preloader.preload();
-					    AssetTag.transfer(assetTagID, $scope.asset)
-							.success(function(){
-								$state.go('main.work-station', {}, {reload:true});
-								Preloader.stop();
-							})
-							.error(function(){
-								Preloader.error();
-							});
-				    });
-			}
-			else {
-				Preloader.preload();
-				AssetTag.transfer(assetTagID, $scope.asset)
-					.success(function(){
-						$mdDialog.hide();
+			.then(function(assetTag){
+				AssetDetail.show(assetTag.asset.id)
+					.success(function(data){
+						$scope.details = data;
 					})
 					.error(function(){
 						Preloader.error();
+					})
+
+				WorkStation.others(assetTag.work_station_id)
+					.success(function(data){
+						$scope.workStations = data;
+						return;
+					})
+					.error(function(){
+						Preloader.error();
+					})
+			}, function(){
+				Preloader.error();
+			})
+
+
+		$scope.submit = function(){
+			if($scope.assetTagForm.$invalid){
+				angular.forEach($scope.assetTagForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
 					});
+				});
+			}
+			else{
+				//  * Stores Single Record
+				Preloader.saving();
+
+				if(!busy){
+					busy = true;
+					AssetTag.transfer(assetTagID, $scope.transfer)
+						.success(function(){
+							Preloader.stop();
+							busy = false;
+						})
+						.error(function(){
+							Preloader.error();
+							busy = false;
+						})
+				}
 			}
 		}
+
 	}]);
 adminModule
 	.controller('transferUsersDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'EmployeeTag', 'WorkStation', 'UserService', function($scope, $stateParams, $mdDialog, Preloader, EmployeeTag, WorkStation, UserService){
@@ -3578,7 +3589,7 @@ adminModule
 		    })
 		    .then(function(){
 		    	$scope.toolbar.refresh();
-		    });
+		    })
 		}
 
 		/**
@@ -3597,11 +3608,11 @@ adminModule
 		};
 
 
-		$scope.editAsset = function(id){
-			AssetTagService.setID(id);
+		$scope.editAssetTag = function(id){
+			Preloader.set(id);
 			$mdDialog.show({
-		      	controller: 'editAssetDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/edit-asset-dialog.template.html',
+		      	controller: 'editAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/edit-asset-tag-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
@@ -3609,16 +3620,16 @@ adminModule
 		    });
 		};
 
-		$scope.transferAsset = function(id){
-			AssetTagService.setID(id);
+		$scope.transferAssetTag = function(id){
+			Preloader.set(id);
 			$mdDialog.show({
-		      	controller: 'transferAssetDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-dialog.template.html',
+		      	controller: 'transferAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-tag-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
-			// .then(function(){
-		 //    	$scope.toolbar.refresh();
-		 //    });
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
 		};
 
 		$scope.swapAsset = function(id){
@@ -3666,11 +3677,21 @@ adminModule
 		    });
 		};
 
+		$scope.showDetails = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'assetTagDetailsDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/asset-tag-details-dialog.template.html',
+		      	parent: angular.element($('body')),
+		      	clickOutsideToClose:true,
+		    })
+		}
+
 		$scope.init = function(refresh){
 			WorkStation.show(workStationID)
 				.success(function(data){
 					angular.forEach(data.asset_tags , function(item){
-						item.warranty_end = new Date(item.warranty_end);
+						item.warranty_end =  item.warranty_end ? new Date(item.warranty_end) : null;
 						item.first_letter = item.asset.brand.charAt(0).toUpperCase();
 					})
 

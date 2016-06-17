@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\WorkStation;
 use App\Activity;
 use App\ActivityType;
+use App\Asset;
 use DB;
 use Auth;
 use Illuminate\Http\Request;
@@ -12,6 +13,10 @@ use App\Http\Controllers\Controller;
 
 class WorkStationController extends Controller
 {
+    public function others($id)
+    {
+        return Workstation::whereNotIn('id', [$id])->get();
+    }
     public function checkIP(Request $request, $id)
     {
         $duplicate =  $id ? Workstation::where('ip_address', $request->ip_address)->whereNotNull('ip_address')->whereNotIn('id', [$id])->first() : Workstation::where('ip_address', $request->ip_address)->whereNotNull('ip_address')->first();
@@ -161,8 +166,11 @@ class WorkStationController extends Controller
      */
     public function index()
     {
-        // $work_stations = Workstation::all();
+        return Workstation::all();
+    }
 
+    public function dashboard()
+    {
         $work_station_6FA = Workstation::with('departments')->where('floor', 6)->where('division', 'A')->get();
         $work_station_6FB = Workstation::with('departments')->where('floor', 6)->where('division', 'B')->get();
         $work_station_10FA = Workstation::with('departments')->where('floor', 10)->where('division', 'A')->get();
@@ -319,7 +327,8 @@ class WorkStationController extends Controller
         $work_station = Workstation::with('asset_tags')->where('id', $id)->first();
 
         foreach ($work_station->asset_tags as $key => $value) {
-            $value->asset = DB::table('assets')->where('id', $value->asset_id)->whereNull('deleted_at')->first();
+            $value->asset = Asset::with('details', 'type')->where('id', $value->asset_id)->whereNull('deleted_at')->first();
+            $value->purchase_order = DB::table('purchase_orders')->where('id', $value->purchase_order_id)->whereNull('deleted_at')->first();
         }
 
         return $work_station;
