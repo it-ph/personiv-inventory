@@ -42,85 +42,30 @@ sharedModule
 		};
 	}]);
 sharedModule
-	.service('Preloader', ['$mdDialog', '$mdToast', function($mdDialog, $mdToast){
-		var dataHolder = null;
-		var user = null;
+	.factory('AssetDetail', ['$http', function($http){
+		var urlBase = '/asset-detail';
 
 		return {
-			/* Starts the preloader */
-			loading: function(){
-				return $mdDialog.show({
-					templateUrl: '/app/shared/templates/loading.html',
-				    parent: angular.element(document.body),
-				});
+			index: function(){
+				return $http.get(urlBase);
 			},
-			saving: function(){
-				return $mdDialog.show({
-					templateUrl: '/app/shared/templates/saving.html',
-				    parent: angular.element(document.body),
-				});
+			store: function(data){
+				return $http.post(urlBase, data);
 			},
-			/* Stops the preloader */
-			stop: function(data){
-				return $mdDialog.hide(data);
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
 			},
-			/* Shows error message if AJAX failed */
-			error: function(){
-				return $mdDialog.show(
-			    	$mdDialog.alert()
-				        .parent(angular.element($('body')))
-				        .clickOutsideToClose(true)
-				        .title('Oops! Something went wrong!')
-				        .content('An error occured. Please contact administrator for assistance.')
-				        .ariaLabel('Error Message')
-				        .ok('Got it!')
-				);
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
 			},
-			errorMessage: function(data){
-				return $mdDialog.show({
-				    controller: 'errorMessageController',
-				    templateUrl: '/app/shared/templates/dialogs/error-message.template.html',
-				    parent: angular.element(document.body),
-				    clickOutsideToClose:true,
-				});
-			},
-			/* Send temporary data for retrival */
-			set: function(data){
-				dataHolder = data;
-			},
-			/* Retrieves data */
-			get: function(){
-				return dataHolder;
-			},
-			/* Set User */
-			setUser: function(data){
-				user = data;
-			},
-			/* Get User */
-			getUser: function(data){
-				return user;
-			},
-			toastChangesSaved: function(){
-				return $mdToast.show(
-			    	$mdToast.simple()
-				        .textContent('Changes saved.')
-				        .position('bottom right')
-				        .hideDelay(3000)
-			    );
-			},
-			deleted: function(){
-				return $mdToast.show(
-			    	$mdToast.simple()
-				        .textContent('Deleted')
-				        .position('bottom right')
-				        .hideDelay(3000)
-			    );
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
 			},
 		};
 	}]);
 sharedModule
-	.factory('AssetDetail', ['$http', function($http){
-		var urlBase = '/asset-detail';
+	.factory('AssetStatus', ['$http', function($http){
+		var urlBase = '/asset-status';
 
 		return {
 			index: function(){
@@ -171,47 +116,6 @@ sharedModule
 			},
 
 			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			storeMultiple: function(data){
-				return $http.post(urlBase + '-multiple', data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-
-			/**
-			 * Search by component type
-			 *
-			*/
-			componentType: function(data){
-				return $http.post(urlBase + '-component-type', data);
-			},
-
-			/**
-			 * Search all components by work-station 
-			 *
-			*/
-			workStation: function(id){
-				return $http.get(urlBase + '-work-station/' + id);
-			},
-
-			/*
-			 * Show specific asset tag with join details on corresponding asset table
-			 *
-			*/
-			specific: function(id){
-				return $http.get(urlBase + '-specific/' + id);
-			},
-
-			/**
      		 * Update the specified resource in storage.
      		 *
      		*/
@@ -227,30 +131,6 @@ sharedModule
 				return $http.put(urlBase + '-transfer/' + assetID, data);
 			},
 
-			/*
-			 * Set asset tag status for repair
-			 *
-			*/
-			repair: function(id){
-				return $http.put(urlBase + '-repair/' + id);
-			},
-
-			/*
-			 * Set asset tag status for dispose
-			 *
-			*/
-			dispose: function(id){
-				return $http.put(urlBase + '-dispose/' + id);
-			},
-
-			/*
-			 * Set asset tag status for active
-			 *
-			*/
-			active: function(id){
-				return $http.put(urlBase + '-active/' + id);
-			},
-
 			/**
 			 * Delete the asset tag
 			 *
@@ -259,53 +139,8 @@ sharedModule
 				return $http.delete(urlBase + '/' + id);
 			},
 
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			activeUnit: function(page, data){
-				return $http.post(urlBase + '-active-unit?page=' + page, data);
-			},
-
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			repairUnit: function(page, data){
-				return $http.post(urlBase + '-repair-unit?page=' + page, data);
-			},
-
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			disposeUnit: function(page, data){
-				return $http.post(urlBase + '-dispose-unit?page=' + page, data);
-			},
-
-			/**
-			 * Pull out the components when pc is pulled out.
-			 * 
-			*/
-			repairComponents: function(id){
-				return $http.put(urlBase + '-repair-components/' + id);
-			},
-
-			/**
-			 * Pull out the components when pc is pulled out.
-			 * 
-			*/
-			disposeComponents: function(id){
-				return $http.put(urlBase + '-dispose-components/' + id);
-			},
-			activeComponents: function(id){
-				return $http.put(urlBase + '-active-components/' + id);
-			},
-			searchBarcode: function(data){
-				return $http.post(urlBase + '-search-barcode', data);
-			},
-			availableSwap: function(data){
-				return $http.post(urlBase + '-available-swap', data);
+			checkSwap: function(data){
+				return $http.post(urlBase + '-check-swap', data);
 			},	
 			swap: function(id, data){
 				return $http.put(urlBase + '-swap/' + id , data);
@@ -687,4 +522,81 @@ sharedModule
 			},
 		};
 	}])
+sharedModule
+	.service('Preloader', ['$mdDialog', '$mdToast', function($mdDialog, $mdToast){
+		var dataHolder = null;
+		var user = null;
+
+		return {
+			/* Starts the preloader */
+			loading: function(){
+				return $mdDialog.show({
+					templateUrl: '/app/shared/templates/loading.html',
+				    parent: angular.element(document.body),
+				});
+			},
+			saving: function(){
+				return $mdDialog.show({
+					templateUrl: '/app/shared/templates/saving.html',
+				    parent: angular.element(document.body),
+				});
+			},
+			/* Stops the preloader */
+			stop: function(data){
+				return $mdDialog.hide(data);
+			},
+			/* Shows error message if AJAX failed */
+			error: function(){
+				return $mdDialog.show(
+			    	$mdDialog.alert()
+				        .parent(angular.element($('body')))
+				        .clickOutsideToClose(true)
+				        .title('Oops! Something went wrong!')
+				        .content('An error occured. Please contact administrator for assistance.')
+				        .ariaLabel('Error Message')
+				        .ok('Got it!')
+				);
+			},
+			errorMessage: function(data){
+				return $mdDialog.show({
+				    controller: 'errorMessageController',
+				    templateUrl: '/app/shared/templates/dialogs/error-message.template.html',
+				    parent: angular.element(document.body),
+				    clickOutsideToClose:true,
+				});
+			},
+			/* Send temporary data for retrival */
+			set: function(data){
+				dataHolder = data;
+			},
+			/* Retrieves data */
+			get: function(){
+				return dataHolder;
+			},
+			/* Set User */
+			setUser: function(data){
+				user = data;
+			},
+			/* Get User */
+			getUser: function(data){
+				return user;
+			},
+			toastChangesSaved: function(){
+				return $mdToast.show(
+			    	$mdToast.simple()
+				        .textContent('Changes saved.')
+				        .position('bottom right')
+				        .hideDelay(3000)
+			    );
+			},
+			deleted: function(){
+				return $mdToast.show(
+			    	$mdToast.simple()
+				        .textContent('Deleted')
+				        .position('bottom right')
+				        .hideDelay(3000)
+			    );
+			},
+		};
+	}]);
 //# sourceMappingURL=shared.js.map

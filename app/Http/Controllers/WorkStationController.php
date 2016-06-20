@@ -15,7 +15,7 @@ class WorkStationController extends Controller
 {
     public function others($id)
     {
-        return Workstation::whereNotIn('id', [$id])->get();
+        return Workstation::with('departments')->whereNotIn('id', [$id])->get();
     }
     public function checkIP(Request $request, $id)
     {
@@ -324,11 +324,10 @@ class WorkStationController extends Controller
      */
     public function show($id)
     {
-        $work_station = Workstation::with('asset_tags')->where('id', $id)->first();
+        $work_station = Workstation::with(['asset_tags' => function($query){ $query->with('status', 'purchase_order'); }])->with('departments')->where('id', $id)->first();
 
         foreach ($work_station->asset_tags as $key => $value) {
             $value->asset = Asset::with('details', 'type')->where('id', $value->asset_id)->whereNull('deleted_at')->first();
-            $value->purchase_order = DB::table('purchase_orders')->where('id', $value->purchase_order_id)->whereNull('deleted_at')->first();
         }
 
         return $work_station;
@@ -358,7 +357,7 @@ class WorkStationController extends Controller
             'ip_address' => 'required',
         ]);
 
-        $duplicate = Workstation::where('ip_address', $request->ip_address)->whereNotIn('id', [$id])->first();
+        $duplicate = Workstation::where('ip_address', $request->ip_address)->whereNotNull('ip_address')->whereNotIn('id', [$id])->first();
 
         if($duplicate){
             return response()->json(true);

@@ -1,6 +1,6 @@
 <div layout-padding layout="row" layout-align="center start">
-	<div flex flex-gt-lg="70" layout-margin>
-		<md-card flex ng-repeat="asset_tag in workStation.asset_tags | filter: toolbar.searchText">
+	<div flex flex-gt-lg="80" layout-margin>
+	    <md-card flex ng-repeat="asset_tag in workStation.asset_tags | filter: toolbar.searchText | orderBy:'prefix'" ng-if="!asset_tag.status.length">
 			<md-card-header>
 		      	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
 		        	<span class="md-headline white-text">{{ asset_tag.first_letter }}</span>
@@ -12,9 +12,9 @@
 		    </md-card-header>
 		    <div class="card-image-bg" flex>
 		    	<div layout="row" layout-align="center center" class="shadow-bg">
-		        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>{{ asset_tag.property_code}}</h2>
-		        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>{{ asset_tag.property_code}}</h2>
-		        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>{{ asset_tag.property_code}}</h2>
+		        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>{{ asset_tag.prefix }} - {{ asset_tag.sequence }}</h2>
+		        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>{{ asset_tag.prefix }} - {{ asset_tag.sequence }}</h2>
+		        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>{{ asset_tag.prefix }} - {{ asset_tag.sequence }}</h2>
 		    	</div>
 		    </div>
 		    <md-card-title>

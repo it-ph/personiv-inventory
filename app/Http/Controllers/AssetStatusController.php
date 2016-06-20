@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\AssetStatus;
+use App\Activity;
+use App\ActivityType;
+use Auth;
+use DB;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -37,7 +41,27 @@ class AssetStatusController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request , [
+            'id' => 'required|numeric',
+            'remarks' => 'required',
+        ]);
+
+        $status = new AssetStatus;
+
+        $status->asset_tag_id = $request->id;
+        $status->remarks = $request->remarks;
+
+        $status->save();
+
+        $activity_type = ActivityType::where('type', 'asset_status')->where('action', 'create')->first();
+
+        $activity = new Activity;
+
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $status->id;
+
+        $activity->save();
     }
 
     /**

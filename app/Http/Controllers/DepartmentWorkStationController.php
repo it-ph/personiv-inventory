@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\DepartmentWorkStation;
+use App\Department;
+use App\WorkStation;
 use App\Activity;
 use App\ActivityType;
 use Auth;
@@ -76,7 +78,14 @@ class DepartmentWorkStationController extends Controller
      */
     public function show($id)
     {
-        //
+        return DB::table('departments')
+            ->join('department_work_station', 'department_work_station.department_id', '=', 'departments.id')
+            ->join('work_stations', 'work_stations.id', '=', 'department_work_station.work_station_id')
+            ->select(
+                'departments.*'
+            )
+            ->where('work_stations.id', $id)
+            ->get();
     }
 
     /**

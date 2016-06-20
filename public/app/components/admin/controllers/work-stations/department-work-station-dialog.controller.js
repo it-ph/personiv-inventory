@@ -4,22 +4,27 @@ adminModule
 		var busy = false;
 
 		$scope.init = function(){
-			WorkStation.show(workStationID)
-				.success(function(data){
-					$scope.workStation = data;
-					$scope.workStation.departments = [];		
+			Department.index()
+				.then(function(data){
+					$scope.departments = data.data;
+					return;
 				})
-				.error(function(){
+				.then(function(){			
+					WorkStation.show(workStationID)
+						.success(function(data){
+							$scope.workStation = data;
+							$scope.workStation.departments = [];
+							DepartmentWorkStation.show(workStationID)
+								.success(function(data){
+									$scope.workStation.departments = data;
+								})
+						})
+						.error(function(){
+							Preloader.error();
+						})
+				}, function(){
 					Preloader.error();
 				});
-
-			Department.index()
-				.success(function(data){
-					$scope.departments = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
 		}();
 
 		$scope.checkIP = function(){

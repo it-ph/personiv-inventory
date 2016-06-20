@@ -67,14 +67,14 @@
 					<!-- Sequence -->
 					<md-input-container flex>
 						<label>Sequence Number</label>
-						<input type="number" name="Sequence" min="0" max="99999" ng-model="assetTag.sequence" ng-pattern="/^[0-9]+$/" required ng-blur="checkSequence()">
+						<input type="number" name="Sequence" min="0" max="99999" ng-model="assetTag.sequence" ng-pattern="/^[0-9]+$/" required ng-blur="checkSequence()" ng-disabled="!assetTag.asset_id">
 						<div ng-messages="assetTagForm.Sequence.$error" ng-if="assetTagForm.Sequence.$touched">
 							<div ng-message="required">Sequence Number is required</div>
 							<div ng-message="pattern">Numeric values only</div>
 							<div ng-message="min">Minimum is zero.</div>
 							<div ng-message="max">Maximum is 99,999.</div>
 						</div>
-						<div class="pattern" ng-if="duplicate">Sequence number is already in use.</div>
+						<div class="pattern" ng-if="duplicate">Sequence number is not available.</div>
 					</md-input-container>
 				</div>
 

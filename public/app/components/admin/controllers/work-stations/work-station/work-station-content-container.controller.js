@@ -46,6 +46,21 @@ adminModule
 	    	}
 		};
 
+		$scope.rightSidenav = {};
+		$scope.rightSidenav.show = true;
+
+		$scope.editDepartmentWorkStation = function(){
+			Preloader.set(workStationID);
+			$mdDialog.show({
+		      	controller: 'departmentWorkStationDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/update-work-station-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    })
+		}
+
 		$scope.createAssetTag = function(){
 			$mdDialog.show({
 		      	controller: 'createAssetTagDialogController',
@@ -97,10 +112,10 @@ adminModule
 		    });
 		};
 
-		$scope.swapAsset = function(id){
-			AssetTagService.setID(id);
+		$scope.swapAssetTag = function(id){
+			Preloader.set(id);
 			$mdDialog.show({
-		      	controller: 'swapAssetDialogController',
+		      	controller: 'swapAssetTagDialogController',
 			    templateUrl: '/app/components/admin/templates/dialogs/swap-asset-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
@@ -109,10 +124,10 @@ adminModule
 		    });
 		};
 
-		$scope.pullOutAsset = function(id){
-			AssetTagService.setID(id);
+		$scope.pullOutAssetTag = function(id){
+			Preloader.set(id);
 			$mdDialog.show({
-		      	controller: 'pullOutAssetDialogController',
+		      	controller: 'pullOutAssetTagDialogController',
 			    templateUrl: '/app/components/admin/templates/dialogs/pull-out-asset-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
@@ -121,11 +136,11 @@ adminModule
 		    });
 		};
 
-		$scope.removeAsset = function(id){
+		$scope.deleteAssetTag = function(id){
 			var confirm = $mdDialog.confirm()
-	        	.title('Delete asset from records.')
-	          	.content('Are you sure you want to delete this asset from our records?')
-	          	.ariaLabel('Delete Asset')
+	        	.title('Delete')
+	          	.content('Are you sure you want to delete this asset tag?')
+	          	.ariaLabel('Delete Asset Tag')
 	          	.ok('Delete')
 	          	.cancel('Cancel');
 

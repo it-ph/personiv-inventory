@@ -73,36 +73,12 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('asset-tag-check-sequence', 'AssetTagController@checkSequence');
 	Route::get('work-station-dashboard', 'WorkStationController@dashboard');
 	Route::get('work-station-others/{workStationID}', 'WorkStationController@others');
-
+	
 	// Route resource store multiple
 	Route::post('asset-tag-multiple', 'AssetTagController@storeMultiple');
 
-	// fetch all components of the workstation
-	Route::get('asset-tag-work-station/{workStationID}', 'AssetTagController@workstation');
-
-	// fetch specific component by asset tag id
-	Route::get('asset-tag-specific/{assetTagID}', 'AssetTagController@specific');
-
 	// transfer asset to another work station
 	Route::put('asset-tag-transfer/{assetTagID}', 'AssetTagController@transfer');
-
-	// set asset tag status to repair
-	Route::put('asset-tag-repair/{assetTagID}', 'AssetTagController@repair');
-
-	// set asset tag status to dispose
-	Route::put('asset-tag-dispose/{assetTagID}', 'AssetTagController@dispose');
-
-	// set asset tag status to active
-	Route::put('asset-tag-active/{assetTagID}', 'AssetTagController@active');
-
-	// fetch all active units 
-	Route::post('asset-tag-active-unit', 'AssetTagController@active_unit');
-
-	// fetch all repair units 
-	Route::post('asset-tag-repair-unit', 'AssetTagController@repair_unit');
-
-	// fetch all dispose units 
-	Route::post('asset-tag-dispose-unit', 'AssetTagController@dispose_unit');
 
 	// fetch for vacant work stations
 	Route::post('work-station-vacant', 'WorkStationController@vacant');
@@ -121,13 +97,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('work-station-floors/{departmentID}', 'WorkStationController@floors');
 	Route::get('work-station-divisions/{departmentID}/floor/{floor}', 'WorkStationController@divisions');
 	Route::post('work-station-available-transfer/{workStationID}', 'WorkStationController@availableTransfer');
-	Route::put('asset-tag-repair-components/{workStationID}', 'AssetTagController@repairComponents');
-	Route::put('asset-tag-dispose-components/{workStationID}', 'AssetTagController@disposeComponents');
-	Route::put('asset-tag-active-components/{workStationID}', 'AssetTagController@activeComponents');
-	Route::post('asset-tag-search-barcode', 'AssetTagController@searchBarcode');
 	Route::post('work-station-tag-search-barcode', 'WorkStationTagController@searchBarcode');
-	Route::post('asset-tag-available-swap', 'AssetTagController@availableSwap');
+	Route::post('asset-tag-check-swap', 'AssetTagController@checkSwap');
 	Route::put('asset-tag-swap/{assetTagID}', 'AssetTagController@swap');
-	Route::put('asset-tag-transfer-components/{workStationID}', 'AssetTagController@transferComponents');
-	Route::put('asset-tag-swap-components/{workStationID}/target/{swapWorkStationID}', 'AssetTagController@swapComponents');
 });

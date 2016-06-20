@@ -144,6 +144,9 @@ adminModule
 					'content@main.work-station': {
 						templateUrl: '/app/components/admin/templates/content/work-station.content.template.html',
 					},
+					'right-sidenav@main.work-station': {
+						templateUrl : '/app/components/admin/templates/sidenavs/work-station.sidenav.html',
+					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
 					var leftSidenav = $('[md-component-id="left"]');

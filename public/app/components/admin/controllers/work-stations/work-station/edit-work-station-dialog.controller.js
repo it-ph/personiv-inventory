@@ -1,30 +1,82 @@
 adminModule
-	.controller('transferWorkStationDialogController', ['$scope', '$state', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'AssetTag', 'AssetTagService', 'Department', 'WorkStationTag', function($scope, $state, $stateParams, $mdDialog, Preloader, WorkStation, AssetTag, AssetTagService, Department, WorkStationTag){
-		var workStationID = $stateParams.workStationID;
-		var departmentID = $stateParams.departmentID;
-		$scope.workStation = AssetTagService.getStation();
+	.controller('editWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
+		var busy = false;
+		$scope.workStation = {};
+		$scope.floors = [
+			{'pattern':6, 'value':'06'},
+			{'pattern':10, 'value': '10'},
+		];
+		$scope.divisions = ['A','B'];
+		$scope.types = [
+			{'pattern':'Admin', 'value':'A'},
+			{'pattern':'Production', 'value': 'P'},
+		];
 
-		$scope.workStationTag = {};
-		$scope.workStationTag.work_station_id = workStationID;
+		$scope.patterns = [
+			{
+				'pattern' : 'A06-A-A***',
+				'value' :  'A06-A-A',
+				'meaning': 'Aeon 6th Floor - Division A - Admin Station Number',
+			},
 
-		Department.others()
-			.success(function(data){
-				$scope.workStationTag.departments = data;
-			});
+			{
+				'pattern' : 'A06-A-P***',
+				'value' :  'A06-A-P',
+				'meaning': 'Aeon 6th Floor - Division A - Production Station Number',
+			},
+
+			{
+				'pattern' : 'A10-A-P***',
+				'value' :  'A10-A-P',
+				'meaning': 'Aeon 10th Floor - Division A - Production Station Number',
+			},
+
+			{
+				'pattern' : 'A06-B-A***',
+				'value' :  'A06-B-A',
+				'meaning': 'Aeon 6th Floor - Division B - Admin Station Number',
+			},
+
+
+			{
+				'pattern' : 'A06-B-P***',
+				'value' :  'A06-B-P',
+				'meaning': 'Aeon 6th Floor - Division B - Production Station Number',
+			},
+		];
 
 		$scope.cancel = function(){
 			$mdDialog.cancel();
 		};
 
 		$scope.submit = function(){
-			Preloader.preload()
-			WorkStationTag.update(departmentID, $scope.workStationTag)
-				.success(function(data){
-					$state.go('main.work-station', {'departmentID':$scope.workStationTag.department_id, 'workStationID': workStationID})
-					$mdDialog.hide();
-				})
-				.error(function(){
-					Preloader.stop();
+			if($scope.addWorkStationForm.$invalid){
+				angular.forEach($scope.addWorkStationForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
 				});
+			}
+			else{
+				if(!busy){
+					busy = true;
+					/* Starts Preloader */
+					Preloader.saving();
+					/**
+					 * Stores Single Record
+					*/
+					WorkStation.store($scope.workStation)
+						.success(function(){
+							// Stops Preloader 
+							busy = false;
+							Preloader.stop();
+						})
+						.error(function(){
+							busy = false;
+							Preloader.error();
+						})
+				}
+			}
 		};
+
 	}]);
