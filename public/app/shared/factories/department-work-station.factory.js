@@ -18,5 +18,8 @@ sharedModule
 			delete: function(id){
 				return $http.delete(urlBase + '/' + id);
 			},
+			relation: function(departmentID, workstationID){
+				return $http.get(urlBase + '-relation/' + departmentID + '/work-station/' + workstationID);
+			},
 		};
 	}]);

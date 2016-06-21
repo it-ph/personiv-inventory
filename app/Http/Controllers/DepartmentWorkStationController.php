@@ -15,6 +15,10 @@ use App\Http\Controllers\Controller;
 
 class DepartmentWorkStationController extends Controller
 {
+    public function relation($department_id, $work_station_id)
+    {
+        return DepartmentWorkStation::where('department_id', $department_id)->where('work_station_id', $work_station_id)->first();
+    }
     /**
      * Display a listing of the resource.
      *
@@ -46,27 +50,24 @@ class DepartmentWorkStationController extends Controller
         $department_work_stations = DepartmentWorkStation::where('work_station_id', $request->input('0.work_station_id'))->delete();
 
         for ($i=0; $i < count($request->all()); $i++) { 
-            $this->validate($request, [
-                $i.'.id' => 'required',
-                $i.'.work_station_id' => 'required',
-            ]);
+            if($request->input($i)){
+                $department_work_station = new DepartmentWorkStation;
 
-            $department_work_station = new DepartmentWorkStation;
+                $department_work_station->work_station_id = $request->input($i.'.work_station_id');
+                $department_work_station->department_id = $request->input($i.'.id');
 
-            $department_work_station->work_station_id = $request->input($i.'.work_station_id');
-            $department_work_station->department_id = $request->input($i.'.id');
+                $department_work_station->save();
 
-            $department_work_station->save();
+                $activity_type = ActivityType::where('type', 'department_work_station')->where('action', 'create')->first();
 
-            $activity_type = ActivityType::where('type', 'department_work_station')->where('action', 'create')->first();
+                $activity = new Activity;
 
-            $activity = new Activity;
+                $activity->user_id = $request->user()->id;
+                $activity->activity_type_id = $activity_type->id;
+                $activity->event_id = $department_work_station->id;
 
-            $activity->user_id = $request->user()->id;
-            $activity->activity_type_id = $activity_type->id;
-            $activity->event_id = $department_work_station->id;
-
-            $activity->save();
+                $activity->save();
+            }
         }
     }
 
@@ -78,14 +79,7 @@ class DepartmentWorkStationController extends Controller
      */
     public function show($id)
     {
-        return DB::table('departments')
-            ->join('department_work_station', 'department_work_station.department_id', '=', 'departments.id')
-            ->join('work_stations', 'work_stations.id', '=', 'department_work_station.work_station_id')
-            ->select(
-                'departments.*'
-            )
-            ->where('work_stations.id', $id)
-            ->get();
+        return DepartmentWorkStation::where('work_station_id', $id)->get();
     }
 
     /**
@@ -108,7 +102,38 @@ class DepartmentWorkStationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $deleted = false;
+        
+        for ($i=0; $i < count($request->all()); $i++) { 
+            $this->validate($request, [
+                $i.'.work_station_id' => 'required',
+            ]);
+
+            if(!$deleted){
+                DepartmentWorkStation::where('work_station_id', $id)->delete();
+
+                $deleted = true;
+            }
+
+            if($request->input($i.'.department_id')){            
+                $department_work_station = new DepartmentWorkStation;
+
+                $department_work_station->work_station_id = $id;
+                $department_work_station->department_id = $request->input($i.'.department_id');
+
+                $department_work_station->save();
+
+                $activity_type = ActivityType::where('type', 'department_work_station')->where('action', 'create')->first();
+
+                $activity = new Activity;
+
+                $activity->user_id = $request->user()->id;
+                $activity->activity_type_id = $activity_type->id;
+                $activity->event_id = $department_work_station->id;
+
+                $activity->save();
+            }
+        }
     }
 
     /**

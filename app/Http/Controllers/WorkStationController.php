@@ -353,10 +353,6 @@ class WorkStationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'ip_address' => 'required',
-        ]);
-
         $duplicate = Workstation::where('ip_address', $request->ip_address)->whereNotNull('ip_address')->whereNotIn('id', [$id])->first();
 
         if($duplicate){

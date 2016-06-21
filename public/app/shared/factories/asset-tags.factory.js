@@ -3,6 +3,9 @@ sharedModule
 		var urlBase = '/asset-tag';
 
 		return {
+			paginate: function(assetTypeID, page){
+				return $http.get(urlBase + '-paginate/' + assetTypeID + '?page=' + page);
+			},
 			/**
 			 * Fetch all departments.
 			 * @return: Array of Objects

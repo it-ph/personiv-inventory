@@ -161,6 +161,29 @@ adminModule
 				}],
 			})
 
+			.state('main.purchase-orders', {
+				url: 'purchase-orders',
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'purchaseOrdersContentContainerController',
+					},
+					'toolbar@main.purchase-orders': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.purchase-orders': {
+						templateUrl: '/app/components/admin/templates/content/purchase-orders.content.template.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+
 			/**
 			 * Unit Routes
 			 *
@@ -445,6 +468,13 @@ adminModule
 				data.first_letter = data.brand.charAt(0).toUpperCase();
 				data.updated_at = new Date(data.updated_at);
 	    	}
+	    	else{
+	    		var item = {};
+				item.display = data.property_code;
+				// format
+				data.first_letter = data.asset.brand.charAt(0).toUpperCase();
+				data.warranty_end = new Date(data.warranty_end);
+	    	}
 
 			$scope.toolbar.items.push(item);
 	    }
@@ -496,6 +526,75 @@ adminModule
 	        	return;
 	        });
 		}
+
+		$scope.editAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'editAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/edit-asset-tag-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.transferAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'transferAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-tag-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.swapAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'swapAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/swap-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.pullOutAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'pullOutAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/pull-out-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.deleteAssetTag = function(id){
+			var confirm = $mdDialog.confirm()
+	        	.title('Delete')
+	          	.content('Are you sure you want to delete this asset tag?')
+	          	.ariaLabel('Delete Asset Tag')
+	          	.ok('Delete')
+	          	.cancel('Cancel');
+
+	        $mdDialog.show(confirm).then(function() {
+		      	AssetTag.delete(id)
+		      		.success(function(){
+		      			$scope.toolbar.refresh();
+		      		})
+		      		.error(function(){
+		      			Preloader.error();
+		      		});
+		    }, function() {
+		      	return;
+		    });
+		};
 
 		/**
 		  *
@@ -570,203 +669,67 @@ adminModule
 					.error(function(){
 						Preloader.error();
 					})
-				}, function(){
-					Preloader.error();
+
+					// Asset Tags
+					$scope.assetTag = {};
+					$scope.assetTag.paginated = [];
+					$scope.toolbar.items = [];
+					// 2 is default so the next page to be loaded will be page 2 
+					$scope.assetTag.page = 2;
+
+					AssetTag.paginate(assetTypeID)
+						.success(function(data){
+							$scope.assetTag.details = data;
+							$scope.assetTag.paginated = data.data;
+							$scope.assetTag.paginated.show = true;
+
+							if(data.data.length){
+								// iterate over each record and set the updated_at date and first letter
+								angular.forEach(data.data, function(item){
+									pushItem(item, 'asset_tag');
+								});
+							}
+
+							$scope.assetTag.paginateLoad = function(){
+								// kills the function if ajax is busy or pagination reaches last page
+								if($scope.assetTag.busy || ($scope.assetTag.page > $scope.assetTag.details.last_page)){
+									return;
+								}
+								/**
+								 * Executes pagination call
+								 *
+								*/
+								// sets to true to disable pagination call if still busy.
+								$scope.assetTag.busy = true;
+
+								AssetTag.paginate(assetTypeID, $scope.assetTag.page)
+									.success(function(data){
+										// increment to call the next page for the next call
+										$scope.assetTag.page++;
+										// iterate over the paginated data and push it to the original array
+										angular.forEach(data.data, function(item){
+											pushItem(item, 'asset_tag');
+											$scope.assetTag.paginated.push(item);
+										});
+										// enables next call
+										$scope.assetTag.busy = false;
+									})
+									.error(function(){
+										Preloader.error();
+									});
+						}
+						if(refresh){
+							Preloader.stop();
+							Preloader.stop();
+						}
+					})
+					.error(function(){
+						Preloader.error();
+					})
 				})
 		}
 
 		$scope.init();
-	}]);
-adminModule
-	.controller('barcodeDialogController', ['$scope', '$mdDialog', function($scope, $mdDialog){
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-		
-		$scope.barcode = {};
-		$scope.barcode.category = 'assets';
-		$scope.max = 99999;
-		$scope.floors = ['06', '10'];
-		$scope.divisions = ['A', 'B'];
-		$scope.types = [
-			{'name':'Admin', 'value':'A'},
-			{'name':'Production', 'value':'P'}
-		];
-
-		$scope.checkMax = function(){
-			if($scope.barcode.category == 'workstation')
-				$scope.max = 999;
-			else
-				$scope.max = 99999;
-		}
-
-		$scope.submit = function(){
-			if($scope.detailsForm.$invalid){
-				angular.forEach($scope.detailsForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				if($scope.barcode.category == 'assets'){				
-					var win = window.open('/barcode-assets/' + $scope.barcode.format + '/starting-point/' + $scope.barcode.starting_point + '/quantity/' + $scope.barcode.quantity , '_blank');
-					win.focus();
-				}
-				else{
-					var win = window.open('/barcode-work-station/' + $scope.barcode.floor + '/division/' + $scope.barcode.division + '/type/' + $scope.barcode.type + '/starting-point/' + $scope.barcode.starting_point + '/quantity/' + $scope.barcode.quantity , '_blank');
-					win.focus();	
-				}
-				$mdDialog.hide();
-			}
-		}
-	}]);
-adminModule
-	.controller('leftSidenavController', ['$scope', '$state', '$mdSidenav', 'AssetType', function($scope, $state, $mdSidenav, AssetType){
-		$scope.menu = {};
-		$scope.state = $state.current.name;
-
-		$scope.menu.static = [
-			{
-				'state':'main',
-				'icon':'mdi-view-dashboard',
-				'label':'Dashboard',
-			},
-			{
-				'state':'main.purchase-orders',
-				'icon':'mdi-format-list-numbers',
-				'label':'Purchase Orders',
-			},
-			{
-				'state':'main.work-stations',
-				'icon':'mdi-desktop-tower',
-				'label':'Work Stations',
-			},
-			{
-				'state':'main.settings',
-				'icon':'mdi-settings',
-				'label':'Settings',
-			},
-		];
-
-		$scope.menu.section = [
-			{
-				'name':'Assets',
-				'icon':'mdi-desktop-mac',
-			},
-		];
-
-		$scope.menu.pages = [];
-
-		AssetType.index()
-			.success(function(data){
-				$scope.menu.pages.push(data);
-			})
-
-
-		// set section as active
-		$scope.setActive = function(index){
-		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').toggleClass('active'));
-		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').siblings().removeClass('active'));
-		};
-	}]);
-adminModule
-	.controller('mainContentContainerController', ['$scope', '$state', '$mdDialog', 'Preloader', function($scope, $state, $mdDialog, Preloader){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-
-		/**
-		 * Properties and method of toolbar.
-		 *
-		*/
-		$scope.toolbar.childState = 'Dashboard';
-
-		/**
-		 * Object for subheader
-		 *
-		*/
-		$scope.subheader = {};
-
-		$scope.subheader.download = function(){
-			// start preloader
-			Preloader.preload();
-
-			EmailReport.index()
-				.success(function(){
-					Preloader.stop();
-				});
-		};
-
-		$scope.subheader.barcode = function(){
-			$mdDialog.show({
-		    	controller: 'barcodeDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/barcode-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    });
-		}
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.toolbar.searchText = '';
-			$scope.searchBar = false;
-		};
-	}]);
-adminModule
-	.controller('mainViewController', ['$scope', '$mdDialog', '$mdSidenav', 'User', 'Preloader', function($scope, $mdDialog, $mdSidenav, User, Preloader){
-		/**
-		 * Fetch authenticated user information
-		 *
-		*/
-		User.index()
-			.success(function(data){
-				$scope.user = data;
-				Preloader.setUser(data);
-			});
-
-		/**
-		 * Toggles Left Sidenav
-		 *
-		*/
-		$scope.toggleSidenav = function(menuId) {
-		    $mdSidenav(menuId).toggle();
-		};
-
-		$scope.changePassword = function()
-		{
-			$mdDialog.show({
-		      controller: 'changePasswordDialogController',
-		      templateUrl: '/app/components/admin/templates/dialogs/change-password-dialog.template.html',
-		      parent: angular.element(document.body),
-		    })
-		    .then(function(){
-		    	$mdToast.show(
-		    		$mdToast.simple()
-				        .content('Password changed.')
-				        .position('bottom right')
-				        .hideDelay(3000)
-		    	);
-		    });
-		}
 	}]);
 adminModule
 	.controller('addEmployeeDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Department', 'Employee', function($scope, $stateParams, $mdDialog, Preloader, Department, Employee){
@@ -1004,6 +967,671 @@ adminModule
 				$scope.workstation = data;
 			});
 	}]);
+adminModule
+	.controller('barcodeDialogController', ['$scope', '$mdDialog', function($scope, $mdDialog){
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+		
+		$scope.barcode = {};
+		$scope.barcode.category = 'assets';
+		$scope.max = 99999;
+		$scope.floors = ['06', '10'];
+		$scope.divisions = ['A', 'B'];
+		$scope.types = [
+			{'name':'Admin', 'value':'A'},
+			{'name':'Production', 'value':'P'}
+		];
+
+		$scope.checkMax = function(){
+			if($scope.barcode.category == 'workstation')
+				$scope.max = 999;
+			else
+				$scope.max = 99999;
+		}
+
+		$scope.submit = function(){
+			if($scope.detailsForm.$invalid){
+				angular.forEach($scope.detailsForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				if($scope.barcode.category == 'assets'){				
+					var win = window.open('/barcode-assets/' + $scope.barcode.format + '/starting-point/' + $scope.barcode.starting_point + '/quantity/' + $scope.barcode.quantity , '_blank');
+					win.focus();
+				}
+				else{
+					var win = window.open('/barcode-work-station/' + $scope.barcode.floor + '/division/' + $scope.barcode.division + '/type/' + $scope.barcode.type + '/starting-point/' + $scope.barcode.starting_point + '/quantity/' + $scope.barcode.quantity , '_blank');
+					win.focus();	
+				}
+				$mdDialog.hide();
+			}
+		}
+	}]);
+adminModule
+	.controller('leftSidenavController', ['$scope', '$state', '$mdSidenav', 'AssetType', function($scope, $state, $mdSidenav, AssetType){
+		$scope.menu = {};
+		$scope.state = $state.current.name;
+
+		$scope.menu.static = [
+			{
+				'state':'main',
+				'icon':'mdi-view-dashboard',
+				'label':'Dashboard',
+			},
+			{
+				'state':'main.purchase-orders',
+				'icon':'mdi-format-list-numbers',
+				'label':'Purchase Orders',
+			},
+			{
+				'state':'main.work-stations',
+				'icon':'mdi-desktop-tower',
+				'label':'Work Stations',
+			},
+			{
+				'state':'main.settings',
+				'icon':'mdi-settings',
+				'label':'Settings',
+			},
+		];
+
+		$scope.menu.section = [
+			{
+				'name':'Assets',
+				'icon':'mdi-desktop-mac',
+			},
+		];
+
+		$scope.menu.pages = [];
+
+		AssetType.index()
+			.success(function(data){
+				$scope.menu.pages.push(data);
+			})
+
+
+		// set section as active
+		$scope.setActive = function(index){
+		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').toggleClass('active'));
+		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').siblings().removeClass('active'));
+		};
+	}]);
+adminModule
+	.controller('mainContentContainerController', ['$scope', '$state', '$mdDialog', 'Preloader', function($scope, $state, $mdDialog, Preloader){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+
+		/**
+		 * Properties and method of toolbar.
+		 *
+		*/
+		$scope.toolbar.childState = 'Dashboard';
+
+		/**
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+
+		$scope.subheader.download = function(){
+			// start preloader
+			Preloader.preload();
+
+			EmailReport.index()
+				.success(function(){
+					Preloader.stop();
+				});
+		};
+
+		$scope.subheader.barcode = function(){
+			$mdDialog.show({
+		    	controller: 'barcodeDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/barcode-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    });
+		}
+
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.toolbar.searchText = '';
+			$scope.searchBar = false;
+		};
+	}]);
+adminModule
+	.controller('mainViewController', ['$scope', '$mdDialog', '$mdSidenav', 'User', 'Preloader', function($scope, $mdDialog, $mdSidenav, User, Preloader){
+		/**
+		 * Fetch authenticated user information
+		 *
+		*/
+		User.index()
+			.success(function(data){
+				$scope.user = data;
+				Preloader.setUser(data);
+			});
+
+		/**
+		 * Toggles Left Sidenav
+		 *
+		*/
+		$scope.toggleSidenav = function(menuId) {
+		    $mdSidenav(menuId).toggle();
+		};
+
+		$scope.changePassword = function()
+		{
+			$mdDialog.show({
+		      controller: 'changePasswordDialogController',
+		      templateUrl: '/app/components/admin/templates/dialogs/change-password-dialog.template.html',
+		      parent: angular.element(document.body),
+		    })
+		    .then(function(){
+		    	$mdToast.show(
+		    		$mdToast.simple()
+				        .content('Password changed.')
+				        .position('bottom right')
+				        .hideDelay(3000)
+		    	);
+		    });
+		}
+	}]);
+adminModule
+	.controller('addWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
+		var busy = false;
+		$scope.workStation = {};
+		$scope.floors = [
+			{'pattern':6, 'value':'06'},
+			{'pattern':10, 'value': '10'},
+		];
+		$scope.divisions = ['A','B'];
+		$scope.types = [
+			{'pattern':'Admin', 'value':'A'},
+			{'pattern':'Production', 'value': 'P'},
+		];
+
+		$scope.patterns = [
+			{
+				'pattern' : 'A06-A-A***',
+				'value' :  'A06-A-A',
+				'meaning': 'Aeon 6th Floor - Division A - Admin Station Number',
+			},
+
+			{
+				'pattern' : 'A06-A-P***',
+				'value' :  'A06-A-P',
+				'meaning': 'Aeon 6th Floor - Division A - Production Station Number',
+			},
+
+			{
+				'pattern' : 'A10-A-P***',
+				'value' :  'A10-A-P',
+				'meaning': 'Aeon 10th Floor - Division A - Production Station Number',
+			},
+
+			{
+				'pattern' : 'A06-B-A***',
+				'value' :  'A06-B-A',
+				'meaning': 'Aeon 6th Floor - Division B - Admin Station Number',
+			},
+
+
+			{
+				'pattern' : 'A06-B-P***',
+				'value' :  'A06-B-P',
+				'meaning': 'Aeon 6th Floor - Division B - Production Station Number',
+			},
+		];
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		$scope.submit = function(){
+			if($scope.addWorkStationForm.$invalid){
+				angular.forEach($scope.addWorkStationForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				if(!busy){
+					busy = true;
+					/* Starts Preloader */
+					Preloader.saving();
+					/**
+					 * Stores Single Record
+					*/
+					WorkStation.store($scope.workStation)
+						.success(function(){
+							// Stops Preloader 
+							busy = false;
+							Preloader.stop();
+						})
+						.error(function(){
+							busy = false;
+							Preloader.error();
+						})
+				}
+			}
+		};
+
+	}]);
+adminModule
+	.controller('departmentWorkStationDialogController', ['$scope', '$mdDialog', 'Preloader', 'WorkStation', 'DepartmentWorkStation', 'Department', function($scope, $mdDialog, Preloader, WorkStation, DepartmentWorkStation, Department){
+		var workStationID = Preloader.get();
+		var busy = false;
+
+		$scope.init = function(){
+			Department.index()
+				.then(function(data){
+					$scope.departments = data.data;
+					return;
+				})
+				.then(function(){			
+					WorkStation.show(workStationID)
+						.success(function(data){
+							$scope.workStation = data;
+							$scope.workStation.departments = [];
+							DepartmentWorkStation.show(workStationID)
+								.success(function(data){
+									$scope.workStation.departments = data;
+								})
+						})
+						.error(function(){
+							Preloader.error();
+						})
+				}, function(){
+					Preloader.error();
+				});
+		}();
+
+		$scope.checkIP = function(){
+			$scope.duplicate = false;
+			WorkStation.checkIP(workStationID, $scope.workStation)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		}
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		$scope.submit = function(){
+			$scope.show = true;
+			if($scope.workStationForm.$invalid){
+				angular.forEach($scope.workStationForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				if(!busy && !$scope.duplicate && $scope.workStation.departments.length)
+				{
+					busy = true;
+					/* Starts Preloader */
+					// Preloader.preload();
+					/**
+					 * Stores Single Record
+					*/
+					WorkStation.update(workStationID, $scope.workStation)
+						.then(function(data){
+							return data.data;
+						})
+						.then(function(data){
+							if(!data){
+								angular.forEach($scope.workStation.departments, function(item, key){
+									item.work_station_id = workStationID;
+								})
+
+								DepartmentWorkStation.store($scope.workStation.departments)
+									.success(function(){
+										busy = false;
+										Preloader.stop();
+									})
+									.error(function(){
+										Preloader.error();
+										busy = false;
+									})
+
+							}
+							else{
+								busy = false;
+								// Preloader.stop();
+							}
+
+						}, function(){
+							Preloader.error();
+							busy = false;
+						})
+				}
+			}
+		};
+
+	}]);
+adminModule
+	.controller('tagWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'WorkStationTag', 'Department', function($scope, $stateParams, $mdDialog, Preloader, WorkStation, WorkStationTag, Department){
+		var departmentID = $stateParams.departmentID;
+		$scope.workStationTag = {};
+		$scope.workStationTag.department_id = $stateParams.departmentID;
+
+		$scope.divisions = [
+			{'name':'Block A', 'value':'A'},
+			{'name':'Block B', 'value':'B'},
+		];
+
+		$scope.types = [
+			{'name':'Admin', 'value':'admin'},
+			{'name':'Production', 'value':'production'},
+		];		
+
+		$scope.searchWorkStations = function(){
+
+			WorkStation.vacant($scope.workStationTag)
+				.success(function(data){
+					$scope.workStations = data;
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+
+		Department.show(departmentID)
+			.success(function(data){
+				$scope.department = data;
+			});
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			WorkStationTag.store($scope.workStationTag)
+				.success(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		};
+
+	}]);
+adminModule
+	.controller('workStationsContentContainerController', ['$scope', '$filter', '$state', '$mdDialog', 'Preloader', 'WorkStation', 'Department', function($scope, $filter, $state, $mdDialog, Preloader, WorkStation, Department){
+		/**
+		  *
+		  * Object for toolbar
+		  *
+		*/
+		$scope.toolbar = {};
+		$scope.toolbar.childState = 'Work Stations';
+	    $scope.toolbar.searchAll = true;
+		$scope.toolbar.items = [];
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+
+		/* Refreshes the list */
+		$scope.toolbar.refresh = function(){
+			$scope.rightSidenav.department = '';
+			// start preloader
+			Preloader.loading();
+			$scope.init(true);
+		};
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+	    	if($scope.workStation.searched){
+	    		$scope.toolbar.refresh();
+	    		$scope.workStation.searched = false;
+	    	}
+		};
+		
+		var pushItem = function(data, type){
+		    var item = {};
+			item.display = data.name;
+			item.subItem = data.ip_address;
+			// format
+			data.first_letter = data.name.charAt(4).toUpperCase();
+			data.updated_at = new Date(data.updated_at);
+
+			$scope.toolbar.items.push(item);
+	    }
+
+		$scope.searchUserInput = function(){
+			$scope.workStation.paginated.show = false;
+			Preloader.loading();
+			WorkStation.search($scope.toolbar)
+				.success(function(data){
+					$scope.workStation.results = data;
+					Preloader.stop();
+					$scope.workStation.searched = true;
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+
+		$scope.createWorkStation = function(){
+		    $mdDialog.show({
+		      	controller: 'addWorkStationDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-work-station-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.toolbar.refresh();
+		    });
+		}
+
+		$scope.show = function(id, count){
+			if(!count){
+				Preloader.set(id);
+				$mdDialog.show({
+			      	controller: 'departmentWorkStationDialogController',
+				    templateUrl: '/app/components/admin/templates/dialogs/update-work-station-dialog.template.html',
+			      	parent: angular.element($('body')),
+			    })
+			    .then(function(){
+			    	Preloader.toastChangesSaved();
+			    	$state.go('main.work-station', {'workStationID':id});
+			    });
+			}
+			else{
+				$state.go('main.work-station', {'workStationID':id});
+			}
+		}
+
+		/**
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Work Station';
+
+		$scope.fab.action = function(){
+			$scope.createWorkStation();			
+		};
+
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = true;
+
+		$scope.filterWorkStation = function(data){
+			$scope.rightSidenav.department = data;
+		};
+
+		$scope.init = function(refresh){
+			Department.index()
+				.then(function(data){
+					angular.forEach(data.data, function(item){
+						item.first_letter = item.name.charAt(0).toUpperCase();
+					})
+
+					$scope.departments = data.data;
+					return;
+				})
+				.then(function(){
+					$scope.charts = [
+						{
+							'labels': ['Occupied', 'Vacant'],
+							'location': '6th Floor A',
+							'data': [0,0],
+						},
+						{
+							'labels': ['Occupied', 'Vacant'],
+							'location': '6th Floor B',
+							'data': [0,0],
+						},
+						{
+							'labels': ['Occupied', 'Vacant'],
+							'location': '10th Floor A',
+							'data': [0,0],
+						},
+						{
+							'labels': ['Occupied', 'Vacant'],
+							'location': '10th Floor B',
+							'data': [0,0],
+						},
+					];
+
+					WorkStation.dashboard()
+						.success(function(data){
+							$scope.charts[0].data[0] = data.occupied_6FA_count;
+							$scope.charts[0].data[1] = data.vacant_6FA_count;
+							$scope.charts[1].data[0] = data.occupied_6FB_count;
+							$scope.charts[1].data[1] = data.vacant_6FB_count;
+							$scope.charts[2].data[0] = data.occupied_10FA_count;
+							$scope.charts[2].data[1] = data.vacant_10FA_count;
+							$scope.charts[3].data[0] = data.occupied_10FB_count;
+							$scope.charts[3].data[1] = data.vacant_10FB_count;
+						})
+						.error(function(){
+							Preloader.error();
+						})
+				})
+				.then(function(){
+					/**
+					 * Object for Work Station
+					 *
+					*/
+					$scope.workStation = {};
+					// 2 is default so the next page to be loaded will be page 2 
+					$scope.workStation.page = 2;
+
+					WorkStation.paginate()
+						.success(function(data){
+							$scope.workStation.details = data;
+							$scope.workStation.paginated = data.data;
+							$scope.workStation.paginated.show = true;
+
+							if(data.data.length){
+								// iterate over each record and set the updated_at date and first letter
+								angular.forEach(data.data, function(item){
+									pushItem(item);
+								});
+
+								$scope.fab.show = true;
+							}
+
+							$scope.workStation.paginateLoad = function(){
+								// kills the function if ajax is busy or pagination reaches last page
+								if($scope.workStation.busy || ($scope.workStation.page > $scope.workStation.details.last_page)){
+									return;
+								}
+								/**
+								 * Executes pagination call
+								 *
+								*/
+								// sets to true to disable pagination call if still busy.
+								$scope.workStation.busy = true;
+
+								// Calls the next page of pagination.
+								WorkStation.paginate($scope.workStation.page)
+									.success(function(data){
+										// increment the page to set up next page for next AJAX Call
+										$scope.workStation.page++;
+
+										// iterate over each data then splice it to the data array
+										angular.forEach(data.data, function(item, key){
+											pushItem(item);
+											$scope.workStation.paginated.data.push(item);
+										});
+
+										// Enables again the pagination call for next call.
+										$scope.workStation.busy = false;
+
+									});
+							}
+							if(refresh){
+								Preloader.stop();
+								Preloader.stop();
+							}
+						})
+						.error(function(){
+							Preloader.error();
+						});
+				})
+		}
+
+		$scope.init();
+	}]);
+
 adminModule
 	.controller('settingsContentContainerController', ['$scope', '$state', '$filter', '$mdDialog', 'Preloader', 'Department', 'AssetType', 'User', 'Vendor', function($scope, $state, $filter, $mdDialog, Preloader, Department, AssetType, User, Vendor){
 		/**
@@ -1386,479 +2014,6 @@ adminModule
 		/* execute initial data fetching */
 		$scope.init();
 	}]);
-adminModule
-	.controller('addWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
-		var busy = false;
-		$scope.workStation = {};
-		$scope.floors = [
-			{'pattern':6, 'value':'06'},
-			{'pattern':10, 'value': '10'},
-		];
-		$scope.divisions = ['A','B'];
-		$scope.types = [
-			{'pattern':'Admin', 'value':'A'},
-			{'pattern':'Production', 'value': 'P'},
-		];
-
-		$scope.patterns = [
-			{
-				'pattern' : 'A06-A-A***',
-				'value' :  'A06-A-A',
-				'meaning': 'Aeon 6th Floor - Division A - Admin Station Number',
-			},
-
-			{
-				'pattern' : 'A06-A-P***',
-				'value' :  'A06-A-P',
-				'meaning': 'Aeon 6th Floor - Division A - Production Station Number',
-			},
-
-			{
-				'pattern' : 'A10-A-P***',
-				'value' :  'A10-A-P',
-				'meaning': 'Aeon 10th Floor - Division A - Production Station Number',
-			},
-
-			{
-				'pattern' : 'A06-B-A***',
-				'value' :  'A06-B-A',
-				'meaning': 'Aeon 6th Floor - Division B - Admin Station Number',
-			},
-
-
-			{
-				'pattern' : 'A06-B-P***',
-				'value' :  'A06-B-P',
-				'meaning': 'Aeon 6th Floor - Division B - Production Station Number',
-			},
-		];
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		};
-
-		$scope.submit = function(){
-			if($scope.addWorkStationForm.$invalid){
-				angular.forEach($scope.addWorkStationForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				if(!busy){
-					busy = true;
-					/* Starts Preloader */
-					Preloader.saving();
-					/**
-					 * Stores Single Record
-					*/
-					WorkStation.store($scope.workStation)
-						.success(function(){
-							// Stops Preloader 
-							busy = false;
-							Preloader.stop();
-						})
-						.error(function(){
-							busy = false;
-							Preloader.error();
-						})
-				}
-			}
-		};
-
-	}]);
-adminModule
-	.controller('departmentWorkStationDialogController', ['$scope', '$mdDialog', 'Preloader', 'WorkStation', 'DepartmentWorkStation', 'Department', function($scope, $mdDialog, Preloader, WorkStation, DepartmentWorkStation, Department){
-		var workStationID = Preloader.get();
-		var busy = false;
-
-		$scope.init = function(){
-			Department.index()
-				.then(function(data){
-					$scope.departments = data.data;
-					return;
-				})
-				.then(function(){			
-					WorkStation.show(workStationID)
-						.success(function(data){
-							$scope.workStation = data;
-							$scope.workStation.departments = [];
-							DepartmentWorkStation.show(workStationID)
-								.success(function(data){
-									$scope.workStation.departments = data;
-								})
-						})
-						.error(function(){
-							Preloader.error();
-						})
-				}, function(){
-					Preloader.error();
-				});
-		}();
-
-		$scope.checkIP = function(){
-			$scope.duplicate = false;
-			WorkStation.checkIP(workStationID, $scope.workStation)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		}
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		};
-
-		$scope.submit = function(){
-			$scope.show = true;
-			if($scope.workStationForm.$invalid){
-				angular.forEach($scope.workStationForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				if(!busy && !$scope.duplicate && $scope.workStation.departments.length)
-				{
-					busy = true;
-					/* Starts Preloader */
-					// Preloader.preload();
-					/**
-					 * Stores Single Record
-					*/
-					WorkStation.update(workStationID, $scope.workStation)
-						.then(function(data){
-							return data.data;
-						})
-						.then(function(data){
-							if(!data){
-								angular.forEach($scope.workStation.departments, function(item){
-									item.work_station_id = workStationID;
-								})
-
-								DepartmentWorkStation.store($scope.workStation.departments)
-									.success(function(){
-										busy = false;
-										Preloader.stop();
-									})
-									.error(function(){
-										Preloader.error();
-										busy = false;
-									})
-							}
-							else{
-								busy = false;
-								// Preloader.stop();
-							}
-
-						}, function(){
-							Preloader.error();
-							busy = false;
-						})
-				}
-			}
-		};
-
-	}]);
-adminModule
-	.controller('tagWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', 'WorkStationTag', 'Department', function($scope, $stateParams, $mdDialog, Preloader, WorkStation, WorkStationTag, Department){
-		var departmentID = $stateParams.departmentID;
-		$scope.workStationTag = {};
-		$scope.workStationTag.department_id = $stateParams.departmentID;
-
-		$scope.divisions = [
-			{'name':'Block A', 'value':'A'},
-			{'name':'Block B', 'value':'B'},
-		];
-
-		$scope.types = [
-			{'name':'Admin', 'value':'admin'},
-			{'name':'Production', 'value':'production'},
-		];		
-
-		$scope.searchWorkStations = function(){
-
-			WorkStation.vacant($scope.workStationTag)
-				.success(function(data){
-					$scope.workStations = data;
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		}
-
-		Department.show(departmentID)
-			.success(function(data){
-				$scope.department = data;
-			});
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		};
-
-		$scope.submit = function(){
-			/* Starts Preloader */
-			Preloader.preload();
-			/**
-			 * Stores Single Record
-			*/
-			WorkStationTag.store($scope.workStationTag)
-				.success(function(){
-					// Stops Preloader 
-					Preloader.stop();
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		};
-
-	}]);
-adminModule
-	.controller('workStationsContentContainerController', ['$scope', '$filter', '$state', '$mdDialog', 'Preloader', 'WorkStation', 'Department', function($scope, $filter, $state, $mdDialog, Preloader, WorkStation, Department){
-		/**
-		  *
-		  * Object for toolbar
-		  *
-		*/
-		$scope.toolbar = {};
-		$scope.toolbar.childState = 'Work Stations';
-	    $scope.toolbar.searchAll = true;
-		$scope.toolbar.items = [];
-		$scope.toolbar.getItems = function(query){
-			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
-			return results;
-		}
-
-		/* Refreshes the list */
-		$scope.toolbar.refresh = function(){
-			$scope.rightSidenav.department = '';
-			// start preloader
-			Preloader.loading();
-			$scope.init(true);
-		};
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.searchBar = false;
-			$scope.toolbar.searchText = '';
-	    	if($scope.workStation.searched){
-	    		$scope.toolbar.refresh();
-	    		$scope.workStation.searched = false;
-	    	}
-		};
-		
-		var pushItem = function(data, type){
-		    var item = {};
-			item.display = data.name;
-			item.subItem = data.ip_address;
-			// format
-			data.first_letter = data.name.charAt(4).toUpperCase();
-			data.updated_at = new Date(data.updated_at);
-
-			$scope.toolbar.items.push(item);
-	    }
-
-		$scope.searchUserInput = function(){
-			$scope.workStation.paginated.show = false;
-			Preloader.loading();
-			WorkStation.search($scope.toolbar)
-				.success(function(data){
-					$scope.workStation.results = data;
-					Preloader.stop();
-					$scope.workStation.searched = true;
-				})
-				.error(function(data){
-					Preloader.error();
-				});
-		};
-
-		$scope.createWorkStation = function(){
-		    $mdDialog.show({
-		      	controller: 'addWorkStationDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-work-station-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	/* Refreshes the list */
-		    	$scope.toolbar.refresh();
-		    });
-		}
-
-		$scope.show = function(id, count){
-			if(!count){
-				Preloader.set(id);
-				$mdDialog.show({
-			      	controller: 'departmentWorkStationDialogController',
-				    templateUrl: '/app/components/admin/templates/dialogs/update-work-station-dialog.template.html',
-			      	parent: angular.element($('body')),
-			    })
-			    .then(function(){
-			    	Preloader.toastChangesSaved();
-			    	$state.go('main.work-station', {'workStationID':id});
-			    });
-			}
-			else{
-				$state.go('main.work-station', {'workStationID':id});
-			}
-		}
-
-		/**
-		 * Object for fab
-		 *
-		*/
-		$scope.fab = {};
-
-		$scope.fab.icon = 'mdi-plus';
-		$scope.fab.label = 'Work Station';
-
-		$scope.fab.action = function(){
-			$scope.createWorkStation();			
-		};
-
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = true;
-
-		$scope.filterWorkStation = function(data){
-			$scope.rightSidenav.department = data;
-		};
-
-		$scope.init = function(refresh){
-			Department.index()
-				.then(function(data){
-					angular.forEach(data.data, function(item){
-						item.first_letter = item.name.charAt(0).toUpperCase();
-					})
-
-					$scope.departments = data.data;
-					return;
-				})
-				.then(function(){
-					$scope.charts = [
-						{
-							'labels': ['Occupied', 'Vacant'],
-							'location': '6th Floor A',
-							'data': [0,0],
-						},
-						{
-							'labels': ['Occupied', 'Vacant'],
-							'location': '6th Floor B',
-							'data': [0,0],
-						},
-						{
-							'labels': ['Occupied', 'Vacant'],
-							'location': '10th Floor A',
-							'data': [0,0],
-						},
-						{
-							'labels': ['Occupied', 'Vacant'],
-							'location': '10th Floor B',
-							'data': [0,0],
-						},
-					];
-
-					WorkStation.dashboard()
-						.success(function(data){
-							$scope.charts[0].data[0] = data.occupied_6FA_count;
-							$scope.charts[0].data[1] = data.vacant_6FA_count;
-							$scope.charts[1].data[0] = data.occupied_6FB_count;
-							$scope.charts[1].data[1] = data.vacant_6FB_count;
-							$scope.charts[2].data[0] = data.occupied_10FA_count;
-							$scope.charts[2].data[1] = data.vacant_10FA_count;
-							$scope.charts[3].data[0] = data.occupied_10FB_count;
-							$scope.charts[3].data[1] = data.vacant_10FB_count;
-						})
-						.error(function(){
-							Preloader.error();
-						})
-				})
-				.then(function(){
-					/**
-					 * Object for Work Station
-					 *
-					*/
-					$scope.workStation = {};
-					// 2 is default so the next page to be loaded will be page 2 
-					$scope.workStation.page = 2;
-
-					WorkStation.paginate()
-						.success(function(data){
-							$scope.workStation.details = data;
-							$scope.workStation.paginated = data.data;
-							$scope.workStation.paginated.show = true;
-
-							if(data.data.length){
-								// iterate over each record and set the updated_at date and first letter
-								angular.forEach(data.data, function(item){
-									pushItem(item);
-								});
-
-								$scope.fab.show = true;
-							}
-
-							$scope.workStation.paginateLoad = function(){
-								// kills the function if ajax is busy or pagination reaches last page
-								if($scope.workStation.busy || ($scope.workStation.page > $scope.workStation.details.last_page)){
-									return;
-								}
-								/**
-								 * Executes pagination call
-								 *
-								*/
-								// sets to true to disable pagination call if still busy.
-								$scope.workStation.busy = true;
-
-								// Calls the next page of pagination.
-								WorkStation.paginate($scope.workStation.page)
-									.success(function(data){
-										// increment the page to set up next page for next AJAX Call
-										$scope.workStation.page++;
-
-										// iterate over each data then splice it to the data array
-										angular.forEach(data.data, function(item, key){
-											pushItem(item);
-											$scope.workStation.paginated.data.push(item);
-										});
-
-										// Enables again the pagination call for next call.
-										$scope.workStation.busy = false;
-
-									});
-							}
-							if(refresh){
-								Preloader.stop();
-								Preloader.stop();
-							}
-						})
-						.error(function(){
-							Preloader.error();
-						});
-				})
-		}
-
-		$scope.init();
-	}]);
-
 adminModule
 	.controller('addDesktopDialogController', ['$scope', '$state', '$mdDialog', 'Preloader', 'Desktop', function($scope, $state, $mdDialog, Preloader, Desktop){
 		$scope.cpu = {};
@@ -3127,6 +3282,122 @@ adminModule
 		}
 	}]);
 adminModule
+	.controller('editdepartmentWorkStationDialogController', ['$scope', '$mdDialog', 'Preloader', 'WorkStation', 'DepartmentWorkStation', 'Department', function($scope, $mdDialog, Preloader, WorkStation, DepartmentWorkStation, Department){
+		var workStationID = Preloader.get();
+		var busy = false;
+
+		$scope.init = function(){
+			Department.index()
+				.then(function(data){
+					$scope.departments = data.data;
+					return;
+				})
+				.then(function(){			
+					WorkStation.show(workStationID)
+						.success(function(data){
+							$scope.workStation = data;
+							$scope.workStation.departments = [];
+
+							angular.forEach($scope.departments, function(item, key){
+								$scope.workStation.departments.push({'department_id':null});
+
+								DepartmentWorkStation.relation(item.id, workStationID)
+									.success(function(data){
+										if(data){
+											$scope.workStation.departments.splice(key, 1, data);
+										}
+									})
+							});
+
+						})
+						.error(function(){
+							Preloader.error();
+						})
+				}, function(){
+					Preloader.error();
+				});
+		}();
+
+		$scope.checkIP = function(){
+			$scope.duplicate = false;
+			WorkStation.checkIP(workStationID, $scope.workStation)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		}
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		$scope.submit = function(){
+			$scope.show = true;
+			if($scope.workStationForm.$invalid){
+				angular.forEach($scope.workStationForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				if(!busy && !$scope.duplicate && $scope.workStation.departments.length)
+				{
+					busy = true;
+					/* Starts Preloader */
+					// Preloader.preload();
+					/**
+					 * Stores Single Record
+					*/
+					WorkStation.update(workStationID, $scope.workStation)
+						.then(function(data){
+							return data.data;
+						})
+						.then(function(data){
+							if(!data){
+								$scope.tags = 0;
+								angular.forEach($scope.workStation.departments, function(item){
+									if(item.department_id)
+									{
+										item.work_station_id = workStationID;
+										$scope.tags+=1;
+									}
+								});
+
+								if($scope.tags >= 1){
+									DepartmentWorkStation.update(workStationID, $scope.workStation.departments)
+										.success(function(){
+											busy = false;
+											Preloader.stop();
+										})
+										.error(function(){
+											Preloader.error();
+											busy = false;
+										})
+								}
+								else{
+									busy = false
+								}
+
+
+							}
+							else{
+								busy = false;
+								// Preloader.stop();
+							}
+
+						}, function(){
+							Preloader.error();
+							busy = false;
+						})
+				}
+			}
+		};
+
+	}]);
+adminModule
 	.controller('editWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
 		var busy = false;
 		$scope.workStation = {};
@@ -3559,8 +3830,8 @@ adminModule
 		$scope.editDepartmentWorkStation = function(){
 			Preloader.set(workStationID);
 			$mdDialog.show({
-		      	controller: 'departmentWorkStationDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/update-work-station-dialog.template.html',
+		      	controller: 'editdepartmentWorkStationDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/edit-update-work-station-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
@@ -3677,6 +3948,33 @@ adminModule
 		$scope.init = function(refresh){
 			WorkStation.show(workStationID)
 				.success(function(data){
+
+					angular.forEach(data.asset_tags, function(item){
+						var asset_tags = {};
+
+						asset_tags.display = item.property_code;
+						asset_tags.brand = item.asset.brand;
+						asset_tags.model = item.asset.model;
+						asset_tags.type = item.asset.type;
+
+						$scope.toolbar.items.push(asset_tags);
+					})
+
+					if(!data.departments.length)
+					{
+						Preloader.set(workStationID);
+						$mdDialog.show({
+					      	controller: 'editdepartmentWorkStationDialogController',
+						    templateUrl: '/app/components/admin/templates/dialogs/edit-update-work-station-dialog.template.html',
+					      	parent: angular.element($('body')),
+					    })
+					    .then(function(){
+					    	$scope.toolbar.refresh();
+					    }, function(){
+					    	$state.go('main.work-stations');
+					    })
+					}
+
 					angular.forEach(data.asset_tags , function(item){
 						item.warranty_end =  item.warranty_end ? new Date(item.warranty_end) : null;
 						item.first_letter = item.asset.brand.charAt(0).toUpperCase();

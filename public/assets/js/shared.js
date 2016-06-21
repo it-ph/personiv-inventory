@@ -90,6 +90,9 @@ sharedModule
 		var urlBase = '/asset-tag';
 
 		return {
+			paginate: function(assetTypeID, page){
+				return $http.get(urlBase + '-paginate/' + assetTypeID + '?page=' + page);
+			},
 			/**
 			 * Fetch all departments.
 			 * @return: Array of Objects
@@ -228,6 +231,9 @@ sharedModule
 			},
 			delete: function(id){
 				return $http.delete(urlBase + '/' + id);
+			},
+			relation: function(departmentID, workstationID){
+				return $http.get(urlBase + '-relation/' + departmentID + '/work-station/' + workstationID);
 			},
 		};
 	}]);

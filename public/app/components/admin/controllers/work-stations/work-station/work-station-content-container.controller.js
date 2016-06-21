@@ -52,8 +52,8 @@ adminModule
 		$scope.editDepartmentWorkStation = function(){
 			Preloader.set(workStationID);
 			$mdDialog.show({
-		      	controller: 'departmentWorkStationDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/update-work-station-dialog.template.html',
+		      	controller: 'editdepartmentWorkStationDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/edit-update-work-station-dialog.template.html',
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
@@ -170,6 +170,33 @@ adminModule
 		$scope.init = function(refresh){
 			WorkStation.show(workStationID)
 				.success(function(data){
+
+					angular.forEach(data.asset_tags, function(item){
+						var asset_tags = {};
+
+						asset_tags.display = item.property_code;
+						asset_tags.brand = item.asset.brand;
+						asset_tags.model = item.asset.model;
+						asset_tags.type = item.asset.type;
+
+						$scope.toolbar.items.push(asset_tags);
+					})
+
+					if(!data.departments.length)
+					{
+						Preloader.set(workStationID);
+						$mdDialog.show({
+					      	controller: 'editdepartmentWorkStationDialogController',
+						    templateUrl: '/app/components/admin/templates/dialogs/edit-update-work-station-dialog.template.html',
+					      	parent: angular.element($('body')),
+					    })
+					    .then(function(){
+					    	$scope.toolbar.refresh();
+					    }, function(){
+					    	$state.go('main.work-stations');
+					    })
+					}
+
 					angular.forEach(data.asset_tags , function(item){
 						item.warranty_end =  item.warranty_end ? new Date(item.warranty_end) : null;
 						item.first_letter = item.asset.brand.charAt(0).toUpperCase();

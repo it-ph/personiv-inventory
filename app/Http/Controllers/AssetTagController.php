@@ -15,6 +15,10 @@ use App\Http\Controllers\Controller;
 
 class AssetTagController extends Controller
 {
+    public function paginate($id)
+    {
+        return AssetTag::with('type', 'asset', 'purchase_order', 'status', 'work_station')->where('asset_type_id', $id)->paginate(20);
+    }
     public function checkSequence(Request $request)
     {
         // fetches the asset

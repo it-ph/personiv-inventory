@@ -1,5 +1,5 @@
 adminModule
-	.controller('departmentWorkStationDialogController', ['$scope', '$mdDialog', 'Preloader', 'WorkStation', 'DepartmentWorkStation', 'Department', function($scope, $mdDialog, Preloader, WorkStation, DepartmentWorkStation, Department){
+	.controller('editdepartmentWorkStationDialogController', ['$scope', '$mdDialog', 'Preloader', 'WorkStation', 'DepartmentWorkStation', 'Department', function($scope, $mdDialog, Preloader, WorkStation, DepartmentWorkStation, Department){
 		var workStationID = Preloader.get();
 		var busy = false;
 
@@ -14,10 +14,18 @@ adminModule
 						.success(function(data){
 							$scope.workStation = data;
 							$scope.workStation.departments = [];
-							DepartmentWorkStation.show(workStationID)
-								.success(function(data){
-									$scope.workStation.departments = data;
-								})
+
+							angular.forEach($scope.departments, function(item, key){
+								$scope.workStation.departments.push({'department_id':null});
+
+								DepartmentWorkStation.relation(item.id, workStationID)
+									.success(function(data){
+										if(data){
+											$scope.workStation.departments.splice(key, 1, data);
+										}
+									})
+							});
+
 						})
 						.error(function(){
 							Preloader.error();
@@ -66,19 +74,30 @@ adminModule
 						})
 						.then(function(data){
 							if(!data){
-								angular.forEach($scope.workStation.departments, function(item, key){
-									item.work_station_id = workStationID;
-								})
+								$scope.tags = 0;
+								angular.forEach($scope.workStation.departments, function(item){
+									if(item.department_id)
+									{
+										item.work_station_id = workStationID;
+										$scope.tags+=1;
+									}
+								});
 
-								DepartmentWorkStation.store($scope.workStation.departments)
-									.success(function(){
-										busy = false;
-										Preloader.stop();
-									})
-									.error(function(){
-										Preloader.error();
-										busy = false;
-									})
+								if($scope.tags >= 1){
+									DepartmentWorkStation.update(workStationID, $scope.workStation.departments)
+										.success(function(){
+											busy = false;
+											Preloader.stop();
+										})
+										.error(function(){
+											Preloader.error();
+											busy = false;
+										})
+								}
+								else{
+									busy = false
+								}
+
 
 							}
 							else{

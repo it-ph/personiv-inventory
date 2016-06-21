@@ -157,6 +157,29 @@ adminModule
 				}],
 			})
 
+			.state('main.purchase-orders', {
+				url: 'purchase-orders',
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'purchaseOrdersContentContainerController',
+					},
+					'toolbar@main.purchase-orders': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.purchase-orders': {
+						templateUrl: '/app/components/admin/templates/content/purchase-orders.content.template.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+
 			/**
 			 * Unit Routes
 			 *

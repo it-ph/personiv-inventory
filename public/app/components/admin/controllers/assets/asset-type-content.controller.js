@@ -90,6 +90,13 @@ adminModule
 				data.first_letter = data.brand.charAt(0).toUpperCase();
 				data.updated_at = new Date(data.updated_at);
 	    	}
+	    	else{
+	    		var item = {};
+				item.display = data.property_code;
+				// format
+				data.first_letter = data.asset.brand.charAt(0).toUpperCase();
+				data.warranty_end = new Date(data.warranty_end);
+	    	}
 
 			$scope.toolbar.items.push(item);
 	    }
@@ -141,6 +148,75 @@ adminModule
 	        	return;
 	        });
 		}
+
+		$scope.editAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'editAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/edit-asset-tag-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.transferAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'transferAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-tag-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.swapAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'swapAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/swap-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.pullOutAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'pullOutAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/pull-out-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.deleteAssetTag = function(id){
+			var confirm = $mdDialog.confirm()
+	        	.title('Delete')
+	          	.content('Are you sure you want to delete this asset tag?')
+	          	.ariaLabel('Delete Asset Tag')
+	          	.ok('Delete')
+	          	.cancel('Cancel');
+
+	        $mdDialog.show(confirm).then(function() {
+		      	AssetTag.delete(id)
+		      		.success(function(){
+		      			$scope.toolbar.refresh();
+		      		})
+		      		.error(function(){
+		      			Preloader.error();
+		      		});
+		    }, function() {
+		      	return;
+		    });
+		};
 
 		/**
 		  *
@@ -215,8 +291,63 @@ adminModule
 					.error(function(){
 						Preloader.error();
 					})
-				}, function(){
-					Preloader.error();
+
+					// Asset Tags
+					$scope.assetTag = {};
+					$scope.assetTag.paginated = [];
+					$scope.toolbar.items = [];
+					// 2 is default so the next page to be loaded will be page 2 
+					$scope.assetTag.page = 2;
+
+					AssetTag.paginate(assetTypeID)
+						.success(function(data){
+							$scope.assetTag.details = data;
+							$scope.assetTag.paginated = data.data;
+							$scope.assetTag.paginated.show = true;
+
+							if(data.data.length){
+								// iterate over each record and set the updated_at date and first letter
+								angular.forEach(data.data, function(item){
+									pushItem(item, 'asset_tag');
+								});
+							}
+
+							$scope.assetTag.paginateLoad = function(){
+								// kills the function if ajax is busy or pagination reaches last page
+								if($scope.assetTag.busy || ($scope.assetTag.page > $scope.assetTag.details.last_page)){
+									return;
+								}
+								/**
+								 * Executes pagination call
+								 *
+								*/
+								// sets to true to disable pagination call if still busy.
+								$scope.assetTag.busy = true;
+
+								AssetTag.paginate(assetTypeID, $scope.assetTag.page)
+									.success(function(data){
+										// increment to call the next page for the next call
+										$scope.assetTag.page++;
+										// iterate over the paginated data and push it to the original array
+										angular.forEach(data.data, function(item){
+											pushItem(item, 'asset_tag');
+											$scope.assetTag.paginated.push(item);
+										});
+										// enables next call
+										$scope.assetTag.busy = false;
+									})
+									.error(function(){
+										Preloader.error();
+									});
+						}
+						if(refresh){
+							Preloader.stop();
+							Preloader.stop();
+						}
+					})
+					.error(function(){
+						Preloader.error();
+					})
 				})
 		}
 
