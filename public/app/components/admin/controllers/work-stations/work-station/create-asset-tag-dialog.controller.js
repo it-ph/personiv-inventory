@@ -69,13 +69,16 @@ adminModule
 			}
 			else{
 				//  * Stores Single Record
-				
 				if(!busy && !$scope.duplicate){
+					busy = true;
 					$scope.assetTag.warranty_end = $scope.hasWarranty ? $scope.assetTag.warranty_end.toDateString() : null;
 					AssetTag.store($scope.assetTag)
 						.success(function(data){
 							if(!data){
 								Preloader.stop();
+							}
+							else{
+								busy = false;
 							}
 						})
 						.error(function(){

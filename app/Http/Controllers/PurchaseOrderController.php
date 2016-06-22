@@ -3,12 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\PurchaseOrder;
+use App\Activity;
+use App\ActivityType;
+use Auth;
+use DB;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 class PurchaseOrderController extends Controller
 {
+    public function paginate()
+    {
+        return PurchaseOrder::with('vendor', 'assset_purchase_order')->paginate(20);
+    }
     /**
      * Display a listing of the resource.
      *

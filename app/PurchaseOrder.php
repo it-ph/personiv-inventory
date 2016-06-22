@@ -15,11 +15,6 @@ class PurchaseOrder extends Model
     	return $this->belongsTo('App\Vendor');
     }
 
-    public function asset()
-    {
-    	return $this->belongsToMany('App\AssetPurchaseOrder');
-    }
-
     public function activities()
     {
         return $this->hasMany('App\Activity', 'event_id');
@@ -28,5 +23,10 @@ class PurchaseOrder extends Model
     public function asset_tags()
     {
         return $this->hasMany('App\AssetTag');
+    } 
+
+    public function assset_purchase_order()
+    {
+        return $this->hasMany('App\AssetPurchaseOrder');
     }
 }

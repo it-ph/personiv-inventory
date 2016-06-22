@@ -25,9 +25,9 @@ class Asset extends Model
     	return $this->hasMany('App\AssetTag');
     }
 
-    public function purchase_order()
+    public function assset_purchase_order()
     {
-        return $this->belongsToMany('App\AssetPurchaseOrder');
+        return $this->hasMany('App\AssetPurchaseOrder');
     }
 
     public function activity()

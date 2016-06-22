@@ -51,12 +51,14 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::resource('vendor', 'VendorController');
 	Route::resource('activity', 'ActivityController');
 	Route::resource('activity-type', 'ActivityTypeController');
+	Route::resource('asset-purchase-order', 'AssetPurchaseOrderController');
 
 	Route::post('user-check-password', 'UserController@checkPassword');
 	Route::post('user-change-password', 'UserController@changePassword');
 
 	Route::get('asset-paginate/{assetTypeID}', 'AssetController@paginate');
 	Route::get('asset-tag-paginate/{assetTypeID}', 'AssetTagController@paginate');
+	Route::get('purchase-order-paginate', 'PurchaseOrderController@paginate');
 	// Route Resource Paginations
 	Route::get('work-station-paginate', 'WorkStationController@paginate');
 	// paginate by department

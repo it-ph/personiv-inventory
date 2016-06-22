@@ -1,0 +1,8 @@
+<!-- If no records yet -->
+<div layout="column" layout-align="center center" flex ng-if="purchaseOrder.paginated.show && !purchaseOrder.paginated.length && !purchaseOrder.results.length">
+	<h3 class="md-subhead  ">No purchase orders to display.</h3>
+	<md-button class="md-fab md-primary" aria-label="Create Purchase Order" ng-click="createPurchaseOrder()">
+		<md-icon class="mdi mdi-plus"></md-icon>
+	</md-button>
+	<p class="secondary-text">Tap to create</p>
+</div>
