@@ -5,7 +5,8 @@ var sharedModule = angular.module('sharedModule', [
 	'ngMessages',
 	'infinite-scroll',
 	'mgcrea.ngStrap',
-	'chart.js'
+	'chart.js',
+	'angularMoment'
 ]);
 sharedModule
 	.config(['$urlRouterProvider', '$stateProvider', '$mdThemingProvider', function($urlRouterProvider, $stateProvider, $mdThemingProvider){
@@ -468,6 +469,15 @@ sharedModule
 			},
 			delete: function(id){
 				return $http.delete(urlBase + '/' + id);
+			},
+			distinct: function(data){
+				return $http.post(urlBase + '-distinct', data);
+			},
+			contactPersons: function(id){
+				return $http.get(urlBase + '-contact-persons/' + id);
+			},
+			contactNumbers: function(id){
+				return $http.get(urlBase + '-contact-numbers/' + id);
 			},
 		};
 	}]);

@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\AssetPurchaseOrder;
+use App\Activity;
+use App\ActivityType;
+use Auth;
+use DB;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -37,7 +41,31 @@ class AssetPurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        for ($i=0; $i < count($request->all()); $i++) { 
+            $this->validate($request, [
+                $i.'.asset_id' => 'required|numeric',
+                $i.'.purchase_order_id' => 'required|numeric',
+                $i.'.quantity' => 'required|numeric',
+            ]);
+
+            $asset_purchase_order = new AssetPurchaseOrder;
+
+            $asset_purchase_order->asset_id = $request->input($i.'.asset_id');
+            $asset_purchase_order->purchase_order_id = $request->input($i.'.purchase_order_id');
+            $asset_purchase_order->quantity = $request->input($i.'.quantity');
+
+            $asset_purchase_order->save();
+
+            $activity_type = ActivityType::where('type', 'asset_purchase_order')->where('action', 'create')->first();
+
+            $activity = new Activity;
+
+            $activity->user_id = $request->user()->id;
+            $activity->activity_type_id = $activity_type->id;
+            $activity->event_id = $asset_purchase_order->id;
+
+            $activity->save();
+        }
     }
 
     /**

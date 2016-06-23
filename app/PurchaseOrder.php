@@ -25,7 +25,7 @@ class PurchaseOrder extends Model
         return $this->hasMany('App\AssetTag');
     } 
 
-    public function assset_purchase_order()
+    public function asset_purchase_order()
     {
         return $this->hasMany('App\AssetPurchaseOrder');
     }

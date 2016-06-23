@@ -8,6 +8,7 @@ use App\Activity;
 use App\ActivityType;
 use Auth;
 use DB;
+use Carbon\Carbon;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -15,7 +16,7 @@ class PurchaseOrderController extends Controller
 {
     public function paginate()
     {
-        return PurchaseOrder::with('vendor', 'assset_purchase_order')->paginate(20);
+        return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->paginate(20);
     }
     /**
      * Display a listing of the resource.
@@ -45,7 +46,31 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'vendor_id' => 'required',
+            'date_purchased' => 'required',
+            'date_arrival' => 'required',
+        ]);
+
+        $purchase_order = new PurchaseOrder;
+
+        $purchase_order->vendor_id = $request->vendor_id;
+        $purchase_order->date_purchased = Carbon::parse($request->date_purchased)->toDateTimeString();
+        $purchase_order->date_arrival = Carbon::parse($request->date_arrival)->toDateTimeString();
+
+        $purchase_order->save();
+
+        $activity_type = ActivityType::where('type', 'purchase_order')->where('action', 'create')->first();
+
+        $activity = new Activity;
+
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $purchase_order->id;
+
+        $activity->save();
+
+        return $purchase_order;
     }
 
     /**

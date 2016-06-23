@@ -42,15 +42,20 @@ adminModule
 	    	}
 		};
 		
-		var pushItem = function(data, type){
+		var pushItem = function(data){
 		    var item = {};
-			item.display = data.name;
-			item.subItem = data.ip_address;
+			item.display = data.vendor.company;
+			item.contact_person = data.vendor.contact_person;
+			item.contact_number = data.vendor.contact_number;
 			// format
-			data.first_letter = data.name.charAt(4).toUpperCase();
+			data.first_letter = data.vendor.company.charAt(0).toUpperCase();
 			data.updated_at = new Date(data.updated_at);
+			data.date_arrival = new Date(data.date_arrival);
+			data.date_purchased = new Date(data.date_purchased);
 
 			$scope.toolbar.items.push(item);
+
+			return data;
 	    }
 
 		$scope.searchUserInput = function(){
@@ -68,15 +73,7 @@ adminModule
 		};
 
 		$scope.createPurchaseOrder = function(){
-		    $mdDialog.show({
-		      	controller: 'createPurchaseOrderDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/purchase-order-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	/* Refreshes the list */
-		    	$scope.toolbar.refresh();
-		    });
+		    $state.go('main.create-purchase-order')
 		}
 
 		$scope.editPurchaseOrder = function(){
@@ -141,7 +138,7 @@ adminModule
 					$scope.purchaseOrder.paginated.show = true;
 
 					if(data.data.length){
-						// iterate over each record and set the updated_at date and first letter
+						// iterate over each record and set the date_purchased date and first letter
 						angular.forEach(data.data, function(item){
 							pushItem(item);
 						});

@@ -1,0 +1,148 @@
+<div layout="row" flex layout-padding>
+	<div flex flex-gt-md="80" aria-label="Program" ng-cloak>
+		<form name="form.purchaseOrderForm" novalidate flex ng-if="show" layout-margin>
+			<div>
+				<md-toolbar>
+					<div class="md-toolbar-tools">
+						<h2>Purchase Order Details</h2>
+					</div>
+					<span flex></span>
+				</md-toolbar>
+				<md-content layout-padding class="md-whiteframe-2dp">				
+					<div layout="row">
+						<!-- Company -->
+						<md-input-container flex>
+							<label>Company</label>
+							<md-select name="Company" ng-model="vendorIndex" ng-change="getUniqueContactPerson(vendorIndex)" required>
+								<md-option value="{{$index}}" ng-repeat="company in companies">
+									{{ company.company }}
+								</md-option>
+							</md-select>
+							<div ng-messages="form.purchaseOrderForm.Company.$error" ng-if="form.purchaseOrderForm.Company.$touched">
+								<div ng-message="required">Company is required.</div>
+							</div>
+						</md-input-container>
+						<!-- Contact Person -->
+						<md-input-container flex>
+							<label>Contact Person</label>
+							<md-select ng-disabled="!vendorIndex" required name="ContactPerson" ng-model="contactPerson" ng-change="getContactNumbers(contactPerson)">
+								<md-option value="{{contact.id}}" ng-repeat="contact in contactPersons">
+									{{contact.contact_person}}
+								</md-option>
+							</md-select>
+							<div ng-messages="form.purchaseOrderForm.ContactPerson.$error" ng-if="form.purchaseOrderForm.ContactPerson.$touched">
+								<div ng-message="required">Contact Person is required.</div>
+							</div>
+						</md-input-container>
+						<!-- Contact Number -->
+						<md-input-container flex>
+							<label>Contact Number</label>
+							<md-select ng-disabled="!contactPerson" required name="ContactNumber" ng-model="purchaseOrder.vendor_id">
+								<md-option value="{{vendor.id}}" ng-repeat="vendor in contactNumbers">
+									{{vendor.contact_number}}
+								</md-option>
+							</md-select>
+							<div ng-messages="form.purchaseOrderForm.ContactNumber.$error" ng-if="form.purchaseOrderForm.ContactNumber.$touched">
+								<div ng-message="required">Contact Number is required.</div>
+							</div>
+						</md-input-container>
+					</div>
+					<div layout="row">
+						<!-- Date Purchased -->
+						<div layout-padding flex>
+							<h4>Date Purchased</h4>
+							<md-datepicker name="DatePurchased" ng-model="purchaseOrder.date_purchased" md-placeholder="Date Purchased" required></md-datepicker>
+					        <div class="validation-messages" ng-messages="form.purchaseOrderForm.DatePurchased.$error" ng-if="form.purchaseOrderForm.DatePurchased.$touched">
+					        	<div ng-message="valid">The entered value is not a date!</div>
+					        	<div ng-message="required">Date Purchased is required.</div>
+					        </div>
+						</div>
+						<!-- Date Arrival -->
+						<div layout-padding flex>
+							<h4>Date Arrival</h4>
+							<md-datepicker name="DateArrival" ng-model="purchaseOrder.date_arrival" md-placeholder="Date Arrival" md-min-date="purchaseOrder.date_purchased" required></md-datepicker>
+					        <div class="validation-messages" ng-messages="form.purchaseOrderForm.DateArrival.$error" ng-if="form.purchaseOrderForm.DateArrival.$touched">
+					        	<div ng-message="valid">The entered value is not a date!</div>
+					        	<div ng-message="required">Date Arrival is required.</div>
+					        	<div ng-message="mindate">Date arrival cannot be before date purchased.</div>
+					        </div>
+						</div>
+					</div>
+				</md-content>
+			</div>
+			<div flex ng-repeat="asset in assets">
+				<md-toolbar layout="row" layout-align="center center" class="md-warn">
+					<div class="md-toolbar-tools">
+						<h2>Item #{{$index + 1}} <span ng-if="asset.assetTypeIndex">- {{ assetTypes[asset.assetTypeIndex].type }}</span></h2>
+					</div>
+					<span flex></span>
+					<md-button class="md-icon-button" ng-click="removeAsset($index)" ng-if="assets.length > 1">
+						<md-icon class="mdi mdi-close"></md-icon>
+					</md-button>
+				</md-toolbar>
+				<md-content class="md-whiteframe-2dp" layout-padding>
+					<div layout="row">
+						<!-- Asset Type -->
+						<md-input-container flex>
+							<label>Asset</label>
+							<md-select ng-model="asset.assetTypeIndex" ng-change="getUniqueBrands(asset.assetTypeIndex, $index)" required>
+								<md-option value="{{$index}}" ng-repeat="assetType in assetTypes">
+									{{ assetType.type }}
+								</md-option>
+							</md-select>
+						</md-input-container>
+					</div>
+					<div layout="row">
+						<!-- Brand -->
+						<md-input-container flex>
+							<label>Brand</label>
+							<md-select ng-disabled="!asset.assetTypeIndex" required name="Brand{{$index}}" ng-model="asset.brand" ng-change="asset.asset_id = null">
+								<md-option value="{{asset.brand}}" ng-repeat="asset in asset.brands | orderBy:'brand'">
+									{{ asset.brand }}
+								</md-option>
+							</md-select>
+							<div ng-messages="form.purchaseOrderForm['Brand' + $index].$error" ng-if="form.purchaseOrderForm['Brand' + $index].$touched">
+								<div ng-message="required">Brand is required.</div>
+							</div>
+						</md-input-container>
+						
+						<!-- Model -->
+						<md-input-container flex>
+							<label>Model</label>
+							<md-select ng-disabled="!asset.brand" required name="Model{{$index}}" ng-model="asset.asset_id" ng-change="getAssetDetails(asset.asset_id, $index)" required>
+								<md-option value="{{asset.id}}" ng-repeat="asset in assetTypes[asset.assetTypeIndex].assets | filter:asset.brand | orderBy:'model'">
+									{{ asset.model }}
+								</md-option>
+							</md-select>
+							<div ng-messages="form.purchaseOrderForm['Model' + $index].$error" ng-if="form.purchaseOrderForm['Model' + $index].$touched">
+								<div ng-message="required">Model is required.</div>
+							</div>
+						</md-input-container>
+						
+						<!-- Quantity -->
+						<md-input-container>
+							<label>Quantity</label>
+							<input type="number" name="Quantity{{$index}}" ng-model="asset.quantity" min="1" required>
+							<div ng-messages="form.purchaseOrderForm['Quantity' + $index].$error" ng-if="form.purchaseOrderForm['Quantity' + $index].$touched">
+								<div ng-message="required">Quantity is required.</div>
+								<div ng-message="min">Quantity must be at least one.</div>
+							</div>
+						</md-input-container>
+					</div>
+					<!-- Specs -->
+					<md-list class="fade-transition" ng-if="asset.details.length">
+						<md-subheader class="md-no-sticky">Specs</md-subheader>
+						<md-list-item ng-repeat="detail in asset.details">
+						    <p>{{detail.label}}: {{detail.value}}</p>
+					  	</md-list-item>
+					</md-list>
+				</md-content>
+			</div>
+			<div layout="row" layout-align="end center">			
+				<md-button class="md-fab md-primary" aria-label="Add More" ng-click="addAsset()">
+					<md-icon class="mdi mdi-plus"></md-icon>
+				</md-button>
+			</div>
+		</form>
+	</div>
+</div>

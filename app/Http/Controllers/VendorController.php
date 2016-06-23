@@ -13,6 +13,22 @@ use App\Http\Controllers\Controller;
 
 class VendorController extends Controller
 {
+    public function contactNumbers($id)
+    {
+        $vendor = Vendor::where('id', $id)->first();
+
+        return Vendor::where('company', $vendor->company)->where('contact_person', $vendor->contact_person)->get();
+    }
+    public function contactPersons($id)
+    {   
+        $vendor = Vendor::where('id', $id)->first();
+
+        return Vendor::where('company', $vendor->company)->groupBy('contact_person')->get();
+    }
+    public function distinct(Request $request)
+    {
+        return Vendor::groupBy($request->distinct)->get();
+    }
     /**
      * Display a listing of the resource.
      *

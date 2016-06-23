@@ -77,6 +77,9 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('work-station-dashboard', 'WorkStationController@dashboard');
 	Route::get('work-station-others/{workStationID}', 'WorkStationController@others');
 	Route::get('department-work-station-relation/{departmentID}/work-station/{workStationID}', 'DepartmentWorkStationController@relation');
+	Route::post('vendor-distinct', 'VendorController@distinct');
+	Route::get('vendor-contact-persons/{id}', 'VendorController@contactPersons');
+	Route::get('vendor-contact-numbers/{id}', 'VendorController@contactNumbers');
 	
 	// Route resource store multiple
 	Route::post('asset-tag-multiple', 'AssetTagController@storeMultiple');

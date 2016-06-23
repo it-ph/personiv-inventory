@@ -184,6 +184,28 @@ adminModule
 				}],
 			})
 
+			.state('main.create-purchase-order', {
+				url: 'purchase-order/create',
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'createPurchaseOrderContentContainerController',
+					},
+					'toolbar@main.create-purchase-order': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.create-purchase-order': {
+						templateUrl: '/app/components/admin/templates/content/create-purchase-order-content.template.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
 			/**
 			 * Unit Routes
 			 *
@@ -1159,6 +1181,178 @@ adminModule
 		}
 	}]);
 adminModule
+	.controller('createPurchaseOrderContentContainerController', ['$scope', '$state', '$mdToast', 'Preloader', 'PurchaseOrder', 'AssetType', 'Asset', 'AssetDetail', 'Vendor', 'AssetPurchaseOrder', function($scope, $state, $mdToast, Preloader, PurchaseOrder, AssetType, Asset, AssetDetail, Vendor, AssetPurchaseOrder){
+		/**
+		  *
+		  * Object for toolbar
+		  *
+		*/
+		$scope.toolbar = {};
+		$scope.toolbar.childState = 'Create Purchase Order';
+
+		$scope.toolbar.refresh = function(){
+			$state.go('main.create-purchase-order', {}, {reload:true});
+		}
+
+		/**
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-check';
+		$scope.fab.label = 'Submit';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+			$scope.submit();			
+		};
+
+		var busy = false;
+		$scope.form = {};
+		$scope.purchaseOrder = {};
+		$scope.purchaseOrder.date_purchased = new Date();
+		$scope.purchaseOrder.date_arrival = new Date();
+		$scope.purchaseOrder.date_arrival.setDate($scope.purchaseOrder.date_arrival.getDate()+30);
+		
+		$scope.label = "Purchase Order";
+
+
+		$scope.assets = [];
+
+		$scope.addAsset = function(){
+			$scope.assets.push(
+				{
+					'assetTypeIndex':null,
+					'brand': null,
+					'asset_id': null,
+					'quantity': null,
+				}
+			);
+		}
+
+		$scope.removeAsset = function(idx){
+			$scope.assets.splice(idx, 1);
+		}
+
+		$scope.getUniqueContactPerson = function(idx){
+			$scope.contactPerson = null;
+			$scope.purchaseOrder.vendor_id = null;
+			
+			Vendor.contactPersons($scope.companies[idx].id)
+				.success(function(data){
+					$scope.contactPersons = data;
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		}
+
+		$scope.getContactNumbers = function(id){
+			Vendor.contactNumbers(id)
+				.success(function(data){
+					$scope.contactNumbers = data;
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		}
+
+		$scope.getUniqueBrands = function(vendorIndex, idx){
+			$scope.assets[idx].brand = null;
+			$scope.purchaseOrder.asset_id = null;
+			$scope.assets[idx].details = [];
+
+			Asset.brands($scope.assetTypes[vendorIndex].id)
+				.success(function(data){
+					$scope.assets[idx].brands = data;
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		}
+
+		$scope.getAssetDetails = function(id, idx){
+			AssetDetail.show(id)
+				.success(function(data){
+					$scope.assets[idx].details = data;
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+
+		$scope.submit = function(){
+			if($scope.form.purchaseOrderForm.$invalid){
+				angular.forEach($scope.form.purchaseOrderForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				//  * Stores Single Record
+				Preloader.saving();
+
+				if(!busy){
+					busy = true;
+					$scope.purchaseOrder.date_purchased = $scope.purchaseOrder.date_purchased.toDateString();
+					$scope.purchaseOrder.date_arrival = $scope.purchaseOrder.date_arrival.toDateString();
+					
+					PurchaseOrder.store($scope.purchaseOrder)
+						.then(function(data){
+							return data.data;
+						})
+						.then(function(data){
+							angular.forEach($scope.assets, function(item){
+								item.purchase_order_id = data.id;
+							});
+
+							AssetPurchaseOrder.store($scope.assets)
+								.success(function(){
+									busy = false;
+									
+									Preloader.stop();
+									
+									$mdToast.simple()
+							        	.textContent('Saved successfuly.')
+							        	.position('bottom right')
+							        	.hideDelay(3000)
+									
+									$state.go('main.purchase-orders');
+								})
+								.error(function(){
+									busy = false;
+									Preloader.error();
+								});
+								
+						}, function(){
+							busy = false;
+							Preloader.error();
+						});
+				}
+			}
+		}
+
+		$scope.init = function(){
+			Vendor.distinct({'distinct':'company'})
+				.then(function(data){
+					$scope.companies = data.data;
+				})
+				.then(function(){
+					AssetType.index()
+						.success(function(data){
+							$scope.assetTypes = data;
+							$scope.show = true;
+						})
+				}, function(){
+					Preloader.error();
+				})
+
+			$scope.addAsset();
+		}();
+	}]);
+adminModule
 	.controller('purchaseOrdersContentContainerController', ['$scope', '$filter', '$state', '$mdDialog', 'PurchaseOrder', 'Preloader', function($scope, $filter, $state, $mdDialog, PurchaseOrder, Preloader){
 		/**
 		  *
@@ -1202,15 +1396,20 @@ adminModule
 	    	}
 		};
 		
-		var pushItem = function(data, type){
+		var pushItem = function(data){
 		    var item = {};
-			item.display = data.name;
-			item.subItem = data.ip_address;
+			item.display = data.vendor.company;
+			item.contact_person = data.vendor.contact_person;
+			item.contact_number = data.vendor.contact_number;
 			// format
-			data.first_letter = data.name.charAt(4).toUpperCase();
+			data.first_letter = data.vendor.company.charAt(0).toUpperCase();
 			data.updated_at = new Date(data.updated_at);
+			data.date_arrival = new Date(data.date_arrival);
+			data.date_purchased = new Date(data.date_purchased);
 
 			$scope.toolbar.items.push(item);
+
+			return data;
 	    }
 
 		$scope.searchUserInput = function(){
@@ -1228,15 +1427,7 @@ adminModule
 		};
 
 		$scope.createPurchaseOrder = function(){
-		    $mdDialog.show({
-		      	controller: 'createPurchaseOrderDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/purchase-order-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	/* Refreshes the list */
-		    	$scope.toolbar.refresh();
-		    });
+		    $state.go('main.create-purchase-order')
 		}
 
 		$scope.editPurchaseOrder = function(){
@@ -1301,7 +1492,7 @@ adminModule
 					$scope.purchaseOrder.paginated.show = true;
 
 					if(data.data.length){
-						// iterate over each record and set the updated_at date and first letter
+						// iterate over each record and set the date_purchased date and first letter
 						angular.forEach(data.data, function(item){
 							pushItem(item);
 						});
@@ -2458,126 +2649,6 @@ adminModule
 					});
 			}
 		}
-	}]);
-adminModule
-	.controller('createPurchaseOrderDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'PurchaseOrder', 'AssetType', 'Asset', 'AssetDetail', 'Vendor', 'AssetPurchaseOrder', function($scope, $stateParams, $mdDialog, Preloader, PurchaseOrder, AssetType, Asset, AssetDetail, Vendor, AssetPurchaseOrder){
-		var busy = false;
-		$scope.purchaseOrder = {};
-		$scope.purchaseOrder.date_purchased = new Date();
-		$scope.purchaseOrder.date_arrival = new Date();
-		
-		$scope.label = "Purchase Order";
-
-
-		$scope.assets = [];
-
-		$scope.addAsset = function(){
-			$scope.assets.push(
-				{
-					'assetTypeIndex':null,
-					'brand': null,
-					'asset_id': null,
-					'quantity': null,
-				}
-			);
-		}
-
-		$scope.removeAsset = function(idx){
-			$scope.assets.splice(idx, 1);
-		}
-
-
-		$scope.getUniqueBrands = function(idx){
-			$scope.brand = null;
-			$scope.purchaseOrder.asset_id = null;
-			$scope.details = [];
-
-			Asset.brands($scope.assetTypes[idx].id)
-				.success(function(data){
-					$scope.assets[idx].brands = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		}
-
-		$scope.getAssetDetails = function(id){
-			AssetDetail.show(id)
-				.success(function(data){
-					$scope.assets[idx].details = data;
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		}
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-
-		$scope.submit = function(){
-			if($scope.assetTagForm.$invalid){
-				angular.forEach($scope.assetTagForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				//  * Stores Single Record
-				Preloader.saving();
-
-				if(!busy){
-					busy = true;
-					$scope.purchaseOrder.date_purchased = $scope.purchaseOrder.date_purchased.toDateString();
-					$scope.purchaseOrder.date_arrival = $scope.purchaseOrder.date_arrival.toDateString();
-					
-					PurchaseOrder.store($scope.purchaseOrder)
-						.then(function(data){
-							return data.data;
-						})
-						.then(function(data){
-							angular.forEach($scope.assets, function(item){
-								item.purchase_order_id = data.id;
-							});
-
-							AssetPurchaseOrder.store($scope.assets)
-								.success(function(){
-									busy = false;
-									Preloader.stop();
-								})
-								.error(function(){
-									busy = false;
-									Preloader.error();
-								});
-								
-						}, function(){
-							Preloader.error();
-						});
-				}
-			}
-		}
-
-		$scope.init = function(){
-			Vendor.index()
-				.success(function(data){
-					$scope.vendors = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-
-			AssetType.index()
-				.success(function(data){
-					$scope.assetTypes = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-
-			$scope.addAsset();
-		}();
 	}]);
 adminModule
 	.controller('createAssetTypeDialogController', ['$scope', '$mdDialog', 'AssetType', 'Preloader', function($scope, $mdDialog, AssetType, Preloader){

@@ -180,6 +180,28 @@ adminModule
 				}],
 			})
 
+			.state('main.create-purchase-order', {
+				url: 'purchase-order/create',
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'createPurchaseOrderContentContainerController',
+					},
+					'toolbar@main.create-purchase-order': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.create-purchase-order': {
+						templateUrl: '/app/components/admin/templates/content/create-purchase-order-content.template.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
 			/**
 			 * Unit Routes
 			 *
