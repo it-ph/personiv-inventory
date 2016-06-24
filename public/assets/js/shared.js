@@ -113,6 +113,9 @@ sharedModule
 		var urlBase = '/asset-tag';
 
 		return {
+			repair: function(id){
+				return $http.get(urlBase + '-repair/' + id);
+			},
 			paginate: function(assetTypeID, page){
 				return $http.get(urlBase + '-paginate/' + assetTypeID + '?page=' + page);
 			},
@@ -179,6 +182,9 @@ sharedModule
 			},
 			checkSequence: function(data){
 				return $http.post(urlBase + '-check-sequence', data);
+			},
+			search: function(data){
+				return $http.post(urlBase + '-search', data);
 			},
 		};
 	}]);
@@ -413,6 +419,9 @@ sharedModule
 			},
 			paginate: function(page){
 				return $http.get(urlBase + '-paginate?page=' + page);
+			},
+			search: function(data){
+				return $http.post(urlBase + '-search', data);
 			},
 		};
 	}]);

@@ -96,7 +96,7 @@
 						<!-- Brand -->
 						<md-input-container flex>
 							<label>Brand</label>
-							<md-select ng-disabled="!asset.assetTypeIndex" required name="Brand{{$index}}" ng-model="asset.brand" ng-change="asset.asset_id = null">
+							<md-select required name="Brand{{$index}}" ng-model="asset.brand" ng-change="asset.asset_id = null">
 								<md-option value="{{asset.brand}}" ng-repeat="asset in asset.brands | orderBy:'brand'">
 									{{ asset.brand }}
 								</md-option>

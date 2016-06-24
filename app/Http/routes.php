@@ -65,6 +65,9 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('employee-paginate/{departmentID}', 'EmployeeController@paginateDepartment');
 	// Route Resource Search
 	Route::post('work-station-search', 'WorkStationController@search');
+	Route::post('asset-tag-search', 'AssetTagController@search');
+	Route::post('purchase-order-search', 'PurchaseOrderController@search');
+	Route::get('asset-tag-repair/{assetTagID}', 'AssetTagController@repair');
 	// Route resource models
 	// Route resource others
 	// Other routes

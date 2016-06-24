@@ -202,6 +202,54 @@ adminModule
 					$mdSidenav('left').toggle();
 				}],
 			})
+
+			.state('main.edit-purchase-order', {
+				url: 'purchase-order/{purchaseOrderID}/edit',
+				params: {'purchaseOrderID': null},
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'editPurchaseOrderContentContainerController',
+					},
+					'toolbar@main.edit-purchase-order': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.edit-purchase-order': {
+						templateUrl: '/app/components/admin/templates/content/create-purchase-order-content.template.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+
+			.state('main.asset-tag-purchase-order', {
+				url: 'purchase-order/{purchaseOrderID}/asset-tag',
+				params: {'purchaseOrderID': null},
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'assetTagPurchaseOrderContentContainerController',
+					},
+					'toolbar@main.asset-tag-purchase-order': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.asset-tag-purchase-order': {
+						templateUrl: '/app/components/admin/templates/content/asset-tag-purchase-order-content.template.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
 			/**
 			 * Unit Routes
 			 *

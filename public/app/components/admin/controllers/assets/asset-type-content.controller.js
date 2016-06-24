@@ -1,7 +1,7 @@
 adminModule
 	.controller('assetTypeContentController', ['$scope', '$filter', '$mdDialog', '$state', '$stateParams', 'AssetType', 'Asset', 'AssetTag', 'Preloader', function($scope, $filter, $mdDialog, $state, $stateParams, AssetType, Asset, AssetTag, Preloader){
 		var assetTypeID = $stateParams.assetTypeID;
-
+		$scope.state = $state.current.name;
 		/**
 		  *
 		  * Object for toolbar
@@ -16,6 +16,30 @@ adminModule
 			return results;
 		}
 
+		$scope.toolbar.options = [
+			{
+				'label': 'Deployed',
+				action : function(){
+					$scope.status = 'deployed';
+					console.log($scope.status);
+				},
+			},
+			{
+				'label': 'Stock',
+				action : function(){
+					$scope.status = 'stock';
+					console.log($scope.status);
+				},
+			},
+			{
+				'label': 'Pulled Out',
+				action : function(){
+					$scope.status = 'pulled out';
+					console.log($scope.status);
+				},
+			},
+		]
+
 		$scope.toolbar.refresh = function(){
 			/* Starts the loading */
 			Preloader.loading();
@@ -29,9 +53,9 @@ adminModule
 	    $scope.hideSearchBar = function(){
 	    	$scope.searchBar = false;
 	    	$scope.toolbar.searchText = '';
-	    	if($scope.asset.searched){
+	    	if($scope.assetTag.searched){
 	    		$scope.toolbar.refresh();
-	    		$scope.asset.searched = false;
+	    		$scope.assetTag.searched = false;
 	    	}
 	    }
 
@@ -84,8 +108,8 @@ adminModule
 	    var pushItem = function(data, type){
 	    	if(type == 'asset'){
 			    var item = {};
-				item.display = data.brand;
-				item.subItem = data.model;
+				item.display = data.model;
+				item.subItem = data.brand;
 				// format
 				data.first_letter = data.brand.charAt(0).toUpperCase();
 				data.updated_at = new Date(data.updated_at);
@@ -96,6 +120,7 @@ adminModule
 				// format
 				data.first_letter = data.asset.brand.charAt(0).toUpperCase();
 				data.warranty_end = new Date(data.warranty_end);
+				data.current_status = data.status.length ? 'Pulled Out' : (data.work_station_id ? 'Deployed' : 'Stock');
 	    	}
 
 			$scope.toolbar.items.push(item);
@@ -109,16 +134,17 @@ adminModule
 
 		$scope.searchUserInput = function(){
 			$scope.asset.show = false;
+			$scope.assetTag.paginated.show = false;
 			Preloader.loading();
 			$scope.toolbar.items = [];
-			Asset.search($scope.toolbar)
+			AssetTag.search($scope.toolbar)
 				.success(function(data){
 					angular.forEach(data, function(item){
-						// pushItem(item);
+						pushItem(item);
 					});
 					
-					$scope.asset.results = data;
-					$scope.asset.searched = true;
+					$scope.assetTag.results = data;
+					$scope.assetTag.searched = true;
 					Preloader.stop();
 				})
 				.error(function(){
@@ -217,6 +243,27 @@ adminModule
 		      	return;
 		    });
 		};
+
+		$scope.repaired = function(id){
+			var confirm = $mdDialog.confirm()
+	        	.title('Repaired')
+	          	.content('Confirm that this asset is repaired?')
+	          	.ariaLabel('Repaired')
+	          	.ok('Yes')
+	          	.cancel('No');
+
+	        $mdDialog.show(confirm).then(function() {
+		      	AssetTag.repair(id)
+		      		.success(function(){
+		      			$scope.toolbar.refresh();
+		      		})
+		      		.error(function(){
+		      			Preloader.error();
+		      		});
+		    }, function() {
+		      	return;
+		    });
+		}
 
 		/**
 		  *

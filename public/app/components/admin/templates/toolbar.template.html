@@ -47,9 +47,24 @@
 				<md-menu-content width="4">
 					<md-menu-item>
 						<md-button ng-click="toolbar.refresh()">
-							Refresh
+							<md-icon class="mdi mdi-refresh grey"></md-icon> Refresh
 						</md-button>
 					</md-menu-item>
+					<md-menu-item hide-gt-sm>
+						<md-button ng-click="toggleSidenav('right')">
+							<md-icon class="mdi mdi-menu grey" aria-label="Toogle Sidenav"></md-icon>
+							<span>Menu</span>
+						</md-button>
+					</md-menu-item>
+					<div ng-if="state == 'main.asset'">
+						<md-divider></md-divider>
+						<md-subheader class="md-no-sticky">Filters</md-subheader>
+						<md-menu-item ng-repeat="option in toolbar.options">
+							<md-button ng-click="option.action()">
+								<md-icon class="mdi mdi-filter grey"></md-icon> {{option.label}}
+							</md-button>
+						</md-menu-item>
+					</div>
 				</md-menu-content>
 			</md-menu>
 			<span flex="5"></span>

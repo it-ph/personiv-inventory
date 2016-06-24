@@ -15,6 +15,28 @@ use App\Http\Controllers\Controller;
 
 class AssetTagController extends Controller
 {
+    public function repair($id)
+    {
+        $asset_tag = AssetTag::with('status')->where('id', $id)->first();
+
+        foreach ($asset_tag->status as $key => $status) {
+            $status->delete();
+        }
+
+        $asset_tag->work_station_id = null;
+
+        $asset_tag->save();
+    }
+
+    public function search(Request $request)
+    {
+        $this->validate($request, [
+            'searchText' => 'required|string',
+        ]);
+
+        return AssetTag::with('type', 'asset', 'purchase_order', 'status', 'work_station')->where('property_code', 'like', '%'. $request->searchText .'%')->orWhere('serial', 'like', '%'. $request->searchText .'%')->orWhere('computer_name', 'like', '%'. $request->searchText .'%')->first();
+    }
+
     public function paginate($id)
     {
         return AssetTag::with('type', 'asset', 'purchase_order', 'status', 'work_station')->where('asset_type_id', $id)->paginate(20);

@@ -21,5 +21,8 @@ sharedModule
 			paginate: function(page){
 				return $http.get(urlBase + '-paginate?page=' + page);
 			},
+			search: function(data){
+				return $http.post(urlBase + '-search', data);
+			},
 		};
 	}]);

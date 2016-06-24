@@ -99,7 +99,33 @@ class AssetPurchaseOrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        AssetPurchaseOrder::where('purchase_order_id', $id)->delete();
+
+        for ($i=0; $i < count($request->all()); $i++) { 
+            $this->validate($request, [
+                $i.'.asset_id' => 'required|numeric',
+                $i.'.purchase_order_id' => 'required|numeric',
+                $i.'.quantity' => 'required|numeric',
+            ]);
+
+            $asset_purchase_order = new AssetPurchaseOrder;
+
+            $asset_purchase_order->asset_id = $request->input($i.'.asset_id');
+            $asset_purchase_order->purchase_order_id = $request->input($i.'.purchase_order_id');
+            $asset_purchase_order->quantity = $request->input($i.'.quantity');
+
+            $asset_purchase_order->save();
+
+            $activity_type = ActivityType::where('type', 'asset_purchase_order')->where('action', 'update')->first();
+
+            $activity = new Activity;
+
+            $activity->user_id = $request->user()->id;
+            $activity->activity_type_id = $activity_type->id;
+            $activity->event_id = $asset_purchase_order->id;
+
+            $activity->save();
+        }
     }
 
     /**

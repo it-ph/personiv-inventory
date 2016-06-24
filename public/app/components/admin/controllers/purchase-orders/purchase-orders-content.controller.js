@@ -6,7 +6,7 @@ adminModule
 		  *
 		*/
 		$scope.toolbar = {};
-		$scope.toolbar.childState = 'Purchaser Orders';
+		$scope.toolbar.childState = 'Purchase Orders';
 	    $scope.toolbar.searchAll = true;
 		$scope.toolbar.items = [];
 		$scope.toolbar.getItems = function(query){
@@ -76,22 +76,14 @@ adminModule
 		    $state.go('main.create-purchase-order')
 		}
 
-		$scope.editPurchaseOrder = function(){
-		    $mdDialog.show({
-		      	controller: 'editPurchaseOrderDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/purchase-order-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	/* Refreshes the list */
-		    	$scope.toolbar.refresh();
-		    });
+		$scope.editPurchaseOrder = function(id){
+		    $state.go('main.edit-purchase-order', {'purchaseOrderID':id});
 		}
 
 		$scope.deletePurchaseOrder = function(id){
 			var confirm = $mdDialog.confirm()
 		        .title('Delete')
-		        .textContent('.')
+		        .textContent('Are you sure you want to remove this purchase order?')
 		        .ariaLabel('Delete')
 		        .ok('Delete')
 		        .cancel('Cancel');
@@ -109,8 +101,8 @@ adminModule
 		    });
 		}
 
-		$scope.show = function(id){
-			$state.go('main.purchase-order', {'purchaseOrderID' : id});
+		$scope.assetTag = function(id){
+			$state.go('main.asset-tag-purchase-order', {'purchaseOrderID' : id});
 		}
 
 		/**
