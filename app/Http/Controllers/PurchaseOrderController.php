@@ -90,7 +90,9 @@ class PurchaseOrderController extends Controller
      */
     public function show($id)
     {
-        return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type', 'details'); }]); }])->where('id', $id)->first();
+        $this->id = $id;
+        // fetch purchase order with its vendor, asset_purchase_order, asset, 
+        return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type', 'details')->with(['asset_tags' => function($query){ $query->with('work_station')->where('purchase_order_id', $this->id); } ]); }]); }])->where('id', $id)->first();
     }
 
     /**

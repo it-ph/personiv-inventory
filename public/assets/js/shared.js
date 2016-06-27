@@ -13,12 +13,10 @@ sharedModule
 		/* Defaul Theme Blue - Light Blue */
 		$mdThemingProvider.theme('default')
 			.primaryPalette('blue')
-			.accentPalette('light-blue');
 		
 		/* Dark Theme - Blue */
 		$mdThemingProvider.theme('dark', 'default')
 	      	.primaryPalette('blue')
-			.accentPalette('light-blue')
 			.dark();
 
 		$mdThemingProvider.theme('dark-teal').backgroundPalette('teal').dark();
@@ -113,6 +111,9 @@ sharedModule
 		var urlBase = '/asset-tag';
 
 		return {
+			lastPropertyCode: function(data){
+				return $http.post(urlBase + '-last-property-code', data);
+			},
 			repair: function(id){
 				return $http.get(urlBase + '-repair/' + id);
 			},

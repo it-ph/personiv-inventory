@@ -1,0 +1,65 @@
+<div layout-margin layout="row" layout-align="center start" flex>
+	<div flex flex-gt-lg="80"  layout-padding >
+		<div class="fade-transition" ng-if="purchaseOrder">
+			<!-- Charts -->
+			<div layout="row" layout-padding>
+				<div ng-repeat="chart in purchaseOrder.asset_purchase_order" flex layout="column" layout-align="center center">	
+					<h3 class="md-subhead primary-text">{{chart.asset.brand}} - {{chart.asset.model}}</h3>
+					<canvas class="chart chart-doughnut" chart-data="chart.chart.data" chart-labels="chart.chart.labels" chart-legend="true"></canvas>
+					<p>
+						<span>Tagged : {{ chart.chart.data[0] }}</span> |
+						<span>Stock : {{ chart.chart.data[1] }}</span>
+					</p>
+				</div>
+			</div>
+			<md-divider></md-divider>
+			<div layout="row">
+				<div flex>
+		        	<h3 class="md-headline">Date Purchased:</h3>
+		        	<p layout="column">
+		        		<span>{{ purchaseOrder.date_purchased | date: 'EEEE, MMMM d, yyyy' }}</span>
+		        		<span class="secondary-text md-caption" am-time-ago="purchaseOrder.date_purchased"></span>
+		        	</p>
+		    	</div>
+		    	<div flex>
+		        	<h3 class="md-headline">Expected Time of Arrival</h3>
+		        	<p layout="column">
+		        		<span>{{ purchaseOrder.date_arrival | date: 'EEEE, MMMM d, yyyy' }}</span>
+		            	<span class="secondary-text md-caption"> will arrive around <span am-time-ago="purchaseOrder.date_arrival"></span></span>
+		        	</p>
+		    	</div>
+		    	<div flex>
+		        	<h3 class="md-headline">Vendor:</h3>
+		        	<p layout="column">
+		        		<span>{{ purchaseOrder.vendor.company }}</span>
+			            <span class="secondary-text md-caption">{{ purchaseOrder.vendor.contact_person }} - {{ purchaseOrder.vendor.contact_number }}</span>
+		        	</p>
+		    	</div>
+			</div>
+			<md-divider></md-divider>
+			<!-- Lists -->
+			<md-tabs md-dynamic-height md-border-bottom>
+				<md-tab ng-repeat="asset in purchaseOrder.asset_purchase_order" label="{{asset.asset.brand}} - {{asset.asset.model}} ({{asset.asset.type.type}})">
+					<md-subheader ng-if="asset.asset.asset_tags.length">Tagged</md-subheader>
+					<md-list layout="row" layout-wrap layout-padding>
+						<md-list-item flex="100" flex-gt-md="50" flex-gt-lg="25" class="md-2-line" ng-repeat="asset_tag in asset.asset.asset_tags">
+							<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
+								<span class="md-headline white-text">{{asset.asset.model[0].toUpperCase()}}</span>
+							</h2>
+							<div class="md-list-item-text">
+								<h3>{{asset_tag.property_code}}</h3>
+								<h4>{{asset_tag.work_station.name}}</h4>
+							</div>
+						</md-list-item>
+					</md-list>
+					<div layout-padding>
+						<p ng-if="!asset.asset.asset_tags.length" class="secondary-text">No asset tags yet.</p>
+					</div>
+				</md-tab>
+			</md-tabs>
+		</div>
+		<div layout="row" layout-align="center center" ng-if="!purchaseOrder">
+			<md-progress-circular md-mode="indeterminate" class="md-primary" md-diameter="96" ></md-progress-circular>
+		</div>
+	</div>
+</div>

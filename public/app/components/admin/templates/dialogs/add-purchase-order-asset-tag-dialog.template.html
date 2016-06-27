@@ -1,0 +1,123 @@
+<md-dialog layout="column" flex flex-gt-sm="50" flex-gt-lg="40"  aria-label="Program" ng-cloak>
+	<form name="assetTagForm" novalidate>
+		<md-toolbar class="white-toolbar">
+			<div class="md-toolbar-tools">
+				<h2 class="primary-text">New Asset Tag</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close mdi-24px grey" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content layout="column" flex layout-padding layout-wrap>
+			<div layout="column">
+				<md-input-container>
+					<label>Asset</label>
+					<md-select name="Asset" ng-model="assetTag.asset_id" required ng-change="checkLastPropertyCode()">
+						<md-option ng-if="asset_purchase_order.asset.asset_tags.length < asset_purchase_order.quantity" value="{{asset_purchase_order.asset.id}}" ng-repeat="asset_purchase_order in purchaseOrder.asset_purchase_order">
+							{{asset_purchase_order.asset.brand}} - {{asset_purchase_order.asset.model}} ({{asset_purchase_order.asset.type.type}})
+						</md-option>
+					</md-select>
+				</md-input-container>
+				<!-- Computer Name -->
+				<md-input-container ng-if="asset_purchase_order.asset.type.type == 'Desktop' || asset_purchase_order.asset.type.type == 'Laptop' || asset_purchase_order.asset.type.type == 'Mac' || asset_purchase_order.asset.type.type == 'Mac Mini'">
+					<label>Computer Name</label>
+					<input type="text" name="ComputerName" ng-model="assetTag.computer_name">
+				</md-input-container>
+				<div layout="row">				
+					<!-- Serial -->
+					<md-input-container flex>
+						<label>Serial</label>
+						<input type="text" name="Serial" ng-model="assetTag.serial">
+					</md-input-container>
+					<!-- Sequence -->
+					<md-input-container flex>
+						<label>Sequence Number</label>
+						<input type="number" name="Sequence" min="0" max="99999" ng-model="assetTag.sequence" ng-pattern="/^[0-9]+$/" required ng-blur="checkSequence()">
+						<div ng-messages="assetTagForm.Sequence.$error" ng-if="assetTagForm.Sequence.$touched">
+							<div ng-message="required">Sequence Number is required</div>
+							<div ng-message="pattern">Numeric values only</div>
+							<div ng-message="min">Minimum is zero.</div>
+							<div ng-message="max">Maximum is 99,999.</div>
+						</div>
+						<div class="pattern" ng-if="duplicate">Sequence number is already in use.</div>
+						<div class="hint" ng-if="!duplicate && assetTagForm.Asset.$touched">Last property code is {{assetTag.lastPropertyCode}}.</div>
+					</md-input-container>
+				</div>
+
+				<md-switch ng-model="hasWarranty" class="md-primary">Warranty</md-switch>
+				<!-- Warranty End -->
+				<div layout-padding ng-if="hasWarranty">
+					<h4>End of warranty <span class="md-caption secondary-text">(Minimum date is today.)</span></h4>
+					<md-datepicker name="Warranty" ng-model="assetTag.warranty_end" md-placeholder="Warranty End" md-min-date="minDate" required></md-datepicker>
+			        <div class="validation-messages" ng-messages="assetTagForm.Warranty.$error" ng-if="assetTagForm.Warranty.$touched">
+			        	<div ng-message="valid">The entered value is not a date!</div>
+			        	<div ng-message="required">Toogle the warranty switch if asset has no more warranty.</div>
+			        	<div ng-message="mindate">Minimum date is today</div>
+			        </div>
+				</div>
+				<!-- Remarks -->
+				<md-input-container flex>
+					<label>Remarks</label>
+					<textarea name="assetTagForm.remarks" ng-model="assetTag.remarks"></textarea>
+					<div class="hint">Note about the asset.</div>
+				</md-input-container>
+				<div layout="row">
+					<!-- Floor -->
+					<md-input-container flex>
+						<label>Floor</label>
+						<md-select name="Floor" ng-model="floor" required ng-change="assetTag.work_station_id=null">
+							<md-option ng-repeat="floor in floors" value="{{ floor }}">
+								<span>{{ floor }}</span>
+							</md-option>
+						</md-select>
+						<div ng-messages="assetTagForm.Floor.$error" ng-if="assetTagForm.Floor.$touched">
+							<div ng-message="required">Floor is required</div>
+						</div>
+					</md-input-container>
+					<!-- Division -->
+					<md-input-container flex>
+						<label>Division</label>
+						<md-select name="Division" ng-model="division" ng-disabled="!floor" ng-change="assetTag.work_station_id=null">
+							<md-option ng-repeat="division in divisions" value="{{ division }}">
+								<span>{{ division }}</span>
+							</md-option>
+						</md-select>
+						<div ng-messages="assetTagForm.Division.$error" ng-if="assetTagForm.Division.$touched">
+							<div ng-message="required">Division is required</div>
+						</div>
+					</md-input-container>
+					<!-- Type -->
+					<md-input-container flex>
+						<label>Type</label>
+						<md-select name="Type" ng-model="type" ng-disabled="!division" ng-change="assetTag.work_station_id=null">
+							<md-option ng-repeat="type in types" value="{{ type }}">
+								<span>{{ type }}</span>
+							</md-option>
+						</md-select>
+						<div ng-messages="assetTagForm.Type.$error" ng-if="assetTagForm.Type.$touched">
+							<div ng-message="required">Type is required</div>
+						</div>
+					</md-input-container>
+				</div>
+				<!-- Work Station -->
+				<md-input-container>
+					<label>Work Station</label>
+					<md-select name="WorkStation" required ng-model="assetTag.work_station_id" ng-disabled="!type">
+						<md-option ng-repeat="workStation in workStations | filter:{floor: floor} | filter:{division:division} | filter:{type:type}" value="{{ workStation.id }}">
+							<span>{{ workStation.name }}</span>
+						</md-option>
+					</md-select>
+					<div ng-messages="assetTagForm.WorkStation.$error" ng-if="assetTagForm.WorkStation.$touched">
+						<div ng-message="required">Work station is required.</div>						
+					</div>
+				</md-input-container>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-button md-primary" aria-label="Submit" ng-click="submit()">
+			Submit
+		</md-button>
+	</div>
+</md-dialog>

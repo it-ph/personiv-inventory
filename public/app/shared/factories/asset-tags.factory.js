@@ -3,6 +3,9 @@ sharedModule
 		var urlBase = '/asset-tag';
 
 		return {
+			lastPropertyCode: function(data){
+				return $http.post(urlBase + '-last-property-code', data);
+			},
 			repair: function(id){
 				return $http.get(urlBase + '-repair/' + id);
 			},

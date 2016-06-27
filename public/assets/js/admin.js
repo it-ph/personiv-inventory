@@ -1865,6 +1865,388 @@ adminModule
 		$scope.init();
 	}]);
 adminModule
+	.controller('settingsContentContainerController', ['$scope', '$state', '$filter', '$mdDialog', 'Preloader', 'Department', 'AssetType', 'User', 'Vendor', function($scope, $state, $filter, $mdDialog, Preloader, Department, AssetType, User, Vendor){
+		/**
+		  *
+		  * Object for toolbar
+		  *
+		*/
+		$scope.toolbar = {};
+		$scope.toolbar.childState = 'Settings';
+		$scope.toolbar.items = [];
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+		$scope.showSearchBar = function(){
+	    	$scope.searchBar = true;
+	    }
+
+	    $scope.hideSearchBar = function(){
+	    	$scope.searchBar = false;
+	    	$scope.toolbar.searchText = '';
+	    }
+		
+		/**
+		  *
+		  * Object for subheader
+		  *
+		*/
+		$scope.subheader = {};
+		$scope.toolbar.refresh = function(){
+			/* Reset the data */
+			$scope.departments = [];
+			$scope.asset_types = [];
+			/* Starts the loading */
+			Preloader.loading();
+			$scope.init(true);
+		}
+
+		/**
+		  *
+		  * Department Actions
+		*/
+
+		$scope.createDepartment = function(){
+			$mdDialog.show({
+		    	controller: 'createDepartmentDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/department-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
+	        .then(function() {
+	        	$scope.toolbar.refresh();
+	        }, function() {
+	        	return;
+	        });
+		}
+
+		$scope.editDepartment = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		    	controller: 'editDepartmentDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/department-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
+	        .then(function() {
+	        	$scope.toolbar.refresh();
+	        	Preloader.toastChangesSaved();
+	        }, function() {
+	        	return;
+	        });	
+		}
+
+		$scope.deleteDepartment = function(id){
+			var confirm = $mdDialog.confirm()
+		        .title('Delete')
+		        .textContent('This department will be removed from the list.')
+		        .ariaLabel('Delete department')
+		        .ok('Delete')
+		        .cancel('Cancel');
+
+		    $mdDialog.show(confirm)
+		    	.then(function() {
+			    	Department.delete(id)
+			    		.success(function(){
+			    			$scope.toolbar.refresh();
+			    			Preloader.deleted();
+			    		})
+			    		.error(function(){
+			    			Preloader.error();
+			    		});
+			    }, function() {
+			    	return;
+			    });
+		}
+
+		/**
+		  *
+		  * AssetType Actions
+		  *
+		*/
+
+		$scope.createAssetType = function(){
+			$mdDialog.show({
+		    	controller: 'createAssetTypeDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/asset-type-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
+	        .then(function() {
+	        	$scope.toolbar.refresh();
+	        	$state.go($state.current, {}, {reload:true});
+	        }, function() {
+	        	return;
+	        });
+		}
+
+		$scope.editAssetType = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		    	controller: 'editAssetTypeDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/asset-type-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
+	        .then(function() {
+	        	$scope.toolbar.refresh();
+	        	$state.go($state.current, {}, {reload:true});
+	        	Preloader.toastChangesSaved();
+	        }, function() {
+	        	return;
+	        });	
+		}
+
+		$scope.deleteAssetType = function(id){
+			var confirm = $mdDialog.confirm()
+		        .title('Delete')
+		        .textContent('This asset will be removed from the list.')
+		        .ariaLabel('Delete Asset Type')
+		        .ok('Delete')
+		        .cancel('Cancel');
+
+		    $mdDialog.show(confirm)
+		    	.then(function() {
+			    	AssetType.delete(id)
+			    		.success(function(){
+			    			$scope.toolbar.refresh();
+			    			$state.go($state.current, {}, {reload:true});
+			    			Preloader.deleted();
+			    		})
+			    		.error(function(){
+			    			Preloader.error();
+			    		});
+			    }, function() {
+			    	return;
+			    });
+		}
+
+		/**
+		  *
+		  * Users Actions
+		  *
+		*/
+		$scope.createUser = function(){
+			$mdDialog.show({
+		    	controller: 'createUserDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/user-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
+	        .then(function(){
+	        	$scope.toolbar.refresh();
+	        	$state.go($state.current, {}, {reload:true});
+	        }, function() {
+	        	return;
+	        });
+		}
+
+		$scope.resetPassword = function(id){
+			var confirm = $mdDialog.confirm()
+		        .title('Reset Password')
+		        .textContent('Reset the password for this account?')
+		        .ariaLabel('Reset Password')
+		        .ok('Reset')
+		        .cancel('Cancel');
+
+		    $mdDialog.show(confirm)
+		    	.then(function() {
+			    	User.resetPassword(id)
+			    		.success(function(){
+			    			Preloader.toastChangesSaved();
+			    		})
+			    		.error(function(){
+			    			Preloader.error();
+			    		});
+			    }, function() {
+			    	return;
+			    });
+		}
+
+		$scope.deleteAccount = function(id){
+			var confirm = $mdDialog.confirm()
+		        .title('Delete Account')
+		        .textContent('This account will be removed permanently.')
+		        .ariaLabel('Delete Account')
+		        .ok('Delete')
+		        .cancel('Cancel');
+
+		    $mdDialog.show(confirm)
+		    	.then(function() {
+			    	User.delete(id)
+			    		.success(function(){
+			    			$scope.toolbar.refresh();
+			    			$state.go($state.current, {}, {reload:true});
+			    			Preloader.deleted();
+			    		})
+			    		.error(function(){
+			    			Preloader.error();
+			    		});
+			    }, function() {
+			    	return;
+			    });
+		}
+
+		/**
+		  *
+		  * Vendor Actions
+		  *
+		*/
+
+		$scope.createVendor = function(){
+			$mdDialog.show({
+		    	controller: 'createVendorDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/vendor-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
+	        .then(function() {
+	        	$scope.toolbar.refresh();
+	        }, function() {
+	        	return;
+	        });
+		}
+
+		$scope.editVendor = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		    	controller: 'editVendorDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/vendor-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
+	        .then(function() {
+	        	$scope.toolbar.refresh();
+	        	Preloader.toastChangesSaved();
+	        }, function() {
+	        	return;
+	        });	
+		}
+
+		$scope.deleteVendor = function(id){
+			var confirm = $mdDialog.confirm()
+		        .title('Delete')
+		        .textContent('This vendor will be removed from the list.')
+		        .ariaLabel('Delete Vendor')
+		        .ok('Delete')
+		        .cancel('Cancel');
+
+		    $mdDialog.show(confirm)
+		    	.then(function() {
+			    	Vendor.delete(id)
+			    		.success(function(){
+			    			$scope.toolbar.refresh();
+			    			Preloader.deleted();
+			    		})
+			    		.error(function(){
+			    			Preloader.error();
+			    		});
+			    }, function() {
+			    	return;
+			    });
+		}
+
+		/* sets the first letter and format the date to date object */
+		var formatData = function(data)
+		{
+			angular.forEach(data, function(item){
+				item.first_letter = item.name ? item.name.charAt(0).toUpperCase() : (item.type ? item.type.charAt(0).toUpperCase() : (item.first_name ? item.first_name.charAt(0).toUpperCase() : item.company.charAt(0).toUpperCase()) );
+				item.created_at = new Date(item.created_at);
+			});
+
+			return data;
+		}
+
+		/**
+		  *
+		  * Initial data fetching
+		  *
+		*/
+		$scope.init = function(refresh){
+			Department.index()
+				.then(function(data){
+					// formats the data;
+					formatData(data.data);
+					
+					$scope.departments = data.data;
+
+					angular.forEach(data.data, function(item){
+						var toolbarItem = {};
+						toolbarItem.display = item.name;
+						$scope.toolbar.items.push(toolbarItem);
+					});
+
+					return;
+				})
+				.then(function(){
+					AssetType.index()
+						.success(function(data){
+							// formats the data;
+							formatData(data.data);
+
+							$scope.asset_types = data;
+
+							angular.forEach(data.data, function(item){
+								var toolbarItem = {};
+								toolbarItem.display = item.type;
+								$scope.toolbar.items.push(toolbarItem);
+							});
+
+							$scope.toolbar.getItems();
+
+							return;
+						})
+
+				})
+				.then(function(){
+					User.others()
+						.success(function(data){
+							formatData(data.data);
+
+							$scope.users = data;
+
+							angular.forEach(data.data, function(item){
+								var toolbarItem = {};
+								toolbarItem.display = item.first_name;
+								$scope.toolbar.items.push(toolbarItem);
+							});
+
+							return;
+							
+							if(refresh)
+							{
+								Preloader.stop();
+								Preloader.stop();
+							}
+						})
+						.error(function(){
+							Preloader.error();
+						});
+
+				})
+				.then(function(){
+					Vendor.index()
+						.success(function(data){
+							formatData(data.data);
+
+							angular.forEach(data.data, function(item){
+								var toolbarItem = {};
+								toolbarItem.display = item.company;
+								$scope.toolbar.items.push(toolbarItem);
+							});
+
+							$scope.vendors = data;
+
+							if(refresh)
+							{
+								Preloader.stop();
+								Preloader.stop();
+							}
+						})
+
+				}, function(){
+					Preloader.error();
+				});
+		}
+
+		/* execute initial data fetching */
+		$scope.init();
+	}]);
+adminModule
 	.controller('addWorkStationDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, WorkStation){
 		var busy = false;
 		$scope.workStation = {};
@@ -2339,388 +2721,6 @@ adminModule
 	}]);
 
 adminModule
-	.controller('settingsContentContainerController', ['$scope', '$state', '$filter', '$mdDialog', 'Preloader', 'Department', 'AssetType', 'User', 'Vendor', function($scope, $state, $filter, $mdDialog, Preloader, Department, AssetType, User, Vendor){
-		/**
-		  *
-		  * Object for toolbar
-		  *
-		*/
-		$scope.toolbar = {};
-		$scope.toolbar.childState = 'Settings';
-		$scope.toolbar.items = [];
-		$scope.toolbar.getItems = function(query){
-			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
-			return results;
-		}
-		$scope.showSearchBar = function(){
-	    	$scope.searchBar = true;
-	    }
-
-	    $scope.hideSearchBar = function(){
-	    	$scope.searchBar = false;
-	    	$scope.toolbar.searchText = '';
-	    }
-		
-		/**
-		  *
-		  * Object for subheader
-		  *
-		*/
-		$scope.subheader = {};
-		$scope.toolbar.refresh = function(){
-			/* Reset the data */
-			$scope.departments = [];
-			$scope.asset_types = [];
-			/* Starts the loading */
-			Preloader.loading();
-			$scope.init(true);
-		}
-
-		/**
-		  *
-		  * Department Actions
-		*/
-
-		$scope.createDepartment = function(){
-			$mdDialog.show({
-		    	controller: 'createDepartmentDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/department-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    })
-	        .then(function() {
-	        	$scope.toolbar.refresh();
-	        }, function() {
-	        	return;
-	        });
-		}
-
-		$scope.editDepartment = function(id){
-			Preloader.set(id);
-			$mdDialog.show({
-		    	controller: 'editDepartmentDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/department-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    })
-	        .then(function() {
-	        	$scope.toolbar.refresh();
-	        	Preloader.toastChangesSaved();
-	        }, function() {
-	        	return;
-	        });	
-		}
-
-		$scope.deleteDepartment = function(id){
-			var confirm = $mdDialog.confirm()
-		        .title('Delete')
-		        .textContent('This department will be removed from the list.')
-		        .ariaLabel('Delete department')
-		        .ok('Delete')
-		        .cancel('Cancel');
-
-		    $mdDialog.show(confirm)
-		    	.then(function() {
-			    	Department.delete(id)
-			    		.success(function(){
-			    			$scope.toolbar.refresh();
-			    			Preloader.deleted();
-			    		})
-			    		.error(function(){
-			    			Preloader.error();
-			    		});
-			    }, function() {
-			    	return;
-			    });
-		}
-
-		/**
-		  *
-		  * AssetType Actions
-		  *
-		*/
-
-		$scope.createAssetType = function(){
-			$mdDialog.show({
-		    	controller: 'createAssetTypeDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/asset-type-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    })
-	        .then(function() {
-	        	$scope.toolbar.refresh();
-	        	$state.go($state.current, {}, {reload:true});
-	        }, function() {
-	        	return;
-	        });
-		}
-
-		$scope.editAssetType = function(id){
-			Preloader.set(id);
-			$mdDialog.show({
-		    	controller: 'editAssetTypeDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/asset-type-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    })
-	        .then(function() {
-	        	$scope.toolbar.refresh();
-	        	$state.go($state.current, {}, {reload:true});
-	        	Preloader.toastChangesSaved();
-	        }, function() {
-	        	return;
-	        });	
-		}
-
-		$scope.deleteAssetType = function(id){
-			var confirm = $mdDialog.confirm()
-		        .title('Delete')
-		        .textContent('This asset will be removed from the list.')
-		        .ariaLabel('Delete Asset Type')
-		        .ok('Delete')
-		        .cancel('Cancel');
-
-		    $mdDialog.show(confirm)
-		    	.then(function() {
-			    	AssetType.delete(id)
-			    		.success(function(){
-			    			$scope.toolbar.refresh();
-			    			$state.go($state.current, {}, {reload:true});
-			    			Preloader.deleted();
-			    		})
-			    		.error(function(){
-			    			Preloader.error();
-			    		});
-			    }, function() {
-			    	return;
-			    });
-		}
-
-		/**
-		  *
-		  * Users Actions
-		  *
-		*/
-		$scope.createUser = function(){
-			$mdDialog.show({
-		    	controller: 'createUserDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/user-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    })
-	        .then(function(){
-	        	$scope.toolbar.refresh();
-	        	$state.go($state.current, {}, {reload:true});
-	        }, function() {
-	        	return;
-	        });
-		}
-
-		$scope.resetPassword = function(id){
-			var confirm = $mdDialog.confirm()
-		        .title('Reset Password')
-		        .textContent('Reset the password for this account?')
-		        .ariaLabel('Reset Password')
-		        .ok('Reset')
-		        .cancel('Cancel');
-
-		    $mdDialog.show(confirm)
-		    	.then(function() {
-			    	User.resetPassword(id)
-			    		.success(function(){
-			    			Preloader.toastChangesSaved();
-			    		})
-			    		.error(function(){
-			    			Preloader.error();
-			    		});
-			    }, function() {
-			    	return;
-			    });
-		}
-
-		$scope.deleteAccount = function(id){
-			var confirm = $mdDialog.confirm()
-		        .title('Delete Account')
-		        .textContent('This account will be removed permanently.')
-		        .ariaLabel('Delete Account')
-		        .ok('Delete')
-		        .cancel('Cancel');
-
-		    $mdDialog.show(confirm)
-		    	.then(function() {
-			    	User.delete(id)
-			    		.success(function(){
-			    			$scope.toolbar.refresh();
-			    			$state.go($state.current, {}, {reload:true});
-			    			Preloader.deleted();
-			    		})
-			    		.error(function(){
-			    			Preloader.error();
-			    		});
-			    }, function() {
-			    	return;
-			    });
-		}
-
-		/**
-		  *
-		  * Vendor Actions
-		  *
-		*/
-
-		$scope.createVendor = function(){
-			$mdDialog.show({
-		    	controller: 'createVendorDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/vendor-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    })
-	        .then(function() {
-	        	$scope.toolbar.refresh();
-	        }, function() {
-	        	return;
-	        });
-		}
-
-		$scope.editVendor = function(id){
-			Preloader.set(id);
-			$mdDialog.show({
-		    	controller: 'editVendorDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/vendor-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    })
-	        .then(function() {
-	        	$scope.toolbar.refresh();
-	        	Preloader.toastChangesSaved();
-	        }, function() {
-	        	return;
-	        });	
-		}
-
-		$scope.deleteVendor = function(id){
-			var confirm = $mdDialog.confirm()
-		        .title('Delete')
-		        .textContent('This vendor will be removed from the list.')
-		        .ariaLabel('Delete Vendor')
-		        .ok('Delete')
-		        .cancel('Cancel');
-
-		    $mdDialog.show(confirm)
-		    	.then(function() {
-			    	Vendor.delete(id)
-			    		.success(function(){
-			    			$scope.toolbar.refresh();
-			    			Preloader.deleted();
-			    		})
-			    		.error(function(){
-			    			Preloader.error();
-			    		});
-			    }, function() {
-			    	return;
-			    });
-		}
-
-		/* sets the first letter and format the date to date object */
-		var formatData = function(data)
-		{
-			angular.forEach(data, function(item){
-				item.first_letter = item.name ? item.name.charAt(0).toUpperCase() : (item.type ? item.type.charAt(0).toUpperCase() : (item.first_name ? item.first_name.charAt(0).toUpperCase() : item.company.charAt(0).toUpperCase()) );
-				item.created_at = new Date(item.created_at);
-			});
-
-			return data;
-		}
-
-		/**
-		  *
-		  * Initial data fetching
-		  *
-		*/
-		$scope.init = function(refresh){
-			Department.index()
-				.then(function(data){
-					// formats the data;
-					formatData(data.data);
-					
-					$scope.departments = data.data;
-
-					angular.forEach(data.data, function(item){
-						var toolbarItem = {};
-						toolbarItem.display = item.name;
-						$scope.toolbar.items.push(toolbarItem);
-					});
-
-					return;
-				})
-				.then(function(){
-					AssetType.index()
-						.success(function(data){
-							// formats the data;
-							formatData(data.data);
-
-							$scope.asset_types = data;
-
-							angular.forEach(data.data, function(item){
-								var toolbarItem = {};
-								toolbarItem.display = item.type;
-								$scope.toolbar.items.push(toolbarItem);
-							});
-
-							$scope.toolbar.getItems();
-
-							return;
-						})
-
-				})
-				.then(function(){
-					User.others()
-						.success(function(data){
-							formatData(data.data);
-
-							$scope.users = data;
-
-							angular.forEach(data.data, function(item){
-								var toolbarItem = {};
-								toolbarItem.display = item.first_name;
-								$scope.toolbar.items.push(toolbarItem);
-							});
-
-							return;
-							
-							if(refresh)
-							{
-								Preloader.stop();
-								Preloader.stop();
-							}
-						})
-						.error(function(){
-							Preloader.error();
-						});
-
-				})
-				.then(function(){
-					Vendor.index()
-						.success(function(data){
-							formatData(data.data);
-
-							angular.forEach(data.data, function(item){
-								var toolbarItem = {};
-								toolbarItem.display = item.company;
-								$scope.toolbar.items.push(toolbarItem);
-							});
-
-							$scope.vendors = data;
-
-							if(refresh)
-							{
-								Preloader.stop();
-								Preloader.stop();
-							}
-						})
-
-				}, function(){
-					Preloader.error();
-				});
-		}
-
-		/* execute initial data fetching */
-		$scope.init();
-	}]);
-adminModule
 	.controller('assetDetailsDialogController', ['$scope', '$mdDialog', 'Asset', 'Preloader', function($scope, $mdDialog, Asset, Preloader){
 		var assetID = Preloader.get();
 		
@@ -2982,7 +2982,8 @@ adminModule
 		  *
 		*/
 		$scope.toolbar = {};
-		$scope.toolbar.parentState = 'Purchase Orders - Asset Tag';
+		$scope.toolbar.parentState = 'Purchase Order';
+		$scope.toolbar.childState = 'Asset Tags';
 	    $scope.toolbar.searchAll = false;
 	    $scope.toolbar.showBack = true;
 	    $scope.toolbar.back = function(){
@@ -2995,7 +2996,7 @@ adminModule
 			Preloader.loading();
 			$scope.init(true);
 		}
-		
+
 		/**
 		 * Object for fab
 		 *
@@ -3003,17 +3004,46 @@ adminModule
 		$scope.fab = {};
 
 		$scope.fab.icon = 'mdi-plus';
-		$scope.fab.label = 'Purchase Order';
+		$scope.fab.label = 'Asset Tag';
+		$scope.fab.show = 'True';
 
 		$scope.fab.action = function(){
-			$scope.submit();			
+			Preloader.set($scope.purchaseOrder);
+			$mdDialog.show({
+		      	controller: 'addPurchaseOrderAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-purchase-order-asset-tag-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.toolbar.refresh();
+		    });			
 		}
 
 		$scope.init = function(refresh){
+			$scope.purchaseOrder = null;
+
 			PurchaseOrder.show(purchaseOrderID)
 				.success(function(data){
+					angular.forEach(data.asset_purchase_order, function(item){
+						item.chart = {};
+						item.chart.data = [];
+						item.chart.labels = ['Tagged','Stocks'];
+						// tagged
+						item.chart.data[0] =  item.asset.asset_tags.length;
+						// stocks
+						item.chart.data[1] = item.quantity - item.asset.asset_tags.length;
+					});
+
+					data.date_arrival = new Date(data.date_arrival);
+					data.date_purchased = new Date(data.date_purchased);
+
 					$scope.purchaseOrder = data;
-					$scope.toolbar.childState = data.id;
+
+					if(refresh){
+						Preloader.stop();
+						Preloader.stop();
+					}
 				})
 				.error(function(){
 					Preloader.error();
@@ -3021,6 +3051,306 @@ adminModule
 		}
 
 		$scope.init();
+	}]);
+adminModule
+	.controller('createAssetTypeDialogController', ['$scope', '$mdDialog', 'AssetType', 'Preloader', function($scope, $mdDialog, AssetType, Preloader){
+		$scope.assetType = {};
+		$scope.label = "New Asset";
+		var busy = false;
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			if($scope.assetTypeForm.$invalid){
+				angular.forEach($scope.assetTypeForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy){
+					busy = true;
+					AssetType.store($scope.assetType)
+						.success(function(){
+							// Stops Preloader 
+							Preloader.stop();
+							busy = false;
+						})
+						.error(function(data){
+							Preloader.error();
+							busy = false;
+						});
+				}
+			}
+		}
+	}]);
+adminModule
+	.controller('createDepartmentDialogController', ['$scope', '$mdDialog', 'Department', 'Preloader', function($scope, $mdDialog, Department, Preloader){
+		$scope.department = {};
+		$scope.label = "New Department";
+		var busy = false;
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			if($scope.departmentForm.$invalid){
+				angular.forEach($scope.departmentForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy){
+					busy = true;
+					Department.store($scope.department)
+						.success(function(){
+							// Stops Preloader 
+							Preloader.stop();
+							busy = false;
+						})
+						.error(function(data){
+							Preloader.error();
+							busy = false;
+						});
+				}
+			}
+		}
+	}]);
+adminModule
+	.controller('createUserDialogController', ['$scope', '$mdDialog', 'User', 'Preloader', function($scope, $mdDialog, User, Preloader){
+		$scope.user = {};
+		$scope.user.role = 'admin';
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+
+		$scope.submit = function(){
+			$scope.showErrors = true;
+			if($scope.userForm.$invalid){
+				angular.forEach($scope.userForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else if($scope.user.password != $scope.user.password_confirmation)
+			{
+				return;
+			}
+			else {
+				Preloader.saving();
+
+				User.store($scope.user)
+					.success(function(){
+						Preloader.stop();
+					})
+					.error(function(){
+						Preloader.error();
+					});
+			}
+		}
+	}]);
+adminModule
+	.controller('createVendorDialogController', ['$scope', '$mdDialog', 'Vendor', 'Preloader', function($scope, $mdDialog, Vendor, Preloader){
+		$scope.vendor = {};
+		$scope.label = "New Vendor";
+		var busy = false;
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			if($scope.vendorForm.$invalid){
+				angular.forEach($scope.vendorForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy){
+					busy = true;
+					Vendor.store($scope.vendor)
+						.success(function(){
+							// Stops Preloader 
+							Preloader.stop();
+							busy = false;
+						})
+						.error(function(data){
+							Preloader.error();
+							busy = false;
+						});
+				}
+			}
+		}
+	}]);
+adminModule
+	.controller('editAssetTypeDialogController', ['$scope', '$mdDialog', 'AssetType', 'Preloader', function($scope, $mdDialog, AssetType, Preloader){
+		var assetTypeID = Preloader.get();	
+		var busy = false;
+		$scope.label = "Edit Asset";
+
+		AssetType.show(assetTypeID)
+			.success(function(data){
+				$scope.assetType = data;
+			})
+			.error(function(){
+				Preloader.error();
+			})
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			if($scope.assetTypeForm.$invalid){
+				angular.forEach($scope.assetTypeForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy){
+					busy = true;
+					AssetType.update(assetTypeID, $scope.assetType)
+						.success(function(){
+							// Stops Preloader 
+							Preloader.stop();
+							busy = false;
+						})
+						.error(function(){
+							Preloader.error()
+							busy = false;
+						});
+				}
+			}
+		}
+	}]);
+adminModule
+	.controller('editDepartmentDialogController', ['$scope', '$mdDialog', 'Department', 'Preloader', function($scope, $mdDialog, Department, Preloader){
+		var departmentID = Preloader.get();	
+		var busy = false;
+		$scope.label = "Edit Department";
+
+		Department.show(departmentID)
+			.success(function(data){
+				$scope.department = data;
+			})
+			.error(function(){
+				Preloader.error();
+			})
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			if($scope.departmentForm.$invalid){
+				angular.forEach($scope.departmentForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy){
+					busy = true;
+					Department.update(departmentID, $scope.department)
+						.success(function(){
+							// Stops Preloader 
+							Preloader.stop();
+							busy = false;
+						})
+						.error(function(){
+							Preloader.error();
+							busy = false;
+						});
+				}
+			}
+		}
+	}]);
+adminModule
+	.controller('editVendorDialogController', ['$scope', '$mdDialog', 'Vendor', 'Preloader', function($scope, $mdDialog, Vendor, Preloader){
+		var vendorID = Preloader.get();
+		var busy = false;
+
+		Vendor.show(vendorID)
+			.success(function(data){
+				$scope.vendor = data;
+				$scope.label = data.company;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			if($scope.vendorForm.$invalid){
+				angular.forEach($scope.vendorForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy){
+					busy = true;
+					Vendor.update(vendorID, $scope.vendor)
+						.success(function(){
+							// Stops Preloader 
+							Preloader.stop();
+							busy = false;
+						})
+						.error(function(data){
+							Preloader.error();
+							busy = false;
+						});
+				}
+			}
+		}
 	}]);
 adminModule
 	.controller('assetTagDetailsDialogController', ['$scope', '$mdDialog', 'Asset', 'Preloader', function($scope, $mdDialog, Asset, Preloader){
@@ -3909,301 +4239,75 @@ adminModule
 	}]);
 
 adminModule
-	.controller('createAssetTypeDialogController', ['$scope', '$mdDialog', 'AssetType', 'Preloader', function($scope, $mdDialog, AssetType, Preloader){
-		$scope.assetType = {};
-		$scope.label = "New Asset";
+	.controller('addPurchaseOrderAssetTagDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', 'Asset', 'AssetDetail', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, AssetTag, Asset, AssetDetail, WorkStation){		
+		$scope.purchaseOrder = Preloader.get();
+		$scope.hasWarranty = true;
+		$scope.assetTag = {};
+		$scope.assetTag.purchase_order_id = $scope.purchaseOrder.id;
+		$scope.assetTag.warranty_end = new Date();
+		$scope.minDate = new Date();
+
+		$scope.floors = [6,10];
+		$scope.divisions = ['A','B'];
+		$scope.types = ['Admin','Production'];
+
 		var busy = false;
 
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			if($scope.assetTypeForm.$invalid){
-				angular.forEach($scope.assetTypeForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				/* Starts Preloader */
-				Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy){
-					busy = true;
-					AssetType.store($scope.assetType)
-						.success(function(){
-							// Stops Preloader 
-							Preloader.stop();
-							busy = false;
-						})
-						.error(function(data){
-							Preloader.error();
-							busy = false;
-						});
-				}
-			}
-		}
-	}]);
-adminModule
-	.controller('createDepartmentDialogController', ['$scope', '$mdDialog', 'Department', 'Preloader', function($scope, $mdDialog, Department, Preloader){
-		$scope.department = {};
-		$scope.label = "New Department";
-		var busy = false;
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			if($scope.departmentForm.$invalid){
-				angular.forEach($scope.departmentForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				/* Starts Preloader */
-				Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy){
-					busy = true;
-					Department.store($scope.department)
-						.success(function(){
-							// Stops Preloader 
-							Preloader.stop();
-							busy = false;
-						})
-						.error(function(data){
-							Preloader.error();
-							busy = false;
-						});
-				}
-			}
-		}
-	}]);
-adminModule
-	.controller('createUserDialogController', ['$scope', '$mdDialog', 'User', 'Preloader', function($scope, $mdDialog, User, Preloader){
-		$scope.user = {};
-		$scope.user.role = 'admin';
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-
-		$scope.submit = function(){
-			$scope.showErrors = true;
-			if($scope.userForm.$invalid){
-				angular.forEach($scope.userForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else if($scope.user.password != $scope.user.password_confirmation)
-			{
-				return;
-			}
-			else {
-				Preloader.saving();
-
-				User.store($scope.user)
-					.success(function(){
-						Preloader.stop();
-					})
-					.error(function(){
-						Preloader.error();
-					});
-			}
-		}
-	}]);
-adminModule
-	.controller('createVendorDialogController', ['$scope', '$mdDialog', 'Vendor', 'Preloader', function($scope, $mdDialog, Vendor, Preloader){
-		$scope.vendor = {};
-		$scope.label = "New Vendor";
-		var busy = false;
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			if($scope.vendorForm.$invalid){
-				angular.forEach($scope.vendorForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				/* Starts Preloader */
-				Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy){
-					busy = true;
-					Vendor.store($scope.vendor)
-						.success(function(){
-							// Stops Preloader 
-							Preloader.stop();
-							busy = false;
-						})
-						.error(function(data){
-							Preloader.error();
-							busy = false;
-						});
-				}
-			}
-		}
-	}]);
-adminModule
-	.controller('editAssetTypeDialogController', ['$scope', '$mdDialog', 'AssetType', 'Preloader', function($scope, $mdDialog, AssetType, Preloader){
-		var assetTypeID = Preloader.get();	
-		var busy = false;
-		$scope.label = "Edit Asset";
-
-		AssetType.show(assetTypeID)
+		WorkStation.index()
 			.success(function(data){
-				$scope.assetType = data;
+				$scope.workStations = data;
 			})
 			.error(function(){
 				Preloader.error();
 			})
 
+		$scope.checkSequence = function(){
+			$scope.duplicate = false;
+			AssetTag.checkSequence($scope.assetTag)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		}
+
 		$scope.cancel = function(){
 			$mdDialog.cancel();
 		}
 
+		$scope.checkLastPropertyCode = function(){		
+			AssetTag.lastPropertyCode($scope.assetTag)
+				.success(function(data){
+					$scope.assetTag.lastPropertyCode = data.property_code;
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
+
 		$scope.submit = function(){
-			if($scope.assetTypeForm.$invalid){
-				angular.forEach($scope.assetTypeForm.$error, function(field){
+			if($scope.assetTagForm.$invalid){
+				angular.forEach($scope.assetTagForm.$error, function(field){
 					angular.forEach(field, function(errorField){
 						errorField.$setTouched();
 					});
 				});
 			}
 			else{
-				/* Starts Preloader */
-				Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy){
-					busy = true;
-					AssetType.update(assetTypeID, $scope.assetType)
-						.success(function(){
-							// Stops Preloader 
-							Preloader.stop();
-							busy = false;
-						})
-						.error(function(){
-							Preloader.error()
-							busy = false;
-						});
-				}
-			}
-		}
-	}]);
-adminModule
-	.controller('editDepartmentDialogController', ['$scope', '$mdDialog', 'Department', 'Preloader', function($scope, $mdDialog, Department, Preloader){
-		var departmentID = Preloader.get();	
-		var busy = false;
-		$scope.label = "Edit Department";
-
-		Department.show(departmentID)
-			.success(function(data){
-				$scope.department = data;
-			})
-			.error(function(){
-				Preloader.error();
-			})
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			if($scope.departmentForm.$invalid){
-				angular.forEach($scope.departmentForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				/* Starts Preloader */
-				Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy){
-					busy = true;
-					Department.update(departmentID, $scope.department)
-						.success(function(){
-							// Stops Preloader 
-							Preloader.stop();
-							busy = false;
+				//  * Stores Single Record
+				
+				if(!busy && !$scope.duplicate){
+					$scope.assetTag.warranty_end = $scope.hasWarranty ? $scope.assetTag.warranty_end.toDateString() : null;
+					AssetTag.store($scope.assetTag)
+						.success(function(data){
+							if(!data){
+								Preloader.stop();
+							}
 						})
 						.error(function(){
 							Preloader.error();
-							busy = false;
-						});
-				}
-			}
-		}
-	}]);
-adminModule
-	.controller('editVendorDialogController', ['$scope', '$mdDialog', 'Vendor', 'Preloader', function($scope, $mdDialog, Vendor, Preloader){
-		var vendorID = Preloader.get();
-		var busy = false;
-
-		Vendor.show(vendorID)
-			.success(function(data){
-				$scope.vendor = data;
-				$scope.label = data.company;
-			})
-			.error(function(){
-				Preloader.error();
-			});
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			if($scope.vendorForm.$invalid){
-				angular.forEach($scope.vendorForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				/* Starts Preloader */
-				Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy){
-					busy = true;
-					Vendor.update(vendorID, $scope.vendor)
-						.success(function(){
-							// Stops Preloader 
-							Preloader.stop();
-							busy = false;
 						})
-						.error(function(data){
-							Preloader.error();
-							busy = false;
-						});
 				}
 			}
 		}

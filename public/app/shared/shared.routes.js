@@ -3,12 +3,10 @@ sharedModule
 		/* Defaul Theme Blue - Light Blue */
 		$mdThemingProvider.theme('default')
 			.primaryPalette('blue')
-			.accentPalette('light-blue');
 		
 		/* Dark Theme - Blue */
 		$mdThemingProvider.theme('dark', 'default')
 	      	.primaryPalette('blue')
-			.accentPalette('light-blue')
 			.dark();
 
 		$mdThemingProvider.theme('dark-teal').backgroundPalette('teal').dark();

@@ -15,6 +15,17 @@ use App\Http\Controllers\Controller;
 
 class AssetTagController extends Controller
 {
+    public function lastPropertyCode(Request $request)
+    {
+        $this->validate($request, [
+            'asset_id' => 'required'
+        ]);
+
+        $asset = Asset::where('id', $request->asset_id)->first();
+
+        return AssetTag::where('asset_type_id', $asset->asset_type_id)->orderBy('created_at', 'desc')->first();
+    }
+
     public function repair($id)
     {
         $asset_tag = AssetTag::with('status')->where('id', $id)->first();
@@ -192,6 +203,7 @@ class AssetTagController extends Controller
         $asset_tag->asset_type_id = $asset->asset_type_id;
         $asset_tag->asset_id = $request->asset_id;
         $asset_tag->work_station_id = $request->work_station_id;
+        $asset_tag->purchase_order_id = $request->purchase_order_id;
         $asset_tag->computer_name = $request->computer_name;
         $asset_tag->serial = $request->serial;
         $asset_tag->prefix = $asset->type->prefix;
@@ -282,6 +294,7 @@ class AssetTagController extends Controller
 
         $asset_tag->computer_name = $request->computer_name;
         $asset_tag->serial = $request->serial;
+        $asset_tag->purchase_order_id = $request->purchase_order_id;
         $asset_tag->sequence = $request->sequence;
         $asset_tag->property_code = $asset->type->prefix . $filler . $request->sequence;
         $asset_tag->remarks = $request->remarks;

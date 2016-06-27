@@ -12,10 +12,9 @@
 		<md-dialog-content layout="column" flex layout-padding layout-wrap>
 			<div layout="column">
 				<!-- Computer Name -->
-				<md-input-container ng-if="assetTag.type.type == 'Desktop'">
+				<md-input-container ng-if="assetTag.type.type == 'Desktop' || assetTag.type.type == 'Laptop' || assetTag.type.type == 'Mac' || assetTag.type.type == 'Mac Mini'">
 					<label>Computer Name</label>
 					<input type="text" name="ComputerName" ng-model="assetTag.computer_name">
-					<div class="hint">For desktops only.</div>
 				</md-input-container>
 				<div layout="row">				
 					<!-- Serial -->
