@@ -63,6 +63,18 @@
 					</div>
 					<div class="pattern" ng-if="!match && assetTagForm.WorkStation.$touched && assetTagForm.WorkStation.$valid">No same type of asset found.</div>
 				</md-input-container>
+				<!-- Asset Tag -->
+				<md-input-container ng-if="swapItems.length > 1">
+					<label>Asset tag to swap with</label>
+					<md-select name="AssetTag" required ng-model="swap.asset_tag" ng-disabled="!swap.work_station_id" ng-change="test()">
+						<md-option ng-repeat="item in swapItems" ng-value="item">
+							<span>{{ item.property_code }}</span>
+						</md-option>
+					</md-select>
+					<div ng-messages="assetTagForm.AssetTag.$error" ng-if="assetTagForm.AssetTag.$touched">
+						<div ng-message="required">Asset tag is required.</div>						
+					</div>
+				</md-input-container>
 				<div layout="row" flex>
 					<div layout="column" flex>
 						<md-subheader class="md-no-stick md-primary">{{assetTag.work_station.name}}</md-subheader>
@@ -83,19 +95,19 @@
 						</md-list>
 					</div>
 					<div layout="column" flex>					
-						<md-list flex layout="column" ng-if="assetTagSwap">
-							<md-subheader class="md-no-stick md-primary">{{assetTagSwap.work_station.name}}</md-subheader>
+						<md-list flex layout="column" ng-if="swap.asset_tag">
+							<md-subheader class="md-no-stick md-primary">{{swap.asset_tag.work_station.name}}</md-subheader>
 							<md-list-item class="md-2-line" layout="row">
 								<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
-									<span class="white-text">{{assetTagSwap.first_letter}}</span>
+									<span class="white-text">{{swap.asset_tag.first_letter}}</span>
 								</h2>
 								<div class="md-list-item-text" layout="column" flex>
-									<h3>{{assetTagSwap.asset.brand}}</h3>
-									<h4>{{assetTagSwap.asset.model}}</h4>
+									<h3>{{swap.asset_tag.asset.brand}}</h3>
+									<h4>{{swap.asset_tag.asset.model}}</h4>
 								</div>
 							</md-list-item>
-							<md-subheader class="md-no-sticky" ng-if="assetTagSwap.details.length">Specs</md-subheader>
-							<md-list-item ng-repeat="detail in assetTagSwap.asset.details">
+							<md-subheader class="md-no-sticky" ng-if="swap.asset_tag.details.length">Specs</md-subheader>
+							<md-list-item ng-repeat="detail in swap.asset_tag.asset.details">
 							    <p>{{detail.label}}: {{detail.value}}</p>
 						  	</md-list-item>
 						</md-list>

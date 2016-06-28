@@ -11,13 +11,17 @@ adminModule
 		$scope.checkSwap = function(){
 			AssetTag.checkSwap($scope.swap)
 				.success(function(data){
-					if(data){
-						data.first_letter = data.asset.brand[0].toUpperCase();
-						$scope.assetTagSwap = data;
+					if(data.length){
+						angular.forEach(data, function(item){
+							item.first_letter = item.asset.brand[0].toUpperCase();
+						});
+
+						$scope.swapItems = data.length > 1 ? data : [];
+						$scope.swap.asset_tag = data.length == 1 ? data[0] : null;
 						$scope.match =  true;
 					}
 					else{
-						$scope.assetTagSwap = null;
+						$scope.swap.asset_tag = null;
 						$scope.match =  false;
 					}
 				})
@@ -73,7 +77,7 @@ adminModule
 					//  * Stores Single Record
 					Preloader.saving();
 					busy = true;
-					AssetTag.swap(assetTagID, $scope.assetTagSwap)
+					AssetTag.swap(assetTagID, $scope.swap.asset_tag)
 						.success(function(){
 							Preloader.stop();
 							busy = false;

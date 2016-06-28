@@ -61,6 +61,7 @@ class VendorController extends Controller
             'company' => 'required',
             'contact_person' => 'required',
             'contact_number' => 'required',
+            'email' => 'required',
         ]);
 
         $vendor = new Vendor;
@@ -68,6 +69,7 @@ class VendorController extends Controller
         $vendor->company = $request->company;
         $vendor->contact_person = $request->contact_person;
         $vendor->contact_number = $request->contact_number;
+        $vendor->email = $request->email;
 
         $vendor->save();
 
@@ -118,6 +120,7 @@ class VendorController extends Controller
             'company' => 'required',
             'contact_person' => 'required',
             'contact_number' => 'required',
+            'email' => 'required',
         ]);
 
         $vendor = Vendor::where('id', $id)->first();
@@ -125,6 +128,7 @@ class VendorController extends Controller
         $vendor->company = $request->company;
         $vendor->contact_person = $request->contact_person;
         $vendor->contact_number = $request->contact_number;
+        $vendor->email = $request->email;
 
         $vendor->save();
 

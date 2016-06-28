@@ -42,14 +42,41 @@
 				<md-tab ng-repeat="asset in purchaseOrder.asset_purchase_order" label="{{asset.asset.brand}} - {{asset.asset.model}} ({{asset.asset.type.type}})">
 					<md-subheader ng-if="asset.asset.asset_tags.length">Tagged</md-subheader>
 					<md-list layout="row" layout-wrap layout-padding>
-						<md-list-item flex="100" flex-gt-md="50" flex-gt-lg="25" class="md-2-line" ng-repeat="asset_tag in asset.asset.asset_tags">
+						<md-list-item flex="100" flex-gt-md="50" flex-gt-lg="30" class="md-3-line" ng-repeat="asset_tag in asset.asset.asset_tags" ng-if="!asset_tag.deleted_at" ng-click="">
 							<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
 								<span class="md-headline white-text">{{asset.asset.model[0].toUpperCase()}}</span>
 							</h2>
 							<div class="md-list-item-text">
 								<h3>{{asset_tag.property_code}}</h3>
 								<h4>{{asset_tag.work_station.name}}</h4>
+								<p>
+									<span>End of warranty: </span>
+									<span ng-if="!asset_tag.warranty_end">N/A</span>
+									<span am-time-ago="asset_tag.warranty_end"></span>
+									<md-tooltip ng-if="asset_tag.warranty_end">{{asset_tag.warranty_end | date: 'EEEE, MMMM d, yyyy'}}</md-tooltip>
+								</p>
 							</div>
+							<md-menu class="fade-transition">
+						    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+							        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
+							        <md-tooltip>Menu</md-tooltip>
+							    </md-button>
+							    <md-menu-content width="2">
+							        <md-menu-item>
+							          	<!-- Edit -->
+										<md-button ng-click="editAssetTag(asset_tag.id)">
+											<md-icon class="mdi mdi-24px mdi-pencil grey"></md-icon>
+											Edit
+										</md-button>
+							        </md-menu-item>
+							        <md-menu-item>
+										<md-button ng-click="deleteAssetTag(asset_tag.id)">
+											<md-icon class="mdi mdi-24px mdi-delete grey"></md-icon>
+											Delete
+										</md-button>
+							        </md-menu-item>
+							    </md-menu-content>
+						    </md-menu>
 						</md-list-item>
 					</md-list>
 					<div layout-padding>

@@ -42,6 +42,14 @@ adminModule
 				.error(function(){
 					Preloader.error();
 				});
+
+			AssetTag.lastPropertyCode($scope.assetTag)
+				.success(function(data){
+					$scope.assetTag.lastPropertyCode = data.property_code;
+				})
+				.error(function(){
+					Preloader.error();
+				});
 		}
 
 		$scope.checkSequence = function(){

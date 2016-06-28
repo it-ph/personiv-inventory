@@ -17,6 +17,7 @@ class CreateVendorsTable extends Migration
             $table->string('company');
             $table->string('contact_person');
             $table->string('contact_number');
+            $table->string('email');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -33,6 +33,7 @@
 							<div ng-message="max">Maximum is 99,999.</div>
 						</div>
 						<div class="pattern" ng-if="duplicate">Sequence number is already in use.</div>
+						<div class="hint" ng-if="!duplicate">Last property code is {{assetTag.lastPropertyCode}}.</div>
 					</md-input-container>
 				</div>
 

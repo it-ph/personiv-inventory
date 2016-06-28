@@ -8,8 +8,16 @@ adminModule
 		AssetTag.show(assetTagID)
 			.success(function(data){
 				data.warranty_end = data.warranty_end ? new Date(data.warranty_end) : new Date();
-				$scope.minDate = new Date(data.warranty_end);
+				// $scope.minDate = new Date(data.warranty_end);
 				$scope.assetTag = data;
+
+				AssetTag.lastPropertyCode($scope.assetTag)
+					.success(function(data){
+						$scope.assetTag.lastPropertyCode = data.property_code;
+					})
+					.error(function(){
+						Preloader.error();
+					});
 			})
 
 		$scope.checkSequence = function(){

@@ -3020,6 +3020,39 @@ adminModule
 		    });			
 		}
 
+		$scope.editAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'editAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/edit-asset-tag-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.deleteAssetTag = function(id){
+			var confirm = $mdDialog.confirm()
+	        	.title('Delete')
+	          	.content('Are you sure you want to delete this asset tag?')
+	          	.ariaLabel('Delete Asset Tag')
+	          	.ok('Delete')
+	          	.cancel('Cancel');
+
+	        $mdDialog.show(confirm).then(function() {
+		      	AssetTag.delete(id)
+		      		.success(function(){
+		      			$scope.toolbar.refresh();
+		      		})
+		      		.error(function(){
+		      			Preloader.error();
+		      		});
+		    }, function() {
+		      	return;
+		    });
+		};
+
 		$scope.init = function(refresh){
 			$scope.purchaseOrder = null;
 
@@ -3037,6 +3070,12 @@ adminModule
 
 					data.date_arrival = new Date(data.date_arrival);
 					data.date_purchased = new Date(data.date_purchased);
+
+					angular.forEach(data.asset_purchase_order, function(asset_purchase_order){
+						angular.forEach(asset_purchase_order.asset.asset_tags, function(asset_tag){
+							asset_tag.warranty_end = asset_tag.warranty_end ? new Date(asset_tag.warranty_end) : null;
+						});
+					});
 
 					$scope.purchaseOrder = data;
 
@@ -3414,6 +3453,14 @@ adminModule
 				.error(function(){
 					Preloader.error();
 				});
+
+			AssetTag.lastPropertyCode($scope.assetTag)
+				.success(function(data){
+					$scope.assetTag.lastPropertyCode = data.property_code;
+				})
+				.error(function(){
+					Preloader.error();
+				});
 		}
 
 		$scope.checkSequence = function(){
@@ -3470,8 +3517,16 @@ adminModule
 		AssetTag.show(assetTagID)
 			.success(function(data){
 				data.warranty_end = data.warranty_end ? new Date(data.warranty_end) : new Date();
-				$scope.minDate = new Date(data.warranty_end);
+				// $scope.minDate = new Date(data.warranty_end);
 				$scope.assetTag = data;
+
+				AssetTag.lastPropertyCode($scope.assetTag)
+					.success(function(data){
+						$scope.assetTag.lastPropertyCode = data.property_code;
+					})
+					.error(function(){
+						Preloader.error();
+					});
 			})
 
 		$scope.checkSequence = function(){
@@ -3782,13 +3837,17 @@ adminModule
 		$scope.checkSwap = function(){
 			AssetTag.checkSwap($scope.swap)
 				.success(function(data){
-					if(data){
-						data.first_letter = data.asset.brand[0].toUpperCase();
-						$scope.assetTagSwap = data;
+					if(data.length){
+						angular.forEach(data, function(item){
+							item.first_letter = item.asset.brand[0].toUpperCase();
+						});
+
+						$scope.swapItems = data.length > 1 ? data : [];
+						$scope.swap.asset_tag = data.length == 1 ? data[0] : null;
 						$scope.match =  true;
 					}
 					else{
-						$scope.assetTagSwap = null;
+						$scope.swap.asset_tag = null;
 						$scope.match =  false;
 					}
 				})
@@ -3844,7 +3903,7 @@ adminModule
 					//  * Stores Single Record
 					Preloader.saving();
 					busy = true;
-					AssetTag.swap(assetTagID, $scope.assetTagSwap)
+					AssetTag.swap(assetTagID, $scope.swap.asset_tag)
 						.success(function(){
 							Preloader.stop();
 							busy = false;

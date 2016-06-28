@@ -11,15 +11,15 @@
 		</md-toolbar>
 		<md-dialog-content layout="column" flex layout-padding layout-wrap>
 			<div layout="column">
-				<!-- Company -->
-				<md-input-container>
-					<label>Company</label>
-					<input type="text" name="Company" required ng-model="vendor.company">
-					<div ng-messages="vendorForm.Company.$error" ng-if="vendorForm.Company.$touched">
-						<div ng-message="required">Company is required.</div>
-					</div>
-				</md-input-container>
-				<div layout="row" layout-wrap flex>				
+				<div layout="row" layout-wrap flex>
+					<!-- Company -->
+					<md-input-container flex flex-xs="100" flex-sm="100">
+						<label>Company</label>
+						<input type="text" name="Company" required ng-model="vendor.company">
+						<div ng-messages="vendorForm.Company.$error" ng-if="vendorForm.Company.$touched">
+							<div ng-message="required">Company is required.</div>
+						</div>
+					</md-input-container>
 					<!-- Contact Person -->
 					<md-input-container flex flex-xs="100" flex-sm="100">
 						<label>Contact Person</label>
@@ -28,12 +28,22 @@
 							<div ng-message="required">Contact Person is required.</div>
 						</div>
 					</md-input-container>
+				</div>
+				<div layout="row" layout-wrap flex>				
 					<!-- Contact Number -->
 					<md-input-container flex flex-xs="100" flex-sm="100">
 						<label>Contact Number</label>
 						<input type="text" name="ContactNumber" required ng-model="vendor.contact_number">
 						<div ng-messages="vendorForm.ContactNumber.$error" ng-if="vendorForm.ContactNumber.$touched">
 							<div ng-message="required">Contact Number is required.</div>
+						</div>
+					</md-input-container>
+					<!-- Email -->
+					<md-input-container flex flex-xs="100" flex-sm="100">
+						<label>Email</label>
+						<input type="email" name="Email" required ng-model="vendor.email">
+						<div ng-messages="vendorForm.Email.$error" ng-if="vendorForm.Email.$touched">
+							<div ng-message="required">Email is required.</div>
 						</div>
 					</md-input-container>
 				</div>

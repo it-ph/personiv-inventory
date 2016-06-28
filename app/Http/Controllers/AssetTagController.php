@@ -103,7 +103,7 @@ class AssetTagController extends Controller
             'asset_type_id' => 'required',
         ]);
 
-        $asset_tag = AssetTag::with(['asset'=> function($query){ $query->with('details'); }, 'work_station'])->where('asset_type_id', $request->asset_type_id)->where('work_station_id', $request->work_station_id)->first();
+        $asset_tag = AssetTag::with(['asset'=> function($query){ $query->with('details'); }, 'work_station'])->where('asset_type_id', $request->asset_type_id)->where('work_station_id', $request->work_station_id)->get();
 
         return $asset_tag;
     }

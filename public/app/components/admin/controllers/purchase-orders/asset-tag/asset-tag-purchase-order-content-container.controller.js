@@ -45,6 +45,39 @@ adminModule
 		    });			
 		}
 
+		$scope.editAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'editAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/edit-asset-tag-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.deleteAssetTag = function(id){
+			var confirm = $mdDialog.confirm()
+	        	.title('Delete')
+	          	.content('Are you sure you want to delete this asset tag?')
+	          	.ariaLabel('Delete Asset Tag')
+	          	.ok('Delete')
+	          	.cancel('Cancel');
+
+	        $mdDialog.show(confirm).then(function() {
+		      	AssetTag.delete(id)
+		      		.success(function(){
+		      			$scope.toolbar.refresh();
+		      		})
+		      		.error(function(){
+		      			Preloader.error();
+		      		});
+		    }, function() {
+		      	return;
+		    });
+		};
+
 		$scope.init = function(refresh){
 			$scope.purchaseOrder = null;
 
@@ -62,6 +95,12 @@ adminModule
 
 					data.date_arrival = new Date(data.date_arrival);
 					data.date_purchased = new Date(data.date_purchased);
+
+					angular.forEach(data.asset_purchase_order, function(asset_purchase_order){
+						angular.forEach(asset_purchase_order.asset.asset_tags, function(asset_tag){
+							asset_tag.warranty_end = asset_tag.warranty_end ? new Date(asset_tag.warranty_end) : null;
+						});
+					});
 
 					$scope.purchaseOrder = data;
 

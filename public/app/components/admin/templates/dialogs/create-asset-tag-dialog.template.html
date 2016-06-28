@@ -13,7 +13,7 @@
 			<div layout="column">
 				<md-input-container>
 					<label>Asset</label>
-					<md-select ng-model="assetTypeIndex" ng-change="getUniqueBrands(assetTypeIndex)">
+					<md-select name="Asset" ng-model="assetTypeIndex" ng-change="getUniqueBrands(assetTypeIndex)">
 						<md-option value="{{$index}}" ng-repeat="assetType in assetTypes">
 							{{ assetType.type }}
 						</md-option>
@@ -75,6 +75,7 @@
 							<div ng-message="max">Maximum is 99,999.</div>
 						</div>
 						<div class="pattern" ng-if="duplicate">Sequence number is not available.</div>
+						<div class="hint" ng-if="!duplicate && assetTagForm.Model.$touched">Last property code is {{assetTag.lastPropertyCode}}.</div>
 					</md-input-container>
 				</div>
 
