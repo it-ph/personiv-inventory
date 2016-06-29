@@ -56,12 +56,12 @@
 							<span>Menu</span>
 						</md-button>
 					</md-menu-item>
-					<div ng-if="state == 'main.asset'">
+					<div ng-if="toolbar.options.length">
 						<md-divider></md-divider>
-						<md-subheader class="md-no-sticky">Filters</md-subheader>
+						<md-subheader class="md-no-sticky">{{toolbar.subheader}}</md-subheader>
 						<md-menu-item ng-repeat="option in toolbar.options">
 							<md-button ng-click="option.action()">
-								<md-icon class="mdi mdi-filter grey"></md-icon> {{option.label}}
+								<md-icon class="mdi {{option.icon}} grey"></md-icon> {{option.label}}
 							</md-button>
 						</md-menu-item>
 					</div>

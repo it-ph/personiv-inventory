@@ -10,39 +10,14 @@
 				</md-toolbar>
 				<md-content layout-padding class="md-whiteframe-2dp">				
 					<div layout="row">
-						<!-- Company -->
 						<md-input-container flex>
-							<label>Company</label>
-							<md-select name="Company" ng-model="vendorIndex" ng-change="getUniqueContactPerson(vendorIndex)" required>
-								<md-option value="{{$index}}" ng-repeat="company in companies">
-									{{ company.company }}
+							<label>Vendor</label>
+							<md-select required name="Vendor" ng-model="purchaseOrder.vendor_id">
+								<md-option value="{{vendor.id}}" ng-repeat="vendor in vendors">
+									{{vendor.email}} - {{vendor.contact_number}}
 								</md-option>
 							</md-select>
-							<div ng-messages="form.purchaseOrderForm.Company.$error" ng-if="form.purchaseOrderForm.Company.$touched">
-								<div ng-message="required">Company is required.</div>
-							</div>
-						</md-input-container>
-						<!-- Contact Person -->
-						<md-input-container flex>
-							<label>Contact Person</label>
-							<md-select ng-disabled="!vendorIndex" required name="ContactPerson" ng-model="contactPerson" ng-change="getContactNumbers(contactPerson)">
-								<md-option value="{{contact.id}}" ng-repeat="contact in contactPersons">
-									{{contact.contact_person}}
-								</md-option>
-							</md-select>
-							<div ng-messages="form.purchaseOrderForm.ContactPerson.$error" ng-if="form.purchaseOrderForm.ContactPerson.$touched">
-								<div ng-message="required">Contact Person is required.</div>
-							</div>
-						</md-input-container>
-						<!-- Contact Number -->
-						<md-input-container flex>
-							<label>Contact Number</label>
-							<md-select ng-disabled="!contactPerson" required name="ContactNumber" ng-model="purchaseOrder.vendor_id">
-								<md-option value="{{vendor.id}}" ng-repeat="vendor in contactNumbers">
-									{{vendor.contact_number}}
-								</md-option>
-							</md-select>
-							<div ng-messages="form.purchaseOrderForm.ContactNumber.$error" ng-if="form.purchaseOrderForm.ContactNumber.$touched">
+							<div ng-messages="form.purchaseOrderForm.Vendor.$error" ng-if="form.purchaseOrderForm.Vendor.$touched">
 								<div ng-message="required">Contact Number is required.</div>
 							</div>
 						</md-input-container>

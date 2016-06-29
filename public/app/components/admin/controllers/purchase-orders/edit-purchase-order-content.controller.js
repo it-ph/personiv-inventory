@@ -58,28 +58,28 @@ adminModule
 			$scope.assets.splice(idx, 1);
 		}
 
-		$scope.getUniqueContactPerson = function(idx){
-			$scope.contactPerson = null;
-			$scope.purchaseOrder.vendor_id = null;
+		// $scope.getUniqueContactPerson = function(idx){
+		// 	$scope.contactPerson = null;
+		// 	$scope.purchaseOrder.vendor_id = null;
 			
-			Vendor.contactPersons($scope.companies[idx].id)
-				.success(function(data){
-					$scope.contactPersons = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		}
+		// 	Vendor.contactPersons($scope.companies[idx].id)
+		// 		.success(function(data){
+		// 			$scope.contactPersons = data;
+		// 		})
+		// 		.error(function(){
+		// 			Preloader.error();
+		// 		})
+		// }
 
-		$scope.getContactNumbers = function(id){
-			Vendor.contactNumbers(id)
-				.success(function(data){
-					$scope.contactNumbers = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		}
+		// $scope.getContactNumbers = function(id){
+		// 	Vendor.contactNumbers(id)
+		// 		.success(function(data){
+		// 			$scope.contactNumbers = data;
+		// 		})
+		// 		.error(function(){
+		// 			Preloader.error();
+		// 		})
+		// }
 
 		$scope.getUniqueBrands = function(assetTypeIndex, idx){
 			$scope.assets[idx].brand = null;
@@ -158,9 +158,9 @@ adminModule
 		}
 
 		$scope.init = function(){
-			Vendor.distinct({'distinct':'company'})
+			Vendor.index()
 				.then(function(data){
-					$scope.companies = data.data;
+					$scope.vendors = data.data;
 					return;
 				})
 				.then(function(){
@@ -181,23 +181,23 @@ adminModule
 							data.date_purchased = new Date(data.date_purchased);
 							data.date_arrival = new Date(data.date_arrival);
 
-							var company = $filter('filter')($scope.companies, {company:data.vendor.company});
+							// var company = $filter('filter')($scope.companies, {company:data.vendor.company});
 
-							$scope.vendorIndex = $scope.companies.indexOf(company[0]);
+							// $scope.vendorIndex = $scope.companies.indexOf(company[0]);
 
-							Vendor.contactPersons($scope.companies[$scope.vendorIndex].id)
-								.success(function(data){
-									$scope.contactPersons = data;
+							// Vendor.contactPersons($scope.companies[$scope.vendorIndex].id)
+							// 	.success(function(data){
+							// 		$scope.contactPersons = data;
 
-									var contactPerson = $filter('filter')($scope.contactPersons, {contact_person:$scope.purchaseOrder.vendor.contact_person});
+							// 		var contactPerson = $filter('filter')($scope.contactPersons, {contact_person:$scope.purchaseOrder.vendor.contact_person});
 
-									$scope.contactPerson = $scope.contactPersons[$scope.contactPersons.indexOf(contactPerson[0])].id;
+							// 		$scope.contactPerson = $scope.contactPersons[$scope.contactPersons.indexOf(contactPerson[0])].id;
 
-									$scope.getContactNumbers($scope.contactPerson);
-								})
-								.error(function(){
-									Preloader.error();
-								})
+							// 		$scope.getContactNumbers($scope.contactPerson);
+							// 	})
+							// 	.error(function(){
+							// 		Preloader.error();
+							// 	})
 
 							$scope.purchaseOrder = data;
 							$scope.assets = data.asset_purchase_order;

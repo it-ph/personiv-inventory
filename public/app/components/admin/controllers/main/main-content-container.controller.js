@@ -1,5 +1,5 @@
 adminModule
-	.controller('mainContentContainerController', ['$scope', '$state', '$mdDialog', 'Preloader', function($scope, $state, $mdDialog, Preloader){
+	.controller('mainContentContainerController', ['$scope', '$state', '$mdDialog', 'Preloader', 'InventoryReport', function($scope, $state, $mdDialog, Preloader, InventoryReport){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -12,29 +12,37 @@ adminModule
 		*/
 		$scope.toolbar.childState = 'Dashboard';
 
-		/**
-		 * Object for subheader
-		 *
-		*/
-		$scope.subheader = {};
+		$scope.toolbar.subheader = 'Options';
 
-		$scope.subheader.download = function(){
-			// start preloader
-			Preloader.preload();
+		$scope.toolbar.options = [
+			{
+				'label': 'Download Report',
+				'icon': 'mdi-download',
+				action : function(){
+					var win = window.open('/inventory-report/', '_blank');
+					win.focus();
+				},
+			},
+			{
+				'label': 'Sticker Generator',
+				'icon': 'mdi-barcode',
+				action : function(){
+					$mdDialog.show({
+				    	controller: 'barcodeDialogController',
+				      	templateUrl: '/app/components/admin/templates/dialogs/barcode-dialog.template.html',
+				      	parent: angular.element(document.body),
+				    });
+				},
+			},
+		];
 
-			EmailReport.index()
-				.success(function(){
-					Preloader.stop();
-				});
-		};
-
-		$scope.subheader.barcode = function(){
-			$mdDialog.show({
-		    	controller: 'barcodeDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/barcode-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    });
-		}
+		// $scope.subheader.barcode = function(){
+		// 	$mdDialog.show({
+		//     	controller: 'barcodeDialogController',
+		//       	templateUrl: '/app/components/admin/templates/dialogs/barcode-dialog.template.html',
+		//       	parent: angular.element(document.body),
+		//     });
+		// }
 
 		/**
 		 * Status of search bar.

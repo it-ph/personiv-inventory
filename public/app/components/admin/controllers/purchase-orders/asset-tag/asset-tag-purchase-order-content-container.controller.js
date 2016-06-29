@@ -86,10 +86,10 @@ adminModule
 					angular.forEach(data.asset_purchase_order, function(item){
 						item.chart = {};
 						item.chart.data = [];
-						item.chart.labels = ['Tagged','Stocks'];
+						item.chart.labels = ['Tagged','Untagged'];
 						// tagged
 						item.chart.data[0] =  item.asset.asset_tags.length;
-						// stocks
+						// untagged
 						item.chart.data[1] = item.quantity - item.asset.asset_tags.length;
 					});
 

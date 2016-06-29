@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EmailReport extends Model
+class InventoryReport extends Model
 {
     //
 }

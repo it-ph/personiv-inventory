@@ -2,6 +2,7 @@ adminModule
 	.controller('addPurchaseOrderAssetTagDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', 'Asset', 'AssetDetail', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, AssetTag, Asset, AssetDetail, WorkStation){		
 		$scope.purchaseOrder = Preloader.get();
 		$scope.hasWarranty = true;
+		$scope.deploy = true;
 		$scope.assetTag = {};
 		$scope.assetTag.purchase_order_id = $scope.purchaseOrder.id;
 		$scope.assetTag.warranty_end = new Date();
@@ -59,6 +60,7 @@ adminModule
 				
 				if(!busy && !$scope.duplicate){
 					$scope.assetTag.warranty_end = $scope.hasWarranty ? $scope.assetTag.warranty_end.toDateString() : null;
+					$scope.assetTag.work_station_id = $scope.deploy ? $scope.assetTag.work_station_id : null;
 					AssetTag.store($scope.assetTag)
 						.success(function(data){
 							if(!data){

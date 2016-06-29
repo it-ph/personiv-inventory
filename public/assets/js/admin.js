@@ -464,32 +464,35 @@ adminModule
 			return results;
 		}
 
+		$scope.toolbar.subheader = 'Filters';
+
 		$scope.toolbar.options = [
 			{
 				'label': 'Deployed',
+				'icon': 'mdi-filter',
 				action : function(){
 					$scope.status = 'deployed';
-					console.log($scope.status);
 				},
 			},
 			{
 				'label': 'Stock',
+				'icon': 'mdi-filter',
 				action : function(){
 					$scope.status = 'stock';
-					console.log($scope.status);
 				},
 			},
 			{
 				'label': 'Pulled Out',
+				'icon': 'mdi-filter',
 				action : function(){
 					$scope.status = 'pulled out';
-					console.log($scope.status);
 				},
 			},
 		]
 
 		$scope.toolbar.refresh = function(){
 			/* Starts the loading */
+			$scope.status = '';
 			Preloader.loading();
 			$scope.init(true);
 		}
@@ -551,6 +554,11 @@ adminModule
 		    },function(){
 		    	return;
 		    })
+	    }
+
+	    $scope.purchaseOrder = function(id)
+	    {
+	    	$state.go('main.asset-tag-purchase-order', {'purchaseOrderID':id});
 	    }
 
 	    var pushItem = function(data, type){
@@ -1178,7 +1186,7 @@ adminModule
 		};
 	}]);
 adminModule
-	.controller('mainContentContainerController', ['$scope', '$state', '$mdDialog', 'Preloader', function($scope, $state, $mdDialog, Preloader){
+	.controller('mainContentContainerController', ['$scope', '$state', '$mdDialog', 'Preloader', 'InventoryReport', function($scope, $state, $mdDialog, Preloader, InventoryReport){
 		/**
 		 *  Object for toolbar view.
 		 *
@@ -1191,29 +1199,37 @@ adminModule
 		*/
 		$scope.toolbar.childState = 'Dashboard';
 
-		/**
-		 * Object for subheader
-		 *
-		*/
-		$scope.subheader = {};
+		$scope.toolbar.subheader = 'Options';
 
-		$scope.subheader.download = function(){
-			// start preloader
-			Preloader.preload();
+		$scope.toolbar.options = [
+			{
+				'label': 'Download Report',
+				'icon': 'mdi-download',
+				action : function(){
+					var win = window.open('/inventory-report/', '_blank');
+					win.focus();
+				},
+			},
+			{
+				'label': 'Sticker Generator',
+				'icon': 'mdi-barcode',
+				action : function(){
+					$mdDialog.show({
+				    	controller: 'barcodeDialogController',
+				      	templateUrl: '/app/components/admin/templates/dialogs/barcode-dialog.template.html',
+				      	parent: angular.element(document.body),
+				    });
+				},
+			},
+		];
 
-			EmailReport.index()
-				.success(function(){
-					Preloader.stop();
-				});
-		};
-
-		$scope.subheader.barcode = function(){
-			$mdDialog.show({
-		    	controller: 'barcodeDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/barcode-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    });
-		}
+		// $scope.subheader.barcode = function(){
+		// 	$mdDialog.show({
+		//     	controller: 'barcodeDialogController',
+		//       	templateUrl: '/app/components/admin/templates/dialogs/barcode-dialog.template.html',
+		//       	parent: angular.element(document.body),
+		//     });
+		// }
 
 		/**
 		 * Status of search bar.
@@ -1334,28 +1350,28 @@ adminModule
 			$scope.assets.splice(idx, 1);
 		}
 
-		$scope.getUniqueContactPerson = function(idx){
-			$scope.contactPerson = null;
-			$scope.purchaseOrder.vendor_id = null;
+		// $scope.getUniqueContactPerson = function(idx){
+		// 	$scope.contactPerson = null;
+		// 	$scope.purchaseOrder.vendor_id = null;
 			
-			Vendor.contactPersons($scope.companies[idx].id)
-				.success(function(data){
-					$scope.contactPersons = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		}
+		// 	Vendor.contactPersons($scope.companies[idx].id)
+		// 		.success(function(data){
+		// 			$scope.contactPersons = data;
+		// 		})
+		// 		.error(function(){
+		// 			Preloader.error();
+		// 		})
+		// }
 
-		$scope.getContactNumbers = function(id){
-			Vendor.contactNumbers(id)
-				.success(function(data){
-					$scope.contactNumbers = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		}
+		// $scope.getContactNumbers = function(id){
+		// 	Vendor.contactNumbers(id)
+		// 		.success(function(data){
+		// 			$scope.contactNumbers = data;
+		// 		})
+		// 		.error(function(){
+		// 			Preloader.error();
+		// 		})
+		// }
 
 		$scope.getUniqueBrands = function(assetTypeIndex, idx){
 			$scope.assets[idx].brand = null;
@@ -1434,9 +1450,9 @@ adminModule
 		}
 
 		$scope.init = function(){
-			Vendor.distinct({'distinct':'company'})
+			Vendor.index()
 				.then(function(data){
-					$scope.companies = data.data;
+					$scope.vendors = data.data;
 				})
 				.then(function(){
 					AssetType.index()
@@ -1511,28 +1527,28 @@ adminModule
 			$scope.assets.splice(idx, 1);
 		}
 
-		$scope.getUniqueContactPerson = function(idx){
-			$scope.contactPerson = null;
-			$scope.purchaseOrder.vendor_id = null;
+		// $scope.getUniqueContactPerson = function(idx){
+		// 	$scope.contactPerson = null;
+		// 	$scope.purchaseOrder.vendor_id = null;
 			
-			Vendor.contactPersons($scope.companies[idx].id)
-				.success(function(data){
-					$scope.contactPersons = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		}
+		// 	Vendor.contactPersons($scope.companies[idx].id)
+		// 		.success(function(data){
+		// 			$scope.contactPersons = data;
+		// 		})
+		// 		.error(function(){
+		// 			Preloader.error();
+		// 		})
+		// }
 
-		$scope.getContactNumbers = function(id){
-			Vendor.contactNumbers(id)
-				.success(function(data){
-					$scope.contactNumbers = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		}
+		// $scope.getContactNumbers = function(id){
+		// 	Vendor.contactNumbers(id)
+		// 		.success(function(data){
+		// 			$scope.contactNumbers = data;
+		// 		})
+		// 		.error(function(){
+		// 			Preloader.error();
+		// 		})
+		// }
 
 		$scope.getUniqueBrands = function(assetTypeIndex, idx){
 			$scope.assets[idx].brand = null;
@@ -1611,9 +1627,9 @@ adminModule
 		}
 
 		$scope.init = function(){
-			Vendor.distinct({'distinct':'company'})
+			Vendor.index()
 				.then(function(data){
-					$scope.companies = data.data;
+					$scope.vendors = data.data;
 					return;
 				})
 				.then(function(){
@@ -1634,23 +1650,23 @@ adminModule
 							data.date_purchased = new Date(data.date_purchased);
 							data.date_arrival = new Date(data.date_arrival);
 
-							var company = $filter('filter')($scope.companies, {company:data.vendor.company});
+							// var company = $filter('filter')($scope.companies, {company:data.vendor.company});
 
-							$scope.vendorIndex = $scope.companies.indexOf(company[0]);
+							// $scope.vendorIndex = $scope.companies.indexOf(company[0]);
 
-							Vendor.contactPersons($scope.companies[$scope.vendorIndex].id)
-								.success(function(data){
-									$scope.contactPersons = data;
+							// Vendor.contactPersons($scope.companies[$scope.vendorIndex].id)
+							// 	.success(function(data){
+							// 		$scope.contactPersons = data;
 
-									var contactPerson = $filter('filter')($scope.contactPersons, {contact_person:$scope.purchaseOrder.vendor.contact_person});
+							// 		var contactPerson = $filter('filter')($scope.contactPersons, {contact_person:$scope.purchaseOrder.vendor.contact_person});
 
-									$scope.contactPerson = $scope.contactPersons[$scope.contactPersons.indexOf(contactPerson[0])].id;
+							// 		$scope.contactPerson = $scope.contactPersons[$scope.contactPersons.indexOf(contactPerson[0])].id;
 
-									$scope.getContactNumbers($scope.contactPerson);
-								})
-								.error(function(){
-									Preloader.error();
-								})
+							// 		$scope.getContactNumbers($scope.contactPerson);
+							// 	})
+							// 	.error(function(){
+							// 		Preloader.error();
+							// 	})
 
 							$scope.purchaseOrder = data;
 							$scope.assets = data.asset_purchase_order;
@@ -3061,10 +3077,10 @@ adminModule
 					angular.forEach(data.asset_purchase_order, function(item){
 						item.chart = {};
 						item.chart.data = [];
-						item.chart.labels = ['Tagged','Stocks'];
+						item.chart.labels = ['Tagged','Untagged'];
 						// tagged
 						item.chart.data[0] =  item.asset.asset_tags.length;
-						// stocks
+						// untagged
 						item.chart.data[1] = item.quantity - item.asset.asset_tags.length;
 					});
 
@@ -4301,6 +4317,7 @@ adminModule
 	.controller('addPurchaseOrderAssetTagDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', 'Asset', 'AssetDetail', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, AssetTag, Asset, AssetDetail, WorkStation){		
 		$scope.purchaseOrder = Preloader.get();
 		$scope.hasWarranty = true;
+		$scope.deploy = true;
 		$scope.assetTag = {};
 		$scope.assetTag.purchase_order_id = $scope.purchaseOrder.id;
 		$scope.assetTag.warranty_end = new Date();
@@ -4358,6 +4375,7 @@ adminModule
 				
 				if(!busy && !$scope.duplicate){
 					$scope.assetTag.warranty_end = $scope.hasWarranty ? $scope.assetTag.warranty_end.toDateString() : null;
+					$scope.assetTag.work_station_id = $scope.deploy ? $scope.assetTag.work_station_id : null;
 					AssetTag.store($scope.assetTag)
 						.success(function(data){
 							if(!data){

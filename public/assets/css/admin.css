@@ -60,6 +60,9 @@ ul {
 .red-text {
   color: #F44336; }
 
+.orange-text {
+  color: #FF9800; }
+
 .white-text {
   /* White */
   color: #fff; }
@@ -143,6 +146,9 @@ md-content.blue-bg {
 
 .red-bg {
   background: #F44336; }
+
+.orange-bg {
+  background: #FF9800; }
 
 .blur-white {
   background: rgba(255, 255, 255, 0.1); }

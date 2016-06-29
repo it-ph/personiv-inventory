@@ -16,32 +16,35 @@ adminModule
 			return results;
 		}
 
+		$scope.toolbar.subheader = 'Filters';
+
 		$scope.toolbar.options = [
 			{
 				'label': 'Deployed',
+				'icon': 'mdi-filter',
 				action : function(){
 					$scope.status = 'deployed';
-					console.log($scope.status);
 				},
 			},
 			{
 				'label': 'Stock',
+				'icon': 'mdi-filter',
 				action : function(){
 					$scope.status = 'stock';
-					console.log($scope.status);
 				},
 			},
 			{
 				'label': 'Pulled Out',
+				'icon': 'mdi-filter',
 				action : function(){
 					$scope.status = 'pulled out';
-					console.log($scope.status);
 				},
 			},
 		]
 
 		$scope.toolbar.refresh = function(){
 			/* Starts the loading */
+			$scope.status = '';
 			Preloader.loading();
 			$scope.init(true);
 		}
@@ -103,6 +106,11 @@ adminModule
 		    },function(){
 		    	return;
 		    })
+	    }
+
+	    $scope.purchaseOrder = function(id)
+	    {
+	    	$state.go('main.asset-tag-purchase-order', {'purchaseOrderID':id});
 	    }
 
 	    var pushItem = function(data, type){

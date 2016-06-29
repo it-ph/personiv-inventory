@@ -140,7 +140,7 @@ class AssetTypeController extends Controller
             $asset_tags = DB::table('asset_tags')->where('asset_id', $asset_value->id)->get();
 
             foreach ($asset_tags as $asset_tag_key => $asset_tag_value) {
-                $asset_tag_value->prefix = $asset_type->prefx;
+                $asset_tag_value->prefix = $asset_type->prefix;
 
                 if($asset_tag_value->sequence > 0 && $asset_tag_value->sequence < 10)
                 {
@@ -162,7 +162,7 @@ class AssetTypeController extends Controller
                     $fill = null;
                 }
 
-                $asset_tag_value->property_code = $asset_type->prefx . $fill . $asset_tag_value->sequence;
+                $asset_tag_value->property_code = $asset_type->prefix . $fill . $asset_tag_value->sequence;
 
                 $asset_tag_value->save();
             } 

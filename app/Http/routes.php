@@ -52,6 +52,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::resource('activity', 'ActivityController');
 	Route::resource('activity-type', 'ActivityTypeController');
 	Route::resource('asset-purchase-order', 'AssetPurchaseOrderController');
+	Route::resource('inventory-report', 'InventoryReportController');
 
 	Route::post('user-check-password', 'UserController@checkPassword');
 	Route::post('user-change-password', 'UserController@changePassword');

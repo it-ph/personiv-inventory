@@ -57,28 +57,28 @@ adminModule
 			$scope.assets.splice(idx, 1);
 		}
 
-		$scope.getUniqueContactPerson = function(idx){
-			$scope.contactPerson = null;
-			$scope.purchaseOrder.vendor_id = null;
+		// $scope.getUniqueContactPerson = function(idx){
+		// 	$scope.contactPerson = null;
+		// 	$scope.purchaseOrder.vendor_id = null;
 			
-			Vendor.contactPersons($scope.companies[idx].id)
-				.success(function(data){
-					$scope.contactPersons = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		}
+		// 	Vendor.contactPersons($scope.companies[idx].id)
+		// 		.success(function(data){
+		// 			$scope.contactPersons = data;
+		// 		})
+		// 		.error(function(){
+		// 			Preloader.error();
+		// 		})
+		// }
 
-		$scope.getContactNumbers = function(id){
-			Vendor.contactNumbers(id)
-				.success(function(data){
-					$scope.contactNumbers = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
-		}
+		// $scope.getContactNumbers = function(id){
+		// 	Vendor.contactNumbers(id)
+		// 		.success(function(data){
+		// 			$scope.contactNumbers = data;
+		// 		})
+		// 		.error(function(){
+		// 			Preloader.error();
+		// 		})
+		// }
 
 		$scope.getUniqueBrands = function(assetTypeIndex, idx){
 			$scope.assets[idx].brand = null;
@@ -157,9 +157,9 @@ adminModule
 		}
 
 		$scope.init = function(){
-			Vendor.distinct({'distinct':'company'})
+			Vendor.index()
 				.then(function(data){
-					$scope.companies = data.data;
+					$scope.vendors = data.data;
 				})
 				.then(function(){
 					AssetType.index()

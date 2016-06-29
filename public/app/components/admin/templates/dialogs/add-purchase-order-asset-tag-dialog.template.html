@@ -62,56 +62,59 @@
 					<textarea name="assetTagForm.remarks" ng-model="assetTag.remarks"></textarea>
 					<div class="hint">Note about the asset.</div>
 				</md-input-container>
-				<div layout="row">
-					<!-- Floor -->
-					<md-input-container flex>
-						<label>Floor</label>
-						<md-select name="Floor" ng-model="floor" required ng-change="assetTag.work_station_id=null">
-							<md-option ng-repeat="floor in floors" value="{{ floor }}">
-								<span>{{ floor }}</span>
+				<md-switch ng-model="deploy" class="md-primary">Work Station</md-switch>
+				<div ng-if="deploy" layout="column">
+					<div layout="row">
+						<!-- Floor -->
+						<md-input-container flex>
+							<label>Floor</label>
+							<md-select name="Floor" ng-model="floor" required ng-change="assetTag.work_station_id=null">
+								<md-option ng-repeat="floor in floors" value="{{ floor }}">
+									<span>{{ floor }}</span>
+								</md-option>
+							</md-select>
+							<div ng-messages="assetTagForm.Floor.$error" ng-if="assetTagForm.Floor.$touched">
+								<div ng-message="required">Floor is required</div>
+							</div>
+						</md-input-container>
+						<!-- Division -->
+						<md-input-container flex>
+							<label>Division</label>
+							<md-select name="Division" ng-model="division" ng-disabled="!floor" ng-change="assetTag.work_station_id=null">
+								<md-option ng-repeat="division in divisions" value="{{ division }}">
+									<span>{{ division }}</span>
+								</md-option>
+							</md-select>
+							<div ng-messages="assetTagForm.Division.$error" ng-if="assetTagForm.Division.$touched">
+								<div ng-message="required">Division is required</div>
+							</div>
+						</md-input-container>
+						<!-- Type -->
+						<md-input-container flex>
+							<label>Type</label>
+							<md-select name="Type" ng-model="type" ng-disabled="!division" ng-change="assetTag.work_station_id=null">
+								<md-option ng-repeat="type in types" value="{{ type }}">
+									<span>{{ type }}</span>
+								</md-option>
+							</md-select>
+							<div ng-messages="assetTagForm.Type.$error" ng-if="assetTagForm.Type.$touched">
+								<div ng-message="required">Type is required</div>
+							</div>
+						</md-input-container>
+					</div>
+					<!-- Work Station -->
+					<md-input-container>
+						<label>Work Station</label>
+						<md-select name="WorkStation" required ng-model="assetTag.work_station_id" ng-disabled="!type">
+							<md-option ng-repeat="workStation in workStations | filter:{floor: floor} | filter:{division:division} | filter:{type:type}" value="{{ workStation.id }}">
+								<span>{{ workStation.name }}</span>
 							</md-option>
 						</md-select>
-						<div ng-messages="assetTagForm.Floor.$error" ng-if="assetTagForm.Floor.$touched">
-							<div ng-message="required">Floor is required</div>
-						</div>
-					</md-input-container>
-					<!-- Division -->
-					<md-input-container flex>
-						<label>Division</label>
-						<md-select name="Division" ng-model="division" ng-disabled="!floor" ng-change="assetTag.work_station_id=null">
-							<md-option ng-repeat="division in divisions" value="{{ division }}">
-								<span>{{ division }}</span>
-							</md-option>
-						</md-select>
-						<div ng-messages="assetTagForm.Division.$error" ng-if="assetTagForm.Division.$touched">
-							<div ng-message="required">Division is required</div>
-						</div>
-					</md-input-container>
-					<!-- Type -->
-					<md-input-container flex>
-						<label>Type</label>
-						<md-select name="Type" ng-model="type" ng-disabled="!division" ng-change="assetTag.work_station_id=null">
-							<md-option ng-repeat="type in types" value="{{ type }}">
-								<span>{{ type }}</span>
-							</md-option>
-						</md-select>
-						<div ng-messages="assetTagForm.Type.$error" ng-if="assetTagForm.Type.$touched">
-							<div ng-message="required">Type is required</div>
+						<div ng-messages="assetTagForm.WorkStation.$error" ng-if="assetTagForm.WorkStation.$touched">
+							<div ng-message="required">Work station is required.</div>						
 						</div>
 					</md-input-container>
 				</div>
-				<!-- Work Station -->
-				<md-input-container>
-					<label>Work Station</label>
-					<md-select name="WorkStation" required ng-model="assetTag.work_station_id" ng-disabled="!type">
-						<md-option ng-repeat="workStation in workStations | filter:{floor: floor} | filter:{division:division} | filter:{type:type}" value="{{ workStation.id }}">
-							<span>{{ workStation.name }}</span>
-						</md-option>
-					</md-select>
-					<div ng-messages="assetTagForm.WorkStation.$error" ng-if="assetTagForm.WorkStation.$touched">
-						<div ng-message="required">Work station is required.</div>						
-					</div>
-				</md-input-container>
 			</div>
 		</md-dialog-content>
 	</form>
