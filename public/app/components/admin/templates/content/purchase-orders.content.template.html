@@ -1,6 +1,6 @@
 <div layout-padding layout="row" layout-align="center start" ng-if="purchaseOrder.paginated.show && purchaseOrder.paginated.length" flex infinite-scroll='purchaseOrder.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="purchaseOrder.busy" infinite-scroll-parent>
 	<div flex flex-gt-lg="80" layout-margin>
-		<md-card flex ng-repeat="purchase_order in purchaseOrder.paginated">
+		<md-card flex ng-repeat="purchase_order in purchaseOrder.paginated | orderBy:'-created_at'">
 			<md-card-header>
 	          	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
 	            	<span class="md-headline white-text">{{ purchase_order.first_letter }}</span>
@@ -74,7 +74,7 @@
 <!-- Search Results -->
 <div layout-padding layout="row" layout-align="center start" ng-if="!purchaseOrder.paginated.show && purchaseOrder.results.length" flex>
 	<div flex flex-gt-lg="80" layout-margin>
-		<md-card flex ng-repeat="purchase_order in purchaseOrder.results">
+		<md-card flex ng-repeat="purchase_order in purchaseOrder.results | orderBy:'-created_at'">
 			<md-card-header>
 	          	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
 	            	<span class="md-headline white-text">{{ purchase_order.first_letter }}</span>

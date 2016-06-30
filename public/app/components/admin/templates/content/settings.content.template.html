@@ -6,8 +6,11 @@
 				<span>Assets</span>
 			</md-subheader>
 			<md-list layout="column" layout-padding>
-				<md-list-item class="fade-transition" flex ng-repeat="asset_type in asset_types | filter:toolbar.searchText | orderBy:'name'">
-					<p class="md-subhead" flex>{{asset_type.type}}</p>
+				<md-list-item class="fade-transition md-2-line" flex ng-repeat="asset_type in asset_types | filter:toolbar.searchText | orderBy:'name'">
+					<div class="md-list-item-text">
+						<h3>{{asset_type.type}}</h3>
+						<h4>{{asset_type.prefix}}</h4>
+					</div>
 					<md-menu class="fade-transition" ng-if="user.role == 'super-admin'">
 				    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
 					        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
@@ -87,7 +90,7 @@
 				<md-list-item class="md-2-line fade-transition" flex ng-repeat="user in users | filter:toolbar.searchText | orderBy:'name'">
 					<div class="md-list-item-text" layout="column">
 			          	<h3>{{user.first_name}}</h3>
-						<p class="md-subhead" flex>{{user.email}}</p>
+						<h4>{{user.email}}</h4>
 			        </div>
 					<md-menu class="fade-transition">
 				    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">

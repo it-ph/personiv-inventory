@@ -28,13 +28,42 @@ class InventoryReportController extends Controller
         $report->user_id = $user->id;
         $report->save();
 
-        $this->data = AssetType::with(['assets' => function($query){ $query->with('details'); }])->with(['asset_tags' => function($query){ $query->with('asset', 'purchase_order', 'status', 'work_station'); }])->get();
-
-        // return $this->data;
+        $this->data = AssetType::with(['assets' => function($query){ $query->with('details')->with(['asset_tags' => function($query){ $query->with('status', 'purchase_order', 'status', 'work_station'); }]); }])->get();
 
         Excel::create('Inventory Report as of '. Carbon::today()->toFormattedDateString(), function($excel){
             foreach ($this->data as $asset_type_key => $asset_type) {
+                foreach ($asset_type->assets as $asset_key => $asset_value) {
+                    $asset_value->deployed = 0;
+                    $asset_value->pulled_out = 0;
+                    $asset_value->stocks = 0;
+                    
+                    foreach ($asset_value->asset_tags as $asset_asset_tag_key => $asset_asset_tag_value) {
+                        $asset_asset_tag_value->warranty_end = Carbon::parse($asset_asset_tag_value->warranty_end)->toFormattedDateString();
+                        
+                        if($asset_asset_tag_value->purchase_order){
+                            $asset_asset_tag_value->purchase_order->date_purchased = Carbon::parse($asset_asset_tag_value->purchase_order->date_purchased)->toFormattedDateString();
+                        }
+
+                        if(count($asset_asset_tag_value->status)){
+                            $asset_value->pulled_out += 1;
+                            $asset_asset_tag_value->status = 'Pulled Out';
+                        }
+                        else if($asset_asset_tag_value->work_station_id)
+                        {
+                            $asset_value->deployed += 1;
+                            $asset_asset_tag_value->status = 'Deployed';
+                        }
+                        else if(!$asset_asset_tag_value->work_station_id){
+                            $asset_value->pulled_out += 1;
+                            $asset_asset_tag_value->status = 'Stock';
+                        }
+                    }
+
+                    $asset_value->total = $asset_value->deployed + $asset_value->pulled_out + $asset_value->stocks;
+                }
+
                 $this->asset_type = $asset_type;
+
                 $excel->sheet($asset_type->type, function($sheet){
                     $sheet->loadView('excel.inventory-report')->with('data', $this->asset_type);
                 });
