@@ -57,6 +57,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('user-check-password', 'UserController@checkPassword');
 	Route::post('user-change-password', 'UserController@changePassword');
 
+	Route::get('activity-paginate', 'ActivityController@paginate');
 	Route::get('asset-paginate/{assetTypeID}', 'AssetController@paginate');
 	Route::get('asset-tag-paginate/{assetTypeID}', 'AssetTagController@paginate');
 	Route::get('purchase-order-paginate', 'PurchaseOrderController@paginate');
@@ -85,6 +86,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('vendor-contact-persons/{id}', 'VendorController@contactPersons');
 	Route::get('vendor-contact-numbers/{id}', 'VendorController@contactNumbers');
 	Route::post('asset-tag-last-property-code', 'AssetTagController@lastPropertyCode');
+	Route::get('inventory-report-dashboard', 'InventoryReportController@dashboard');
 	
 	// Route resource store multiple
 	Route::post('asset-tag-multiple', 'AssetTagController@storeMultiple');

@@ -2,7 +2,7 @@
 	<!-- Toolbar -->
 	<div ui-view="toolbar" layout="row" flex class="md-toolbar-tools"></div>
 </md-toolbar>
-<md-content layout="row" flex class="hide-overflow">
+<div layout="row" flex class="hide-overflow" id="paginate-loader">
 	<div layout="column" flex>
 		<!-- Toogle on scroll Toolbar -->
 		<md-toolbar class="white-toolbar" md-scroll-shrink>
@@ -10,7 +10,7 @@
 			<div class="md-toolbar-tools" ui-view="subheader"></div>
 		</md-toolbar>
 		<!-- Content -->
-		<md-content flex layout="column" ui-view="content" id="main-content"></md-content>
+		<md-content flex layout="column" ui-view="content" class="overflow-y-hidden"></md-content>
 	</div>
 	<!-- Right Sidenav -->
 	<md-sidenav ng-if="rightSidenav.show" class="md-sidenav-right md-whiteframe-2dp" md-component-id="right" md-is-locked-open="$mdMedia('gt-md')" ui-view="right-sidenav"></md-sidenav>
@@ -19,4 +19,4 @@
 		<md-icon class="mdi {{ fab.icon }}" aria-label="{{ fab.label }}"></md-icon>
 		<md-tooltip>{{ fab.label }}</md-tooltip>
 	</md-button>
-</md-content>
+</div>

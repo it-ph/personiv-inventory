@@ -1,64 +1,66 @@
-<div layout="row" layout-padding>
-	<div ng-repeat="chart in charts" flex layout="column" layout-align="center center">	
-		<h3 class="md-subhead primary-text">{{ chart.location }}</h3>
-		<canvas class="chart chart-doughnut" chart-data="chart.data" chart-labels="chart.labels" chart-legend="true"></canvas>
-		<p>
-			<span>Occupied : {{ chart.data[0] }}</span> |
-			<span>Vacant : {{ chart.data[1] }}</span>
-		</p>
-	</div>
-</div>
-
-<!-- Search Results -->
-<div class="fade-transition" layout="column" flex ng-if="workStation.results && !workStation.paginated.show">
-	<div layout-padding>
-		<md-list>
-			<md-list-item class="md-3-line" layout="row" ng-repeat="workStation in workStation.results | filter: rightSidenav.department | filter:toolbar.searchText" ng-click="show(workStation.id, workStation.departments.length)">
-				<h2 class="md-avatar md-headline" ng-class="{'red-bg':workStation.departments.length, 'blue-bg':!workStation.departments.length}" layout="row" layout-align="center center">
-					<span class="weight-200 white-text">{{ workStation.first_letter }}</span>
-				</h2>
-				<div class="md-list-item-text" layout="column" flex>
-					<h3>{{ workStation.name }}</h3>
-					<h4>
-						<span ng-repeat="department in workStation.departments">{{ department.name }} <span ng-if="workStation.departments.length > 1">|</span> </span>
-					</h4>
-					<p>{{ workStation.ip_address }}</p>
-				</div>
-			</md-list-item>
-		</md-list>
-		<p ng-if="!workStation.results.length && !workStation.paginated.show">No results found matching <strong>"{{ toolbar.searchText }}"</strong></p>
-	</div>
-</div>
-<!-- Paginated Data -->
-<div class="fade-transition" ng-if="workStation.paginated.show && workStation.paginated.length" flex infinite-scroll='workStation.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="workStation.busy" infinite-scroll-parent>
-	<div layout-padding>
-		<p class="md-subhead primary-text"><span ng-if="!rightSidenav.department">All</span>{{ rightSidenav.department }}</p>
-		<md-list>
-			<md-list-item class="md-3-line" ng-click="show(workStation.id, workStation.departments.length)" layout="row" ng-repeat="workStation in workStation.paginated | orderBy:'name' | filter:toolbar.searchText | filter: rightSidenav.department">
-				<h2 class="md-avatar md-headline" ng-class="{'red-bg':workStation.departments.length, 'blue-bg':!workStation.departments.length}" layout="row" layout-align="center center">
-					<span class="weight-200 white-text">{{ workStation.first_letter }}</span>
-				</h2>
-				<div class="md-list-item-text" layout="column" flex>
-					<h3>{{ workStation.name }}</h3>
-					<h4> 
-						<span ng-repeat="department in workStation.departments">{{ department.name }} <span ng-if="workStation.departments.length > 1">|</span> </span>
-					</h4>
-					<p>{{ workStation.ip_address }}</p>
-				</div>
-			</md-list-item>
-		</md-list>
-		<!-- Loading for paginate -->
-		<div layout="column" layout-align="center center" flex ng-if="workStation.busy">
-			<md-progress-circular md-mode="indeterminate" class="md-primary" md-diameter="96" ></md-progress-circular>
+<md-content>
+	<div layout="row" layout-padding>
+		<div ng-repeat="chart in charts" flex layout="column" layout-align="center center">	
+			<h3 class="md-subhead primary-text">{{ chart.location }}</h3>
+			<canvas class="chart chart-doughnut" chart-data="chart.data" chart-labels="chart.labels" chart-legend="true"></canvas>
+			<p>
+				<span>Occupied : {{ chart.data[0] }}</span> |
+				<span>Vacant : {{ chart.data[1] }}</span>
+			</p>
 		</div>
 	</div>
-</div>
 
-<!-- If no records yet -->
-<div layout="column" layout-align="center center" flex ng-if="workStation.paginated.show && !workStation.paginated.length && !workStation.results.length">
-	<h3 class="md-subhead  ">No work stations to display</h3>
-	<md-button class="md-fab md-primary" aria-label="Create Work Station" ng-click="createWorkStation()">
-		<md-icon class="mdi mdi-plus"></md-icon>
-	</md-button>
-	<p class="secondary-text">Tap to create</p>
-</div>
+	<!-- Search Results -->
+	<div class="fade-transition" layout="column" flex ng-if="workStation.results && !workStation.paginated.show">
+		<div layout-padding>
+			<md-list>
+				<md-list-item class="md-3-line" layout="row" ng-repeat="workStation in workStation.results | filter: rightSidenav.department | filter:toolbar.searchText" ng-click="show(workStation.id, workStation.departments.length)">
+					<h2 class="md-avatar md-headline" ng-class="{'red-bg':workStation.departments.length, 'blue-bg':!workStation.departments.length}" layout="row" layout-align="center center">
+						<span class="weight-200 white-text">{{ workStation.first_letter }}</span>
+					</h2>
+					<div class="md-list-item-text" layout="column" flex>
+						<h3>{{ workStation.name }}</h3>
+						<h4>
+							<span ng-repeat="department in workStation.departments">{{ department.name }} <span ng-if="workStation.departments.length > 1">|</span> </span>
+						</h4>
+						<p>{{ workStation.ip_address }}</p>
+					</div>
+				</md-list-item>
+			</md-list>
+			<p ng-if="!workStation.results.length && !workStation.paginated.show">No results found matching <strong>"{{ toolbar.searchText }}"</strong></p>
+		</div>
+	</div>
+	<!-- Paginated Data -->
+	<div class="fade-transition" ng-if="workStation.paginated.show && workStation.paginated.length" flex infinite-scroll='workStation.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="workStation.busy" infinite-scroll-parent>
+		<div layout-padding>
+			<p class="md-subhead primary-text"><span ng-if="!rightSidenav.department">All</span>{{ rightSidenav.department }}</p>
+			<md-list>
+				<md-list-item class="md-3-line" ng-click="show(workStation.id, workStation.departments.length)" layout="row" ng-repeat="workStation in workStation.paginated | orderBy:'name' | filter:toolbar.searchText | filter: rightSidenav.department">
+					<h2 class="md-avatar md-headline" ng-class="{'red-bg':workStation.departments.length, 'blue-bg':!workStation.departments.length}" layout="row" layout-align="center center">
+						<span class="weight-200 white-text">{{ workStation.first_letter }}</span>
+					</h2>
+					<div class="md-list-item-text" layout="column" flex>
+						<h3>{{ workStation.name }}</h3>
+						<h4> 
+							<span ng-repeat="department in workStation.departments">{{ department.name }} <span ng-if="workStation.departments.length > 1">|</span> </span>
+						</h4>
+						<p>{{ workStation.ip_address }}</p>
+					</div>
+				</md-list-item>
+			</md-list>
+			<!-- Loading for paginate -->
+			<div layout="column" layout-align="center center" flex ng-if="workStation.busy">
+				<md-progress-circular md-mode="indeterminate" class="md-primary" md-diameter="96" ></md-progress-circular>
+			</div>
+		</div>
+	</div>
+
+	<!-- If no records yet -->
+	<div layout="column" layout-align="center center" flex ng-if="workStation.paginated.show && !workStation.paginated.length && !workStation.results.length">
+		<h3 class="md-subhead  ">No work stations to display</h3>
+		<md-button class="md-fab md-primary" aria-label="Create Work Station" ng-click="createWorkStation()">
+			<md-icon class="mdi mdi-plus"></md-icon>
+		</md-button>
+		<p class="secondary-text">Tap to create</p>
+	</div>
+</md-content>

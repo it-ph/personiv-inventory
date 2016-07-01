@@ -1,6 +1,6 @@
 sharedModule
-	.factory('InventoryReport', ['$http', function($http){
-		var urlBase = '/inventory-report';
+	.factory('Activity', ['$http', function($http){
+		var urlBase = '/activity';
 
 		return {
 			index: function(){
@@ -18,8 +18,8 @@ sharedModule
 			delete: function(id){
 				return $http.delete(urlBase + '/' + id);
 			},
-			dashboard: function(){
-				return $http.get(urlBase + '-dashboard');
+			paginate: function(page){
+				return $http.get(urlBase + '-paginate?page=' + page);
 			},
 		};
 	}]);

@@ -1,5 +1,5 @@
-<div class="md-padding" layout="row" layout-align="center start">
-	<div flex-gt-md="90">
+<md-content class="md-padding" layout="row" layout-align="center start">
+	<div flex infinite-scroll='activity.paginateLoad()' infinite-scroll-distance="3" infinite-scroll-disabled="activity.busy" infinite-scroll-parent>
 		<div layout="row" flex>
 	        <md-card flex md-theme="dark-blue">
 		        <md-card-title>
@@ -67,108 +67,24 @@
 			</md-toolbar>
 			<md-card-content>
 				<md-list layout="row" layout-wrap>
-					<md-list-item class="md-3-line" flex="30">
+					<md-list-item class="md-3-line" flex="30" ng-repeat="activity in activity.paginated" ng-click="show(activity.id)">
 						<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-							<span class="md-headline white-text">M</span>
+							<span class="md-headline white-text">{{activity.first_letter}}</span>
 						</h2>
 						<div class="md-list-item-text">
-							<h3>Marco Paco</h3>
-							<h3>add an asset tag.</h3>
-							<p>yesterday.</p>
-						</div>
-					</md-list-item>
-					<md-list-item class="md-3-line" flex="30">
-						<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-							<span class="md-headline white-text">M</span>
-						</h2>
-						<div class="md-list-item-text">
-							<h3>Marco Paco</h3>
-							<h3>add an asset tag.</h3>
-							<p>yesterday.</p>
-						</div>
-					</md-list-item>
-					<md-list-item class="md-3-line" flex="30">
-						<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-							<span class="md-headline white-text">M</span>
-						</h2>
-						<div class="md-list-item-text">
-							<h3>Marco Paco</h3>
-							<h3>add an asset tag.</h3>
-							<p>yesterday.</p>
-						</div>
-					</md-list-item>
-					<md-list-item class="md-3-line" flex="30">
-						<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-							<span class="md-headline white-text">M</span>
-						</h2>
-						<div class="md-list-item-text">
-							<h3>Marco Paco</h3>
-							<h3>add an asset tag.</h3>
-							<p>yesterday.</p>
-						</div>
-					</md-list-item>
-					<md-list-item class="md-3-line" flex="30">
-						<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-							<span class="md-headline white-text">M</span>
-						</h2>
-						<div class="md-list-item-text">
-							<h3>Marco Paco</h3>
-							<h3>add an asset tag.</h3>
-							<p>yesterday.</p>
-						</div>
-					</md-list-item>
-					<md-list-item class="md-3-line" flex="30">
-						<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-							<span class="md-headline white-text">M</span>
-						</h2>
-						<div class="md-list-item-text">
-							<h3>Marco Paco</h3>
-							<h3>add an asset tag.</h3>
-							<p>yesterday.</p>
-						</div>
-					</md-list-item>
-					<md-list-item class="md-3-line" flex="30">
-						<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-							<span class="md-headline white-text">M</span>
-						</h2>
-						<div class="md-list-item-text">
-							<h3>Marco Paco</h3>
-							<h3>add an asset tag.</h3>
-							<p>yesterday.</p>
-						</div>
-					</md-list-item>
-					<md-list-item class="md-3-line" flex="30">
-						<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-							<span class="md-headline white-text">M</span>
-						</h2>
-						<div class="md-list-item-text">
-							<h3>Marco Paco</h3>
-							<h3>add an asset tag.</h3>
-							<p>yesterday.</p>
-						</div>
-					</md-list-item>
-					<md-list-item class="md-3-line" flex="30">
-						<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-							<span class="md-headline white-text">M</span>
-						</h2>
-						<div class="md-list-item-text">
-							<h3>Marco Paco</h3>
-							<h3>add an asset tag.</h3>
-							<p>yesterday.</p>
-						</div>
-					</md-list-item>
-					<md-list-item class="md-3-line" flex="30">
-						<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-							<span class="md-headline white-text">M</span>
-						</h2>
-						<div class="md-list-item-text">
-							<h3>Marco Paco</h3>
-							<h3>add an asset tag.</h3>
-							<p>yesterday.</p>
+							<h3>{{activity.user.first_name}} {{activity.user.last_name}}</h3>
+							<h4>{{activity.activity_type.description}}</h4>
+							<p>
+				        		<span class="secondary-text md-caption" am-time-ago="activity.created_at"></span>
+								<md-tooltip>{{ activity.created_at | date: 'EEEE, MMMM d, yyyy' }}</md-tooltip>
+							</p>
 						</div>
 					</md-list-item>
 				</md-list>
 			</md-card-content>
 		</md-card>
+		<div layout="row" layout-align="center center" flex ng-if="activity.busy">
+			<md-progress-circular md-diameter="96"></md-progress-circular>
+		</div>
 	</div>
-</div>
+</md-content>

@@ -1,160 +1,162 @@
-<div layout-padding layout="row" layout-align="center start" ng-if="purchaseOrder.paginated.show && purchaseOrder.paginated.length" flex infinite-scroll='purchaseOrder.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="purchaseOrder.busy" infinite-scroll-parent>
-	<div flex flex-gt-lg="80" layout-margin>
-		<md-card flex ng-repeat="purchase_order in purchaseOrder.paginated | orderBy:'-created_at'">
-			<md-card-header>
-	          	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
-	            	<span class="md-headline white-text">{{ purchase_order.first_letter }}</span>
-	          	</md-card-avatar>
-	          	<md-card-header-text>
-		            <span class="md-title">{{ purchase_order.vendor.company }}</span>
-		            <span class="md-subhead">{{ purchase_order.vendor.contact_person }} - {{ purchase_order.vendor.contact_number }}</span>
-	          	</md-card-header-text>
-	        </md-card-header>
-	        <div class="card-image-bg" flex>
-	        	<div layout="row" layout-align="center center" class="shadow-bg">
-		        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>P.O. #{{ purchase_order.id }}</h2>
-		        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>P.O. #{{ purchase_order.id }}</h2>
-		        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>P.O. #{{ purchase_order.id }}</h2>
-	        	</div>
-	        </div>
-	        <md-card-title>
-	          	<md-card-title-text layout="row">
-	            	<div flex>
-		            	<h3 class="md-headline">Date Purchased:</h3>
-		            	<p layout="column">
-		            		<span>{{ purchase_order.date_purchased | date: 'EEEE, MMMM d, yyyy' }}</span>
-			        		<span class="secondary-text md-caption" am-time-ago="purchase_order.date_purchased"></span>
-		            	</p>
-	            	</div>
-	            	<div flex>
-		            	<h3 class="md-headline">Expected Time of Arrival:</h3>
-		            	<p layout="column">
-		            		<span>{{ purchase_order.date_arrival | date: 'EEEE, MMMM d, yyyy' }}</span>
-			            	<span class="secondary-text md-caption"> will arrive around <span am-time-ago="purchase_order.date_arrival"></span></span>
-		            	</p>
-	            	</div>
-	          	</md-card-title-text>
-	        </md-card-title>
-	        <md-card-content>
-	        	<h3 class="md-headline primary-text">Items</h3>
-	        	<md-list layout="row" flex layout-wrap layout-padding>
-		        	<md-list-item flex="25" class="md-3-line" ng-repeat="asset_purchase_order in purchase_order.asset_purchase_order">
-		        		<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-		        			<span class="md-headline white-text">{{ asset_purchase_order.asset.brand[0] }}</span>
-		        		</h2>
-		        		<div class="md-list-item-text">
-		        			<h3>{{ asset_purchase_order.asset.brand }}</h3>
-		        			<h4>{{ asset_purchase_order.asset.model }} <span class="secondary-text md-caption">({{ asset_purchase_order.asset.type.type }})</span></h4>
-		        			<p>Quantity: {{ asset_purchase_order.quantity }}</p>
-		        		</div>
-		        	</md-list-item>
-	        	</md-list>
-	        </md-card-content>
-	        <md-divider></md-divider>
-	    	<md-card-actions layout="row" layout-align="start center">
-		    	<md-card-icon-actions>
-		            <md-button class="md-icon-button" aria-label="Edit" ng-click="editPurchaseOrder(purchase_order.id)">
-		              	<md-icon class="mdi mdi-pencil grey"></md-icon>
-						<md-tooltip>Edit</md-tooltip>
-		            </md-button>
-					<md-button class="md-icon-button" ng-if="user.role == 'super-admin'" ng-click="deletePurchaseOrder(purchase_order.id)">
-						<md-icon class="mdi grey mdi-delete"></md-icon>
-						<md-tooltip>Delete</md-tooltip>
-					</md-button>
-		      	</md-card-icon-actions>
-	          	<md-button ng-click="assetTag(purchase_order.id)">Asset Tags</md-button>
-	        </md-card-actions>
-	    </md-card>
-	    <!-- Loading for paginate -->
-		<div layout="column" layout-align="center center" flex ng-if="asset.busy">
-			<md-progress-circular md-mode="indeterminate" class="md-primary" md-diameter="96" ></md-progress-circular>
+<md-content>
+	<div layout-padding layout="row" layout-align="center start" ng-if="purchaseOrder.paginated.show && purchaseOrder.paginated.length" flex infinite-scroll='purchaseOrder.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="purchaseOrder.busy" infinite-scroll-parent>
+		<div flex flex-gt-lg="80" layout-margin>
+			<md-card flex ng-repeat="purchase_order in purchaseOrder.paginated | orderBy:'-created_at'">
+				<md-card-header>
+		          	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
+		            	<span class="md-headline white-text">{{ purchase_order.first_letter }}</span>
+		          	</md-card-avatar>
+		          	<md-card-header-text>
+			            <span class="md-title">{{ purchase_order.vendor.company }}</span>
+			            <span class="md-subhead">{{ purchase_order.vendor.contact_person }} - {{ purchase_order.vendor.contact_number }}</span>
+		          	</md-card-header-text>
+		        </md-card-header>
+		        <div class="card-image-bg" flex>
+		        	<div layout="row" layout-align="center center" class="shadow-bg">
+			        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>P.O. #{{ purchase_order.id }}</h2>
+			        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>P.O. #{{ purchase_order.id }}</h2>
+			        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>P.O. #{{ purchase_order.id }}</h2>
+		        	</div>
+		        </div>
+		        <md-card-title>
+		          	<md-card-title-text layout="row">
+		            	<div flex>
+			            	<h3 class="md-headline">Date Purchased:</h3>
+			            	<p layout="column">
+			            		<span>{{ purchase_order.date_purchased | date: 'EEEE, MMMM d, yyyy' }}</span>
+				        		<span class="secondary-text md-caption" am-time-ago="purchase_order.date_purchased"></span>
+			            	</p>
+		            	</div>
+		            	<div flex>
+			            	<h3 class="md-headline">Expected Time of Arrival:</h3>
+			            	<p layout="column">
+			            		<span>{{ purchase_order.date_arrival | date: 'EEEE, MMMM d, yyyy' }}</span>
+				            	<span class="secondary-text md-caption"> will arrive around <span am-time-ago="purchase_order.date_arrival"></span></span>
+			            	</p>
+		            	</div>
+		          	</md-card-title-text>
+		        </md-card-title>
+		        <md-card-content>
+		        	<h3 class="md-headline primary-text">Items</h3>
+		        	<md-list layout="row" flex layout-wrap layout-padding>
+			        	<md-list-item flex="25" class="md-3-line" ng-repeat="asset_purchase_order in purchase_order.asset_purchase_order">
+			        		<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
+			        			<span class="md-headline white-text">{{ asset_purchase_order.asset.brand[0] }}</span>
+			        		</h2>
+			        		<div class="md-list-item-text">
+			        			<h3>{{ asset_purchase_order.asset.brand }}</h3>
+			        			<h4>{{ asset_purchase_order.asset.model }} <span class="secondary-text md-caption">({{ asset_purchase_order.asset.type.type }})</span></h4>
+			        			<p>Quantity: {{ asset_purchase_order.quantity }}</p>
+			        		</div>
+			        	</md-list-item>
+		        	</md-list>
+		        </md-card-content>
+		        <md-divider></md-divider>
+		    	<md-card-actions layout="row" layout-align="start center">
+			    	<md-card-icon-actions>
+			            <md-button class="md-icon-button" aria-label="Edit" ng-click="editPurchaseOrder(purchase_order.id)">
+			              	<md-icon class="mdi mdi-pencil grey"></md-icon>
+							<md-tooltip>Edit</md-tooltip>
+			            </md-button>
+						<md-button class="md-icon-button" ng-if="user.role == 'super-admin'" ng-click="deletePurchaseOrder(purchase_order.id)">
+							<md-icon class="mdi grey mdi-delete"></md-icon>
+							<md-tooltip>Delete</md-tooltip>
+						</md-button>
+			      	</md-card-icon-actions>
+		          	<md-button ng-click="assetTag(purchase_order.id)">Asset Tags</md-button>
+		        </md-card-actions>
+		    </md-card>
+		    <!-- Loading for paginate -->
+			<div layout="column" layout-align="center center" flex ng-if="asset.busy">
+				<md-progress-circular md-mode="indeterminate" class="md-primary" md-diameter="96" ></md-progress-circular>
+			</div>
 		</div>
 	</div>
-</div>
-<!-- Search Results -->
-<div layout-padding layout="row" layout-align="center start" ng-if="!purchaseOrder.paginated.show && purchaseOrder.results.length" flex>
-	<div flex flex-gt-lg="80" layout-margin>
-		<md-card flex ng-repeat="purchase_order in purchaseOrder.results | orderBy:'-created_at'">
-			<md-card-header>
-	          	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
-	            	<span class="md-headline white-text">{{ purchase_order.first_letter }}</span>
-	          	</md-card-avatar>
-	          	<md-card-header-text>
-		            <span class="md-title">{{ purchase_order.vendor.company }}</span>
-		            <span class="md-subhead">{{ purchase_order.vendor.contact_person }} - {{ purchase_order.vendor.contact_number }}</span>
-	          	</md-card-header-text>
-	        </md-card-header>
-	        <div class="card-image-bg" flex>
-	        	<div layout="row" layout-align="center center" class="shadow-bg">
-		        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>P.O. #{{ purchase_order.id }}</h2>
-		        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>P.O. #{{ purchase_order.id }}</h2>
-		        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>P.O. #{{ purchase_order.id }}</h2>
-	        	</div>
-	        </div>
-	        <md-card-title>
-	          	<md-card-title-text layout="row">
-	            	<div flex>
-		            	<h3 class="md-headline">Date Purchased:</h3>
-		            	<p layout="column">
-		            		<span>{{ purchase_order.date_purchased | date: 'EEEE, MMMM d, yyyy' }}</span>
-			        		<span class="secondary-text md-caption" am-time-ago="purchase_order.date_purchased"></span>
-		            	</p>
-	            	</div>
-	            	<div flex>
-		            	<h3 class="md-headline">Expected Time of Arrival:</h3>
-		            	<p layout="column">
-		            		<span>{{ purchase_order.date_arrival | date: 'EEEE, MMMM d, yyyy' }}</span>
-			            	<span class="secondary-text md-caption"> will arrive around <span am-time-ago="purchase_order.date_arrival"></span></span>
-		            	</p>
-	            	</div>
-	          	</md-card-title-text>
-	        </md-card-title>
-	        <md-card-content>
-	        	<h3 class="md-headline primary-text">Items</h3>
-	        	<md-list layout="row" flex layout-wrap layout-padding>
-		        	<md-list-item flex="25" class="md-3-line" ng-repeat="asset_purchase_order in purchase_order.asset_purchase_order">
-		        		<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-		        			<span class="md-headline white-text">{{ asset_purchase_order.asset.brand[0] }}</span>
-		        		</h2>
-		        		<div class="md-list-item-text">
-		        			<h3>{{ asset_purchase_order.asset.brand }}</h3>
-		        			<h4>{{ asset_purchase_order.asset.model }} <span class="secondary-text md-caption">({{ asset_purchase_order.asset.type.type }})</span></h4>
-		        			<p>Quantity: {{ asset_purchase_order.quantity }}</p>
-		        		</div>
-		        	</md-list-item>
-	        	</md-list>
-	        </md-card-content>
-	        <md-divider></md-divider>
-	    	<md-card-actions layout="row" layout-align="start center">
-		    	<md-card-icon-actions>
-		            <md-button class="md-icon-button" aria-label="Edit" ng-click="editPurchaseOrder(purchase_order.id)">
-		              	<md-icon class="mdi mdi-pencil grey"></md-icon>
-						<md-tooltip>Edit</md-tooltip>
-		            </md-button>
-					<md-button class="md-icon-button" ng-if="user.role == 'super-admin'" ng-click="deletePurchaseOrder(purchase_order.id)">
-						<md-icon class="mdi grey mdi-delete"></md-icon>
-						<md-tooltip>Delete</md-tooltip>
-					</md-button>
-		      	</md-card-icon-actions>
-	          	<md-button ng-click="assetTag(purchase_order.id)">Asset Tags</md-button>
-	        </md-card-actions>
-	    </md-card>
+	<!-- Search Results -->
+	<div layout-padding layout="row" layout-align="center start" ng-if="!purchaseOrder.paginated.show && purchaseOrder.results.length" flex>
+		<div flex flex-gt-lg="80" layout-margin>
+			<md-card flex ng-repeat="purchase_order in purchaseOrder.results | orderBy:'-created_at'">
+				<md-card-header>
+		          	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
+		            	<span class="md-headline white-text">{{ purchase_order.first_letter }}</span>
+		          	</md-card-avatar>
+		          	<md-card-header-text>
+			            <span class="md-title">{{ purchase_order.vendor.company }}</span>
+			            <span class="md-subhead">{{ purchase_order.vendor.contact_person }} - {{ purchase_order.vendor.contact_number }}</span>
+		          	</md-card-header-text>
+		        </md-card-header>
+		        <div class="card-image-bg" flex>
+		        	<div layout="row" layout-align="center center" class="shadow-bg">
+			        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>P.O. #{{ purchase_order.id }}</h2>
+			        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>P.O. #{{ purchase_order.id }}</h2>
+			        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>P.O. #{{ purchase_order.id }}</h2>
+		        	</div>
+		        </div>
+		        <md-card-title>
+		          	<md-card-title-text layout="row">
+		            	<div flex>
+			            	<h3 class="md-headline">Date Purchased:</h3>
+			            	<p layout="column">
+			            		<span>{{ purchase_order.date_purchased | date: 'EEEE, MMMM d, yyyy' }}</span>
+				        		<span class="secondary-text md-caption" am-time-ago="purchase_order.date_purchased"></span>
+			            	</p>
+		            	</div>
+		            	<div flex>
+			            	<h3 class="md-headline">Expected Time of Arrival:</h3>
+			            	<p layout="column">
+			            		<span>{{ purchase_order.date_arrival | date: 'EEEE, MMMM d, yyyy' }}</span>
+				            	<span class="secondary-text md-caption"> will arrive around <span am-time-ago="purchase_order.date_arrival"></span></span>
+			            	</p>
+		            	</div>
+		          	</md-card-title-text>
+		        </md-card-title>
+		        <md-card-content>
+		        	<h3 class="md-headline primary-text">Items</h3>
+		        	<md-list layout="row" flex layout-wrap layout-padding>
+			        	<md-list-item flex="25" class="md-3-line" ng-repeat="asset_purchase_order in purchase_order.asset_purchase_order">
+			        		<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
+			        			<span class="md-headline white-text">{{ asset_purchase_order.asset.brand[0] }}</span>
+			        		</h2>
+			        		<div class="md-list-item-text">
+			        			<h3>{{ asset_purchase_order.asset.brand }}</h3>
+			        			<h4>{{ asset_purchase_order.asset.model }} <span class="secondary-text md-caption">({{ asset_purchase_order.asset.type.type }})</span></h4>
+			        			<p>Quantity: {{ asset_purchase_order.quantity }}</p>
+			        		</div>
+			        	</md-list-item>
+		        	</md-list>
+		        </md-card-content>
+		        <md-divider></md-divider>
+		    	<md-card-actions layout="row" layout-align="start center">
+			    	<md-card-icon-actions>
+			            <md-button class="md-icon-button" aria-label="Edit" ng-click="editPurchaseOrder(purchase_order.id)">
+			              	<md-icon class="mdi mdi-pencil grey"></md-icon>
+							<md-tooltip>Edit</md-tooltip>
+			            </md-button>
+						<md-button class="md-icon-button" ng-if="user.role == 'super-admin'" ng-click="deletePurchaseOrder(purchase_order.id)">
+							<md-icon class="mdi grey mdi-delete"></md-icon>
+							<md-tooltip>Delete</md-tooltip>
+						</md-button>
+			      	</md-card-icon-actions>
+		          	<md-button ng-click="assetTag(purchase_order.id)">Asset Tags</md-button>
+		        </md-card-actions>
+		    </md-card>
+		</div>
 	</div>
-</div>
 
-<!-- If no asset tag is found -->
-<div layout="column" layout-align="center center" flex ng-if="!purchaseOrder.results.length && purchaseOrder.searched">
-	<div layout="column" layout-align="center center">
-		<md-icon class="mdi grey mdi-magnify"></md-icon>
-		<h3 class="md-subhead">No results found matching <strong class="primary-text">{{toolbar.searchText}}</strong>.</h3>
+	<!-- If no asset tag is found -->
+	<div layout="column" layout-align="center center" flex ng-if="!purchaseOrder.results.length && purchaseOrder.searched">
+		<div layout="column" layout-align="center center">
+			<md-icon class="mdi grey mdi-magnify"></md-icon>
+			<h3 class="md-subhead">No results found matching <strong class="primary-text">{{toolbar.searchText}}</strong>.</h3>
+		</div>
 	</div>
-</div>
 
-<!-- If no records yet -->
-<div layout="column" layout-align="center center" flex ng-if="purchaseOrder.paginated.show && !purchaseOrder.paginated.length && !purchaseOrder.results.length">
-	<h3 class="md-subhead  ">No purchase orders to display.</h3>
-	<md-button class="md-fab md-primary" aria-label="Create Purchase Order" ng-click="createPurchaseOrder()">
-		<md-icon class="mdi mdi-plus"></md-icon>
-	</md-button>
-	<p class="secondary-text">Tap to create</p>
-</div>
+	<!-- If no records yet -->
+	<div layout="column" layout-align="center center" flex ng-if="purchaseOrder.paginated.show && !purchaseOrder.paginated.length && !purchaseOrder.results.length">
+		<h3 class="md-subhead  ">No purchase orders to display.</h3>
+		<md-button class="md-fab md-primary" aria-label="Create Purchase Order" ng-click="createPurchaseOrder()">
+			<md-icon class="mdi mdi-plus"></md-icon>
+		</md-button>
+		<p class="secondary-text">Tap to create</p>
+	</div>
+</md-content>

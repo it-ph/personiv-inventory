@@ -59,6 +59,9 @@ adminModule
 			Preloader.loading();
 			WorkStation.search($scope.toolbar)
 				.success(function(data){
+					angular.forEach(data, function(item){
+						pushItem(item);
+					})
 					$scope.workStation.results = data;
 					Preloader.stop();
 					$scope.workStation.searched = true;
@@ -179,6 +182,7 @@ adminModule
 					 *
 					*/
 					$scope.workStation = {};
+					$scope.workStation.paginated = [];
 					// 2 is default so the next page to be loaded will be page 2 
 					$scope.workStation.page = 2;
 
@@ -218,7 +222,7 @@ adminModule
 										// iterate over each data then splice it to the data array
 										angular.forEach(data.data, function(item, key){
 											pushItem(item);
-											$scope.workStation.paginated.data.push(item);
+											$scope.workStation.paginated.push(item);
 										});
 
 										// Enables again the pagination call for next call.

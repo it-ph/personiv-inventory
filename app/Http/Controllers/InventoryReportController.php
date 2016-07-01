@@ -14,6 +14,10 @@ use App\Http\Controllers\Controller;
 
 class InventoryReportController extends Controller
 {
+    public function dashboard()
+    {
+        //
+    }
     /**
      * Display a listing of the resource.
      *

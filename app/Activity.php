@@ -11,6 +11,11 @@ class Activity extends Model
     	return $this->belongsTo('App\ActivityType');
     }
 
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
     public function department()
     {
     	return $this->belongsTo('App\Department', 'event_id');

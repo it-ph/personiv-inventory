@@ -12,4 +12,14 @@ class DepartmentWorkStation extends Model
     {
         return $this->hasMany('App\Activity', 'event_id');
     }
+
+    public function department()
+    {
+    	return $this->belongsTo('App\Department');
+    }
+
+    public function work_station()
+    {
+    	return $this->belongsTo('App\WorkStation');
+    }
 }
