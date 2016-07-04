@@ -10,6 +10,7 @@
 				</md-toolbar>
 				<md-content layout-padding class="md-whiteframe-2dp">				
 					<div layout="row">
+						<!-- Vendor -->
 						<md-input-container flex>
 							<label>Vendor</label>
 							<md-select required name="Vendor" ng-model="purchaseOrder.vendor_id">
@@ -20,6 +21,11 @@
 							<div ng-messages="form.purchaseOrderForm.Vendor.$error" ng-if="form.purchaseOrderForm.Vendor.$touched">
 								<div ng-message="required">Contact Number is required.</div>
 							</div>
+						</md-input-container>
+						<!-- Tracking Code -->
+						<md-input-container flex>
+							<label>Tracking Code</label>
+							<input type="text" name="TrackingCode" ng-model="purchaseOrder.tracking_code">
 						</md-input-container>
 					</div>
 					<div layout="row">

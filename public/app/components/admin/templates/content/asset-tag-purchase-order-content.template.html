@@ -49,11 +49,19 @@
 							<div class="md-list-item-text">
 								<h3>{{asset_tag.property_code}} <span class="md-caption secondary-text" ng-if="asset_tag.deleted_at">(Deleted)</span></h3>
 								<h4>{{asset_tag.work_station.name}}</h4>
-								<p>
-									<span>End of warranty: </span>
-									<span ng-if="!asset_tag.warranty_end">N/A</span>
-									<span am-time-ago="asset_tag.warranty_end"></span>
-									<md-tooltip ng-if="asset_tag.warranty_end">{{asset_tag.warranty_end | date: 'EEEE, MMMM d, yyyy'}}</md-tooltip>
+								<p layout="column">
+									<div>
+										<span>End of warranty: </span>
+										<span ng-if="!asset_tag.warranty_end">N/A</span>
+										<span am-time-ago="asset_tag.warranty_end"></span>
+										<md-tooltip ng-if="asset_tag.warranty_end">{{asset_tag.warranty_end | date: 'EEEE, MMMM d, yyyy'}}</md-tooltip>
+									</div>
+									<div>
+										<span>Date Received: </span>
+										<span ng-if="!asset_tag.date_received">N/A</span>
+										<span am-time-ago="asset_tag.date_received"></span>
+										<md-tooltip ng-if="asset_tag.date_received">{{asset_tag.date_received | date: 'EEEE, MMMM d, yyyy'}}</md-tooltip>
+									</div>
 								</p>
 							</div>
 							<md-menu ng-if="!asset_tag.deleted_at">

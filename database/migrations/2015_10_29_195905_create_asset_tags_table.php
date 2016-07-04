@@ -24,6 +24,7 @@ class CreateAssetTagsTable extends Migration
             $table->string('property_code')->unique();
             $table->text('remarks')->nullable();
             $table->dateTime('warranty_end')->nullable();
+            $table->dateTime('date_received')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

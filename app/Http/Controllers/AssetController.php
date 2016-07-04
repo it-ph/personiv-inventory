@@ -13,6 +13,11 @@ use App\Http\Controllers\Controller;
 
 class AssetController extends Controller
 {
+    public function purchaseOrders($id)
+    {
+        return Asset::with(['assset_purchase_order' => function($query){ $query->where('asset_id', $id)->with('purchase_order'); }])->where('id', $id)->first();
+    }
+
     public function brands($id)
     {
         return Asset::where('asset_type_id', $id)->groupBy('brand')->get();

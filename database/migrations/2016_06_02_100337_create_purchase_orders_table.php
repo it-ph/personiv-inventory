@@ -15,6 +15,7 @@ class CreatePurchaseOrdersTable extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('vendor_id');
+            $table->string('tracking_code')->nullable();
             $table->dateTime('date_purchased');
             $table->dateTime('date_arrival');
             $table->timestamps();

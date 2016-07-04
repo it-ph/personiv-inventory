@@ -13,9 +13,18 @@
 		        </md-card-header>
 		        <div class="card-image-bg" flex>
 		        	<div layout="row" layout-align="center center" class="shadow-bg">
-			        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>P.O. #{{ purchase_order.id }}</h2>
-			        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>P.O. #{{ purchase_order.id }}</h2>
-			        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>P.O. #{{ purchase_order.id }}</h2>
+			        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>
+			        		<span ng-if="purchase_order.tracking_code">T.N. {{purchase_order.tracking_code}}</span>
+			        		<span ng-if="!purchase_order.tracking_code">P.O. #{{ purchase_order.id }}</span>
+		        		</h2>
+			        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>
+			        		<span ng-if="purchase_order.tracking_code">T.N. {{purchase_order.tracking_code}}</span>
+			        		<span ng-if="!purchase_order.tracking_code">P.O. #{{ purchase_order.id }}</span>
+		        		</h2>
+			        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>
+			        		<span ng-if="purchase_order.tracking_code">T.N. {{purchase_order.tracking_code}}</span>
+			        		<span ng-if="!purchase_order.tracking_code">P.O. #{{ purchase_order.id }}</span>
+		        		</h2>
 		        	</div>
 		        </div>
 		        <md-card-title>
@@ -87,9 +96,18 @@
 		        </md-card-header>
 		        <div class="card-image-bg" flex>
 		        	<div layout="row" layout-align="center center" class="shadow-bg">
-			        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>P.O. #{{ purchase_order.id }}</h2>
-			        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>P.O. #{{ purchase_order.id }}</h2>
-			        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>P.O. #{{ purchase_order.id }}</h2>
+			        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>
+			        		<span ng-if="purchase_order.tracking_code">T.N. {{purchase_order.tracking_code}}</span>
+			        		<span ng-if="!purchase_order.tracking_code">P.O. #{{ purchase_order.id }}</span>
+		        		</h2>
+			        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>
+			        		<span ng-if="purchase_order.tracking_code">T.N. {{purchase_order.tracking_code}}</span>
+			        		<span ng-if="!purchase_order.tracking_code">P.O. #{{ purchase_order.id }}</span>
+		        		</h2>
+			        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>
+			        		<span ng-if="purchase_order.tracking_code">T.N. {{purchase_order.tracking_code}}</span>
+			        		<span ng-if="!purchase_order.tracking_code">P.O. #{{ purchase_order.id }}</span>
+		        		</h2>
 		        	</div>
 		        </div>
 		        <md-card-title>

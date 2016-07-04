@@ -99,6 +99,7 @@ adminModule
 					angular.forEach(data.asset_purchase_order, function(asset_purchase_order){
 						angular.forEach(asset_purchase_order.asset.asset_tags, function(asset_tag){
 							asset_tag.warranty_end = asset_tag.warranty_end ? new Date(asset_tag.warranty_end) : null;
+							asset_tag.date_received = asset_tag.date_received ? new Date(asset_tag.date_received) : null;
 						});
 					});
 

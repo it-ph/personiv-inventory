@@ -25,7 +25,7 @@ class PurchaseOrderController extends Controller
 
     public function paginate()
     {
-        return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->paginate(20);
+        return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->orderBy('created_at', 'desc')->paginate(20);
     }
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ class PurchaseOrderController extends Controller
      */
     public function index()
     {
-        //
+        return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -64,6 +64,7 @@ class PurchaseOrderController extends Controller
         $purchase_order = new PurchaseOrder;
 
         $purchase_order->vendor_id = $request->vendor_id;
+        $purchase_order->tracking_code = $request->tracking_code ? $request->tracking_code : null;
         $purchase_order->date_purchased = Carbon::parse($request->date_purchased)->toDateTimeString();
         $purchase_order->date_arrival = Carbon::parse($request->date_arrival)->toDateTimeString();
 
@@ -124,6 +125,7 @@ class PurchaseOrderController extends Controller
         $purchase_order = PurchaseOrder::where('id', $id)->first();
 
         $purchase_order->vendor_id = $request->vendor_id;
+        $purchase_order->tracking_code = $request->tracking_code ? $request->tracking_code : null;
         $purchase_order->date_purchased = Carbon::parse($request->date_purchased)->toDateTimeString();
         $purchase_order->date_arrival = Carbon::parse($request->date_arrival)->toDateTimeString();
 

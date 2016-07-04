@@ -211,6 +211,7 @@ class AssetTagController extends Controller
         $asset_tag->property_code = $asset->type->prefix . $filler . $request->sequence;
         $asset_tag->remarks = $request->remarks;
         $asset_tag->warranty_end = $request->warranty_end ? Carbon::parse($request->warranty_end)->toDateTimeString() : null;
+        $asset_tag->date_received = $request->date_received ? Carbon::parse($request->date_received)->toDateTimeString() : null;
 
         $asset_tag->save();
 
@@ -233,7 +234,7 @@ class AssetTagController extends Controller
      */
     public function show($id)
     {
-        return AssetTag::with('asset', 'type', 'work_station')->where('id', $id)->first();
+        return AssetTag::with('asset', 'type', 'work_station', 'purchase_order')->where('id', $id)->first();
     }
 
     /**
@@ -299,6 +300,7 @@ class AssetTagController extends Controller
         $asset_tag->property_code = $asset->type->prefix . $filler . $request->sequence;
         $asset_tag->remarks = $request->remarks;
         $asset_tag->warranty_end = $request->warranty_end ? Carbon::parse($request->warranty_end)->toDateTimeString() : null;
+        $asset_tag->date_received = $request->date_received ? Carbon::parse($request->date_received)->toDateTimeString() : null;
 
         $asset_tag->save();
 

@@ -6,7 +6,9 @@ adminModule
 		$scope.assetTag = {};
 		$scope.assetTag.purchase_order_id = $scope.purchaseOrder.id;
 		$scope.assetTag.warranty_end = new Date();
-		$scope.minDate = new Date();
+		$scope.assetTag.date_received = new Date();
+		$scope.minDateWarranty = new Date();
+		$scope.minDatePurchaseOrder = new Date($scope.purchaseOrder.date_purchased);
 
 		$scope.floors = [6,10];
 		$scope.divisions = ['A','B'];
@@ -60,6 +62,7 @@ adminModule
 				
 				if(!busy && !$scope.duplicate){
 					$scope.assetTag.warranty_end = $scope.hasWarranty ? $scope.assetTag.warranty_end.toDateString() : null;
+					$scope.assetTag.date_received = $scope.assetTag.date_received ? $scope.assetTag.date_received.toDateString() : null;
 					$scope.assetTag.work_station_id = $scope.deploy ? $scope.assetTag.work_station_id : null;
 					AssetTag.store($scope.assetTag)
 						.success(function(data){
