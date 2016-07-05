@@ -79,5 +79,8 @@ sharedModule
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
 			},
+			statuses: function(id){
+				return $http.get(urlBase + '-statuses/' + id);
+			},
 		};
 	}]);

@@ -10,14 +10,15 @@
 	</md-toolbar>
 	<md-dialog-content layout="column" flex layout-padding layout-wrap>
 		<div layout="column">
+			<md-subheader class="md-no-sticky">{{ activity.user.first_name }} {{ activity.user.last_name }} {{ activity.activity_type.description }}</md-subheader>
 			<md-list>
-				<md-list-item class="md-3-line" flex="30">
-					<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
+				<md-list-item class="md-2-line" flex="30">
+					<!-- <h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
 						<span class="md-headline white-text">{{activity.first_letter}}</span>
-					</h2>
+					</h2> -->
 					<div class="md-list-item-text">
-						<h3>{{activity.}}</h3>
-						<!-- <h4>{{activity.activity_type.description}}</h4> -->
+						<h3>{{activity.asset.brand }} {{activity.asset.model }} {{activity.asset_type.type }} {{activity.asset_tag.property_code}} 
+						<span ng-if="activity.department_work_station">{{activity.department_work_station.work_station.name }} to {{activity.department_work_station.department.name }}</span> {{activity.purchase_order.id}} {{activity.purchase_order.tracking_code}} {{ activity.vendor.contact_person }} {{ activity.vendor.email }} {{ activity.vendor.contact_number }} {{ activity.work_station.name }} {{activity.asset_purchase_order.asset.brand }} {{activity.asset_purchase_order.asset.model }}</h3>
 						<p>
 			        		<span class="secondary-text md-caption" am-time-ago="activity.created_at"></span>
 							<md-tooltip>{{ activity.created_at | date: 'EEEE, MMMM d, yyyy' }}</md-tooltip>
@@ -26,13 +27,13 @@
 				</md-list-item>
 			</md-list>
 		</div>
-		<div layout="row" layout-align="end center">		
+		<!-- <div layout="row" layout-align="end center">		
 			<md-button class="md-button" aria-label="Submit" ng-click="edit()">
 				Edit
 			</md-button>
 			<md-button class="md-button" aria-label="Delete" ng-click="delete()" ng-if="!asset.asset_tags.length">
 				Delete
 			</md-button>
-		</div>
+		</div> -->
 	</md-dialog-content>
 </md-dialog>

@@ -65,38 +65,56 @@ adminModule
 			$scope.searchBar = false;
 		};
 
-		$scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
-		$scope.series = ['Series A', 'Series B'];
-		$scope.data = [
-		    [65, 59, 80, 81, 56, 55, 40],
-		    [28, 48, 40, 19, 86, 27, 90]
+		$scope.charts = [
+			// Purchase Orders
+			{
+				'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+				// 'series': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], - 
+			},
+			// Asset Tags
+			{
+				'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+				'series': ["Deployed", "Stock", "Pulled Out"],
+			},
+			// Activities
+			{
+				'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+				// 'series': ["Deployed", "Stock", "Pulled Out"],
+			},
 		];
-		$scope.onClick = function (points, evt) {
-		    console.log(points, evt);
-		};
-		$scope.datasetOverride = [{ yAxisID: 'y-axis-1' }, { yAxisID: 'y-axis-2' }];
-		$scope.options = {
-		    scales: {
-		      yAxes: [
-		        {
-		          id: 'y-axis-1',
-		          type: 'linear',
-		          display: true,
-		          position: 'left'
-		        },
-		        {
-		          id: 'y-axis-2',
-		          type: 'linear',
-		          display: true,
-		          position: 'right'
-		        }
-		      ]
-		    }
-		};
 
-		$scope.pie = {};
-		$scope.pie.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
-		$scope.pie.data = [300, 500, 100];
+		// $scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
+		// $scope.series = ['Series A', 'Series B'];
+		// $scope.data = [
+		//     [65, 59, 80, 81, 56, 55, 40],
+		//     [28, 48, 40, 19, 86, 27, 90]
+		// ];
+		// $scope.onClick = function (points, evt) {
+		//     console.log(points, evt);
+		// };
+		// $scope.datasetOverride = [{ yAxisID: 'y-axis-1' }, { yAxisID: 'y-axis-2' }];
+		// $scope.options = {
+		//     scales: {
+		//       yAxes: [
+		//         {
+		//           id: 'y-axis-1',
+		//           type: 'linear',
+		//           display: true,
+		//           position: 'left'
+		//         },
+		//         {
+		//           id: 'y-axis-2',
+		//           type: 'linear',
+		//           display: true,
+		//           position: 'right'
+		//         }
+		//       ]
+		//     }
+		// };
+
+		$scope.rightSidenav = {};
+
+		$scope.rightSidenav.show = true;
 
 		$scope.show = function(id){
 			Preloader.set(id);
@@ -104,6 +122,7 @@ adminModule
 		    	controller: 'activityDialogController',
 		      	templateUrl: '/app/components/admin/templates/dialogs/activity-dialog.template.html',
 		      	parent: angular.element(document.body),
+		      	clickOutsideToClose: true,
 		    });
 		}
 

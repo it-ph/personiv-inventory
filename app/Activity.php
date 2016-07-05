@@ -23,7 +23,7 @@ class Activity extends Model
 
 	public function asset()
     {
-    	return $this->belongsTo('App\Department', 'event_id');
+    	return $this->belongsTo('App\Asset', 'event_id');
     }
 
     public function asset_status()
@@ -65,4 +65,9 @@ class Activity extends Model
     {
     	return $this->belongsTo('App\WorkStation', 'event_id');
     }    
+
+    public function asset_purchase_order()
+    {
+        return $this->belongsTo('App\AssetPurchaseOrder', 'event_id');
+    }  
 }

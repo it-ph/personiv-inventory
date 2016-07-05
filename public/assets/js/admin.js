@@ -34,6 +34,9 @@ adminModule
 					'content@main': {
 						templateUrl: '/app/components/admin/templates/content/main.content.template.html',
 					},
+					'right-sidenav@main': {
+						templateUrl: '/app/components/admin/templates/sidenavs/dashboard-right-sidenav.template.html',
+					}
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
 					var leftSidenav = $('[md-component-id="left"]');
@@ -447,416 +450,6 @@ adminModule
 		}
 	});
 adminModule
-	.controller('assetTypeContentController', ['$scope', '$filter', '$mdDialog', '$state', '$stateParams', 'AssetType', 'Asset', 'AssetTag', 'Preloader', function($scope, $filter, $mdDialog, $state, $stateParams, AssetType, Asset, AssetTag, Preloader){
-		var assetTypeID = $stateParams.assetTypeID;
-		$scope.state = $state.current.name;
-		/**
-		  *
-		  * Object for toolbar
-		  *
-		*/
-		$scope.toolbar = {};
-		$scope.toolbar.parentState = 'Asset';
-		// $scope.toolbar.childState = 'Settings';
-		$scope.toolbar.items = [];
-		$scope.toolbar.getItems = function(query){
-			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
-			return results;
-		}
-
-		$scope.toolbar.subheader = 'Filters';
-
-		$scope.toolbar.options = [
-			{
-				'label': 'Deployed',
-				'icon': 'mdi-filter',
-				action : function(){
-					$scope.status = 'deployed';
-				},
-			},
-			{
-				'label': 'Stock',
-				'icon': 'mdi-filter',
-				action : function(){
-					$scope.status = 'stock';
-				},
-			},
-			{
-				'label': 'Pulled Out',
-				'icon': 'mdi-filter',
-				action : function(){
-					$scope.status = 'pulled out';
-				},
-			},
-		]
-
-		$scope.toolbar.refresh = function(){
-			/* Starts the loading */
-			$scope.status = '';
-			Preloader.loading();
-			$scope.init(true);
-		}
-
-		$scope.showSearchBar = function(){
-	    	$scope.searchBar = true;
-	    }
-
-	    $scope.hideSearchBar = function(){
-	    	$scope.searchBar = false;
-	    	$scope.toolbar.searchText = '';
-	    	if($scope.assetTag.searched){
-	    		$scope.toolbar.refresh();
-	    		$scope.assetTag.searched = false;
-	    	}
-	    }
-
-	    $scope.showAssetDetails = function(id){
-	    	Preloader.set(id);
-	    	$mdDialog.show({
-		    	controller: 'assetDetailsDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/asset-details-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    })
-		    .then(function(data){
-		    	if(data == 'edit'){
-			    	$mdDialog.show({
-				    	controller: 'editAssetDialogController',
-				      	templateUrl: '/app/components/admin/templates/dialogs/asset-dialog.template.html',
-				      	parent: angular.element(document.body),
-				    })
-				    .then(function(){
-				    	Preloader.toastChangesSaved();
-				    	$scope.toolbar.refresh();
-				    })
-		    	}
-		    	else{
-		    		var confirm = $mdDialog.confirm()
-				        .title('Delete')
-				        .textContent('This asset will be removed.')
-				        .ariaLabel('Delete')
-				        .ok('Delete')
-				        .cancel('Cancel');
-				    $mdDialog.show(confirm).then(function() {
-				    	var assetID = Preloader.get();
-				    	Asset.delete(assetID)
-				    		.success(function(){
-				    			$scope.toolbar.refresh();
-				    			Preloader.deleted();
-				    		})
-				    		.error(function(){
-				    			Preloader.error();
-				    		})
-				    }, function() {
-				    	return;
-				    });
-		    	}
-
-		    },function(){
-		    	return;
-		    })
-	    }
-
-	    $scope.purchaseOrder = function(id)
-	    {
-	    	$state.go('main.asset-tag-purchase-order', {'purchaseOrderID':id});
-	    }
-
-	    var pushItem = function(data, type){
-	    	if(type == 'asset'){
-			    var item = {};
-				item.display = data.model;
-				item.subItem = data.brand;
-				// format
-				data.first_letter = data.brand.charAt(0).toUpperCase();
-				data.updated_at = new Date(data.updated_at);
-	    	}
-	    	else{
-	    		var item = {};
-				item.display = data.property_code;
-				// format
-				data.first_letter = data.asset.brand.charAt(0).toUpperCase();
-				data.warranty_end = new Date(data.warranty_end);
-				data.current_status = data.status.length ? 'Pulled Out' : (data.work_station_id ? 'Deployed' : 'Stock');
-	    	}
-
-			$scope.toolbar.items.push(item);
-	    }
-
-	    $scope.toolbar.searchAll = true;
-	    $scope.toolbar.getItems = function(query){
-	    	var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items = [];
-	    	return results;
-	    }
-
-		$scope.searchUserInput = function(){
-			$scope.asset.show = false;
-			$scope.assetTag.paginated.show = false;
-			Preloader.loading();
-			$scope.toolbar.items = [];
-			AssetTag.search($scope.toolbar)
-				.success(function(data){
-					angular.forEach(data, function(item){
-						pushItem(item);
-					});
-					
-					$scope.assetTag.results = data;
-					$scope.assetTag.searched = true;
-					Preloader.stop();
-				})
-				.error(function(){
-					Preloader.error();
-				});
-		};
-
-		/**
-		  *
-		  * Object for fab
-		  *
-		*/
-		$scope.fab = {};
-		$scope.fab.label = "Create";
-		$scope.fab.icon = "mdi-plus";
-		$scope.fab.action = function(){    
-	        $mdDialog.show({
-		    	controller: 'createAssetDialogController',
-		      	templateUrl: '/app/components/admin/templates/dialogs/asset-dialog.template.html',
-		      	parent: angular.element(document.body),
-		    })
-	        .then(function(data) {
-	        	// if(data){
-		        	$scope.toolbar.refresh();
-	        	// }
-	        }, function() {
-	        	return;
-	        });
-		}
-
-		$scope.editAssetTag = function(id){
-			Preloader.set(id);
-			$mdDialog.show({
-		      	controller: 'editAssetTagDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/edit-asset-tag-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	$scope.toolbar.refresh();
-		    });
-		};
-
-		$scope.transferAssetTag = function(id){
-			Preloader.set(id);
-			$mdDialog.show({
-		      	controller: 'transferAssetTagDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-tag-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	$scope.toolbar.refresh();
-		    });
-		};
-
-		$scope.swapAssetTag = function(id){
-			Preloader.set(id);
-			$mdDialog.show({
-		      	controller: 'swapAssetTagDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/swap-asset-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	$scope.toolbar.refresh();
-		    });
-		};
-
-		$scope.pullOutAssetTag = function(id){
-			Preloader.set(id);
-			$mdDialog.show({
-		      	controller: 'pullOutAssetTagDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/pull-out-asset-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	$scope.toolbar.refresh();
-		    });
-		};
-
-		$scope.deleteAssetTag = function(id){
-			var confirm = $mdDialog.confirm()
-	        	.title('Delete')
-	          	.content('Are you sure you want to delete this asset tag?')
-	          	.ariaLabel('Delete Asset Tag')
-	          	.ok('Delete')
-	          	.cancel('Cancel');
-
-	        $mdDialog.show(confirm).then(function() {
-		      	AssetTag.delete(id)
-		      		.success(function(){
-		      			$scope.toolbar.refresh();
-		      		})
-		      		.error(function(){
-		      			Preloader.error();
-		      		});
-		    }, function() {
-		      	return;
-		    });
-		};
-
-		$scope.repaired = function(id){
-			var confirm = $mdDialog.confirm()
-	        	.title('Repaired')
-	          	.content('Confirm that this asset is repaired?')
-	          	.ariaLabel('Repaired')
-	          	.ok('Yes')
-	          	.cancel('No');
-
-	        $mdDialog.show(confirm).then(function() {
-		      	AssetTag.repair(id)
-		      		.success(function(){
-		      			$scope.toolbar.refresh();
-		      		})
-		      		.error(function(){
-		      			Preloader.error();
-		      		});
-		    }, function() {
-		      	return;
-		    });
-		}
-
-		/**
-		  *
-		  * Object for rightSidenav
-		  *
-		*/
-		$scope.rightSidenav = {};
-		$scope.rightSidenav.show = true;
-
-		$scope.init = function(refresh){
-			AssetType.show(assetTypeID)
-				.then(function(data){
-					$scope.assetType = data.data;
-					$scope.toolbar.childState = data.data.type;
-					return;
-				})
-				.then(function(){
-					$scope.asset = {};
-					$scope.asset.paginated = [];
-					$scope.toolbar.items = [];
-					// 2 is default so the next page to be loaded will be page 2 
-					$scope.asset.page = 2;
-
-					Asset.paginate(assetTypeID)
-						.success(function(data){
-							$scope.asset.details = data;
-							$scope.asset.paginated = data.data;
-							$scope.asset.show = true;
-
-							if(data.data.length){
-								// iterate over each record and set the updated_at date and first letter
-								angular.forEach(data.data, function(item){
-									pushItem(item, 'asset');
-								});
-
-								$scope.fab.show = true;
-							}
-
-							$scope.asset.paginateLoad = function(){
-								// kills the function if ajax is busy or pagination reaches last page
-								if($scope.asset.busy || ($scope.asset.page > $scope.asset.details.last_page)){
-									return;
-								}
-								/**
-								 * Executes pagination call
-								 *
-								*/
-								// sets to true to disable pagination call if still busy.
-								$scope.asset.busy = true;
-
-								Asset.paginate(assetTypeID, $scope.asset.page)
-									.success(function(data){
-										// increment to call the next page for the next call
-										$scope.asset.page++;
-										// iterate over the paginated data and push it to the original array
-										angular.forEach(data.data, function(item){
-											pushItem(item, 'asset');
-											$scope.asset.paginated.push(item);
-										});
-										// enables next call
-										$scope.asset.busy = false;
-									})
-									.error(function(){
-										Preloader.error();
-									});
-						}
-						if(refresh){
-							Preloader.stop();
-							Preloader.stop();
-						}
-					})
-					.error(function(){
-						Preloader.error();
-					})
-
-					// Asset Tags
-					$scope.assetTag = {};
-					$scope.assetTag.paginated = [];
-					$scope.toolbar.items = [];
-					// 2 is default so the next page to be loaded will be page 2 
-					$scope.assetTag.page = 2;
-
-					AssetTag.paginate(assetTypeID)
-						.success(function(data){
-							$scope.assetTag.details = data;
-							$scope.assetTag.paginated = data.data;
-							$scope.assetTag.paginated.show = true;
-
-							if(data.data.length){
-								// iterate over each record and set the updated_at date and first letter
-								angular.forEach(data.data, function(item){
-									pushItem(item, 'asset_tag');
-								});
-							}
-
-							$scope.assetTag.paginateLoad = function(){
-								// kills the function if ajax is busy or pagination reaches last page
-								if($scope.assetTag.busy || ($scope.assetTag.page > $scope.assetTag.details.last_page)){
-									return;
-								}
-								/**
-								 * Executes pagination call
-								 *
-								*/
-								// sets to true to disable pagination call if still busy.
-								$scope.assetTag.busy = true;
-
-								AssetTag.paginate(assetTypeID, $scope.assetTag.page)
-									.success(function(data){
-										// increment to call the next page for the next call
-										$scope.assetTag.page++;
-										// iterate over the paginated data and push it to the original array
-										angular.forEach(data.data, function(item){
-											pushItem(item, 'asset_tag');
-											$scope.assetTag.paginated.push(item);
-										});
-										// enables next call
-										$scope.assetTag.busy = false;
-									})
-									.error(function(){
-										Preloader.error();
-									});
-						}
-						if(refresh){
-							Preloader.stop();
-							Preloader.stop();
-						}
-					})
-					.error(function(){
-						Preloader.error();
-					})
-				})
-		}
-
-		$scope.init();
-	}]);
-adminModule
 	.controller('addEmployeeDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Department', 'Employee', function($scope, $stateParams, $mdDialog, Preloader, Department, Employee){
 		$scope.employee = {};
 		$scope.employee.department_id = $stateParams.departmentID;
@@ -1252,38 +845,56 @@ adminModule
 			$scope.searchBar = false;
 		};
 
-		$scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
-		$scope.series = ['Series A', 'Series B'];
-		$scope.data = [
-		    [65, 59, 80, 81, 56, 55, 40],
-		    [28, 48, 40, 19, 86, 27, 90]
+		$scope.charts = [
+			// Purchase Orders
+			{
+				'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+				// 'series': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], - 
+			},
+			// Asset Tags
+			{
+				'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+				'series': ["Deployed", "Stock", "Pulled Out"],
+			},
+			// Activities
+			{
+				'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+				// 'series': ["Deployed", "Stock", "Pulled Out"],
+			},
 		];
-		$scope.onClick = function (points, evt) {
-		    console.log(points, evt);
-		};
-		$scope.datasetOverride = [{ yAxisID: 'y-axis-1' }, { yAxisID: 'y-axis-2' }];
-		$scope.options = {
-		    scales: {
-		      yAxes: [
-		        {
-		          id: 'y-axis-1',
-		          type: 'linear',
-		          display: true,
-		          position: 'left'
-		        },
-		        {
-		          id: 'y-axis-2',
-		          type: 'linear',
-		          display: true,
-		          position: 'right'
-		        }
-		      ]
-		    }
-		};
 
-		$scope.pie = {};
-		$scope.pie.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
-		$scope.pie.data = [300, 500, 100];
+		// $scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
+		// $scope.series = ['Series A', 'Series B'];
+		// $scope.data = [
+		//     [65, 59, 80, 81, 56, 55, 40],
+		//     [28, 48, 40, 19, 86, 27, 90]
+		// ];
+		// $scope.onClick = function (points, evt) {
+		//     console.log(points, evt);
+		// };
+		// $scope.datasetOverride = [{ yAxisID: 'y-axis-1' }, { yAxisID: 'y-axis-2' }];
+		// $scope.options = {
+		//     scales: {
+		//       yAxes: [
+		//         {
+		//           id: 'y-axis-1',
+		//           type: 'linear',
+		//           display: true,
+		//           position: 'left'
+		//         },
+		//         {
+		//           id: 'y-axis-2',
+		//           type: 'linear',
+		//           display: true,
+		//           position: 'right'
+		//         }
+		//       ]
+		//     }
+		// };
+
+		$scope.rightSidenav = {};
+
+		$scope.rightSidenav.show = true;
 
 		$scope.show = function(id){
 			Preloader.set(id);
@@ -1291,6 +902,7 @@ adminModule
 		    	controller: 'activityDialogController',
 		      	templateUrl: '/app/components/admin/templates/dialogs/activity-dialog.template.html',
 		      	parent: angular.element(document.body),
+		      	clickOutsideToClose: true,
 		    });
 		}
 
@@ -2853,226 +2465,436 @@ adminModule
 	}]);
 
 adminModule
-	.controller('assetDetailsDialogController', ['$scope', '$mdDialog', 'Asset', 'Preloader', function($scope, $mdDialog, Asset, Preloader){
-		var assetID = Preloader.get();
-		
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		};
-
-		Asset.show(assetID)
-			.success(function(data){
-				$scope.asset = data;
-				$scope.label = data.type.type;
-				$scope.asset.first_letter = data.brand[0].toUpperCase();
-			})
-			.error(function(){
-				Preloader.error();
-			});
-
-		$scope.edit = function(){
-			Preloader.set($scope.asset);
-			$mdDialog.hide('edit');
-		};
-
-		$scope.delete = function(){
-			Preloader.set(assetID);		
-			$mdDialog.hide('delete');
-		};
-
-	}]);
-adminModule
-	.controller('createAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Asset', 'AssetDetail', 'Preloader', function($scope, $stateParams, $mdDialog, Asset, AssetDetail, Preloader){
-		$scope.asset = {};
-		$scope.asset.asset_type_id = $stateParams.assetTypeID;
-		
-		$scope.details = [];
-		$scope.label = "New";
-		var busy = false;
-
-		$scope.addDetail = function(){
-			$scope.details.push(
-				{
-					'label':null,
-					'value':null,
-				}
-			);
+	.controller('assetTypeContentController', ['$scope', '$filter', '$mdDialog', '$state', '$stateParams', 'AssetType', 'Asset', 'AssetTag', 'Preloader', function($scope, $filter, $mdDialog, $state, $stateParams, AssetType, Asset, AssetTag, Preloader){
+		var assetTypeID = $stateParams.assetTypeID;
+		$scope.state = $state.current.name;
+		/**
+		  *
+		  * Object for toolbar
+		  *
+		*/
+		$scope.toolbar = {};
+		$scope.toolbar.parentState = 'Asset';
+		// $scope.toolbar.childState = 'Settings';
+		$scope.toolbar.items = [];
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
 		}
 
-		$scope.removeDetail = function(idx){
-			$scope.details.splice(idx, 1);
+		$scope.toolbar.subheader = 'Filters';
+
+		$scope.toolbar.options = [
+			{
+				'label': 'Deployed',
+				'icon': 'mdi-filter',
+				action : function(){
+					$scope.status = 'deployed';
+				},
+			},
+			{
+				'label': 'Stock',
+				'icon': 'mdi-filter',
+				action : function(){
+					$scope.status = 'stock';
+				},
+			},
+			{
+				'label': 'Pulled Out',
+				'icon': 'mdi-filter',
+				action : function(){
+					$scope.status = 'pulled out';
+				},
+			},
+		]
+
+		$scope.toolbar.refresh = function(){
+			/* Starts the loading */
+			$scope.status = '';
+			Preloader.loading();
+			$scope.init(true);
 		}
 
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
+		$scope.showSearchBar = function(){
+	    	$scope.searchBar = true;
+	    }
 
-		$scope.checkDuplicate = function(){
-			$scope.duplicate = false;
-			Asset.checkDuplicate($scope.asset)
+	    $scope.hideSearchBar = function(){
+	    	$scope.searchBar = false;
+	    	$scope.toolbar.searchText = '';
+	    	if($scope.assetTag.searched){
+	    		$scope.toolbar.refresh();
+	    		$scope.assetTag.searched = false;
+	    	}
+	    }
+
+	    $scope.showAssetDetails = function(id){
+	    	Preloader.set(id);
+	    	$mdDialog.show({
+		    	controller: 'assetDetailsDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/asset-details-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
+		    .then(function(data){
+		    	if(data == 'edit'){
+			    	$mdDialog.show({
+				    	controller: 'editAssetDialogController',
+				      	templateUrl: '/app/components/admin/templates/dialogs/asset-dialog.template.html',
+				      	parent: angular.element(document.body),
+				    })
+				    .then(function(){
+				    	Preloader.toastChangesSaved();
+				    	$scope.toolbar.refresh();
+				    })
+		    	}
+		    	else{
+		    		var confirm = $mdDialog.confirm()
+				        .title('Delete')
+				        .textContent('This asset will be removed.')
+				        .ariaLabel('Delete')
+				        .ok('Delete')
+				        .cancel('Cancel');
+				    $mdDialog.show(confirm).then(function() {
+				    	var assetID = Preloader.get();
+				    	Asset.delete(assetID)
+				    		.success(function(){
+				    			$scope.toolbar.refresh();
+				    			Preloader.deleted();
+				    		})
+				    		.error(function(){
+				    			Preloader.error();
+				    		})
+				    }, function() {
+				    	return;
+				    });
+		    	}
+
+		    },function(){
+		    	return;
+		    })
+	    }
+
+	    $scope.purchaseOrder = function(id)
+	    {
+	    	$state.go('main.asset-tag-purchase-order', {'purchaseOrderID':id});
+	    }
+
+	    var pushItem = function(data, type){
+	    	if(type == 'asset'){
+			    var item = {};
+				item.display = data.model;
+				item.subItem = data.brand;
+				// format
+				data.first_letter = data.brand.charAt(0).toUpperCase();
+				data.updated_at = new Date(data.updated_at);
+	    	}
+	    	else{
+	    		var item = {};
+				item.display = data.property_code;
+				// format
+				data.first_letter = data.asset.brand.charAt(0).toUpperCase();
+				data.warranty_end = new Date(data.warranty_end);
+				data.current_status = data.status.length ? 'Pulled Out' : (data.work_station_id ? 'Deployed' : 'Stock');
+	    	}
+
+			$scope.toolbar.items.push(item);
+	    }
+
+	    $scope.toolbar.searchAll = true;
+	    $scope.toolbar.getItems = function(query){
+	    	var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items = [];
+	    	return results;
+	    }
+
+		$scope.searchUserInput = function(){
+			$scope.asset.show = false;
+			$scope.assetTag.paginated.show = false;
+			Preloader.loading();
+			$scope.toolbar.items = [];
+			AssetTag.search($scope.toolbar)
 				.success(function(data){
-					$scope.duplicate = data;
+					angular.forEach(data, function(item){
+						pushItem(item);
+					});
+					
+					$scope.assetTag.results = data;
+					$scope.assetTag.searched = true;
+					Preloader.stop();
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		  *
+		  * Object for fab
+		  *
+		*/
+		$scope.fab = {};
+		$scope.fab.label = "Create";
+		$scope.fab.icon = "mdi-plus";
+		$scope.fab.action = function(){    
+	        $mdDialog.show({
+		    	controller: 'createAssetDialogController',
+		      	templateUrl: '/app/components/admin/templates/dialogs/asset-dialog.template.html',
+		      	parent: angular.element(document.body),
+		    })
+	        .then(function(data) {
+	        	// if(data){
+		        	$scope.toolbar.refresh();
+	        	// }
+	        }, function() {
+	        	return;
+	        });
+		}
+
+		$scope.editAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'editAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/edit-asset-tag-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.transferAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'transferAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/transfer-asset-tag-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.swapAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'swapAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/swap-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.pullOutAssetTag = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'pullOutAssetTagDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/pull-out-asset-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		};
+
+		$scope.deleteAssetTag = function(id){
+			var confirm = $mdDialog.confirm()
+	        	.title('Delete')
+	          	.content('Are you sure you want to delete this asset tag?')
+	          	.ariaLabel('Delete Asset Tag')
+	          	.ok('Delete')
+	          	.cancel('Cancel');
+
+	        $mdDialog.show(confirm).then(function() {
+		      	AssetTag.delete(id)
+		      		.success(function(){
+		      			$scope.toolbar.refresh();
+		      		})
+		      		.error(function(){
+		      			Preloader.error();
+		      		});
+		    }, function() {
+		      	return;
+		    });
+		};
+
+		$scope.repaired = function(id){
+			var confirm = $mdDialog.confirm()
+	        	.title('Repaired')
+	          	.content('Confirm that this asset is repaired?')
+	          	.ariaLabel('Repaired')
+	          	.ok('Yes')
+	          	.cancel('No');
+
+	        $mdDialog.show(confirm).then(function() {
+		      	AssetTag.repair(id)
+		      		.success(function(){
+		      			$scope.toolbar.refresh();
+		      		})
+		      		.error(function(){
+		      			Preloader.error();
+		      		});
+		    }, function() {
+		      	return;
+		    });
+		}
+
+		$scope.pullOutDetails = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'pullOutDetailsDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/pull-out-details-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		}
+		/**
+		  *
+		  * Object for rightSidenav
+		  *
+		*/
+		$scope.rightSidenav = {};
+		$scope.rightSidenav.show = true;
+
+		$scope.init = function(refresh){
+			AssetType.show(assetTypeID)
+				.then(function(data){
+					$scope.assetType = data.data;
+					$scope.toolbar.childState = data.data.type;
+					return;
+				})
+				.then(function(){
+					$scope.asset = {};
+					$scope.asset.paginated = [];
+					$scope.toolbar.items = [];
+					// 2 is default so the next page to be loaded will be page 2 
+					$scope.asset.page = 2;
+
+					Asset.paginate(assetTypeID)
+						.success(function(data){
+							$scope.asset.details = data;
+							$scope.asset.paginated = data.data;
+							$scope.asset.show = true;
+
+							if(data.data.length){
+								// iterate over each record and set the updated_at date and first letter
+								angular.forEach(data.data, function(item){
+									pushItem(item, 'asset');
+								});
+
+								$scope.fab.show = true;
+							}
+
+							$scope.asset.paginateLoad = function(){
+								// kills the function if ajax is busy or pagination reaches last page
+								if($scope.asset.busy || ($scope.asset.page > $scope.asset.details.last_page)){
+									return;
+								}
+								/**
+								 * Executes pagination call
+								 *
+								*/
+								// sets to true to disable pagination call if still busy.
+								$scope.asset.busy = true;
+
+								Asset.paginate(assetTypeID, $scope.asset.page)
+									.success(function(data){
+										// increment to call the next page for the next call
+										$scope.asset.page++;
+										// iterate over the paginated data and push it to the original array
+										angular.forEach(data.data, function(item){
+											pushItem(item, 'asset');
+											$scope.asset.paginated.push(item);
+										});
+										// enables next call
+										$scope.asset.busy = false;
+									})
+									.error(function(){
+										Preloader.error();
+									});
+						}
+						if(refresh){
+							Preloader.stop();
+							Preloader.stop();
+						}
+					})
+					.error(function(){
+						Preloader.error();
+					})
+
+					// Asset Tags
+					$scope.assetTag = {};
+					$scope.assetTag.paginated = [];
+					$scope.toolbar.items = [];
+					// 2 is default so the next page to be loaded will be page 2 
+					$scope.assetTag.page = 2;
+
+					AssetTag.paginate(assetTypeID)
+						.success(function(data){
+							$scope.assetTag.details = data;
+							$scope.assetTag.paginated = data.data;
+							$scope.assetTag.paginated.show = true;
+
+							if(data.data.length){
+								// iterate over each record and set the updated_at date and first letter
+								angular.forEach(data.data, function(item){
+									pushItem(item, 'asset_tag');
+								});
+							}
+
+							$scope.assetTag.paginateLoad = function(){
+								// kills the function if ajax is busy or pagination reaches last page
+								if($scope.assetTag.busy || ($scope.assetTag.page > $scope.assetTag.details.last_page)){
+									return;
+								}
+								/**
+								 * Executes pagination call
+								 *
+								*/
+								// sets to true to disable pagination call if still busy.
+								$scope.assetTag.busy = true;
+
+								AssetTag.paginate(assetTypeID, $scope.assetTag.page)
+									.success(function(data){
+										// increment to call the next page for the next call
+										$scope.assetTag.page++;
+										// iterate over the paginated data and push it to the original array
+										angular.forEach(data.data, function(item){
+											pushItem(item, 'asset_tag');
+											$scope.assetTag.paginated.push(item);
+										});
+										// enables next call
+										$scope.assetTag.busy = false;
+									})
+									.error(function(){
+										Preloader.error();
+									});
+						}
+						if(refresh){
+							Preloader.stop();
+							Preloader.stop();
+						}
+					})
+					.error(function(){
+						Preloader.error();
+					})
 				})
 		}
 
-		$scope.submit = function(){
-			if($scope.assetForm.$invalid){
-				angular.forEach($scope.assetForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				/* Starts Preloader */
-				// Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy && !$scope.duplicate){
-					busy = true;
-
-					Asset.store($scope.asset)
-						.then(function(data){
-							return data.data;
-						})
-						.then(function(assetID){
-							if(!$scope.details.length && typeof(assetID) === "string"){
-								busy = false;
-								Preloader.stop();
-							}
-							else if($scope.details.length && !typeof(assetID) === "string"){
-								busy = false;
-								$scope.duplicate = assetID;
-							}
-							else if($scope.details.length && typeof(assetID) === "string"){
-								angular.forEach($scope.details, function(item){
-									item.asset_id = assetID;
-								});
-
-								AssetDetail.store($scope.details)
-									.success(function(){
-										// Stops Preloader
-										Preloader.stop();
-										busy = false;
-									})
-									.error(function(){
-										Preloader.error()
-										busy = false;
-									});
-							}
-							else{
-								busy = false;
-							}
-						}, function(){
-							Preloader.error();
-							busy = false;
-						})
-				}
-			}
-		}
+		$scope.init();
 	}]);
 adminModule
-	.controller('editAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Asset', 'AssetDetail', 'Preloader', function($scope, $stateParams, $mdDialog, Asset, AssetDetail, Preloader){
-		$scope.asset = Preloader.get();
-		$scope.details = $scope.asset.details;
-
-		$scope.label = "Edit";
-		var busy = false;
-
-		$scope.addDetail = function(){
-			$scope.details.push(
-				{
-					'label':null,
-					'value':null,
-				}
-			);
-		}
-
-		$scope.removeDetail = function(idx){
-			$scope.details.splice(idx, 1);
-		}
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.checkDuplicate = function(){
-			$scope.duplicate = false;
-			Asset.checkDuplicate($scope.asset, $scope.asset.id)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.assetForm.$invalid){
-				angular.forEach($scope.assetForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-			}
-			else{
-				/* Starts Preloader */
-				// Preloader.loading();
-				/**
-				 * Stores Single Record
-				*/
-				if(!busy && !$scope.duplicate){
-					busy = true;
-
-					Asset.update($scope.asset.id, $scope.asset)
-						.then(function(data){
-							return data.data;
-						})
-						.then(function(assetID){
-							if(!$scope.details.length && typeof(assetID) === "string"){
-								busy = false;
-								Preloader.stop();
-							}
-							else if($scope.details.length && !typeof(assetID) === "string"){
-								busy = false;
-								$scope.duplicate = assetID;
-							}
-							else if($scope.details.length && typeof(assetID) === "string"){
-								angular.forEach($scope.details, function(item){
-									item.asset_id = assetID;
-								});
-
-								AssetDetail.update($scope.asset.id, $scope.details)
-									.success(function(){
-										// Stops Preloader
-										Preloader.stop();
-										busy = false;
-									})
-									.error(function(){
-										Preloader.error()
-										busy = false;
-									});
-							}
-							else{
-								busy = false;
-							}
-						}, function(){
-							Preloader.error();
-							busy = false;
-						})
-				}
-			}
-		}
-	}]);
-adminModule
-	.controller('activityDialogController', ['$scope', '$mdDialog', 'Activitiy', 'Preloader', function($scope, $mdDialog, Activitiy, Preloader){
+	.controller('activityDialogController', ['$scope', '$mdDialog', 'Activity', 'Preloader', function($scope, $mdDialog, Activity, Preloader){
 		var activityID = Preloader.get();
 
 		$scope.cancel = function(){
 			$mdDialog.cancel();
 		}
 
-		Activitiy.show(activityID)
+		Activity.show(activityID)
 			.success(function(data){
-				
 				
 				$scope.activity = data;
 			})
@@ -3662,7 +3484,6 @@ adminModule
 	.controller('editAssetTagDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', 'Asset', 'AssetDetail', 'PurchaseOrder', function($scope, $stateParams, $mdDialog, Preloader, AssetTag, Asset, AssetDetail, PurchaseOrder){		
 		var assetTagID = Preloader.get();
 		$scope.hasWarranty = true;
-		$scope.hasPurchaseOrder = true;
 
 		var busy = false;
 
@@ -3672,6 +3493,7 @@ adminModule
 				data.date_received = data.date_received ? new Date(data.date_received) : new Date();
 				$scope.minDateWarranty = data.purchase_order ? new Date(data.purchase_order.date_purchased) : null;
 				$scope.minDatePurchaseOrder = data.purchase_order ? new Date(data.purchase_order.date_purchased) : null;
+				$scope.hasPurchaseOrder = data.purchase_order_id ? true : false;
 				
 				$scope.assetTag = data;
 
@@ -3721,6 +3543,7 @@ adminModule
 				
 				if(!busy && !$scope.duplicate){
 					$scope.assetTag.warranty_end = $scope.hasWarranty ? $scope.assetTag.warranty_end.toDateString() : null;
+					$scope.assetTag.purchase_order_id = $scope.hasPurchaseOrder ? $scope.assetTag.purchase_order_id : null;
 					$scope.assetTag.date_received = $scope.assetTag.date_received ? $scope.assetTag.date_received.toDateString() : null;
 					AssetTag.update(assetTagID, $scope.assetTag)
 						.success(function(data){
@@ -4462,6 +4285,239 @@ adminModule
 		$scope.init();
 	}]);
 
+adminModule
+	.controller('assetDetailsDialogController', ['$scope', '$mdDialog', 'Asset', 'Preloader', function($scope, $mdDialog, Asset, Preloader){
+		var assetID = Preloader.get();
+		
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		Asset.show(assetID)
+			.success(function(data){
+				$scope.asset = data;
+				$scope.label = data.type.type;
+				$scope.asset.first_letter = data.brand[0].toUpperCase();
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		$scope.edit = function(){
+			Preloader.set($scope.asset);
+			$mdDialog.hide('edit');
+		};
+
+		$scope.delete = function(){
+			Preloader.set(assetID);		
+			$mdDialog.hide('delete');
+		};
+
+	}]);
+adminModule
+	.controller('createAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Asset', 'AssetDetail', 'Preloader', function($scope, $stateParams, $mdDialog, Asset, AssetDetail, Preloader){
+		$scope.asset = {};
+		$scope.asset.asset_type_id = $stateParams.assetTypeID;
+		
+		$scope.details = [];
+		$scope.label = "New";
+		var busy = false;
+
+		$scope.addDetail = function(){
+			$scope.details.push(
+				{
+					'label':null,
+					'value':null,
+				}
+			);
+		}
+
+		$scope.removeDetail = function(idx){
+			$scope.details.splice(idx, 1);
+		}
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.checkDuplicate = function(){
+			$scope.duplicate = false;
+			Asset.checkDuplicate($scope.asset)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.assetForm.$invalid){
+				angular.forEach($scope.assetForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				// Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy && !$scope.duplicate){
+					busy = true;
+
+					Asset.store($scope.asset)
+						.then(function(data){
+							return data.data;
+						})
+						.then(function(assetID){
+							if(!$scope.details.length && typeof(assetID) === "string"){
+								busy = false;
+								Preloader.stop();
+							}
+							else if($scope.details.length && !typeof(assetID) === "string"){
+								busy = false;
+								$scope.duplicate = assetID;
+							}
+							else if($scope.details.length && typeof(assetID) === "string"){
+								angular.forEach($scope.details, function(item){
+									item.asset_id = assetID;
+								});
+
+								AssetDetail.store($scope.details)
+									.success(function(){
+										// Stops Preloader
+										Preloader.stop();
+										busy = false;
+									})
+									.error(function(){
+										Preloader.error()
+										busy = false;
+									});
+							}
+							else{
+								busy = false;
+							}
+						}, function(){
+							Preloader.error();
+							busy = false;
+						})
+				}
+			}
+		}
+	}]);
+adminModule
+	.controller('editAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Asset', 'AssetDetail', 'Preloader', function($scope, $stateParams, $mdDialog, Asset, AssetDetail, Preloader){
+		$scope.asset = Preloader.get();
+		$scope.details = $scope.asset.details;
+
+		$scope.label = "Edit";
+		var busy = false;
+
+		$scope.addDetail = function(){
+			$scope.details.push(
+				{
+					'label':null,
+					'value':null,
+				}
+			);
+		}
+
+		$scope.removeDetail = function(idx){
+			$scope.details.splice(idx, 1);
+		}
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.checkDuplicate = function(){
+			$scope.duplicate = false;
+			Asset.checkDuplicate($scope.asset, $scope.asset.id)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.assetForm.$invalid){
+				angular.forEach($scope.assetForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+			}
+			else{
+				/* Starts Preloader */
+				// Preloader.loading();
+				/**
+				 * Stores Single Record
+				*/
+				if(!busy && !$scope.duplicate){
+					busy = true;
+
+					Asset.update($scope.asset.id, $scope.asset)
+						.then(function(data){
+							return data.data;
+						})
+						.then(function(assetID){
+							if(!$scope.details.length && typeof(assetID) === "string"){
+								busy = false;
+								Preloader.stop();
+							}
+							else if($scope.details.length && !typeof(assetID) === "string"){
+								busy = false;
+								$scope.duplicate = assetID;
+							}
+							else if($scope.details.length && typeof(assetID) === "string"){
+								angular.forEach($scope.details, function(item){
+									item.asset_id = assetID;
+								});
+
+								AssetDetail.update($scope.asset.id, $scope.details)
+									.success(function(){
+										// Stops Preloader
+										Preloader.stop();
+										busy = false;
+									})
+									.error(function(){
+										Preloader.error()
+										busy = false;
+									});
+							}
+							else{
+								busy = false;
+							}
+						}, function(){
+							Preloader.error();
+							busy = false;
+						})
+				}
+			}
+		}
+	}]);
+adminModule
+	.controller('pullOutDetailsDialogController', ['$scope', '$mdDialog', 'AssetTag', 'Preloader', function($scope, $mdDialog, AssetTag, Preloader){
+		var assetTagID = Preloader.get();
+		
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		};
+
+		AssetTag.statuses(assetTagID)
+			.success(function(data){
+				angular.forEach(data.status, function(item){
+					item.created_at = new Date(item.created_at);
+				});
+
+				$scope.assetTag = data;
+				$scope.label = data.property_code;
+
+				console.log($scope.assetTag);
+			})
+			.error(function(){
+				Preloader.error();
+			});
+	}]);
 adminModule
 	.controller('addPurchaseOrderAssetTagDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', 'Asset', 'AssetDetail', 'WorkStation', function($scope, $stateParams, $mdDialog, Preloader, AssetTag, Asset, AssetDetail, WorkStation){		
 		$scope.purchaseOrder = Preloader.get();

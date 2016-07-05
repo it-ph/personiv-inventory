@@ -273,6 +273,17 @@ adminModule
 		    });
 		}
 
+		$scope.pullOutDetails = function(id){
+			Preloader.set(id);
+			$mdDialog.show({
+		      	controller: 'pullOutDetailsDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/pull-out-details-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	$scope.toolbar.refresh();
+		    });
+		}
 		/**
 		  *
 		  * Object for rightSidenav

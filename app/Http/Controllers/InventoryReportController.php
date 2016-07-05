@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\InventoryReport;
 use App\AssetType;
+use App\PurchaseOrder;
+use App\AssetTag;
+use App\Activity;
 use Auth;
 use DB;
 use Excel;
@@ -16,7 +19,16 @@ class InventoryReportController extends Controller
 {
     public function dashboard()
     {
-        //
+        $user = Auth::user();
+
+        $date_start = new Carbon('first day of this month');
+        $date_end = new Carbon('last day of this month');
+
+        $user->purchase_order_count = PurchaseOrder::whereBetween('created_at', [$date_start, $date_end])->count();
+        $user->asset_tag_count = AssetTag::whereBetween('created_at', [$date_start, $date_end])->count();
+        $user->activity_count = Activity::whereBetween('created_at', [$date_start, $date_end])->count();
+
+        return $user;
     }
     /**
      * Display a listing of the resource.

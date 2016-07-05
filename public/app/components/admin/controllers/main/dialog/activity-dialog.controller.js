@@ -1,14 +1,13 @@
 adminModule
-	.controller('activityDialogController', ['$scope', '$mdDialog', 'Activitiy', 'Preloader', function($scope, $mdDialog, Activitiy, Preloader){
+	.controller('activityDialogController', ['$scope', '$mdDialog', 'Activity', 'Preloader', function($scope, $mdDialog, Activity, Preloader){
 		var activityID = Preloader.get();
 
 		$scope.cancel = function(){
 			$mdDialog.cancel();
 		}
 
-		Activitiy.show(activityID)
+		Activity.show(activityID)
 			.success(function(data){
-				
 				
 				$scope.activity = data;
 			})

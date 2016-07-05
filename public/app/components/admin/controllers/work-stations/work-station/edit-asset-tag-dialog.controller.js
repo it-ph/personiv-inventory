@@ -2,7 +2,6 @@ adminModule
 	.controller('editAssetTagDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', 'Asset', 'AssetDetail', 'PurchaseOrder', function($scope, $stateParams, $mdDialog, Preloader, AssetTag, Asset, AssetDetail, PurchaseOrder){		
 		var assetTagID = Preloader.get();
 		$scope.hasWarranty = true;
-		$scope.hasPurchaseOrder = true;
 
 		var busy = false;
 
@@ -12,6 +11,7 @@ adminModule
 				data.date_received = data.date_received ? new Date(data.date_received) : new Date();
 				$scope.minDateWarranty = data.purchase_order ? new Date(data.purchase_order.date_purchased) : null;
 				$scope.minDatePurchaseOrder = data.purchase_order ? new Date(data.purchase_order.date_purchased) : null;
+				$scope.hasPurchaseOrder = data.purchase_order_id ? true : false;
 				
 				$scope.assetTag = data;
 
@@ -61,6 +61,7 @@ adminModule
 				
 				if(!busy && !$scope.duplicate){
 					$scope.assetTag.warranty_end = $scope.hasWarranty ? $scope.assetTag.warranty_end.toDateString() : null;
+					$scope.assetTag.purchase_order_id = $scope.hasPurchaseOrder ? $scope.assetTag.purchase_order_id : null;
 					$scope.assetTag.date_received = $scope.assetTag.date_received ? $scope.assetTag.date_received.toDateString() : null;
 					AssetTag.update(assetTagID, $scope.assetTag)
 						.success(function(data){

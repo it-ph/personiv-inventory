@@ -27,5 +27,8 @@ sharedModule
 			brands: function(id){
 				return $http.get(urlBase + '-brands/' + id);
 			},
+			purchaseOrders: function(id){
+				return $http.get(urlBase + '-purchase-orders/' + id);
+			},
 		};
 	}]);

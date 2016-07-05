@@ -1,0 +1,32 @@
+<md-divider></md-divider>
+<md-toolbar class="white-toolbar md-whiteframe-1dp">
+	<div class="md-toolbar-tools">
+		<h3 class="primary-text">Activities</h3>
+	</div>
+</md-toolbar>
+<div layout="column" class="hide-overflow">
+	<md-content>
+		<div class="fade-transition" flex infinite-scroll='activity.paginateLoad()' infinite-scroll-distance="3" infinite-scroll-disabled="activity.busy" infinite-scroll-parent>
+			<md-list>
+				<md-list-item class="md-3-line" ng-repeat="activity in activity.paginated" ng-click="show(activity.id)">
+					<!-- <h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
+						<span class="md-headline white-text">{{activity.first_letter}}</span>
+					</h2> -->
+					<div class="md-list-item-text">
+						<h3>{{activity.user.first_name}} {{activity.user.last_name}}</h3>
+						<h4>{{activity.activity_type.description}}</h4>
+						<p>
+			        		<span class="secondary-text md-caption" am-time-ago="activity.created_at"></span>
+							<md-tooltip>{{ activity.created_at | date: 'EEEE, MMMM d, yyyy' }}</md-tooltip>
+						</p>
+					</div>
+					<md-divider></md-divider>
+				</md-list-item>
+			</md-list>
+			<!-- Loading for paginate -->
+			<div layout="row" layout-align="center center" flex ng-if="activity.busy">
+				<md-progress-circular md-diameter="96"></md-progress-circular>
+			</div>
+		</div>
+	</md-content>
+</div>

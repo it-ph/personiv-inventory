@@ -30,6 +30,9 @@ adminModule
 					'content@main': {
 						templateUrl: '/app/components/admin/templates/content/main.content.template.html',
 					},
+					'right-sidenav@main': {
+						templateUrl: '/app/components/admin/templates/sidenavs/dashboard-right-sidenav.template.html',
+					}
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
 					var leftSidenav = $('[md-component-id="left"]');

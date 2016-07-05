@@ -1,16 +1,16 @@
 <md-content class="md-padding" layout="row" layout-align="center start">
-	<div flex infinite-scroll='activity.paginateLoad()' infinite-scroll-distance="3" infinite-scroll-disabled="activity.busy" infinite-scroll-parent>
+	<div flex >
 		<div layout="row" flex>
 	        <md-card flex md-theme="dark-blue">
 		        <md-card-title>
 		          	<md-card-title-text>
 			            <span class="md-headline white-text">Purchase Orders</span>
-			            <span class="md-subhead white-text">Pending</span>
+			            <span class="md-subhead white-text">July</span>
 		          	</md-card-title-text>
 		          	<md-card-title-media>
 		            	<div class="md-media-sm" layout="row" layout-align="center center">
 	            			<!-- <md-icon class="mdi mdi-format-list-numbers"></md-icon> -->
-	            			<span class="md-display-1 white-text">2</span>
+	            			<span class="md-display-1 white-text">{{dashboard.purchase_order_count}}</span>
 		            	</div>
 		          	</md-card-title-media>
 		       	</md-card-title>
@@ -24,7 +24,7 @@
 		          	<md-card-title-media>
 		            	<div class="md-media-sm" layout="row" layout-align="center center">
 	            			<!-- <md-icon class="mdi mdi-format-list-numbers"></md-icon> -->
-	            			<span class="md-display-1 white-text">2</span>
+	            			<span class="md-display-1 white-text">{{dashboard.asset_tag_count}}</span>
 		            	</div>
 		          	</md-card-title-media>
 		       	</md-card-title>
@@ -38,28 +38,22 @@
 		          	<md-card-title-media>
 		            	<div class="md-media-sm" layout="row" layout-align="center center">
 	            			<!-- <md-icon class="mdi mdi-format-list-numbers"></md-icon> -->
-	            			<span class="md-display-1 white-text">2</span>
+	            			<span class="md-display-1 white-text">{{dashboard.activity_count}}</span>
 		            	</div>
 		          	</md-card-title-media>
 		       	</md-card-title>
 		    </md-card>
 		</div>
-		<md-card flex>
-			<md-toolbar class="white-toolbar">
-				<div class="md-toolbar-tools">
-					<h2 class="primary-text">Asset tags January 2016 to present</h2>
-				</div>
-			</md-toolbar>
-			<md-card-content layout-padding layout="row">
-				<div flex="50">
-					<canvas id="line" class="chart chart-line" chart-data="data" chart-labels="labels" chart-series="series" chart-options="options" chart-dataset-override="datasetOverride" chart-click="onClick" ></canvas>
-				</div>
-				<div flex="50">
-					<canvas id="pie" class="chart chart-pie" chart-data="pie.data" chart-labels="pie.labels" chart-options="options"></canvas>
-				</div>
-			</md-card-content>	
-		</md-card>
-		<md-card>
+		<div layout="row" flex>
+			<md-card flex ng-repeat="chart in charts">
+				<md-card-content layout-padding layout="column">
+					<div layout="row" flex>
+						<canvas class="chart chart-line" chart-data="chart.data" chart-labels="chart.labels" chart-series="chart.series"></canvas>
+					</div>
+				</md-card-content>	
+			</md-card>
+		</div>
+		<!-- <md-card>
 			<md-toolbar class="white-toolbar">
 				<div class="md-toolbar-tools">
 					<h2 class="primary-text">Activities</h2>
@@ -82,7 +76,7 @@
 					</md-list-item>
 				</md-list>
 			</md-card-content>
-		</md-card>
+		</md-card> -->
 		<div layout="row" layout-align="center center" flex ng-if="activity.busy">
 			<md-progress-circular md-diameter="96"></md-progress-circular>
 		</div>

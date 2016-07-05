@@ -106,9 +106,9 @@
 							<input type="number" name="Quantity{{$index}}" ng-model="asset.quantity" min="{{asset.asset.asset_tags.length}}" required>
 							<div ng-messages="form.purchaseOrderForm['Quantity' + $index].$error" ng-if="form.purchaseOrderForm['Quantity' + $index].$touched">
 								<div ng-message="required">Quantity is required.</div>
-								<div ng-message="min">Quantity must be at least one.</div>
+								<div ng-message="min">Quantity must not be less than {{asset.asset.asset_tags.length}}.</div>
 							</div>
-							<div class="hint">Mimimum quantity is the number of existing asset tags.</div>
+							<div class="hint" ng-if="form.purchaseOrderForm['Quantity' + $index].$valid">Number of existing asset tags is {{asset.asset.asset_tags.length}}. (minimum)</div>
 						</md-input-container>
 
 						<!-- Quantity -->

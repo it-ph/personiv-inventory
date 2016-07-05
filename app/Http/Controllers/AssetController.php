@@ -15,7 +15,8 @@ class AssetController extends Controller
 {
     public function purchaseOrders($id)
     {
-        return Asset::with(['assset_purchase_order' => function($query){ $query->where('asset_id', $id)->with('purchase_order'); }])->where('id', $id)->first();
+        $this->id = $id;
+        return Asset::with(['asset_purchase_order' => function($query){ $query->where('asset_id', $this->id)->with(['purchase_order' => function($query){ $query->with(['asset_tags' => function($query){ $query->withTrashed();}]); }]); }])->where('id', $this->id)->first();
     }
 
     public function brands($id)

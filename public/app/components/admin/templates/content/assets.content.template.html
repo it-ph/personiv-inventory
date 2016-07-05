@@ -54,6 +54,10 @@
 							<md-tooltip>Delete</md-tooltip>
 						</md-button>
 			      	</md-card-icon-actions>
+		          	<md-button class="md-icon-button" ng-if="asset_tag.status.length" ng-click="pullOutDetails(asset_tag.id)">
+		          		<md-icon class="mdi mdi-information grey"></md-icon>
+						<md-tooltip>Pull Out Info</md-tooltip>
+		          	</md-button>
 		          	<md-button class="md-icon-button" ng-if="asset_tag.status.length" ng-click="repaired(asset_tag.id)">
 		          		<md-icon class="mdi mdi-wrench grey"></md-icon>
 						<md-tooltip>Repaired</md-tooltip>
@@ -124,6 +128,10 @@
 							<md-tooltip>Delete</md-tooltip>
 						</md-button>
 			      	</md-card-icon-actions>
+		          	<md-button class="md-icon-button" ng-if="asset_tag.status.length" ng-click="pullOutDetails(asset_tag.id)">
+		          		<md-icon class="mdi mdi-information grey"></md-icon>
+						<md-tooltip>Pull Out Info</md-tooltip>
+		          	</md-button>
 		          	<md-button ng-if="asset_tag.status.length" ng-click="repaired(asset_tag.asset.id)">
 		          		<md-icon class="mdi mdi-wrench grey"></md-icon>
 						<md-tooltip>Repaired</md-tooltip>

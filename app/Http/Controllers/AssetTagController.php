@@ -15,6 +15,11 @@ use App\Http\Controllers\Controller;
 
 class AssetTagController extends Controller
 {
+    public function statuses($id)
+    {
+        return AssetTag::with(['status' => function($query){ $query->withTrashed(); }])->where('id', $id)->first();
+    }
+
     public function lastPropertyCode(Request $request)
     {
         $this->validate($request, [
@@ -203,7 +208,7 @@ class AssetTagController extends Controller
         $asset_tag->asset_type_id = $asset->asset_type_id;
         $asset_tag->asset_id = $request->asset_id;
         $asset_tag->work_station_id = $request->work_station_id;
-        $asset_tag->purchase_order_id = $request->purchase_order_id;
+        $asset_tag->purchase_order_id = $request->purchase_order_id ? $request->purchase_order_id : null;
         $asset_tag->computer_name = $request->computer_name;
         $asset_tag->serial = $request->serial;
         $asset_tag->prefix = $asset->type->prefix;
@@ -295,7 +300,7 @@ class AssetTagController extends Controller
 
         $asset_tag->computer_name = $request->computer_name;
         $asset_tag->serial = $request->serial;
-        $asset_tag->purchase_order_id = $request->purchase_order_id;
+        $asset_tag->purchase_order_id = $request->purchase_order_id ? $request->purchase_order_id : null;
         $asset_tag->sequence = $request->sequence;
         $asset_tag->property_code = $asset->type->prefix . $filler . $request->sequence;
         $asset_tag->remarks = $request->remarks;

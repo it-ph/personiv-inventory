@@ -74,7 +74,12 @@ class ActivityController extends Controller
         else if ($activity->activity_type->type == 'asset_tag')
         {
             return Activity::where('id', $id)->with(['asset_tag' => function($query){ $query->withTrashed()->with('asset', 'type'); }])->with('activity_type', 'user')->first();
-        }        
+        }    
+
+        else if ($activity->activity_type->type == 'asset_purchase_order')
+        {
+            return Activity::where('id', $id)->with(['asset_purchase_order' => function($query){ $query->with('asset'); }])->with('activity_type', 'user')->first();
+        }      
 
         else if ($activity->activity_type->type == 'asset_type')
         {
@@ -99,6 +104,11 @@ class ActivityController extends Controller
         else if ($activity->activity_type->type == 'vendor')
         {
             return Activity::where('id', $id)->with(['vendor' => function($query){ $query->withTrashed(); }])->with('activity_type', 'user')->first();
+        }
+
+        else if ($activity->activity_type->type == 'work_station')
+        {
+            return Activity::where('id', $id)->with(['work_station' => function($query){ $query->withTrashed(); }])->with('activity_type', 'user')->first();
         }        
     }
 
