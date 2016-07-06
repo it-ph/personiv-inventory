@@ -44,41 +44,35 @@
 		       	</md-card-title>
 		    </md-card>
 		</div>
+		<!-- <div layout-padding>		
+			<md-radio-group ng-model="chartType" layout="row">
+				<md-radio-button value="1" class="md-primary">Monthly</md-radio-button>
+				<md-radio-button value="0" class="md-primary">Weekly</md-radio-button>
+			</md-radio-group>
+		</div> -->
 		<div layout="row" flex>
 			<md-card flex ng-repeat="chart in charts">
 				<md-card-content layout-padding layout="column">
 					<div layout="row" flex>
-						<canvas class="chart chart-line" chart-data="chart.data" chart-labels="chart.labels" chart-series="chart.series"></canvas>
+						<canvas class="chart chart-line" chart-data="chart.monthly.data" chart-labels="chart.monthly.labels" chart-series="chart.monthly.series"></canvas>
 					</div>
+					<h3 class="md-headline center-text">{{chart.title}}</h3>
 				</md-card-content>	
 			</md-card>
 		</div>
-		<!-- <md-card>
-			<md-toolbar class="white-toolbar">
-				<div class="md-toolbar-tools">
-					<h2 class="primary-text">Activities</h2>
+		<!-- <md-tabs md-dynamic-height md-border-bottom>
+			<md-tab ng-repeat="chart in charts" label="{{chart.title}}">
+				<div layout="row" flex>
 				</div>
-			</md-toolbar>
+			</md-tab>
+		</md-tabs> -->
+		<md-card ng-repeat="chart in charts">
 			<md-card-content>
-				<md-list layout="row" layout-wrap>
-					<md-list-item class="md-3-line" flex="30" ng-repeat="activity in activity.paginated" ng-click="show(activity.id)">
-						<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
-							<span class="md-headline white-text">{{activity.first_letter}}</span>
-						</h2>
-						<div class="md-list-item-text">
-							<h3>{{activity.user.first_name}} {{activity.user.last_name}}</h3>
-							<h4>{{activity.activity_type.description}}</h4>
-							<p>
-				        		<span class="secondary-text md-caption" am-time-ago="activity.created_at"></span>
-								<md-tooltip>{{ activity.created_at | date: 'EEEE, MMMM d, yyyy' }}</md-tooltip>
-							</p>
-						</div>
-					</md-list-item>
-				</md-list>
+				<div layout="row" flex ng-repeat="item in chart.monthly.data">
+					<canvas class="chart chart-line" chart-data="chart.weekly.data[$index]" chart-labels="chart.weekly.labels" chart-series="chart.weekly.series"></canvas>
+				</div>
+				<h3 class="md-headline">{{chart.title}}</h3>
 			</md-card-content>
-		</md-card> -->
-		<div layout="row" layout-align="center center" flex ng-if="activity.busy">
-			<md-progress-circular md-diameter="96"></md-progress-circular>
-		</div>
+		</md-card>
 	</div>
 </md-content>

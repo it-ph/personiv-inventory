@@ -19,16 +19,112 @@ class InventoryReportController extends Controller
 {
     public function dashboard()
     {
-        $user = Auth::user();
+        $user = DB::table('users')->where('id', Auth::user()->id)->first();
 
-        $date_start = new Carbon('first day of this month');
-        $date_end = new Carbon('last day of this month');
+        $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-        $user->purchase_order_count = PurchaseOrder::whereBetween('created_at', [$date_start, $date_end])->count();
-        $user->asset_tag_count = AssetTag::whereBetween('created_at', [$date_start, $date_end])->count();
-        $user->activity_count = Activity::whereBetween('created_at', [$date_start, $date_end])->count();
+        $user->purchase_order_array = array(array(),array([]));
+        $user->asset_tag_array = array(array(),array([],[],[]));
+        $user->activity_array = array(array(),array([]));
+        $user->week_ranges = array();
 
-        return $user;
+        // yearly
+        foreach ($months as $month_key => $month_value) {
+            $month_date_start = new Carbon('first Monday of '. $month_value);
+            $month_date_end = new Carbon('first Monday of next month '. $month_value);
+
+            // Purchase Orders
+            $purchase_orders = PurchaseOrder::whereBetween('created_at', [$month_date_start, $month_date_end])->count();
+            array_push($user->purchase_order_array[1][0], $purchase_orders);
+
+            // Asset Tags
+            $asset_tags = AssetTag::with('status')->whereBetween('created_at', [$month_date_start, $month_date_end])->get();
+
+            $pulled_out = 0;
+            $deployed = 0;
+            $stock = 0;
+
+            foreach ($asset_tags as $asset_tag_key => $asset_tag_value) {
+                // Pulled Out
+                if(count($asset_tag_value->status)){
+                    $pulled_out += 1;
+                }
+                // Deployed
+                else if(!count($asset_tag_value->status) && $asset_tag_value->work_station_id){
+                    $deployed += 1;
+                }
+                // Stock
+                else if(!count($asset_tag_value->status) && !$asset_tag_value->work_station_id){
+                    $stock += 1;
+                }
+            }
+
+            array_push($user->asset_tag_array[1][2], $pulled_out);
+            array_push($user->asset_tag_array[1][0], $deployed);
+            array_push($user->asset_tag_array[1][1], $stock);
+
+            // Activities
+            $activities = Activity::whereBetween('created_at', [$month_date_start, $month_date_end])->count();
+            array_push($user->activity_array[1][0], $activities);
+
+            $date_end = Carbon::parse('first Monday of '.$month_value)->addWeek();
+            
+            // Weekly
+            $purchase_orders_weekly = array();
+            $asset_tags_weekly = array();
+            $activities_weekly = array();
+            $key = 0;
+
+            array_push($user->week_ranges, []);
+
+            for ($date_start = Carbon::parse('first Monday of '. $month_value); $date_start->lt(Carbon::parse('first Monday of next month '.$month_value)); $date_start->addWeek())
+            { 
+                $week_range = $date_start->toFormattedDateString().' to '.$date_end->toFormattedDateString();
+                array_push($user->week_ranges[$month_key], $week_range);
+                // Purchase Orders
+                $purchase_orders_week = PurchaseOrder::whereBetween('created_at', [$date_start, $date_end])->count();
+                array_push($purchase_orders_weekly, $purchase_orders_week);
+                
+                // Asset Tags
+                $asset_tags = AssetTag::with('status')->whereBetween('created_at', [$date_start, $date_end])->get();
+                array_push($asset_tags_weekly, [0,0,0]);
+
+                foreach ($asset_tags as $asset_tag_key => $asset_tag_value) {
+                    // Pulled Out
+                    if(count($asset_tag_value->status)){
+                        $asset_tags_weekly[$key][2] += 1;
+                    }
+                    // Deployed
+                    else if(!count($asset_tag_value->status) && $asset_tag_value->work_station_id){
+                        $asset_tags_weekly[$key][0] += 1;
+                    }
+                    // Stock
+                    else if(!count($asset_tag_value->status) && !$asset_tag_value->work_station_id){
+                        $asset_tags_weekly[$key][1] += 1;
+                    }
+                }
+
+                // Activities
+                $activities = Activity::whereBetween('created_at', [$date_start, $date_end])->count();
+                array_push($activities_weekly, $activities);
+
+                $date_end->addWeek();
+                $key++;
+            }
+            
+            array_push($user->purchase_order_array[0], $purchase_orders_weekly);
+            array_push($user->asset_tag_array[0], $asset_tags_weekly);
+            array_push($user->activity_array[0], $activities_weekly);
+        }
+
+        $first_day = new Carbon('first Monday of this month');
+        $last_day = new Carbon('first Monday of next month');
+
+        $user->purchase_order_count = PurchaseOrder::whereBetween('created_at', [$first_day, $last_day])->count();
+        $user->asset_tag_count = AssetTag::whereBetween('created_at', [$first_day, $last_day])->count();
+        $user->activity_count = Activity::whereBetween('created_at', [$first_day, $last_day])->count();
+
+        return response()->json($user);
     }
     /**
      * Display a listing of the resource.

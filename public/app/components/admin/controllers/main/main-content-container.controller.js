@@ -68,49 +68,39 @@ adminModule
 		$scope.charts = [
 			// Purchase Orders
 			{
-				'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-				// 'series': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], - 
+				'title': 'Purchase Orders',
+				'monthly': {
+					'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+				},
+				'weekly': {
+					'data': [],
+				},
 			},
 			// Asset Tags
 			{
-				'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-				'series': ["Deployed", "Stock", "Pulled Out"],
+				'title': 'Asset Tags',
+				'monthly': {
+					'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+					'series': ["Deployed", "Stock", "Pulled Out"],
+				},
+				'weekly': {
+					'series': ["Deployed", "Stock", "Pulled Out"],
+					'data': [],
+				},
 			},
 			// Activities
 			{
-				'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-				// 'series': ["Deployed", "Stock", "Pulled Out"],
-			},
+				'title': 'Activities',
+				'monthly' : {
+					'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+				},
+				'weekly': {
+					'data': [],
+				}
+			}
 		];
 
-		// $scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
-		// $scope.series = ['Series A', 'Series B'];
-		// $scope.data = [
-		//     [65, 59, 80, 81, 56, 55, 40],
-		//     [28, 48, 40, 19, 86, 27, 90]
-		// ];
-		// $scope.onClick = function (points, evt) {
-		//     console.log(points, evt);
-		// };
-		// $scope.datasetOverride = [{ yAxisID: 'y-axis-1' }, { yAxisID: 'y-axis-2' }];
-		// $scope.options = {
-		//     scales: {
-		//       yAxes: [
-		//         {
-		//           id: 'y-axis-1',
-		//           type: 'linear',
-		//           display: true,
-		//           position: 'left'
-		//         },
-		//         {
-		//           id: 'y-axis-2',
-		//           type: 'linear',
-		//           display: true,
-		//           position: 'right'
-		//         }
-		//       ]
-		//     }
-		// };
+		$scope.chartType = 1;
 
 		$scope.rightSidenav = {};
 
@@ -130,6 +120,35 @@ adminModule
 			InventoryReport.dashboard()
 				.then(function(data){
 					$scope.dashboard = data.data;
+
+					$scope.charts[0].monthly.data = data.data.purchase_order_array[1];
+					$scope.charts[1].monthly.data = data.data.asset_tag_array[1];
+					$scope.charts[2].monthly.data = data.data.activity_array[1];
+
+					angular.forEach($scope.charts[0].monthly.data, function(item, key){
+						$scope.charts[0].weekly.labels = data.data.week_ranges[key];
+						$scope.charts[1].weekly.labels = data.data.week_ranges[key];
+						$scope.charts[2].weekly.labels = data.data.week_ranges[key];
+
+						angular.forEach(data.data.purchase_order_array[0], function(item, key){
+							$scope.charts[0].weekly.data.push([item]);
+						});
+
+						angular.forEach(data.data.purchase_order_array[1], function(item, key){
+							$scope.charts[1].weekly.data.push([item]);
+						});
+
+						angular.forEach(data.data.purchase_order_array[2], function(item, key){
+							$scope.charts[2].weekly.data.push([item]);
+						});
+
+						console.log($scope.charts[0].weekly.data[key]);
+						
+						// $scope.charts[1].weekly.data = data.data.asset_tag_array[0];
+						// $scope.charts[2].weekly.data = data.data.activity_array[0];
+					});
+
+
 				})
 				.then(function(){
 					/**

@@ -75,28 +75,24 @@ class AssetTypeController extends Controller
      */
     public function show($id)
     {
-        $asset_type = AssetType::where('id', $id)->with('assets')->first();
+        $asset_type = AssetType::where('id', $id)->with('assets', 'asset_tags')->first();
         $asset_type->deployed = 0;
         $asset_type->pulled_out = 0;
         $asset_type->stocks = 0;
 
-        foreach ($asset_type->assets as $asset_key => $asset_value) {
-            $asset_tags = AssetTag::where('asset_id', $asset_value->id)->with('status')->orderBy('created_at', 'desc')->get();
-
-            foreach ($asset_tags as $asset_tag_key => $asset_tag_value) {
-                $asset_type->last_property_code = $asset_tag_key == 0 ? $asset_tag_value->property_code : null;
-
-                if(count($asset_tag_value->status)){
-                    $asset_type->pulled_out += 1;
-                }
+        foreach ($asset_type->asset_tags as $asset_tag_key => $asset_tag_value) {
+            if(count($asset_tag_value->status)){
+                $asset_type->pulled_out += 1;
             }
-
-            $deployed_count = AssetTag::where('asset_id', $asset_value->id)->whereNotNull('work_station_id')->count();
-            $stock_count = AssetTag::where('asset_id', $asset_value->id)->whereNull('work_station_id')->count();
-
-            $asset_type->deployed += $deployed_count;
-            $asset_type->stocks += $stock_count;
+            else if(!count($asset_tag_value->status) && $asset_tag_value->work_station_id){
+                $asset_type->deployed += 1;
+            }
+            else if(!count($asset_tag_value->status) && !$asset_tag_value->work_station_id){
+                $asset_type->stocks += 1;
+            }
         }
+
+        $asset_type->last_property_code = AssetTag::where('asset_type_id', $id)->orderBy('created_at', 'desc')->first()->property_code;
 
         return $asset_type;
     }
