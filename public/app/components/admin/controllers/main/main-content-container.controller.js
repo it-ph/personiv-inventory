@@ -42,6 +42,8 @@ adminModule
 			$scope.init(true);
 		}
 
+		$scope.toolbar.hideSearchIcon = true;
+
 		/**
 		 * Status of search bar.
 		 *
@@ -65,43 +67,6 @@ adminModule
 			$scope.searchBar = false;
 		};
 
-		$scope.charts = [
-			// Purchase Orders
-			{
-				'title': 'Purchase Orders',
-				'monthly': {
-					'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-				},
-				'weekly': {
-					'data': [],
-				},
-			},
-			// Asset Tags
-			{
-				'title': 'Asset Tags',
-				'monthly': {
-					'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-					'series': ["Deployed", "Stock", "Pulled Out"],
-				},
-				'weekly': {
-					'series': ["Deployed", "Stock", "Pulled Out"],
-					'data': [],
-				},
-			},
-			// Activities
-			{
-				'title': 'Activities',
-				'monthly' : {
-					'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-				},
-				'weekly': {
-					'data': [],
-				}
-			}
-		];
-
-		$scope.chartType = 1;
-
 		$scope.rightSidenav = {};
 
 		$scope.rightSidenav.show = true;
@@ -116,37 +81,78 @@ adminModule
 		    });
 		}
 
+		$scope.chartWeekly = function(data){
+			console.log(data);
+			// Preloader.set(data[0]);
+			// $mdDialog.show({
+		 //    	controller: 'chartWeeklyDialogController',
+		 //      	templateUrl: '/app/components/admin/templates/dialogs/chart-weekly.template.html',
+		 //      	parent: angular.element(document.body),
+		 //      	clickOutsideToClose: true,
+		 //    });
+		}
+
 		$scope.init = function(refresh){
+			$scope.charts = [
+				// Purchase Orders
+				{
+					'title': 'Purchase Orders',
+					'monthly': {
+						'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+					},
+					'weekly': {
+						// 'data': [],
+						'labels': [],
+					},
+				},
+				// Asset Tags
+				{
+					'title': 'Asset Tags',
+					'monthly': {
+						'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+						'series': ["Deployed", "Stock", "Pulled Out"],
+					},
+					'weekly': {
+						'series': ["Deployed", "Stock", "Pulled Out"],
+						// 'data': [],
+						'labels': [],
+					},
+				},
+				// Activities
+				{
+					'title': 'Activities',
+					'monthly' : {
+						'labels': ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+					},
+					'weekly': {
+						// 'data': [],
+						'labels': [],
+					}
+				}
+			];
+
+
 			InventoryReport.dashboard()
 				.then(function(data){
+					angular.forEach(data.data.warranty, function(item){
+						item.warranty_end = new Date(item.warranty_end);
+					});
+
 					$scope.dashboard = data.data;
 
 					$scope.charts[0].monthly.data = data.data.purchase_order_array[1];
 					$scope.charts[1].monthly.data = data.data.asset_tag_array[1];
 					$scope.charts[2].monthly.data = data.data.activity_array[1];
 
-					angular.forEach($scope.charts[0].monthly.data, function(item, key){
-						$scope.charts[0].weekly.labels = data.data.week_ranges[key];
-						$scope.charts[1].weekly.labels = data.data.week_ranges[key];
-						$scope.charts[2].weekly.labels = data.data.week_ranges[key];
+					angular.forEach(data.data.week_ranges, function(date){				
+						$scope.charts[0].weekly.labels.push(date);
+						$scope.charts[1].weekly.labels.push(date);
+						$scope.charts[2].weekly.labels.push(date);
+					})
 
-						angular.forEach(data.data.purchase_order_array[0], function(item, key){
-							$scope.charts[0].weekly.data.push([item]);
-						});
-
-						angular.forEach(data.data.purchase_order_array[1], function(item, key){
-							$scope.charts[1].weekly.data.push([item]);
-						});
-
-						angular.forEach(data.data.purchase_order_array[2], function(item, key){
-							$scope.charts[2].weekly.data.push([item]);
-						});
-
-						console.log($scope.charts[0].weekly.data[key]);
-						
-						// $scope.charts[1].weekly.data = data.data.asset_tag_array[0];
-						// $scope.charts[2].weekly.data = data.data.activity_array[0];
-					});
+					$scope.charts[0].weekly.data = data.data.purchase_order_array[0];
+					$scope.charts[1].weekly.data = data.data.asset_tag_array[0];
+					$scope.charts[2].weekly.data = data.data.activity_array[0];
 
 
 				})

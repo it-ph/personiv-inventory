@@ -21,5 +21,8 @@ sharedModule
 			dashboard: function(){
 				return $http.get(urlBase + '-dashboard');
 			},
+			chartWeekly: function(data){
+				return $http.post(urlBase + '-chart-weekly', data);
+			},
 		};
 	}]);

@@ -270,6 +270,9 @@ md-content.blue-bg {
 .overflow-auto {
   overflow: auto; }
 
+/*.chart-container{
+	min-width: 100%;
+}*/
 /* transition duration */
 .transition, .fade-transition, .main-view {
   transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2); }

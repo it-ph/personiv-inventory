@@ -53,7 +53,7 @@
 						</md-button>
 			      	</md-card-icon-actions>
 			        <md-button ng-if="asset_tag.asset.details.length" ng-click="showDetails(asset_tag.asset.id)">Details</md-button>
-			        <md-button ng-if="asset_tag.purchase_order">Purchase Order</md-button>
+			        <md-button ng-if="asset_tag.purchase_order" ng-click="purchaseOrder(asset_tag.purchase_order_id)">Purchase Order</md-button>
 			    </md-card-actions>
 			</md-card>
 		</div>
@@ -67,4 +67,13 @@
 		</md-button>
 		<p class="secondary-text">Tap to create</p>
 	</div>
+
+	<!-- If asset tag is one and it is pulled out -->
+	<div layout="column" layout-align="center center" flex ng-if="workStation.asset_tags.length == 1 && workStation.asset_tags[0].status.length">
+		<h3 class="md-subhead  ">No asset tags to display</h3>
+		<md-button class="md-fab md-primary" aria-label="Create Work Station" ng-click="createAssetTag()">
+			<md-icon class="mdi mdi-plus"></md-icon>
+		</md-button>
+		<p class="secondary-text">Tap to create</p>
+	</div>	
 </md-content>

@@ -167,6 +167,10 @@ adminModule
 		    })
 		}
 
+		$scope.purchaseOrder = function(id){
+			$state.go('main.asset-tag-purchase-order', {'purchaseOrderID':id});
+		}
+
 		$scope.init = function(refresh){
 			WorkStation.show(workStationID)
 				.success(function(data){

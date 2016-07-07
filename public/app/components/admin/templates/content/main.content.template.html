@@ -1,4 +1,4 @@
-<md-content class="md-padding" layout="row" layout-align="center start">
+<md-content class="md-padding" layout="row" layout-align="center start" ng-if="activity.paginated.show">
 	<div flex >
 		<div layout="row" flex>
 	        <md-card flex md-theme="dark-blue">
@@ -44,35 +44,43 @@
 		       	</md-card-title>
 		    </md-card>
 		</div>
-		<!-- <div layout-padding>		
-			<md-radio-group ng-model="chartType" layout="row">
-				<md-radio-button value="1" class="md-primary">Monthly</md-radio-button>
-				<md-radio-button value="0" class="md-primary">Weekly</md-radio-button>
-			</md-radio-group>
-		</div> -->
 		<div layout="row" flex>
 			<md-card flex ng-repeat="chart in charts">
 				<md-card-content layout-padding layout="column">
 					<div layout="row" flex>
-						<canvas class="chart chart-line" chart-data="chart.monthly.data" chart-labels="chart.monthly.labels" chart-series="chart.monthly.series"></canvas>
+						<canvas class="chart chart-line" chart-data="chart.monthly.data" chart-labels="chart.monthly.labels" chart-series="chart.monthly.series" chart-click="chartWeekly"></canvas>
 					</div>
-					<h3 class="md-headline center-text">{{chart.title}}</h3>
+					<!-- <h3 class="md-headline center-text">{{chart.title}}</h3> -->
 				</md-card-content>	
 			</md-card>
 		</div>
-		<!-- <md-tabs md-dynamic-height md-border-bottom>
-			<md-tab ng-repeat="chart in charts" label="{{chart.title}}">
-				<div layout="row" flex>
+		<!-- <div flex>
+			<md-card ng-repeat="chart in charts" flex>
+				<md-card-content layout-padding layout="column">
+					<div layout="row" flex layout-align="center center">
+						<canvas class="chart chart-line" chart-data="chart.weekly.data" chart-labels="chart.weekly.labels" chart-series="chart.weekly.series"></canvas>
+					</div>
+					<h3 class="md-headline center-text">{{chart.title}}</h3>
+				</md-card-content>
+			</md-card>
+		</div> -->
+		<md-subheader>Asset Tags Expiring Warranty</md-subheader>
+		<md-list>
+			<md-list-item class="md-3-line" ng-repeat="item in dashboard.warranty">
+				<!-- <h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
+					<span class="md-headline white-text">{{activity.first_letter}}</span>
+				</h2> -->
+				<div class="md-list-item-text">
+					<h3>{{item.asset.brand}} {{item.asset.model}} <span class="secondary-text">({{item.property_code}})</span></h3>
+					<h4>{{item.purchase_order.vendor.contact_person}} <span ng-if="item.purchase_order">/</span> {{item.purchase_order.vendor.email}} <span ng-if="item.purchase_order">/</span> {{item.purchase_order.vendor.contact_number}}</h4>
+					<p>
+		        		<span class="secondary-text md-caption" am-time-ago="item.warranty_end"></span>
+						<md-tooltip>{{ item.warranty_end | date: 'EEEE, MMMM d, yyyy' }}</md-tooltip>
+					</p>
 				</div>
-			</md-tab>
-		</md-tabs> -->
-		<md-card ng-repeat="chart in charts">
-			<md-card-content>
-				<div layout="row" flex ng-repeat="item in chart.monthly.data">
-					<canvas class="chart chart-line" chart-data="chart.weekly.data[$index]" chart-labels="chart.weekly.labels" chart-series="chart.weekly.series"></canvas>
-				</div>
-				<h3 class="md-headline">{{chart.title}}</h3>
-			</md-card-content>
-		</md-card>
+				<md-divider></md-divider>
+			</md-list-item>
+		</md-list>
+		<p ng-if="!dashboard.warranty.length">No items about to expire</p>
 	</div>
 </md-content>
