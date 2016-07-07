@@ -130,12 +130,12 @@ md-toolbar.white-toolbar {
   opacity: 0; }
 
 #main {
-  background: url("/assets/img/EASNZXBH4G.jpg");
+  background: url("/assets/img/PHE63L27S6.jpg");
   background-size: cover;
   transition: all 1s; }
 
 .main-content {
-  background: rgba(33, 33, 33, 0.3); }
+  background: rgba(33, 33, 33, 0.7); }
 
 /* Background colors */
 md-content.dirty-white {
