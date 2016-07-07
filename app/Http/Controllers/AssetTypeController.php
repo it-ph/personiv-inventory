@@ -92,9 +92,7 @@ class AssetTypeController extends Controller
             }
         }
 
-        $last = AssetTag::where('asset_type_id', $id)->orderBy('created_at', 'desc')->first();
-
-        $asset_type->last_property_code = $last->property_code;
+        $asset_type->last_property_code = AssetTag::where('asset_type_id', $id)->orderBy('created_at', 'desc')->first()->property_code;
 
         return $asset_type;
     }
