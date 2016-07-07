@@ -1,34 +1,73 @@
-<div layout="row" layout-align="start center" flex flex-gt-sm="70">
+<div layout="row" layout-align="start center" flex flex-gt-md="80">
 	<div layout="row" ng-if="!searchBar" layout-align="start center">
-		<md-button class="md-icon-button" ng-click="toolbar.back()" ng-if="toolbar.showBack">
-			<md-icon class="mdi mdi-arrow-left grey" aria-label="Back"></md-icon>
+		<!-- Toggle Left Sidenav Button -->
+		<md-button class="md-icon-button" ng-click="toggleSidenav('left')" hide-gt-sm>
+			<md-icon class="mdi mdi-24px mdi-menu grey" aria-label="Toogle Sidenav"></md-icon>
 		</md-button>
-		<span class="md-headline main-text"> <span hide-md hide-sm>{{ toolbar.parentState }}</span>
-			<md-icon class="mdi mdi-chevron-right grey" aria-label="chevron right" ng-if="toolbar.parentState && toolbar.childState" hide-md hide-sm></md-icon>
+		<md-button class="md-icon-button" ng-click="toolbar.back()" hide-md hide-sm hide-xs ng-if="toolbar.showBack">
+			<md-icon class="mdi mdi-24px mdi-arrow-left grey" aria-label="Back"></md-icon>
+		</md-button>
+		<span class="md-headline main-text"> <span hide-md hide-sm hide-xs>{{ toolbar.parentState }}</span>
+			<md-icon class="mdi mdi-24px mdi-chevron-right grey" aria-label="chevron right" ng-if="toolbar.parentState && toolbar.childState" hide-md hide-sm hide-xs></md-icon>
 			<span ng-if="toolbar.childState">{{ toolbar.childState }}</span>
 		</span>
 	</div>
-	<!-- Search Bar -->
-	<div layout="row" ng-if="searchBar" flex layout-align="center center">
-		<md-button class="md-icon-button" ng-click="hideSearchBar()">
-			<md-icon class="mdi mdi-arrow-left grey" aria-label="Hide Search Bar"></md-icon>
-		</md-button>
+	<div ng-if="user" flex>	
 		<!-- Search Bar -->
-		<div flex ng-include="'/app/components/admin/templates/search-bars.template.html'"></div>
-
-		<md-button class="md-icon-button" ng-click="searchUserInput()">
-			<md-icon class="mdi mdi-magnify grey" aria-label="Search"></md-icon>
-			<md-tooltip>Search</md-tooltip>
-		</md-button>
-	</div>
-	<!-- Icon Buttons -->
-	<div flex layout="row" layout-align="end center" ng-if="!searchBar">
-		<md-button class="md-icon-button" ng-click="showSearchBar()">
-			<md-icon class="mdi mdi-magnify grey" aria-label="Search"></md-icon>
-		</md-button>
-		<!-- Toggle Left Sidenav Button -->
-		<md-button class="md-icon-button" ng-click="toggleSidenav('left')" hide-gt-sm>
-			<md-icon class="mdi mdi-menu grey" aria-label="Toogle Sidenav"></md-icon>
-		</md-button>
+		<div layout="row" ng-if="searchBar" flex flex-gt-sm="70" layout-align="center center">
+			<md-button class="md-icon-button" ng-click="hideSearchBar()">
+				<md-icon class="mdi mdi-24px mdi-arrow-left grey" aria-label="Hide Search Bar"></md-icon>
+			</md-button>
+			<!-- Search Bar -->
+			<form layout="row" flex class="main-text">
+				<md-autocomplete placeholder="Search" md-selected-item="toolbar.searchItem" md-search-text="toolbar.searchText" md-items="item in toolbar.getItems(toolbar.searchText)" md-item-text="item.display" flex>
+					<md-item-template>
+						<p>
+							<md-icon class="mdi mdi-magnify mdi-24px grey"></md-icon>
+							<span md-highlight-text="toolbar.searchText" md-highlight-flags="^i">{{item.display}}</span>
+						</p>
+			        </md-item-template>
+					<md-not-found>
+						<p ng-if="!toolbar.searchAll">No results matching <span class="primary-text">"{{toolbar.searchText}}"</span> were found.</p>
+					    <p ng-click="searchUserInput(toolbar.searchText)" ng-if="toolbar.searchAll" flex>Click to see all results for <span class="primary-text">"{{toolbar.searchText}}"</span></p>
+					</md-not-found>
+				</md-autocomplete>
+			</form>
+		</div>
+		<!-- Icon Buttons -->
+		<div flex layout="row" layout-align="end center" ng-if="!searchBar">
+			<span flex></span>
+			<md-button class="md-icon-button" ng-click="showSearchBar()" ng-if="!toolbar.hideSearchIcon">
+				<md-icon class="mdi mdi-24px mdi-magnify grey" aria-label="Search"></md-icon>
+			</md-button>
+			<md-menu>
+				<md-button class="md-icon-button" ng-click="$mdOpenMenu($event)">
+					<md-icon class="mdi grey mdi-dots-vertical"></md-icon>
+				</md-button>
+				<md-menu-content width="4">
+					<md-menu-item>
+						<md-button ng-click="toolbar.refresh()">
+							<md-icon class="mdi mdi-refresh grey"></md-icon> Refresh
+						</md-button>
+					</md-menu-item>
+					<md-menu-item hide-gt-sm>
+						<md-button ng-click="toggleSidenav('right')">
+							<md-icon class="mdi mdi-menu grey" aria-label="Toogle Sidenav"></md-icon>
+							<span>Menu</span>
+						</md-button>
+					</md-menu-item>
+					<div ng-if="toolbar.options.length">
+						<md-divider></md-divider>
+						<md-subheader class="md-no-sticky">{{toolbar.subheader}}</md-subheader>
+						<md-menu-item ng-repeat="option in toolbar.options">
+							<md-button ng-click="option.action()">
+								<md-icon class="mdi {{option.icon}} grey"></md-icon> {{option.label}}
+							</md-button>
+						</md-menu-item>
+					</div>
+				</md-menu-content>
+			</md-menu>
+			<span flex="5"></span>
+		</div>
 	</div>
 </div>

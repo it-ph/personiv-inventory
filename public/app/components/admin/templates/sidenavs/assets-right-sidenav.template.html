@@ -1,0 +1,28 @@
+<md-divider></md-divider>
+<md-toolbar class="white-toolbar md-whiteframe-1dp">
+	<div class="md-toolbar-tools">
+		<h3 class="primary-text">{{toolbar.childState}}</h3>
+	</div>
+</md-toolbar>
+<div class="hide-overflow" layout="column">
+	<md-content>
+		<div class="fade-transition" ng-if="asset.show" flex infinite-scroll='asset.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="asset.busy" infinite-scroll-parent>
+			<md-list flex layout="column">
+				<md-list-item class="md-2-line" ng-repeat="asset in asset.paginated" ng-click="showAssetDetails(asset.id)">
+					<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+						<span class="white-text">{{asset.first_letter}}</span>
+					</h2>
+					<div class="md-list-item-text" layout="column" flex>
+						<h3>{{asset.brand}}</h3>
+						<h4>{{asset.model}}</h4>
+					</div>
+					<md-divider></md-divider>
+				</md-list-item>
+			</md-list>
+			<!-- Loading for paginate -->
+			<div layout="column" layout-align="center center" flex ng-if="asset.busy">
+				<md-progress-circular md-mode="indeterminate" class="md-primary" md-diameter="96" ></md-progress-circular>
+			</div>
+		</div>
+	</md-content>
+</div>

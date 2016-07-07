@@ -22,7 +22,6 @@ adminModule
 					},
 					'toolbar@main': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controller: 'mainToolbarController',
 					},
 					'content-container@main': {
 						templateUrl: '/app/components/admin/views/content-container.view.html',
@@ -30,12 +29,10 @@ adminModule
 					},
 					'content@main': {
 						templateUrl: '/app/components/admin/templates/content/main.content.template.html',
-						// controller: 'mainContentController',	
 					},
 					'right-sidenav@main': {
-						templateUrl : '/app/components/admin/templates/sidenavs/logs-right.sidenav.html',
-						controller: 'mainRightSidenavController',
-					},
+						templateUrl: '/app/components/admin/templates/sidenavs/dashboard-right-sidenav.template.html',
+					}
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
 					var leftSidenav = $('[md-component-id="left"]');
@@ -45,95 +42,19 @@ adminModule
 					$mdSidenav('left').toggle();
 				}],
 			})
-			/**
-			 * Dashboard Routes
-			 * 
-			*/
 
-			/**
-			 * Displays charts of inventory
-			 * 
-			*/
-			.state('main.analysis', {
-				url: 'dashboard/analysis',
-				views: {
-					'toolbar': {
-						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controller: 'analysisToolbarController',
-					},
-					'content': {
-						templateUrl: '/app/components/admin/templates/content/analysis.content.template.html',
-						controller: 'analysisContentController',
-					},
-					'right-sidenav': {
-						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
-						controller: 'analysisRightSidenavController',
-					},
-				},
-				onExit: ['$mdSidenav', function($mdSidenav){
-					var leftSidenav = $('[md-component-id="left"]');
-					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
-						return;
-					}
-					$mdSidenav('left').toggle();
-				}],
-			})
-			/**
-			 * Displays floor plan of the building
-			 * 
-			*/
-			.state('main.floor-plan', {
-				url: 'dashboard/floor-plan/{departmentID}',
-				params: {'departmentID': null},
+			.state('main.settings', {
+				url: 'settings',
 				views: {
 					'content-container': {
 						templateUrl: '/app/components/admin/views/content-container.view.html',
-						controller: 'floorPlanContentContainerController',
+						controller: 'settingsContentContainerController',
 					},
-					'toolbar@main.floor-plan': {
+					'toolbar@main.settings': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controller: 'floorPlanToolbarController',
 					},
-					'content@main.floor-plan': {
-						templateUrl: '/app/components/admin/templates/content/floor-plan.content.template.html',
-						// controller: 'floorPlanContentController',
-					},
-					'right-sidenav@main.floor-plan': {
-						templateUrl : '/app/components/admin/templates/sidenavs/main-right.sidenav.html',
-						controller: 'floorPlanRightSidenavController',
-					},
-				},
-				onExit: ['$mdSidenav', function($mdSidenav){
-					var leftSidenav = $('[md-component-id="left"]');
-					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
-						return;
-					}
-					$mdSidenav('left').toggle();
-				}],
-			})
-			/**
-			 * Display Work Station
-			 *
-			*/
-			.state('main.work-station', {
-				url: 'dashboard/floor-plan/{departmentID}/work-station/{workStationID}',
-				params: {'departmentID':null, 'workStationID': null},
-				views: {
-					'content-container': {
-						templateUrl: '/app/components/admin/views/content-container.view.html',
-						controller: 'workStationContentContainerController',
-					},
-					'toolbar@main.work-station': {
-						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controller: 'workStationToolbarController',
-					},
-					'content@main.work-station': {
-						templateUrl: '/app/components/admin/templates/content/work-station.content.template.html',
-						// controller: 'workStationContentController',
-					},
-					'right-sidenav@main.work-station': {
-						templateUrl : '/app/components/admin/templates/sidenavs/work-station-right.sidenav.html',
-						controller: 'workStationRightSidenavController',
+					'content@main.settings': {
+						templateUrl: '/app/components/admin/templates/content/settings.content.template.html',
 					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
@@ -149,30 +70,179 @@ adminModule
 			 * Assets Routes
 			 *
 			*/
-			.state('main.assets', {
-				url: 'assets/{assetID}',
-				params: {'assetID':null},
+			.state('main.asset', {
+				url: 'asset/{assetTypeID}',
+				params: {'assetTypeID':null},
 				views: {
 					'content-container': {
 						templateUrl: '/app/components/admin/views/content-container.view.html',
-						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
-							var index = $stateParams.assetID - 1;
-							return assetService.contentContainerController(index);
-						}]
+						controller: 'assetTypeContentController'
 					},
-					'toolbar@main.assets': {
+					'toolbar@main.asset': {
 						templateUrl: '/app/components/admin/templates/toolbar.template.html',
-						controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
-							var index = $stateParams.assetID - 1;
-							return assetService.toolbarController(index);
-						}]
 					},
-					'content@main.assets': {
+					'content@main.asset': {
 						templateUrl: '/app/components/admin/templates/content/assets.content.template.html',
-						// controllerProvider: ['$stateParams', 'assetService', function($stateParams, assetService){
-						// 	var index = $stateParams.assetID - 1;
-						// 	return assetService.contentController(index);
-						// }]
+					},
+					'right-sidenav@main.asset': {
+						templateUrl: '/app/components/admin/templates/sidenavs/assets-right-sidenav.template.html',
+					},
+					'subheader@main.asset':{
+						templateUrl: '/app/components/admin/templates/subheader/asset-subheader.template.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+			/**
+			 * Displays floor plan of the building
+			 * 
+			*/
+			.state('main.work-stations', {
+				url: 'work-stations',
+				params: {'departmentID': null},
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'workStationsContentContainerController',
+					},
+					'toolbar@main.work-stations': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.work-stations': {
+						templateUrl: '/app/components/admin/templates/content/work-stations.content.template.html',
+					},
+					'right-sidenav@main.work-stations': {
+						templateUrl : '/app/components/admin/templates/sidenavs/work-stations.sidenav.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+			/**
+			 * Display Work Station
+			 *
+			*/
+			.state('main.work-station', {
+				url: 'work-station/{workStationID}',
+				params: {'workStationID': null},
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'workStationContentContainerController',
+					},
+					'toolbar@main.work-station': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.work-station': {
+						templateUrl: '/app/components/admin/templates/content/work-station.content.template.html',
+					},
+					'right-sidenav@main.work-station': {
+						templateUrl : '/app/components/admin/templates/sidenavs/work-station.sidenav.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+
+			.state('main.purchase-orders', {
+				url: 'purchase-orders',
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'purchaseOrdersContentContainerController',
+					},
+					'toolbar@main.purchase-orders': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.purchase-orders': {
+						templateUrl: '/app/components/admin/templates/content/purchase-orders.content.template.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+
+			.state('main.create-purchase-order', {
+				url: 'purchase-order/create',
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'createPurchaseOrderContentContainerController',
+					},
+					'toolbar@main.create-purchase-order': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.create-purchase-order': {
+						templateUrl: '/app/components/admin/templates/content/create-purchase-order-content.template.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+
+			.state('main.edit-purchase-order', {
+				url: 'purchase-order/{purchaseOrderID}/edit',
+				params: {'purchaseOrderID': null},
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'editPurchaseOrderContentContainerController',
+					},
+					'toolbar@main.edit-purchase-order': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.edit-purchase-order': {
+						templateUrl: '/app/components/admin/templates/content/create-purchase-order-content.template.html',
+					},
+				},
+				onExit: ['$mdSidenav', function($mdSidenav){
+					var leftSidenav = $('[md-component-id="left"]');
+					if(leftSidenav.hasClass('md-closed') && leftSidenav.hasClass('md-locked-open')){
+						return;
+					}
+					$mdSidenav('left').toggle();
+				}],
+			})
+
+			.state('main.asset-tag-purchase-order', {
+				url: 'purchase-order/{purchaseOrderID}/asset-tag',
+				params: {'purchaseOrderID': null},
+				views: {
+					'content-container': {
+						templateUrl: '/app/components/admin/views/content-container.view.html',
+						controller: 'assetTagPurchaseOrderContentContainerController',
+					},
+					'toolbar@main.asset-tag-purchase-order': {
+						templateUrl: '/app/components/admin/templates/toolbar.template.html',
+					},
+					'content@main.asset-tag-purchase-order': {
+						templateUrl: '/app/components/admin/templates/content/asset-tag-purchase-order-content.template.html',
 					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){

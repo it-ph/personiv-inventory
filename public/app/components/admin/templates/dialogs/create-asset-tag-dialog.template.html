@@ -1,0 +1,108 @@
+<md-dialog layout="column" flex flex-gt-sm="50" flex-gt-lg="40"  aria-label="Program" ng-cloak>
+	<form name="assetTagForm" novalidate>
+		<md-toolbar class="white-toolbar">
+			<div class="md-toolbar-tools">
+				<h2 class="primary-text">New Asset Tag</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close mdi-24px grey" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content layout="column" flex layout-padding layout-wrap>
+			<div layout="column">
+				<md-input-container>
+					<label>Asset</label>
+					<md-select name="Asset" ng-model="assetTypeIndex" ng-change="getUniqueBrands(assetTypeIndex)">
+						<md-option value="{{$index}}" ng-repeat="assetType in assetTypes">
+							{{ assetType.type }}
+						</md-option>
+					</md-select>
+				</md-input-container>
+				<div layout="row" flex>
+					<!-- Brand -->
+					<md-input-container flex>
+						<label>Brand</label>
+						<md-select ng-disabled="!assetTypeIndex" required name="Brand" ng-model="brand" ng-change="assetTag.asset_id = null">
+							<md-option value="{{asset.brand}}" ng-repeat="asset in brands | orderBy:'brand'">
+								{{ asset.brand }}
+							</md-option>
+						</md-select>
+						<div ng-messages="assetTagForm.Brand.$error" ng-if="assetTagForm.Brand.$touched">
+							<div ng-message="required">Brand is required.</div>
+						</div>
+					</md-input-container>
+					
+					<!-- Model -->
+					<md-input-container flex>
+						<label>Model</label>
+						<md-select ng-disabled="!brand" required name="Model" ng-model="assetTag.asset_id" ng-change="getAssetDetails(assetTag.asset_id)">
+							<md-option value="{{asset.id}}" ng-repeat="asset in assetTypes[assetTypeIndex].assets | filter:brand | orderBy:'model'">
+								{{ asset.model }}
+							</md-option>
+						</md-select>
+						<div ng-messages="assetTagForm.Model.$error" ng-if="assetTagForm.Model.$touched">
+							<div ng-message="required">Model is required.</div>
+						</div>
+					</md-input-container>
+				</div>
+				<!-- Specs -->
+				<md-list class="fade-transition" ng-if="details.length">
+					<md-subheader class="md-no-sticky">Specs</md-subheader>
+					<md-list-item ng-repeat="detail in details">
+					    <p>{{detail.label}}: {{detail.value}}</p>
+				  	</md-list-item>
+				</md-list>
+				<!-- Computer Name -->
+				<md-input-container ng-if="assetTypes[assetTypeIndex].type == 'Desktop' || assetTypes[assetTypeIndex].type == 'Laptop' || assetTypes[assetTypeIndex].type == 'Mac' || assetTypes[assetTypeIndex].type == 'Mac Mini'">
+					<label>Computer Name</label>
+					<input type="text" name="ComputerName" ng-model="assetTag.computer_name">
+				</md-input-container>
+				<div layout="row">				
+					<!-- Serial -->
+					<md-input-container flex>
+						<label>Serial</label>
+						<input type="text" name="Serial" ng-model="assetTag.serial">
+					</md-input-container>
+					<!-- Sequence -->
+					<md-input-container flex>
+						<label>Sequence Number</label>
+						<input type="number" name="Sequence" min="0" max="99999" ng-model="assetTag.sequence" ng-pattern="/^[0-9]+$/" required ng-blur="checkSequence()" ng-disabled="!assetTag.asset_id">
+						<div ng-messages="assetTagForm.Sequence.$error" ng-if="assetTagForm.Sequence.$touched">
+							<div ng-message="required">Sequence Number is required</div>
+							<div ng-message="pattern">Numeric values only</div>
+							<div ng-message="min">Minimum is zero.</div>
+							<div ng-message="max">Maximum is 99,999.</div>
+						</div>
+						<div class="pattern" ng-if="duplicate">Sequence number is not available.</div>
+						<div class="hint" ng-if="!duplicate && assetTagForm.Model.$touched">Last property code is {{assetTag.lastPropertyCode}}.</div>
+					</md-input-container>
+				</div>
+
+				<md-switch ng-model="hasWarranty" class="md-primary">Warranty</md-switch>
+				<!-- Warranty End -->
+				<div layout-padding ng-if="hasWarranty">
+					<h4>End of warranty <span class="md-caption secondary-text">(Minimum date is today.)</span></h4>
+					<md-datepicker name="Warranty" ng-model="assetTag.warranty_end" md-placeholder="Warranty End" md-min-date="minDate" required></md-datepicker>
+			        <div class="validation-messages" ng-messages="assetTagForm.Warranty.$error" ng-if="assetTagForm.Warranty.$touched">
+			        	<div ng-message="valid">The entered value is not a date!</div>
+			        	<div ng-message="required">Toogle the warranty switch if asset has no more warranty.</div>
+			        	<div ng-message="mindate">Minimum date is today</div>
+			        </div>
+				</div>
+				<!-- Remarks -->
+				<md-input-container flex>
+					<label>Remarks</label>
+					<textarea name="assetTagForm.remarks" ng-model="assetTag.remarks"></textarea>
+					<div class="hint">Note about the asset.</div>
+				</md-input-container>
+
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-button md-primary" aria-label="Submit" ng-click="submit()">
+			Submit
+		</md-button>
+	</div>
+</md-dialog>

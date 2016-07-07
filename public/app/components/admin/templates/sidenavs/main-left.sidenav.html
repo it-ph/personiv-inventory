@@ -1,64 +1,64 @@
+<md-divider></md-divider>
+<div layout="column" layout-align="center center">
+	<h2 class="md-headline">{{ user.first_name }}</h2>
+	<h3 class="md-subhead">{{ user.email }}</h3>
+</div>
+<md-divider></md-divider>
 <ul>
-	<li flex class="blur-white" layout="row" layout-align="start center">
-		<span flex="5"></span>
-		<h2 class="md-title white-text">Inventory System</h2>
+	<li layout="row" flex ng-repeat="page in menu.static">
+		<md-button class="static" flex ui-sref="{{page.state}}">
+			<div layout="row" flex>
+				<md-icon class="mdi {{page.icon}} grey"></md-icon>
+				<span flex="5"></span>
+				<span flex class="left-text secondary-text">{{page.label}}</span>
+			</div>
+		</md-button>
 	</li>
+	<md-divider></md-divider>
 	<li ng-repeat="section in menu.section" class="section" flex>
 		<div layout="row" class="section-button-container">
 			<md-button flex ng-click="setActive($index)" aria-label="section-{{ $index }}">
 				<div layout="row" flex>
-					<span class="white-text">{{ section.name }}</span>
+					<md-icon class="mdi {{section.icon}} grey"></md-icon>
+					<span flex="5"></span>
+					<span class="secondary-text">{{ section.name }}</span>
 					<span flex></span>
-					<md-icon class="mdi mdi-chevron-down rotate-icon"></md-icon>
+					<md-icon class="mdi mdi-chevron-down rotate-icon grey"></md-icon>
 				</div>
 			</md-button>
 		</div>
 		<!-- Child -->
 		<ul class="pages">
-			<!-- Dashboard -->
-			<li layout="row" ng-repeat="page in menu.pages[$index]" ui-sref-active="active" ng-if="section.name == 'Dashboard'">
-				<md-button flex ng-if="page.name != 'Floor Plan'" ui-sref="{{ page.state }}">
-					<div layout="row" flex>
-						<span flex="5"></span>
-						<span class="white-text">{{ page.name }}</span>
-						<span flex></span>
-					</div>
-				</md-button>
-				<md-button flex ng-if="page.name == 'Floor Plan'" ui-sref="main.floor-plan()">
-					<div layout="row" flex>
-						<span flex="5"></span>
-						<span class="white-text">{{ page.name }}</span>
-						<span flex></span>
-					</div>
-				</md-button>
-				
-			</li>
 			<!-- Assets -->
-			<li layout="row" ui-sref-active="active" ng-if="section.name == 'Assets'" ng-repeat="page in menu.pages[$index]">
-				<md-button flex ui-sref="main.assets({'assetID': {{ page.id }} })">
+			<li layout="row" ng-if="section.name == 'Assets'" ng-repeat="page in menu.pages[$index] | orderBy: 'type'">
+				<md-button ui-sref-active="active" flex ui-sref="main.asset({'assetTypeID': {{ page.id }} })">
 					<div layout="row" flex>
 						<span flex="5"></span>
-						<span class="white-text">{{ page.name }}</span>
-						<span flex></span>
-					</div>
-				</md-button>
-			</li>
-			<!-- Departments -->
-			<li layout="row" ui-sref-active="active" ng-if="section.name == 'Departments'" ng-repeat="page in menu.pages[$index]">
-				<md-button flex ui-sref="main.department({'departmentID': {{ page.id }} })">
-					<div layout="row" flex>
-						<span flex="5"></span>
-						<span class="white-text">{{ page.name }}</span>
+						<span class="secondary-text">{{ page.type }}</span>
 						<span flex></span>
 					</div>
 				</md-button>
 			</li>
 		</ul>
 	</li>
+	<md-divider></md-divider>
+	<md-subheader class="md-no-sticky">Account Settings</md-subheader>
+	<li layout="row" flex>
+		<md-button flex ng-click="changePassword()">
+			<div layout="row" flex>
+				<md-icon class="mdi mdi-key-change grey"></md-icon>
+				<span flex="5"></span>
+				<span class="secondary-text">Change Password</span>
+				<span flex></span>
+			</div>
+		</md-button>
+	</li>
 	<li layout="row" flex>
 		<md-button flex href="/auth/logout">
 			<div layout="row" flex>
-				<span class="white-text">Logout</span>
+				<md-icon class="mdi mdi-logout grey"></md-icon>
+				<span flex="5"></span>
+				<span class="secondary-text">Logout</span>
 				<span flex></span>
 			</div>
 		</md-button>

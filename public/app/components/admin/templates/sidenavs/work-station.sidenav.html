@@ -1,0 +1,25 @@
+<md-divider></md-divider>
+<md-toolbar class="white-toolbar">
+	<div class="md-toolbar-tools" layout="row" layout-align="space-between center">
+		<h2 class="primary-text" flex>More Details</h2>
+		<md-button class="md-icon-button" ng-click="editDepartmentWorkStation()">
+			<md-icon class="mdi mdi-pencil grey"></md-icon>
+			<md-tooltip>Edit</md-tooltip>
+		</md-button>
+	</div>
+</md-toolbar>
+<md-content layout="column" flex>
+	<md-divider></md-divider>
+	<md-list layout="column" layout-padding>
+		<md-list-item class="md-2-line">
+			<div class="md-list-item-text">
+				<h3>{{workStation.ip_address}}</h3>
+				<h4>IP Address</h4>
+			</div>
+		</md-list-item>
+		<md-subheader class="md-no-sticky md-primary">Departments</md-subheader>
+		<md-list-item class="fade-transition" flex ng-repeat="department in workStation.departments | filter:toolbar.searchText | orderBy:'name'">
+			<p class="md-subhead" flex>{{department.name}}</p>
+		</md-list-item>
+	</md-list>
+</md-content>

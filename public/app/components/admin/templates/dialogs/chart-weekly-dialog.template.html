@@ -1,0 +1,16 @@
+<md-dialog layout="column" flex ng-cloak>
+	<md-toolbar class="white-toolbar">
+		<div class="md-toolbar-tools">
+			<h2 class="primary-text">{{chart.title}}</h2>
+			<span flex></span>
+			<md-button class="md-icon-button" ng-click="cancel()">
+				<md-icon class="mdi mdi-close mdi-24px grey" aria-label="cancel"></md-icon>
+			</md-button>
+		</div>
+	</md-toolbar>
+	<md-dialog-content layout="column" flex layout-padding layout-wrap>
+		<div layout="column">
+			<canvas class="chart chart-line" chart-data="chart.data" chart-labels="chart.labels" chart-series="chart.series"></canvas>
+		</div>
+	</md-dialog-content>
+</md-dialog>

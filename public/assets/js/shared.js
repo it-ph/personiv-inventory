@@ -4,20 +4,25 @@ var sharedModule = angular.module('sharedModule', [
 	'ngMaterial',
 	'ngMessages',
 	'infinite-scroll',
-	'mgcrea.ngStrap'
+	'mgcrea.ngStrap',
+	'chart.js',
+	'angularMoment'
 ]);
 sharedModule
 	.config(['$urlRouterProvider', '$stateProvider', '$mdThemingProvider', function($urlRouterProvider, $stateProvider, $mdThemingProvider){
 		/* Defaul Theme Blue - Light Blue */
 		$mdThemingProvider.theme('default')
 			.primaryPalette('blue')
-			.accentPalette('light-blue');
 		
 		/* Dark Theme - Blue */
 		$mdThemingProvider.theme('dark', 'default')
 	      	.primaryPalette('blue')
-			.accentPalette('light-blue')
 			.dark();
+
+		$mdThemingProvider.theme('dark-teal').backgroundPalette('teal').dark();
+		$mdThemingProvider.theme('dark-orange').backgroundPalette('orange').dark();
+		$mdThemingProvider.theme('dark-purple').backgroundPalette('deep-purple').dark();
+		$mdThemingProvider.theme('dark-blue').backgroundPalette('blue').dark();
 
 		$urlRouterProvider
 			.otherwise('/page-not-found')
@@ -36,19 +41,27 @@ sharedModule
 		};
 	}]);
 sharedModule
-	.service('Preloader', ['$mdDialog', function($mdDialog){
+	.service('Preloader', ['$mdDialog', '$mdToast', function($mdDialog, $mdToast){
 		var dataHolder = null;
+		var user = null;
+
 		return {
 			/* Starts the preloader */
-			preload: function(){
+			loading: function(){
 				return $mdDialog.show({
-					templateUrl: '/app/shared/templates/preloader.html',
+					templateUrl: '/app/shared/templates/loading.html',
+				    parent: angular.element(document.body),
+				});
+			},
+			saving: function(){
+				return $mdDialog.show({
+					templateUrl: '/app/shared/templates/saving.html',
 				    parent: angular.element(document.body),
 				});
 			},
 			/* Stops the preloader */
 			stop: function(data){
-				$mdDialog.hide(data);
+				return $mdDialog.hide(data);
 			},
 			/* Shows error message if AJAX failed */
 			error: function(){
@@ -62,6 +75,14 @@ sharedModule
 				        .ok('Got it!')
 				);
 			},
+			errorMessage: function(data){
+				return $mdDialog.show({
+				    controller: 'errorMessageController',
+				    templateUrl: '/app/shared/templates/dialogs/error-message.template.html',
+				    parent: angular.element(document.body),
+				    clickOutsideToClose:true,
+				});
+			},
 			/* Send temporary data for retrival */
 			set: function(data){
 				dataHolder = data;
@@ -69,7 +90,122 @@ sharedModule
 			/* Retrieves data */
 			get: function(){
 				return dataHolder;
-			}
+			},
+			/* Set User */
+			setUser: function(data){
+				user = data;
+			},
+			/* Get User */
+			getUser: function(data){
+				return user;
+			},
+			toastChangesSaved: function(){
+				return $mdToast.show(
+			    	$mdToast.simple()
+				        .textContent('Changes saved.')
+				        .position('bottom right')
+				        .hideDelay(3000)
+			    );
+			},
+			deleted: function(){
+				return $mdToast.show(
+			    	$mdToast.simple()
+				        .textContent('Deleted')
+				        .position('bottom right')
+				        .hideDelay(3000)
+			    );
+			},
+		};
+	}]);
+sharedModule
+	.factory('Activity', ['$http', function($http){
+		var urlBase = '/activity';
+
+		return {
+			index: function(){
+				return $http.get(urlBase);
+			},
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
+			},
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
+			paginate: function(page){
+				return $http.get(urlBase + '-paginate?page=' + page);
+			},
+		};
+	}]);
+sharedModule
+	.factory('AssetDetail', ['$http', function($http){
+		var urlBase = '/asset-detail';
+
+		return {
+			index: function(){
+				return $http.get(urlBase);
+			},
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
+			},
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
+		};
+	}]);
+sharedModule
+	.factory('AssetPurchaseOrder', ['$http', function($http){
+		var urlBase = '/asset-purchase-order';
+
+		return {
+			index: function(){
+				return $http.get(urlBase);
+			},
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
+			},
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
+		};
+	}]);
+sharedModule
+	.factory('AssetStatus', ['$http', function($http){
+		var urlBase = '/asset-status';
+
+		return {
+			index: function(){
+				return $http.get(urlBase);
+			},
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
+			},
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
 		};
 	}]);
 sharedModule
@@ -77,6 +213,15 @@ sharedModule
 		var urlBase = '/asset-tag';
 
 		return {
+			lastPropertyCode: function(data){
+				return $http.post(urlBase + '-last-property-code', data);
+			},
+			repair: function(id){
+				return $http.get(urlBase + '-repair/' + id);
+			},
+			paginate: function(assetTypeID, page){
+				return $http.get(urlBase + '-paginate/' + assetTypeID + '?page=' + page);
+			},
 			/**
 			 * Fetch all departments.
 			 * @return: Array of Objects
@@ -100,47 +245,6 @@ sharedModule
 			*/
 			store: function(data){
 				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			storeMultiple: function(data){
-				return $http.post(urlBase + '-multiple', data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-
-			/**
-			 * Search by component type
-			 *
-			*/
-			componentType: function(data){
-				return $http.post(urlBase + '-component-type', data);
-			},
-
-			/**
-			 * Search all components by work-station 
-			 *
-			*/
-			workStation: function(id){
-				return $http.get(urlBase + '-work-station/' + id);
-			},
-
-			/*
-			 * Show specific asset tag with join details on corresponding asset table
-			 *
-			*/
-			specific: function(id){
-				return $http.get(urlBase + '-specific/' + id);
 			},
 
 			/**
@@ -159,30 +263,6 @@ sharedModule
 				return $http.put(urlBase + '-transfer/' + assetID, data);
 			},
 
-			/*
-			 * Set asset tag status for repair
-			 *
-			*/
-			repair: function(id){
-				return $http.put(urlBase + '-repair/' + id);
-			},
-
-			/*
-			 * Set asset tag status for dispose
-			 *
-			*/
-			dispose: function(id){
-				return $http.put(urlBase + '-dispose/' + id);
-			},
-
-			/*
-			 * Set asset tag status for active
-			 *
-			*/
-			active: function(id){
-				return $http.put(urlBase + '-active/' + id);
-			},
-
 			/**
 			 * Delete the asset tag
 			 *
@@ -191,53 +271,8 @@ sharedModule
 				return $http.delete(urlBase + '/' + id);
 			},
 
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			activeUnit: function(page, data){
-				return $http.post(urlBase + '-active-unit?page=' + page, data);
-			},
-
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			repairUnit: function(page, data){
-				return $http.post(urlBase + '-repair-unit?page=' + page, data);
-			},
-
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			disposeUnit: function(page, data){
-				return $http.post(urlBase + '-dispose-unit?page=' + page, data);
-			},
-
-			/**
-			 * Pull out the components when pc is pulled out.
-			 * 
-			*/
-			repairComponents: function(id){
-				return $http.put(urlBase + '-repair-components/' + id);
-			},
-
-			/**
-			 * Pull out the components when pc is pulled out.
-			 * 
-			*/
-			disposeComponents: function(id){
-				return $http.put(urlBase + '-dispose-components/' + id);
-			},
-			activeComponents: function(id){
-				return $http.put(urlBase + '-active-components/' + id);
-			},
-			searchBarcode: function(data){
-				return $http.post(urlBase + '-search-barcode', data);
-			},
-			availableSwap: function(data){
-				return $http.post(urlBase + '-available-swap', data);
+			checkSwap: function(data){
+				return $http.post(urlBase + '-check-swap', data);
 			},	
 			swap: function(id, data){
 				return $http.put(urlBase + '-swap/' + id , data);
@@ -248,6 +283,96 @@ sharedModule
 			swapComponents: function(id, swapID){
 				return $http.put(urlBase + '-swap-components/' + id + '/target/' + swapID);
 			},
+			checkSequence: function(data){
+				return $http.post(urlBase + '-check-sequence', data);
+			},
+			search: function(data){
+				return $http.post(urlBase + '-search', data);
+			},
+			statuses: function(id){
+				return $http.get(urlBase + '-statuses/' + id);
+			},
+		};
+	}]);
+sharedModule
+	.factory('AssetType', ['$http', function($http){
+		var urlBase = '/asset-type';
+
+		return {
+			index: function(){
+				return $http.get(urlBase);
+			},
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
+			},
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
+		};
+	}]);
+sharedModule
+	.factory('Asset', ['$http', function($http){
+		var urlBase = '/asset';
+
+		return {
+			index: function(){
+				return $http.get(urlBase);
+			},
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
+			},
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
+			paginate: function(assetTypeID, page){
+				return $http.get(urlBase + '-paginate/' + assetTypeID + '?page=' + page);
+			},
+			checkDuplicate: function(data, id){
+				return $http.post(urlBase + '-check-duplicate/' + id, data);
+			},
+			brands: function(id){
+				return $http.get(urlBase + '-brands/' + id);
+			},
+			purchaseOrders: function(id){
+				return $http.get(urlBase + '-purchase-orders/' + id);
+			},
+		};
+	}]);
+sharedModule
+	.factory('DepartmentWorkStation', ['$http', function($http){
+		var urlBase = '/department-work-station';
+
+		return {
+			index: function(){
+				return $http.get(urlBase);
+			},
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
+			},
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
+			relation: function(departmentID, workstationID){
+				return $http.get(urlBase + '-relation/' + departmentID + '/work-station/' + workstationID);
+			},
 		};
 	}]);
 sharedModule
@@ -255,99 +380,20 @@ sharedModule
 		var urlBase = '/department';
 
 		return {
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
 			index: function(){
 				return $http.get(urlBase);
 			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Other departments
-			 * @return: Array of Objects
-			*/
-			others: function(id){
-				return $http.get(urlBase + '-others/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Desktop', ['$http', function($http){
-		var urlBase = '/desktop';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-			
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
 			store: function(data){
 				return $http.post(urlBase, data);
 			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
 			},
-
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
 			},
 		};
 	}]);
@@ -388,58 +434,6 @@ sharedModule
 			*/
 			update: function(id, data){
 				return $http.put(urlBase + '/' + id, data);
-			},
-		};
-	}])
-sharedModule
-	.factory('EmployeeTag', ['$http', function($http){
-		var urlBase = '/employee-tag';
-
-		return {
-			/**
-			 * Fetch all.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-			
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Fetch Work Station Tag by workstation_id
-			 * 
-			*/
-			workstation: function(id){
-				return $http.get(urlBase + '-workstation/' + id);
-			},
-
-			/**
-			 * Update single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			update: function(id, data){
-				return $http.put(urlBase + '/' + id, data);
-			},
-
-			employee: function(id){
-				return $http.get(urlBase + '-employee/' + id);
 			},
 		};
 	}])
@@ -513,1396 +507,58 @@ sharedModule
 		};
 	}])
 sharedModule
-	.factory('Firewall', ['$http', function($http){
-		var urlBase = '/firewall';
+	.factory('InventoryReport', ['$http', function($http){
+		var urlBase = '/inventory-report';
 
 		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
 			index: function(){
 				return $http.get(urlBase);
 			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
 			store: function(data){
 				return $http.post(urlBase, data);
 			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
 			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
+			dashboard: function(){
+				return $http.get(urlBase + '-dashboard');
+			},
+			chartWeekly: function(data){
+				return $http.post(urlBase + '-chart-weekly', data);
 			},
 		};
 	}]);
 sharedModule
-	.factory('HardDisk', ['$http', function($http){
-		var urlBase = '/hard-disk';
+	.factory('PurchaseOrder', ['$http', function($http){
+		var urlBase = '/purchase-order';
 
 		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
 			index: function(){
 				return $http.get(urlBase);
 			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
 			store: function(data){
 				return $http.post(urlBase, data);
 			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
 			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
 			},
-		};
-	}]);
-sharedModule
-	.factory('Headset', ['$http', function($http){
-		var urlBase = '/headset';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
 			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
 			paginate: function(page){
 				return $http.get(urlBase + '-paginate?page=' + page);
 			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Keyboard', ['$http', function($http){
-		var urlBase = '/keyboard';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Log', ['$http', function($http){
-		var urlBase = '/log';
-
-		return {
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Mac', ['$http', function($http){
-		var urlBase = '/mac';
-
-		return {
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase + '-other/' + id);
-			},
-
-			processor: function(data){
-				return $http.post(urlBase + '-processor', data);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Memory', ['$http', function($http){
-		var urlBase = '/memory';
-
-		return {
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Monitor', ['$http', function($http){
-		var urlBase = '/monitor';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Mouse', ['$http', function($http){
-		var urlBase = '/mouse';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('NetworkSwitch', ['$http', function($http){
-		var urlBase = '/network-switch';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('OtherComponent', ['$http', function($http){
-		var urlBase = '/other-component';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('PortableHardDisk', ['$http', function($http){
-		var urlBase = '/portable-hard-disk';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Printer', ['$http', function($http){
-		var urlBase = '/printer';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Projector', ['$http', function($http){
-		var urlBase = '/projector';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Router', ['$http', function($http){
-		var urlBase = '/router';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Scanner', ['$http', function($http){
-		var urlBase = '/scanner';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Software', ['$http', function($http){
-		var urlBase = '/software';
-
-		return {
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Speaker', ['$http', function($http){
-		var urlBase = '/speaker';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('Telephone', ['$http', function($http){
-		var urlBase = '/telephone';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-			
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('UPS', ['$http', function($http){
-		var urlBase = '/ups';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
 			},
 		};
 	}]);
@@ -1911,145 +567,77 @@ sharedModule
 		var urlBase = '/user';
 
 		return {
-			/**
-			 * Fetch the authenticated user info.
-			 *
-			 * @return: Object
-			 */
 			index: function(){
 				return $http.get(urlBase);
 			},
-		};
-	}]);
-sharedModule
-	.factory('VideoCard', ['$http', function($http){
-		var urlBase = '/video-card';
-
-		return {
-			/**
-		     * Fetch models with specific brand.
-		     *
-		     * @return Array of Objects
-		    */
-			model: function(data){
-				return $http.post(urlBase + '-model', data);
-			},
-			/**
-		     * Fetch distinct table columns
-		     *
-		     * @return Array of Objects
-		    */
-		    distinct: function(data){
-		    	return $http.post(urlBase + '-distinct', data);
-		    },
-		    
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			paginate: function(page){
-				return $http.get(urlBase + '-paginate?page=' + page);
-			},
-
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
-			},
-
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
 			store: function(data){
 				return $http.post(urlBase, data);
 			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-
-			/**
-			 * Search for other records in database except the given id
-			 *
-			*/
-			other: function(id){
-				return $http.get(urlBase +'-other/' + id);
-			},
-		};
-	}]);
-sharedModule
-	.factory('WorkStationTag', ['$http', function($http){
-		var urlBase = '/work-station-tag';
-
-		return {
-			/**
-			 * Fetch all.
-			 * @return: Array of Objects
-			*/
-			index: function(){
-				return $http.get(urlBase);
-			},
-
-			/**
-			 * Fetch specific.
-			 * @return: Object
-			*/
 			show: function(id){
-				return $http.get(urlBase +  '/' + id);
+				return $http.get(urlBase + '/' + id);
 			},
-			
-			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			store: function(data){
-				return $http.post(urlBase, data);
-			},
-
-			/**
-			 * Fetch Work Station Tag by workstation_id
-			 * 
-			*/
-			workstation: function(id){
-				return $http.get(urlBase + '-workstation/' + id);
-			},
-
-			/**
-			 * Update single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
 			update: function(id, data){
 				return $http.put(urlBase + '/' + id, data);
 			},
-
-			searchBarcode: function(data){
-				return $http.post(urlBase + '-search-barcode', data);
-			}
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
+			checkPassword: function(data){
+				return $http.post(urlBase + '-check-password', data);
+			},
+			changePassword: function(data){
+				return $http.post(urlBase + '-change-password', data);
+			},
+			others: function(){
+				return $http.get(urlBase + '-others');
+			},
+			resetPassword: function(id){
+				return $http.get(urlBase + '-reset-password/' + id);
+			},
 		};
-	}])
+	}]);
+sharedModule
+	.factory('Vendor', ['$http', function($http){
+		var urlBase = '/vendor';
+
+		return {
+			index: function(){
+				return $http.get(urlBase);
+			},
+			store: function(data){
+				return $http.post(urlBase, data);
+			},
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
+			},
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
+			},
+			distinct: function(data){
+				return $http.post(urlBase + '-distinct', data);
+			},
+			contactPersons: function(id){
+				return $http.get(urlBase + '-contact-persons/' + id);
+			},
+			contactNumbers: function(id){
+				return $http.get(urlBase + '-contact-numbers/' + id);
+			},
+		};
+	}]);
 sharedModule
 	.factory('WorkStation', ['$http', function($http){
 		var urlBase = '/work-station';
 
 		return {
+			others: function(id){
+				return $http.get(urlBase + '-others/' + id);
+			},
+			dashboard: function(){
+				return $http.get(urlBase + '-dashboard');
+			},
 			/**
 			 * Search for vacant work stations
 			 * @return : Array
@@ -2096,6 +684,10 @@ sharedModule
 				return $http.post(urlBase, data);
 			},
 
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+
 			/**
 			 * Search database tables for data
 			 * @return Array
@@ -2133,7 +725,10 @@ sharedModule
 
 			availableTransfer: function(data, id){
 				return $http.post(urlBase + '-available-transfer/' + id, data);
-			}
+			},
+			checkIP: function(id, data){
+				return $http.post(urlBase + '-check-ip/' + id, data);
+			},
 		};
 	}])
 //# sourceMappingURL=shared.js.map

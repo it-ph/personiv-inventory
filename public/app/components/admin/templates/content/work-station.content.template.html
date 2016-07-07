@@ -1,55 +1,79 @@
-<md-content layout="column" layout-padding layout-margin>
-	<div ng-if="show" class="fade-transition">
-		<md-card flex ng-if="!assets.length">
-			<md-card-content>
-				<p>No records yet.</p>
-			</md-card-content>
-		</md-card>
-		<md-card flex class="fade-transition" ng-repeat="asset in assets | filter:workStation.userInput">
-			<md-card-content>
-				<md-list>
-					<md-subheader class="md-no-sticky md-primary" flex>{{ asset.component_type }}</md-subheader>
-					<md-list-item class="md-3-line" layout="row">
-						<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
-							<span class="weight-200 white-text">{{ asset.first_letter }}</span>
-						</h2>
-						<div class="md-list-item-text" layout="column">
-							<h3>{{ asset.brand }} {{ asset.maker }}</h3>
-							<h4>{{ asset.model }} <span ng-if="asset.processor && asset.component_type == 'Desktop'">/</span> {{ asset.type }} {{ asset.processor }} <span ng-if="asset.size">/</span> {{ asset.size }} <span ng-if="asset.speed">/</span> {{ asset.speed }} {{ asset.name }} {{ asset.version }}</h4>
-							<p>
-								<span>Serial: {{ asset.serial }}</span><span ng-if="!asset.serial">N/A</span> <br>
-								<span>Property Code: {{ asset.property_code }}</span>
-							</p>
-						</div>
-						<p flex class="text-right secondary-text md-caption" layout="column">
-							<span>{{ asset.date_purchase }}</span>
-							<span>{{ asset.supplier }}</span>
-						</p>
-					</md-list-item>
-				</md-list>
-				<md-card-actions layout="row" layout-align="end center">
-					<md-button class="md-icon-button" ng-click="editAsset(asset.asset_tags_id)">
-						<md-icon class="mdi grey mdi-pencil"></md-icon>
-						<md-tooltip>Edit</md-tooltip>
-					</md-button>
-					<md-button class="md-icon-button">
-						<md-icon class="mdi grey mdi-transfer" ng-click="transferAsset(asset.asset_tags_id)"></md-icon>
-						<md-tooltip>Transfer</md-tooltip>
-					</md-button>
-					<md-button class="md-icon-button">
-						<md-icon class="mdi grey mdi-swap-horizontal" ng-click="swapAsset(asset.asset_tags_id)"></md-icon>
-						<md-tooltip>Swap</md-tooltip>
-					</md-button>
-					<md-button class="md-icon-button">
-						<md-icon class="mdi grey mdi-outbox" ng-click="pullOutAsset(asset.asset_tags_id)"></md-icon>
-						<md-tooltip>Pull Out</md-tooltip>
-					</md-button>
-					<md-button class="md-icon-button" ng-if="user.email == 'marco.paco@personiv.com'">
-						<md-icon class="mdi grey mdi-delete" ng-click="removeAsset(asset.asset_tags_id)"></md-icon>
-						<md-tooltip>Delete</md-tooltip>
-					</md-button>
-				</md-card-actions>
-			</md-card-content>
-		</md-card>
+<md-content>
+	<div layout-padding layout="row" layout-align="center start">
+		<div flex flex-gt-lg="80" layout-margin>
+		    <md-card flex ng-repeat="asset_tag in workStation.asset_tags | filter: toolbar.searchText | orderBy:'prefix'" ng-if="!asset_tag.status.length">
+				<md-card-header>
+			      	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
+			        	<span class="md-headline white-text">{{ asset_tag.first_letter }}</span>
+			      	</md-card-avatar>
+			      	<md-card-header-text>
+			            <span class="md-title">{{ asset_tag.asset.brand }}</span>
+			            <span class="md-subhead">{{ asset_tag.asset.model }}</span>
+			      	</md-card-header-text>
+			    </md-card-header>
+			    <div class="card-image-bg" flex>
+			    	<div layout="row" layout-align="center center" class="shadow-bg">
+			        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>{{ asset_tag.prefix }} - {{ asset_tag.sequence }}</h2>
+			        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>{{ asset_tag.prefix }} - {{ asset_tag.sequence }}</h2>
+			        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>{{ asset_tag.prefix }} - {{ asset_tag.sequence }}</h2>
+			    	</div>
+			    </div>
+			    <md-card-title>
+			      	<md-card-title-text>
+			        	<span class="md-headline">{{ asset_tag.computer_name}}</span>
+			      	</md-card-title-text>
+			    </md-card-title>
+			    <md-card-content>
+			    	<p>Serial Number: {{ asset_tag.serial_number }} <span ng-if="!asset_tag.serial_number">N/A</span></p>
+			    	<p ng-if="asset_tag.warranty_end">End of Warranty: {{ asset_tag.warranty_end | date: 'EEEE, MMMM d, yyyy'}}</p>
+			    	<p ng-if="asset_tag.remarks">Remarks : {{ asset_tag.remarks }}</p>
+			    </md-card-content>
+			    <md-divider></md-divider>
+				<md-card-actions layout="row" layout-align="start center">
+			    	<md-card-icon-actions>
+			            <md-button class="md-icon-button" aria-label="Edit" ng-click="editAssetTag(asset_tag.id)">
+			              	<md-icon class="mdi mdi-pencil grey"></md-icon>
+							<md-tooltip>Edit</md-tooltip>
+			            </md-button>
+			            <md-button class="md-icon-button" aria-label="Transfer" ng-click="transferAssetTag(asset_tag.id)">
+			              	<md-icon class="mdi grey mdi-transfer"></md-icon>
+							<md-tooltip>Transfer</md-tooltip>
+			            </md-button>
+			            <md-button class="md-icon-button" aria-label="Swap" ng-click="swapAssetTag(asset_tag.id)">
+							<md-icon class="mdi grey mdi-swap-horizontal"></md-icon>
+							<md-tooltip>Swap</md-tooltip>
+						</md-button>
+						<md-button class="md-icon-button" aria-label="Pull Out" ng-click="pullOutAssetTag(asset_tag.id)">
+							<md-icon class="mdi grey mdi-inbox""></md-icon>
+							<md-tooltip>Pull Out</md-tooltip>
+						</md-button>
+						<md-button class="md-icon-button" ng-if="user.role == 'super-admin'" ng-click="deleteAssetTag(asset_tag.id)">
+							<md-icon class="mdi grey mdi-delete"></md-icon>
+							<md-tooltip>Delete</md-tooltip>
+						</md-button>
+			      	</md-card-icon-actions>
+			        <md-button ng-if="asset_tag.asset.details.length" ng-click="showDetails(asset_tag.asset.id)">Details</md-button>
+			        <md-button ng-if="asset_tag.purchase_order" ng-click="purchaseOrder(asset_tag.purchase_order_id)">Purchase Order</md-button>
+			    </md-card-actions>
+			</md-card>
+		</div>
 	</div>
+
+	<!-- If asset tag is empty -->
+	<div layout="column" layout-align="center center" flex ng-if="!workStation.asset_tags.length && show">
+		<h3 class="md-subhead  ">No asset tags to display</h3>
+		<md-button class="md-fab md-primary" aria-label="Create Work Station" ng-click="createAssetTag()">
+			<md-icon class="mdi mdi-plus"></md-icon>
+		</md-button>
+		<p class="secondary-text">Tap to create</p>
+	</div>
+
+	<!-- If asset tag is one and it is pulled out -->
+	<div layout="column" layout-align="center center" flex ng-if="workStation.asset_tags.length == 1 && workStation.asset_tags[0].status.length">
+		<h3 class="md-subhead  ">No asset tags to display</h3>
+		<md-button class="md-fab md-primary" aria-label="Create Work Station" ng-click="createAssetTag()">
+			<md-icon class="mdi mdi-plus"></md-icon>
+		</md-button>
+		<p class="secondary-text">Tap to create</p>
+	</div>	
 </md-content>

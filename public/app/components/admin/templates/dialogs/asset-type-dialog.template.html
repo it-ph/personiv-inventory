@@ -1,0 +1,41 @@
+<md-dialog layout="column" flex flex-gt-sm="50" flex-gt-lg="40"  aria-label="Program" ng-cloak>
+	<form name="assetTypeForm" novalidate>
+		<md-toolbar class="white-toolbar">
+			<div class="md-toolbar-tools">
+				<h2 class="primary-text">{{ label }}</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close mdi-24px grey" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content layout="column" flex layout-padding layout-wrap>
+			<div layout="column">
+				<!-- Name -->
+				<md-input-container>
+					<label>Name</label>
+					<input type="text" name="Type" required ng-model="assetType.type" ng-pattern="/^[a-zA-Z- ]+$/">
+					<div ng-messages="assetTypeForm.Type.$error" ng-if="assetTypeForm.Type.$touched">
+						<div ng-message="required">Name is required.</div>
+						<div ng-message="pattern">Characters only.</div>
+					</div>
+				</md-input-container>
+				
+				<!-- Prefix -->
+				<md-input-container>
+					<label>Prefix</label>
+					<input type="text" name="Prefix" required ng-model="assetType.prefix" ng-pattern="/^[a-zA-Z]+$/">
+					<div ng-messages="assetTypeForm.Prefix.$error" ng-if="assetTypeForm.Prefix.$touched">
+						<div ng-message="required">Prefix is required.</div>
+						<div ng-message="pattern">Characters only.</div>
+					</div>
+				</md-input-container>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-button md-primary" aria-label="Submit" ng-click="submit()">
+			Submit
+		</md-button>
+	</div>
+</md-dialog>

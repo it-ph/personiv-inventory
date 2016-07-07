@@ -3,13 +3,16 @@ sharedModule
 		/* Defaul Theme Blue - Light Blue */
 		$mdThemingProvider.theme('default')
 			.primaryPalette('blue')
-			.accentPalette('light-blue');
 		
 		/* Dark Theme - Blue */
 		$mdThemingProvider.theme('dark', 'default')
 	      	.primaryPalette('blue')
-			.accentPalette('light-blue')
 			.dark();
+
+		$mdThemingProvider.theme('dark-teal').backgroundPalette('teal').dark();
+		$mdThemingProvider.theme('dark-orange').backgroundPalette('orange').dark();
+		$mdThemingProvider.theme('dark-purple').backgroundPalette('deep-purple').dark();
+		$mdThemingProvider.theme('dark-blue').backgroundPalette('blue').dark();
 
 		$urlRouterProvider
 			.otherwise('/page-not-found')

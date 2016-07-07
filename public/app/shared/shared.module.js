@@ -4,5 +4,7 @@ var sharedModule = angular.module('sharedModule', [
 	'ngMaterial',
 	'ngMessages',
 	'infinite-scroll',
-	'mgcrea.ngStrap'
+	'mgcrea.ngStrap',
+	'chart.js',
+	'angularMoment'
 ]);

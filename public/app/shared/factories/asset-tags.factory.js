@@ -3,6 +3,15 @@ sharedModule
 		var urlBase = '/asset-tag';
 
 		return {
+			lastPropertyCode: function(data){
+				return $http.post(urlBase + '-last-property-code', data);
+			},
+			repair: function(id){
+				return $http.get(urlBase + '-repair/' + id);
+			},
+			paginate: function(assetTypeID, page){
+				return $http.get(urlBase + '-paginate/' + assetTypeID + '?page=' + page);
+			},
 			/**
 			 * Fetch all departments.
 			 * @return: Array of Objects
@@ -29,47 +38,6 @@ sharedModule
 			},
 
 			/**
-			 * Store single record and returns the input data for updating record.
-			 * @return object
-			 *
-			*/
-			storeMultiple: function(data){
-				return $http.post(urlBase + '-multiple', data);
-			},
-
-			/**
-			 * Search database tables for data
-			 *
-			*/
-			search: function(data){
-				return $http.post(urlBase + '-search', data);
-			},
-
-			/**
-			 * Search by component type
-			 *
-			*/
-			componentType: function(data){
-				return $http.post(urlBase + '-component-type', data);
-			},
-
-			/**
-			 * Search all components by work-station 
-			 *
-			*/
-			workStation: function(id){
-				return $http.get(urlBase + '-work-station/' + id);
-			},
-
-			/*
-			 * Show specific asset tag with join details on corresponding asset table
-			 *
-			*/
-			specific: function(id){
-				return $http.get(urlBase + '-specific/' + id);
-			},
-
-			/**
      		 * Update the specified resource in storage.
      		 *
      		*/
@@ -85,30 +53,6 @@ sharedModule
 				return $http.put(urlBase + '-transfer/' + assetID, data);
 			},
 
-			/*
-			 * Set asset tag status for repair
-			 *
-			*/
-			repair: function(id){
-				return $http.put(urlBase + '-repair/' + id);
-			},
-
-			/*
-			 * Set asset tag status for dispose
-			 *
-			*/
-			dispose: function(id){
-				return $http.put(urlBase + '-dispose/' + id);
-			},
-
-			/*
-			 * Set asset tag status for active
-			 *
-			*/
-			active: function(id){
-				return $http.put(urlBase + '-active/' + id);
-			},
-
 			/**
 			 * Delete the asset tag
 			 *
@@ -117,53 +61,8 @@ sharedModule
 				return $http.delete(urlBase + '/' + id);
 			},
 
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			activeUnit: function(page, data){
-				return $http.post(urlBase + '-active-unit?page=' + page, data);
-			},
-
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			repairUnit: function(page, data){
-				return $http.post(urlBase + '-repair-unit?page=' + page, data);
-			},
-
-			/**
-			 * Paginated load of resource for infinite scrolling.
-			 * @return: Object
-			*/
-			disposeUnit: function(page, data){
-				return $http.post(urlBase + '-dispose-unit?page=' + page, data);
-			},
-
-			/**
-			 * Pull out the components when pc is pulled out.
-			 * 
-			*/
-			repairComponents: function(id){
-				return $http.put(urlBase + '-repair-components/' + id);
-			},
-
-			/**
-			 * Pull out the components when pc is pulled out.
-			 * 
-			*/
-			disposeComponents: function(id){
-				return $http.put(urlBase + '-dispose-components/' + id);
-			},
-			activeComponents: function(id){
-				return $http.put(urlBase + '-active-components/' + id);
-			},
-			searchBarcode: function(data){
-				return $http.post(urlBase + '-search-barcode', data);
-			},
-			availableSwap: function(data){
-				return $http.post(urlBase + '-available-swap', data);
+			checkSwap: function(data){
+				return $http.post(urlBase + '-check-swap', data);
 			},	
 			swap: function(id, data){
 				return $http.put(urlBase + '-swap/' + id , data);
@@ -173,6 +72,15 @@ sharedModule
 			},
 			swapComponents: function(id, swapID){
 				return $http.put(urlBase + '-swap-components/' + id + '/target/' + swapID);
+			},
+			checkSequence: function(data){
+				return $http.post(urlBase + '-check-sequence', data);
+			},
+			search: function(data){
+				return $http.post(urlBase + '-search', data);
+			},
+			statuses: function(id){
+				return $http.get(urlBase + '-statuses/' + id);
 			},
 		};
 	}]);

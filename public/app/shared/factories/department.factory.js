@@ -3,28 +3,20 @@ sharedModule
 		var urlBase = '/department';
 
 		return {
-			/**
-			 * Fetch all departments.
-			 * @return: Array of Objects
-			*/
 			index: function(){
 				return $http.get(urlBase);
 			},
-
-			/**
-			 * Fetch specific department.
-			 * @return: Object
-			*/
-			show: function(id){
-				return $http.get(urlBase +  '/' + id);
+			store: function(data){
+				return $http.post(urlBase, data);
 			},
-
-			/**
-			 * Other departments
-			 * @return: Array of Objects
-			*/
-			others: function(id){
-				return $http.get(urlBase + '-others/' + id);
+			show: function(id){
+				return $http.get(urlBase + '/' + id);
+			},
+			update: function(id, data){
+				return $http.put(urlBase + '/' + id, data);
+			},
+			delete: function(id){
+				return $http.delete(urlBase + '/' + id);
 			},
 		};
 	}]);

@@ -2,14 +2,28 @@
 
 namespace App\Http\Controllers;
 use App\WorkStation;
-use App\Log;
+use App\Activity;
+use App\ActivityType;
+use App\Asset;
 use DB;
+use Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 class WorkStationController extends Controller
 {
+    public function others($id)
+    {
+        return Workstation::with('departments')->whereNotIn('id', [$id])->get();
+    }
+    public function checkIP(Request $request, $id)
+    {
+        $duplicate =  $id ? Workstation::where('ip_address', $request->ip_address)->whereNotNull('ip_address')->whereNotIn('id', [$id])->first() : Workstation::where('ip_address', $request->ip_address)->whereNotNull('ip_address')->first();
+
+        return response()->json($duplicate ? true : false);
+    }
+
     public function availableTransfer(Request $request, $workstationID)
     {
         return DB::table('work_stations')
@@ -98,12 +112,7 @@ class WorkStationController extends Controller
     */
     public function search(Request $request)
     {
-        return DB::table('work_stations')
-            ->select('*', DB::raw('SUBSTRING(work_stations.name, 7, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
-            ->where('work_stations.name', 'like', '%'. $request->userInput .'%')
-            ->whereNull('work_stations.deleted_at')
-            ->groupBy('work_stations.id')
-            ->get();
+        return Workstation::with('departments')->where('name', 'like', '%'. $request->searchText .'%')->orWhere('ip_address', 'like', '%'. $request->searchText .'%')->get();
     }
 
     /**
@@ -130,11 +139,7 @@ class WorkStationController extends Controller
     */
     public function paginate()
     {
-        return DB::table('work_stations')
-            ->select('work_stations.*', DB::raw('SUBSTRING(work_stations.name, 7, 1) as first_letter'), DB::raw('DATE_FORMAT(work_stations.created_at, "%h:%i %p, %b. %d, %Y") as created_at'))
-            ->whereNull('work_stations.deleted_at')
-            // ->groupBy('work_stations.id')
-            ->paginate(25);
+        return WorkStation::with('departments')->paginate(25);
     }
 
     /**
@@ -161,13 +166,75 @@ class WorkStationController extends Controller
      */
     public function index()
     {
-        $work_stations = Workstation::all();
+        return Workstation::all();
+    }
 
-        // foreach ($work_stations as $key => $value) {
-        //     $work_station_sbstr = substr($value->name, 1);
-        //     $value->name = 'A0' . $work_station_sbstr;
-        //     $value->save();
-        // }
+    public function dashboard()
+    {
+        $work_station_6FA = Workstation::with('departments')->where('floor', 6)->where('division', 'A')->get();
+        $work_station_6FB = Workstation::with('departments')->where('floor', 6)->where('division', 'B')->get();
+        $work_station_10FA = Workstation::with('departments')->where('floor', 10)->where('division', 'A')->get();
+        $work_station_10FB = Workstation::with('departments')->where('floor', 10)->where('division', 'B')->get();
+
+        $occupied_6FA_count = 0;
+        $occupied_6FB_count = 0;
+        $occupied_10FA_count = 0;
+        $occupied_10FB_count = 0;
+
+        $vacant_6FA_count = 0;
+        $vacant_6FB_count = 0;
+        $vacant_10FA_count = 0;
+        $vacant_10FB_count = 0;
+
+        foreach ($work_station_6FA as $work_station_6FA_key => $work_station_6FA_value) {
+            if(count($work_station_6FA_value->departments)){
+                $occupied_6FA_count = $occupied_6FA_count + 1;
+            }
+            else{
+                $vacant_6FA_count = $vacant_6FA_count + 1;
+            }
+        }
+
+        foreach ($work_station_6FB as $work_station_6FB_key => $work_station_6FB_value) {
+            if(count($work_station_6FB_value->departments)){
+                $occupied_6FB_count = $occupied_6FB_count + 1;
+            }
+            else{
+                $vacant_6FB_count = $vacant_6FB_count + 1;
+            }
+        }
+
+        foreach ($work_station_10FA as $work_station_10FA_key => $work_station_10FA_value) {
+            if(count($work_station_10FA_value->departments)){
+                $occupied_10FA_count = $occupied_10FA_count + 1;
+            }
+            else{
+                $vacant_10FA_count = $vacant_10FA_count + 1;
+            }
+        }
+
+        foreach ($work_station_10FB as $work_station_10FB_key => $work_station_10FB_value) {
+            if(count($work_station_10FB_value->departments)){
+                $occupied_10FB_count = $occupied_10FB_count + 1;
+            }
+            else{
+                $vacant_10FB_count = $vacant_10FB_count + 1;
+            }
+        }
+
+        $user = Auth::user();
+
+        $user->occupied_6FA_count = $occupied_6FA_count;
+        $user->occupied_6FB_count = $occupied_6FB_count;
+        $user->occupied_10FA_count = $occupied_10FA_count;
+        $user->occupied_10FB_count = $occupied_10FB_count;
+
+        $user->vacant_6FA_count = $vacant_6FA_count;
+        $user->vacant_6FB_count = $vacant_6FB_count;
+        $user->vacant_10FA_count = $vacant_10FA_count;
+        $user->vacant_10FB_count = $vacant_10FB_count;
+
+        return $user;
     }
 
     /**
@@ -195,6 +262,7 @@ class WorkStationController extends Controller
             'quantity' =>'required|numeric',
         ]);
 
+        $activity_type = ActivityType::where('type', 'work_station')->where('action', 'create')->first();
         $type = $request->type == 'A' ? 'admin' : 'production';
 
         // gets the last station
@@ -236,20 +304,16 @@ class WorkStationController extends Controller
             $work_station->floor = $request->floor;
             $work_station->division = $request->division;
             $work_station->type = $type;
-            $work_station->occupied = false;
 
             $work_station->save();
+            
+            $activity = new Activity;
+            $activity->user_id = $request->user()->id;
+            $activity->activity_type_id = $activity_type->id;
+            $activity->event_id = $work_station->id;
+
+            $activity->save();
         }
-
-        // create a Log record
-        $log = new Log;
-
-        $log->user_id = $request->user()->id;
-        $log->activity_id = $work_station->id;
-        $log->activity = 'added '. $request->quantity . ' new work station(s).';
-        $log->state = 'main.floor-plan';
-
-        $log->save();
     }
 
     /**
@@ -260,7 +324,13 @@ class WorkStationController extends Controller
      */
     public function show($id)
     {
-        return Workstation::where('id', $id)->first();
+        $work_station = Workstation::with(['asset_tags' => function($query){ $query->with('status', 'purchase_order'); }])->with('departments')->where('id', $id)->first();
+
+        foreach ($work_station->asset_tags as $key => $value) {
+            $value->asset = Asset::with('details', 'type')->where('id', $value->asset_id)->whereNull('deleted_at')->first();
+        }
+
+        return $work_station;
     }
 
     /**
@@ -283,7 +353,26 @@ class WorkStationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $duplicate = Workstation::where('ip_address', $request->ip_address)->whereNotNull('ip_address')->whereNotIn('id', [$id])->first();
+
+        if($duplicate){
+            return response()->json(true);
+        }
+
+        $work_station = Workstation::where('id', $id)->first();
+
+        $work_station->ip_address = $request->ip_address;
+
+        $work_station->save();
+
+        $activity_type = ActivityType::where('type', 'work_station')->where('action', 'update')->first();
+
+        $activity = new Activity;
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $work_station->id;
+
+        $activity->save();
     }
 
     /**

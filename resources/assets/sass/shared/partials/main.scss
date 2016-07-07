@@ -9,6 +9,14 @@
 	color: $accent500;
 }
 
+.red-text{
+	color: $red500;
+}
+
+.orange-text{
+	color: $orange500;
+}
+
 .white-text {
 	/* White */
 	color: #fff;
@@ -57,6 +65,10 @@
 	overflow: auto;
 }
 
+.overflow-auto{
+	overflow: auto;
+}
+
 /* Stretch to full height */
 .full-height-min {
 	min-height: 100vh;
@@ -77,8 +89,8 @@ md-toolbar.white-toolbar {
 
 .site-logo {
 	img{
-		max-width: 60%;
-		max-height: 100%;
+		max-width: 50px;
+		/*max-height: 100%;*/
 	}
 }
 
@@ -102,19 +114,23 @@ md-toolbar.white-toolbar {
 
 /* Background colors */
 md-content.dirty-white{
-	background: #eeeeee;
+	background: #fafafa;
 }
 
 md-content.blue-bg{
 	background: $primary500;
 }
 
-.blue-bg{
+.blue-bg, .primary-bg{
 	background: $primary500;
 }
 
 .red-bg{
 	background: $red500;
+}
+
+.orange-bg{
+	background: $orange500;
 }
 
 .blur-white{
@@ -196,9 +212,78 @@ md-content.blue-bg{
   }
 }
 
-.pattern{
-	position: absolute;
-	font-size: 12px;
-	color: $red500;
-	line-height: 24px;
+.hide-overflow{
+	overflow: hidden;
 }
+
+.hint{
+    /* Position the hint */
+    position: absolute;
+    left: 2px;
+    right: auto;
+    bottom: -10px;
+    /* Copy styles from ng-messages */
+    font-size: 12px;
+    line-height: 14px;
+    transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
+    /* Set our own color */
+    color: grey;
+}
+
+.not-absolute{
+	position:relative;
+}
+
+.pattern{
+	@extend .hint;
+	color: $red500;
+}
+
+.hint.ng-hide, .hint.ng-enter, .hint.ng-leave.ng-leave-active {
+    bottom: 26px;
+    opacity: 0;
+}
+.hint.ng-leave, .hint.ng-enter.ng-enter-active {
+    bottom: -10px;
+    opacity: 1;
+}
+
+.pattern.ng-hide, .pattern.ng-enter, .pattern.ng-leave.ng-leave-active {
+    bottom: 26px;
+    opacity: 0;
+}
+.pattern.ng-leave, .pattern.ng-enter.ng-enter-active {
+    bottom: -10px;
+    opacity: 1;
+}
+
+.card-image-bg {
+	background: url('/assets/img/bg.png');
+	background-size: cover;
+}
+.circle{
+	border-radius: 50%;
+}
+
+.shadow-bg{
+	background: rgba(0,0,0,0.5);
+}
+
+
+.validation-messages{
+	font-size: 12px;
+    color: $red500;
+    margin: 10px 0 0 25px;
+}
+
+.overflow-y-hidden{
+	overflow-y: hidden;
+}
+
+.overflow-auto{
+	overflow: auto;
+}
+
+/*.chart-container{
+	min-width: 100%;
+}*/

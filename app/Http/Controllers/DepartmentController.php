@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 use App\Department;
+use App\Activity;
+use App\ActivityType;
+use Auth;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests;
@@ -9,15 +12,6 @@ use App\Http\Controllers\Controller;
 
 class DepartmentController extends Controller
 {
-    /**
-     * Display others listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function others($id)
-    {
-        return Department::whereNotIn('id', [$id])->get();
-    }
 
     /**
      * Display a listing of the resource.
@@ -47,7 +41,27 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required'
+        ]);
+
+        $department = new Department;
+
+        $department->name = $request->name;
+
+        $department->save();
+
+        // Search the activity type
+        $activity_type = ActivityType::where('type', 'department')->where('action', 'create')->first();
+
+        // create an activity log
+        $activity = new Activity;
+
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $department->id;
+
+        $activity->save();
     }
 
     /**
@@ -81,7 +95,27 @@ class DepartmentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required'
+        ]);
+
+        $department = Department::where('id', $id)->first();
+
+        $department->name = $request->name;
+
+        $department->save();
+
+        // Search the activity type
+        $activity_type = ActivityType::where('type', 'department')->where('action', 'update')->first();
+
+        // create an activity log
+        $activity = new Activity;
+
+        $activity->user_id = $request->user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $department->id;
+
+        $activity->save();
     }
 
     /**
@@ -92,6 +126,20 @@ class DepartmentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $department = Department::where('id', $id)->first();
+        
+        // Search the activity type
+        $activity_type = ActivityType::where('type', 'department')->where('action', 'delete')->first();
+
+        // create an activity log
+        $activity = new Activity;
+
+        $activity->user_id = Auth::user()->id;
+        $activity->activity_type_id = $activity_type->id;
+        $activity->event_id = $department->id;
+
+        $activity->save();
+
+        $department->delete();
     }
 }

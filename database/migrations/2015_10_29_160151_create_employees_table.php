@@ -14,10 +14,10 @@ class CreateEmployeesTable extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('employee_id')->unique();
+            $table->integer('employee_number')->unsigned()->unique();
             $table->string('full_name');
-            $table->integer('department_id');
-            $table->boolean('assigned');
+            $table->integer('department_id')->unsigned();
+            $table->integer('work_station_id')->unsigned()->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -1,33 +1,49 @@
-<md-dialog layout="column" flex="50"  aria-label="Add {{ workStation.name }} Asset" ng-cloak>
-	<form name="editAssetForm" novalidate>
-		<md-toolbar>
+<md-dialog layout="column" flex flex-gt-sm="50" flex-gt-lg="40"  aria-label="Program" ng-cloak>
+	<form name="assetTagForm" novalidate>
+		<md-toolbar class="white-toolbar">
 			<div class="md-toolbar-tools">
-				<h2>Pull Out {{ workStation }}'s Asset</h2>
+				<h2 class="primary-text">Pull Out</h2>
 				<span flex></span>
 				<md-button class="md-icon-button" ng-click="cancel()">
-					<md-icon class="mdi mdi-close" aria-label="cancel"></md-icon>
+					<md-icon class="mdi mdi-close mdi-24px grey" aria-label="cancel"></md-icon>
 				</md-button>
 			</div>
 		</md-toolbar>
-		<md-dialog-content layout="column" flex layout-padding>
-			<md-list>
-				<md-list-item class="md-2-line" layout="row">
-					<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
-						<span class="weight-200 white-text">{{ asset.first_letter }}</span>
-					</h2>
-					<div class="md-list-item-text" layout="column">
-						<h3>{{ asset.brand }} {{ asset.maker }}</h3>
-						<h4>{{ asset.model }} <span ng-if="asset.processor">/</span> {{ asset.processor }} {{ asset.type }} <span ng-if="asset.size">/</span> {{ asset.size }} <span ng-if="asset.speed">/</span> {{ asset.speed }} {{ asset.name }} {{ asset.version }}</h4>
-						<p>
-							<span>Serial: {{ asset.serial }}</span><span ng-if="!asset.serial">N/A</span><br>
-						</p>
+		<md-dialog-content layout="column" flex layout-padding layout-wrap>
+			<div layout="column">
+				<div layout="column" flex>
+					<md-subheader class="md-no-stick md-primary">{{assetTag.work_station.name}}</md-subheader>
+					<md-list flex layout="column">
+						<md-list-item class="md-3-line" layout="row">
+							<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+								<span class="white-text">{{assetTag.first_letter}}</span>
+							</h2>
+							<div class="md-list-item-text" layout="column" flex>
+								<h3>{{assetTag.asset.brand}}</h3>
+								<h4>{{assetTag.asset.model}}</h4>
+								<p>{{assetTag.property_code}}</p>
+							</div>
+						</md-list-item>
+						<md-subheader class="md-no-sticky" ng-if="details.length">Specs</md-subheader>
+						<md-list-item ng-repeat="detail in details">
+						    <p>{{detail.label}}: {{detail.value}}</p>
+					  	</md-list-item>
+					</md-list>
+				</div>
+				<!-- Remarks -->
+				<md-input-container>
+					<label>Remarks</label>
+					<textarea name="Remarks" ng-model="assetTag.remarks" required></textarea>
+					<div ng-messages="assetTagForm.Remarks.$error" ng-if="assetTagForm.Remarks.$touched">
+						<div ng-message="required">Remarks for pull out is required.</div>
 					</div>
-				</md-list-item>
-			</md-list>
-		<div layout="row" layout-align="end center">		
-			<md-button class="md-primary" ng-click="repair()">Repair</md-button>
-			<md-button class="md-primary" ng-click="dispose()">Dispose</md-button>
-		</div>
+				</md-input-container>
+			</div>
 		</md-dialog-content>
 	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-button" aria-label="Submit" ng-click="submit()">
+			Pull Out
+		</md-button>
+	</div>
 </md-dialog>

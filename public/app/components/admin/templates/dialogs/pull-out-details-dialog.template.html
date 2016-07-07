@@ -1,0 +1,33 @@
+<md-dialog layout="column" flex flex-gt-sm="50" flex-gt-lg="40"  aria-label="Program" ng-cloak>
+	<md-toolbar class="white-toolbar">
+		<div class="md-toolbar-tools">
+			<h2 class="primary-text">{{ label }}</h2>
+			<span flex></span>
+			<md-button class="md-icon-button" ng-click="cancel()">
+				<md-icon class="mdi mdi-close mdi-24px grey" aria-label="cancel"></md-icon>
+			</md-button>
+		</div>
+	</md-toolbar>
+	<md-dialog-content layout="column" flex layout-padding layout-wrap>
+		<div layout="column" layout>
+			<md-list>
+				<md-subheader class="md-no-sticky md-primary">Current</md-subheader>
+				<md-list-item class="md-2-line" ng-repeat="status in assetTag.status" ng-if="!status.deleted_at" layout-padding>
+					<div class="md-list-item-text">
+						<h3>{{status.remarks}}</h3>
+						<p>
+							<span am-time-ago="status.created_at"></span>
+							<md-tooltip>{{status.created_at | date: 'EEEE, MMMM d, yyyy'}}</md-tooltip>
+						</p>
+					</div>
+				</md-list-item>
+				<div ng-if="status.deleted_at">
+					<md-subheader class="md-no-sticky md-warning">Previous</md-subheader>
+					<md-list-item ng-repeat="status in assetTag.status">
+						<p>{{status.created_at}}</p>
+					</md-list-item>
+				</div>
+			</md-list>
+		</div>
+	</md-dialog-content>
+</md-dialog>

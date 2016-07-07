@@ -5,9 +5,48 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Hash;
+use Auth;
+use App\User;
 
 class UserController extends Controller
 {
+    public function resetPassword($id)
+    {
+        if(Auth::user()->role != 'super-admin')
+        {
+            abort(403, 'Unauthorized action.');
+        }
+        else{
+            $user = User::where('id', $id)->first();
+
+            $user->password = Hash::make('!welcome10');
+
+            $user->save();
+        }
+
+    }
+
+    public function others()
+    {
+        return User::whereNotIn('role', ['super-admin'])->whereNotIn('id', [Auth::user()->id])->get();
+    }
+
+    public function changePassword(Request $request)
+    {
+        $user = $request->user();
+
+        if($request->new == $request->confirm && $request->old != $request->new)
+        {
+            $user->password = Hash::make($request->new);
+        }
+
+        $user->save();
+    }
+    public function checkPassword(Request $request)
+    {
+        return response()->json(Hash::check($request->old, $request->user()->password));
+    }
     /**
      * Display a listing of the resource.
      *
@@ -36,7 +75,23 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'role' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        $user = new User;
+
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->email = $request->email;
+        $user->role = $request->role;
+        $user->password = Hash::make($request->password);
+
+        $user->save();
     }
 
     /**
@@ -81,6 +136,6 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        User::where('id', $id)->delete();
     }
 }

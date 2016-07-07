@@ -14,14 +14,17 @@ class CreateAssetTagsTable extends Migration
     {
         Schema::create('asset_tags', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('component_type');
-            $table->integer('component_id');
-            $table->integer('work_station_id');
+            $table->integer('asset_type_id')->unsigned();
+            $table->integer('asset_id')->unsigned();
+            $table->integer('work_station_id')->unsigned()->nullable();
+            $table->string('computer_name')->nullable();
             $table->string('serial')->nullable();
+            $table->string('prefix');
+            $table->integer('sequence')->unsigned();
             $table->string('property_code')->unique();
-            $table->date('date_purchase')->nullable();
-            $table->string('supplier')->nullable();
-            $table->string('status');
+            $table->text('remarks')->nullable();
+            $table->dateTime('warranty_end')->nullable();
+            $table->dateTime('date_received')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

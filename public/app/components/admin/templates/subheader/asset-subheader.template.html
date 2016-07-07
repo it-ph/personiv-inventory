@@ -1,0 +1,18 @@
+<div layout="row" flex ng-if="asset.paginated.length">
+	<div layout="column" flex layout-align="center center">
+		<span class="md-body-2 primary-text">{{assetType.deployed}}</span>
+		<span class="md-body-1 secondary-text">deployed</span>
+	</div>
+	<div layout="column" flex layout-align="center center">
+		<span class="md-body-2 primary-text">{{assetType.stocks}}</span>
+		<span class="md-body-1 secondary-text">stocks</span>
+	</div>
+	<div layout="column" flex layout-align="center center">
+		<span class="md-body-2 primary-text">{{assetType.pulled_out}}</span>
+		<span class="md-body-1 secondary-text">pulled out</span>
+	</div>
+	<div layout="column" flex layout-align="center center" ng-if="assetType.last_property_code">
+		<span class="md-body-2 primary-text">{{assetType.last_property_code}}</span>
+		<span class="md-body-1 secondary-text">last property code</span>
+	</div>
+</div>

@@ -11,28 +11,32 @@ body {
 ul {
   padding: 0px; }
 
-::-webkit-scrollbar {
-  width: 6px; }
-
+/* ::-webkit-scrollbar {
+    width: 6px;
+}
+ 
 ::-webkit-scrollbar-track {
-  /*background: rgba(0,0,0,0.1); */
-  border-radius: 10px;
-  /*border:1px gray solid;*/ }
-
+    background: rgba(0,0,0,0.1);
+    border-radius: 10px;
+    border:1px gray solid;
+}
+ 
 ::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.3);
-  /*&:not(:active){
+    border-radius: 10px;
+    background: rgba(0,0,0,0.3);
+    &:hover{
+        background: rgba(0,0,0,0.3);
+        border:1px solid rgba(0,0,0,0.3);
+    }
+    &:active{
+        background: rgba(0,0,0,0.5);
+        border:1px solid rgba(0,0,0,0.5);
+    }
+    &:not(:active){
         background: none;
         border:0px solid rgba(0,0,0,0.5);
-    }	*/ }
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(0, 0, 0, 0.3); }
-  ::-webkit-scrollbar-thumb:active {
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(0, 0, 0, 0.5); }
-
+    }
+} */
 .mdi {
   color: #FFFFFF;
   font-size: 24px;
@@ -52,6 +56,12 @@ ul {
 .accent-text {
   /* Light Blue */
   color: #03A9F4; }
+
+.red-text {
+  color: #F44336; }
+
+.orange-text {
+  color: #FF9800; }
 
 .white-text {
   /* White */
@@ -91,6 +101,9 @@ ul {
   position: relative;
   overflow: auto; }
 
+.overflow-auto {
+  overflow: auto; }
+
 /* Stretch to full height */
 .full-height-min {
   min-height: 100vh; }
@@ -107,8 +120,8 @@ md-toolbar.white-toolbar {
   background-color: white; }
 
 .site-logo img {
-  max-width: 60%;
-  max-height: 100%; }
+  max-width: 50px;
+  /*max-height: 100%;*/ }
 
 .personiv-logo {
   height: 110px; }
@@ -126,16 +139,19 @@ md-toolbar.white-toolbar {
 
 /* Background colors */
 md-content.dirty-white {
-  background: #eeeeee; }
+  background: #fafafa; }
 
 md-content.blue-bg {
   background: #2196F3; }
 
-.blue-bg {
+.blue-bg, .primary-bg {
   background: #2196F3; }
 
 .red-bg {
   background: #F44336; }
+
+.orange-bg {
+  background: #FF9800; }
 
 .blur-white {
   background: rgba(255, 255, 255, 0.1); }
@@ -195,12 +211,68 @@ md-content.blue-bg {
   .timepicker.dropdown-menu tbody button {
     padding: 6px; }
 
-.pattern {
+.hide-overflow {
+  overflow: hidden; }
+
+.hint, .pattern {
+  /* Position the hint */
   position: absolute;
+  left: 2px;
+  right: auto;
+  bottom: -10px;
+  /* Copy styles from ng-messages */
+  font-size: 12px;
+  line-height: 14px;
+  transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
+  /* Set our own color */
+  color: grey; }
+
+.not-absolute {
+  position: relative; }
+
+.pattern {
+  color: #F44336; }
+
+.hint.ng-hide, .ng-hide.pattern, .hint.ng-enter, .ng-enter.pattern, .hint.ng-leave.ng-leave-active, .ng-leave.ng-leave-active.pattern {
+  bottom: 26px;
+  opacity: 0; }
+
+.hint.ng-leave, .ng-leave.pattern, .hint.ng-enter.ng-enter-active, .ng-enter.ng-enter-active.pattern {
+  bottom: -10px;
+  opacity: 1; }
+
+.pattern.ng-hide, .pattern.ng-enter, .pattern.ng-leave.ng-leave-active {
+  bottom: 26px;
+  opacity: 0; }
+
+.pattern.ng-leave, .pattern.ng-enter.ng-enter-active {
+  bottom: -10px;
+  opacity: 1; }
+
+.card-image-bg {
+  background: url("/assets/img/bg.png");
+  background-size: cover; }
+
+.circle {
+  border-radius: 50%; }
+
+.shadow-bg {
+  background: rgba(0, 0, 0, 0.5); }
+
+.validation-messages {
   font-size: 12px;
   color: #F44336;
-  line-height: 24px; }
+  margin: 10px 0 0 25px; }
 
+.overflow-y-hidden {
+  overflow-y: hidden; }
+
+.overflow-auto {
+  overflow: auto; }
+
+/*.chart-container{
+	min-width: 100%;
+}*/
 /* transition duration */
 .transition, .fade-transition, .main-view {
   transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2); }

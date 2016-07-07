@@ -1,111 +1,86 @@
-<div class="fade-transition" layout="column" layout-align="center center" flex layout-padding>
-	<div layout="row" flex layout-margin layout-padding>	
-		<div layout="column" layout-align="center center" flex>
-			<img src="/assets/img/magnifier13.png" alt="Search">
-			<md-content layout="column" layout-align="center center">
-				<h1 class="md-headline">Quick Search</h1>
-				<p>Quickly search assets, or work stations.</p>
-				<md-tooltip>Click the search icon at the upper right part of the screen.</md-tooltip>
-			</md-content>
+<md-content class="md-padding" layout="row" layout-align="center start" ng-if="activity.paginated.show">
+	<div flex >
+		<div layout="row" flex>
+	        <md-card flex md-theme="dark-blue">
+		        <md-card-title>
+		          	<md-card-title-text>
+			            <span class="md-headline white-text">Purchase Orders</span>
+			            <span class="md-subhead white-text">July</span>
+		          	</md-card-title-text>
+		          	<md-card-title-media>
+		            	<div class="md-media-sm" layout="row" layout-align="center center">
+	            			<!-- <md-icon class="mdi mdi-format-list-numbers"></md-icon> -->
+	            			<span class="md-display-1 white-text">{{dashboard.purchase_order_count}}</span>
+		            	</div>
+		          	</md-card-title-media>
+		       	</md-card-title>
+		    </md-card>
+		    <md-card flex layout="column" md-theme="dark-orange">
+		        <md-card-title>
+		          	<md-card-title-text>
+			            <span class="md-headline white-text">Asset Tags</span>
+			            <span class="md-subhead white-text">New</span>
+		          	</md-card-title-text>
+		          	<md-card-title-media>
+		            	<div class="md-media-sm" layout="row" layout-align="center center">
+	            			<!-- <md-icon class="mdi mdi-format-list-numbers"></md-icon> -->
+	            			<span class="md-display-1 white-text">{{dashboard.asset_tag_count}}</span>
+		            	</div>
+		          	</md-card-title-media>
+		       	</md-card-title>
+		    </md-card>
+		    <md-card flex layout="column" md-theme="dark-teal">
+		        <md-card-title>
+		          	<md-card-title-text>
+			            <span class="md-headline white-text">Activities</span>
+			            <span class="md-subhead white-text">Recent</span>
+		          	</md-card-title-text>
+		          	<md-card-title-media>
+		            	<div class="md-media-sm" layout="row" layout-align="center center">
+	            			<!-- <md-icon class="mdi mdi-format-list-numbers"></md-icon> -->
+	            			<span class="md-display-1 white-text">{{dashboard.activity_count}}</span>
+		            	</div>
+		          	</md-card-title-media>
+		       	</md-card-title>
+		    </md-card>
 		</div>
-		<div layout="column" layout-align="center center" flex>
-			<img src="/assets/img/download164.png" alt="Search">
-			<md-content layout="column" layout-align="center center">
-				<h1 class="md-headline">Report</h1>
-				<p>Download summary report of current inventory.</p>
-				<md-tooltip>Click the download icon at the navigation bar.</md-tooltip>
-			</md-content>
-		</div>
-		<div layout="column" layout-align="center center" flex>
-			<img src="/assets/img/product3.png" alt="Search">
-			<md-content layout="column" layout-align="center center">
-				<h1 class="md-headline">Barcode</h1>
-				<p>Generate barcode of work stations and property codes.</p>
-				<md-tooltip>Click the barcode icon at the navigation bar.</md-tooltip>
-			</md-content>
-		</div>
-	</div>
-</div>
-<!-- Search Results -->
-<div class="fade-transition" layout="column" flex ng-if="search.showAsset">
-	<div layout-margin layout-padding>
-		<md-subheader>Search Results</md-subheader>	
-		<md-card>
-			<md-list ng-if="search.result">
-				<md-subheader class="md-no-sticky md-primary" flex>{{ search.result.component_type }}</md-subheader>
-				<md-list-item class="md-3-line" layout="row" ng-click="show(search.result.department_id, search.result.work_station_id)">
-					<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
-						<span class="weight-200 white-text">{{ search.result.first_letter }}</span>
-					</h2>
-					<div class="md-list-item-text" layout="column">
-						<h3>{{ search.result.brand }} {{ search.result.maker }}</h3>
-						<h4>{{ search.result.model }} <span ng-if="search.result.processor && search.result.component_type == 'Desktop'">/</span> {{ search.result.type }} {{ search.result.processor }} <span ng-if="search.result.size">/</span> {{ search.result.size }} <span ng-if="search.result.speed">/</span> {{ search.result.speed }} {{ search.result.name }} {{ search.result.version }}</h4>
-						<p>
-							<span>Serial: {{ search.result.serial }}</span><span ng-if="!search.result.serial">N/A</span> <br>
-							<span>Property Code: {{ search.result.property_code }}</span><br>
-							<span>Work Station: {{ search.result.work_station_name }}</span><br>
-						</p>
+		<div layout="row" flex>
+			<md-card flex ng-repeat="chart in charts">
+				<md-card-content layout-padding layout="column">
+					<div layout="row" flex>
+						<canvas class="chart chart-line" chart-data="chart.monthly.data" chart-labels="chart.monthly.labels" chart-series="chart.monthly.series" chart-click="chartWeekly"></canvas>
 					</div>
-					<p flex class="text-right secondary-text md-caption" layout="column">
-						<span>{{ search.result.date_purchase }}</span>
-						<span>{{ search.result.supplier }}</span>
-					</p>
-				</md-list-item>
-			</md-list>
-			<md-card-content ng-if="!search.result">
-				<p class="secondary-text">No results found.</p>
-			</md-card-content>
-		</md-card>
-	</div>
-</div>
-
-<!-- Search Work Station -->
-<div class="fade-transition" layout="column" flex ng-if="search.showWorkStation">
-	<div layout-margin layout-padding>
-		<md-subheader>Search Results</md-subheader>	
-		<md-card>
-			<md-list>
-				<md-subheader class="md-no-sticky md-primary" flex>{{ search.component_type }}</md-subheader>
-				<md-list-item class="md-2-line" layout="row" ng-click="show(search.result.department_id, search.result.work_station_id)">
-					<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
-						<span class="weight-200 white-text">{{ search.result.first_letter }}</span>
-					</h2>
-					<div class="md-list-item-text" layout="column">
-						<h3>{{ search.result.work_station_name }}</h3>
-						<h4>{{ search.result.department_name }}</h4>
-					</div>
-				</md-list-item>
-			</md-list>
-		</md-card>
-		<md-card>
-			<md-card-content ng-if="!search.result">
-				<p class="secondary-text">No results found.</p>
-			</md-card-content>
-		</md-card>
-	</div>
-</div>
-
-<!-- Paginated Data -->
-<!-- <div class="fade-transition" ng-if="log.paginated.show" flex infinite-scroll='log.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="log.busy" infinite-scroll-parent>
-	<div layout="column" flex flex-gt-sm="70">
-		<div layout-margin layout-padding>
-			<md-card >
-				<md-list>
-					<md-list-item class="md-3-line" ng-click="show(log.id)" layout="row" ng-repeat="log in log.paginated.data | filter:log.userInput">
-						<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
-							<span class="weight-200 white-text">{{ log.first_letter }}</span>
-						</h2>
-						<div class="md-list-item-text" layout="column" flex>
-							<h3>{{ log.first_name }} {{ log.last_name }}</h3>
-							<h4>{{ log.activity }}</h4>
-							<p>{{ log.created_at }}</p>
-						</div>
-					</md-list-item>
-				</md-list>
-				<md-card-content ng-if="!log.paginated.data.length">
-					<p class="secondary-text">No records yet.</p>
-				</md-card-content>
+					<!-- <h3 class="md-headline center-text">{{chart.title}}</h3> -->
+				</md-card-content>	
 			</md-card>
 		</div>
+		<!-- <div flex>
+			<md-card ng-repeat="chart in charts" flex>
+				<md-card-content layout-padding layout="column">
+					<div layout="row" flex layout-align="center center">
+						<canvas class="chart chart-line" chart-data="chart.weekly.data" chart-labels="chart.weekly.labels" chart-series="chart.weekly.series"></canvas>
+					</div>
+					<h3 class="md-headline center-text">{{chart.title}}</h3>
+				</md-card-content>
+			</md-card>
+		</div> -->
+		<md-subheader>Asset Tags Expiring Warranty</md-subheader>
+		<md-list>
+			<md-list-item class="md-3-line" ng-repeat="item in dashboard.warranty">
+				<!-- <h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
+					<span class="md-headline white-text">{{activity.first_letter}}</span>
+				</h2> -->
+				<div class="md-list-item-text">
+					<h3>{{item.asset.brand}} {{item.asset.model}} <span class="secondary-text">({{item.property_code}})</span></h3>
+					<h4>{{item.purchase_order.vendor.contact_person}} <span ng-if="item.purchase_order">/</span> {{item.purchase_order.vendor.email}} <span ng-if="item.purchase_order">/</span> {{item.purchase_order.vendor.contact_number}}</h4>
+					<p>
+		        		<span class="secondary-text md-caption" am-time-ago="item.warranty_end"></span>
+						<md-tooltip>{{ item.warranty_end | date: 'EEEE, MMMM d, yyyy' }}</md-tooltip>
+					</p>
+				</div>
+				<md-divider></md-divider>
+			</md-list-item>
+		</md-list>
+		<p ng-if="!dashboard.warranty.length">No items about to expire</p>
 	</div>
-</div> -->
+</md-content>

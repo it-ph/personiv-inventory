@@ -1,0 +1,169 @@
+<div layout="row" flex class="overflow-auto">
+	<div layout-padding flex flex-gt-md="75">
+		<!-- Assets -->
+		<div ng-if="user.role != 'trainee'">
+			<md-subheader class="md-no-sticky md-primary">
+				<span>Assets</span>
+			</md-subheader>
+			<md-list layout="column" layout-padding>
+				<md-list-item class="fade-transition md-2-line" flex ng-repeat="asset_type in asset_types | filter:toolbar.searchText | orderBy:'name'">
+					<div class="md-list-item-text">
+						<h3>{{asset_type.type}}</h3>
+						<h4>{{asset_type.prefix}}</h4>
+					</div>
+					<md-menu class="fade-transition" ng-if="user.role == 'super-admin'">
+				    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+					        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
+					        <md-tooltip>Menu</md-tooltip>
+					    </md-button>
+					    <md-menu-content width="2">
+					        <md-menu-item>
+					          	<!-- Edit -->
+								<md-button ng-click="editAssetType(asset_type.id)">
+									<md-icon class="mdi mdi-24px mdi-pencil grey"></md-icon>
+									Edit
+								</md-button>
+					        </md-menu-item>
+					        <md-menu-item ng-if="!asset_type.assets.length">
+								<md-button ng-click="deleteAssetType(asset_type.id)">
+									<md-icon class="mdi mdi-24px mdi-delete grey"></md-icon>
+									Delete
+								</md-button>
+					        </md-menu-item>
+					    </md-menu-content>
+				    </md-menu>
+				</md-list-item>
+			</md-list>
+			<p ng-if="!asset_types.length">No assets to display.</p>
+			<div layout="row" layout-align="end center">
+				<md-button class="md-primary" ng-click="createAssetType()"> 
+					Create
+				</md-button>
+			</div>
+		</div>
+		<!-- Departments -->
+		<md-divider></md-divider>
+		<div ng-if="user.role != 'trainee'">
+			<md-subheader class="md-no-sticky md-primary" layout="row" layout-align="space-between center" flex>
+				<span>Departments</span>
+			</md-subheader>
+			<md-list layout="column" layout-padding>
+				<md-list-item class="fade-transition" flex ng-repeat="department in departments | filter:toolbar.searchText | orderBy:'name'">
+					<p class="md-subhead" flex>{{department.name}}</p>
+					<md-menu class="fade-transition" ng-if="user.role == 'super-admin'">
+				    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+					        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
+					        <md-tooltip>Menu</md-tooltip>
+					    </md-button>
+					    <md-menu-content width="2">
+					        <md-menu-item>
+					          	<!-- Edit -->
+								<md-button ng-click="editDepartment(department.id)">
+									<md-icon class="mdi mdi-24px mdi-pencil grey"></md-icon>
+									Edit
+								</md-button>
+					        </md-menu-item>
+					        <md-menu-item>
+								<md-button ng-click="deleteDepartment(department.id)">
+									<md-icon class="mdi mdi-24px mdi-delete grey"></md-icon>
+									Delete
+								</md-button>
+					        </md-menu-item>
+					    </md-menu-content>
+				    </md-menu>
+				</md-list-item>
+			</md-list>
+			<p ng-if="!departments.length">No departments to display.</p>
+			<div layout="row" layout-align="end center">
+				<md-button class="md-primary" ng-click="createDepartment()"> 
+					Create
+				</md-button>
+			</div>
+		</div>
+		<!-- User -->
+		<md-divider></md-divider>
+		<div ng-if="user.role == 'super-admin'">
+			<md-subheader class="md-no-sticky md-primary">
+				<span>Users</span>
+			</md-subheader>
+			<md-list layout="column" layout-padding>
+				<md-list-item class="md-2-line fade-transition" flex ng-repeat="user in users | filter:toolbar.searchText | orderBy:'name'">
+					<div class="md-list-item-text" layout="column">
+			          	<h3>{{user.first_name}}</h3>
+						<h4>{{user.email}}</h4>
+			        </div>
+					<md-menu class="fade-transition">
+				    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+					        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
+					        <md-tooltip>Menu</md-tooltip>
+					    </md-button>
+					    <md-menu-content width="2">
+					        <md-menu-item>
+					          	<!-- Reset Password -->
+								<md-button ng-click="resetPassword(user.id)">
+									<md-icon class="mdi mdi-key-minus grey"></md-icon>
+									Reset Password
+								</md-button>
+					        </md-menu-item>
+					        <md-menu-item ng-if="!user.assets.length">
+								<md-button ng-click="deleteAccount(user.id)">
+									<md-icon class="mdi mdi-account-remove grey"></md-icon>
+									Delete Account
+								</md-button>
+					        </md-menu-item>
+					    </md-menu-content>
+				    </md-menu>
+				</md-list-item>
+			</md-list>
+			<p ng-if="!users.length">No users to display.</p>
+			<div layout="row" layout-align="end center">
+				<md-button class="md-primary" ng-click="createUser()"> 
+					Create
+				</md-button>
+			</div>
+		</div>
+		<!-- Vendors -->
+		<md-divider></md-divider>
+		<div ng-if="user.role != 'trainee'">
+			<md-subheader class="md-no-sticky md-primary" layout="row" layout-align="space-between center" flex>
+				<span>Vendors</span>
+			</md-subheader>
+			<md-list layout="column" layout-padding>
+				<md-list-item class="md-3-line fade-transition" flex ng-repeat="vendor in vendors | filter:toolbar.searchText | orderBy:'name'">
+					<div class="md-list-item-text">
+						<h3>{{vendor.company}}</h3>
+						<h4>{{vendor.contact_person}}</h4>
+						<p>{{vendor.contact_number}} - {{vendor.email}}</p>
+					</div>
+					<md-menu class="fade-transition" ng-if="user.role == 'super-admin'">
+				    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+					        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
+					        <md-tooltip>Menu</md-tooltip>
+					    </md-button>
+					    <md-menu-content width="2">
+					        <md-menu-item>
+					          	<!-- Edit -->
+								<md-button ng-click="editVendor(vendor.id)">
+									<md-icon class="mdi mdi-24px mdi-pencil grey"></md-icon>
+									Edit
+								</md-button>
+					        </md-menu-item>
+					        <md-menu-item>
+								<md-button ng-click="deleteVendor(vendor.id)" ng-if="!vendor.purchase_orders.length">
+									<md-icon class="mdi mdi-24px mdi-delete grey"></md-icon>
+									Delete
+								</md-button>
+					        </md-menu-item>
+					    </md-menu-content>
+				    </md-menu>
+				</md-list-item>
+			</md-list>
+			<p ng-if="!vendors.length">No vendors to display.</p>
+			<div layout="row" layout-align="end center">
+				<md-button class="md-primary" ng-click="createVendor()"> 
+					Create
+				</md-button>
+			</div>
+		</div>
+	</div>
+</div>
