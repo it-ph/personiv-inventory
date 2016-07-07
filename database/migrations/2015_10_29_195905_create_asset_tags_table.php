@@ -17,6 +17,7 @@ class CreateAssetTagsTable extends Migration
             $table->integer('asset_type_id')->unsigned();
             $table->integer('asset_id')->unsigned();
             $table->integer('work_station_id')->unsigned()->nullable();
+            $table->integer('purchase_order_id')->unsigned()->nullable();
             $table->string('computer_name')->nullable();
             $table->string('serial')->nullable();
             $table->string('prefix');

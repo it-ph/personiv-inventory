@@ -24,6 +24,7 @@
 			      	</md-card-title-text>
 			    </md-card-title>
 			    <md-card-content>
+			    	<p>Property Code: {{ asset_tag.property_code }}</p>
 			    	<p>Serial Number: {{ asset_tag.serial_number }} <span ng-if="!asset_tag.serial_number">N/A</span></p>
 			    	<p ng-if="asset_tag.warranty_end">End of Warranty: {{ asset_tag.warranty_end | date: 'EEEE, MMMM d, yyyy'}}</p>
 			    	<p ng-if="asset_tag.remarks">Remarks : {{ asset_tag.remarks }}</p>

@@ -60,7 +60,7 @@
 					<!-- Date Received -->
 					<div flex>
 						<h4>Date Received <span class="md-caption secondary-text">(Minimum date is date purchased.)</span></h4>
-						<md-datepicker name="DateReceived" ng-model="assetTag.date_received" md-placeholder="Date Received" md-min-date="minDatePurchaseOrder"></md-datepicker>
+						<md-datepicker name="DateReceived" ng-model="assetTag.date_received" md-placeholder="Date Received" md-min-date="minDatePurchaseOrder" md-max-date="maxDatePurchaseOrder"></md-datepicker>
 				        <div class="validation-messages" ng-messages="assetTagForm.DateReceived.$error" ng-if="assetTagForm.DateReceived.$touched">
 				        	<div ng-message="valid">The entered value is not a date!</div>
 				        	<div ng-message="mindate">Minimum date is date purchased.</div>

@@ -65,6 +65,8 @@ class AssetTypeController extends Controller
         $activity->event_id = $asset_type->id;
 
         $activity->save();
+
+        return;
     }
 
     /**
@@ -92,7 +94,12 @@ class AssetTypeController extends Controller
             }
         }
 
-        $asset_type->last_property_code = AssetTag::where('asset_type_id', $id)->orderBy('created_at', 'desc')->first()->property_code;
+        $last = AssetTag::where('asset_type_id', $id)->orderBy('created_at', 'desc')->first();
+        
+        if($last)
+        {
+            $asset_type->last_property_code = $last->property_code;
+        }
 
         return $asset_type;
     }

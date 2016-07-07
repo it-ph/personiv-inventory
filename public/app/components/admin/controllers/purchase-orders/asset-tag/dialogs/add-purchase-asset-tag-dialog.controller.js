@@ -7,7 +7,8 @@ adminModule
 		$scope.assetTag.purchase_order_id = $scope.purchaseOrder.id;
 		$scope.assetTag.warranty_end = new Date();
 		$scope.assetTag.date_received = new Date();
-		$scope.minDateWarranty = new Date();
+		$scope.assetTag.max_date = new Date();
+		$scope.maxDatePurchaseOrder = new Date();
 		$scope.minDatePurchaseOrder = new Date($scope.purchaseOrder.date_purchased);
 
 		$scope.floors = [6,10];
