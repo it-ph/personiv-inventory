@@ -16,7 +16,7 @@ class CreateAssetsTable extends Migration
             $table->increments('id');
             $table->string('brand');
             $table->string('model');
-            $table->integer('asset_types_id')->unsigned();
+            $table->integer('asset_type_id')->unsigned();
             $table->timestamps();
             $table->softDeletes();
         });
