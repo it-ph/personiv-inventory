@@ -14,11 +14,12 @@
 				<!-- Name -->
 				<md-input-container>
 					<label>Name</label>
-					<input type="text" name="DepartmentName" required ng-model="department.name" ng-pattern="/^[a-zA-Z0-9.-_ ]+$/">
+					<input type="text" name="DepartmentName" required ng-model="department.name" ng-pattern="/^[a-zA-Z0-9.-_ ]+$/" ng-blur="checkDepartment()">
 					<div ng-messages="departmentForm.DepartmentName.$error" ng-if="departmentForm.DepartmentName.$touched">
 						<div ng-message="required">Name is required.</div>
 						<div ng-message="pattern">Characters, numbers, spaces, dashes and underscores only.</div>
 					</div>
+					<div class="pattern" ng-if="duplicate">Department already exists.</div>
 				</md-input-container>
 			</div>
 		</md-dialog-content>

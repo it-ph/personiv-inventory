@@ -17,6 +17,8 @@ adminModule
 			$scope.init(true);
 		}
 
+		$scope.toolbar.hideSearchIcon = true;
+
 		/**
 		 * Object for fab
 		 *
@@ -177,7 +179,7 @@ adminModule
 				.then(function(){
 					PurchaseOrder.show(purchaseOrderID)
 						.success(function(data){
-							$scope.toolbar.childState = data.id;
+							$scope.toolbar.childState = data.tracking_code ? data.tracking_code : 'N/A';
 							data.date_purchased = new Date(data.date_purchased);
 							data.date_arrival = new Date(data.date_arrival);
 

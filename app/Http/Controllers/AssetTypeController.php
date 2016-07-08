@@ -14,6 +14,12 @@ use App\Http\Controllers\Controller;
 
 class AssetTypeController extends Controller
 {
+    public function checkAssetType(Request $request)
+    {
+        $asset_type = $request->id ? AssetType::whereNotIn('id', [$request->id])->where('type', $request->type)->first() : AssetType::where('type', $request->type)->first();
+
+        return response()->json($asset_type ? true : false);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -46,6 +52,13 @@ class AssetTypeController extends Controller
             'type' => 'required|string',
             'prefix' => 'required',
         ]);
+
+        $duplicate = AssetType::where('type', $request->type)->first();
+
+        if($duplicate)
+        {
+            return response()->json(true);
+        }
 
         $asset_type = new AssetType;
 
@@ -129,6 +142,13 @@ class AssetTypeController extends Controller
             'prefix' => 'required',
         ]);
 
+        $duplicate = AssetType::whereNotIn('id', [$id])->where('type', $request->type)->first();
+
+        if($duplicate)
+        {
+            return response()->json(true);
+        }
+
         $asset_type = AssetType::with('assets', 'asset_tags')->where('id', $id)->first();
 
         $asset_type->type = ucfirst($request->type);
@@ -136,40 +156,33 @@ class AssetTypeController extends Controller
 
         $asset_type->save();
 
-        // fetch all the assets and update the prefix
-        // $assets = DB::table('assets')->where('asset_type_id', $asset_type->id)->get();
+        foreach ($asset_type->asset_tags as $asset_tag_key => $asset_tag_value) {
+            $asset_tag_value->prefix = $asset_type->prefix;
 
-        // foreach ($asset_type->assets as $asset_key => $asset_value) {
-        //     $asset_tags = DB::table('asset_tags')->where('asset_id', $asset_value->id)->get();
+            if($asset_tag_value->sequence > 0 && $asset_tag_value->sequence < 10)
+            {
+                $fill = '0000';
+            }
+            else if($asset_tag_value->sequence > 9 && $asset_tag_value->sequence < 100)
+            {
+                $fill = '000';
+            }
+            else if($asset_tag_value->sequence > 99 && $asset_tag_value->sequence < 1000)
+            {
+                $fill = '00';
+            }
+            else if($asset_tag_value->sequence > 999 && $asset_tag_value->sequence < 10000)
+            {
+                $fill = '0';
+            }
+            else{
+                $fill = null;
+            }
 
-            foreach ($asset_type->asset_tags as $asset_tag_key => $asset_tag_value) {
-                $asset_tag_value->prefix = $asset_type->prefix;
+            $asset_tag_value->property_code = $asset_type->prefix . $fill . $asset_tag_value->sequence;
 
-                if($asset_tag_value->sequence > 0 && $asset_tag_value->sequence < 10)
-                {
-                    $fill = '0000';
-                }
-                else if($asset_tag_value->sequence > 9 && $asset_tag_value->sequence < 100)
-                {
-                    $fill = '000';
-                }
-                else if($asset_tag_value->sequence > 99 && $asset_tag_value->sequence < 1000)
-                {
-                    $fill = '00';
-                }
-                else if($asset_tag_value->sequence > 999 && $asset_tag_value->sequence < 10000)
-                {
-                    $fill = '0';
-                }
-                else{
-                    $fill = null;
-                }
-
-                $asset_tag_value->property_code = $asset_type->prefix . $fill . $asset_tag_value->sequence;
-
-                $asset_tag_value->save();
-            } 
-        // }
+            $asset_tag_value->save();
+        } 
 
         // Search the activity type
         $activity_type = ActivityType::where('type', 'asset_type')->where('action', 'update')->first();

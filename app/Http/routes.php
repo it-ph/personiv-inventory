@@ -90,6 +90,9 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('asset-purchase-orders/{assetID}', 'AssetController@purchaseOrders');
 	Route::get('asset-tag-statuses/{assetTagID}', 'AssetTagController@statuses');
 	Route::post('inventory-report-weekly-chart', 'InventoryReportController@weeklyChart');
+	Route::post('user-check-email', 'UserController@checkEmail');
+	Route::post('department-check-department', 'DepartmentController@checkDepartment');
+	Route::post('asset-type-check-asset-type', 'AssetTypeController@checkAssetType');
 	
 	// Route resource store multiple
 	Route::post('asset-tag-multiple', 'AssetTagController@storeMultiple');

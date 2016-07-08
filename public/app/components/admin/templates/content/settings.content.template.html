@@ -63,7 +63,7 @@
 									Edit
 								</md-button>
 					        </md-menu-item>
-					        <md-menu-item>
+					        <md-menu-item ng-if="!department.work_stations.length">
 								<md-button ng-click="deleteDepartment(department.id)">
 									<md-icon class="mdi mdi-24px mdi-delete grey"></md-icon>
 									Delete

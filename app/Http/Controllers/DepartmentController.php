@@ -12,6 +12,12 @@ use App\Http\Controllers\Controller;
 
 class DepartmentController extends Controller
 {
+    public function checkDepartment(Request $request)
+    {
+        $department = $request->id ? Department::whereNotIn('id', [$request->id])->where('name', $request->name)->first() : Department::where('name', $request->name)->first();
+
+        return response()->json($department ? true : false);
+    }
 
     /**
      * Display a listing of the resource.
@@ -20,7 +26,7 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        return Department::all();
+        return Department::with('work_stations')->get();
     }
 
     /**
@@ -44,6 +50,13 @@ class DepartmentController extends Controller
         $this->validate($request, [
             'name' => 'required'
         ]);
+
+        $department = Department::where('name', $request->name)->first();
+
+        if($department)
+        {
+            return response()->json(true);
+        }
 
         $department = new Department;
 
@@ -98,6 +111,13 @@ class DepartmentController extends Controller
         $this->validate($request, [
             'name' => 'required'
         ]);
+
+        $department = Department::whereNotIn('id', [$id])->where('name', $request->name)->first();
+
+        if($department)
+        {
+            return response()->json(true);
+        }
 
         $department = Department::where('id', $id)->first();
 

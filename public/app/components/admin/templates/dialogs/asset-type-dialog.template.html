@@ -14,11 +14,12 @@
 				<!-- Name -->
 				<md-input-container>
 					<label>Name</label>
-					<input type="text" name="Type" required ng-model="assetType.type" ng-pattern="/^[a-zA-Z- ]+$/">
+					<input type="text" name="Type" required ng-model="assetType.type" ng-pattern="/^[a-zA-Z- ]+$/" ng-blur="checkAssetType()">
 					<div ng-messages="assetTypeForm.Type.$error" ng-if="assetTypeForm.Type.$touched">
 						<div ng-message="required">Name is required.</div>
 						<div ng-message="pattern">Characters only.</div>
 					</div>
+					<div class="pattern" ng-if="duplicate">Asset already exists.</div>
 				</md-input-container>
 				
 				<!-- Prefix -->

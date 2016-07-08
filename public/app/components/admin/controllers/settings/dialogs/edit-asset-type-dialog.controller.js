@@ -16,6 +16,17 @@ adminModule
 			$mdDialog.cancel();
 		}
 
+		$scope.checkAssetType = function(){
+			$scope.duplicate = false;
+			AssetType.checkAssetType($scope.assetType)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		}
+
 		$scope.submit = function(){
 			if($scope.assetTypeForm.$invalid){
 				angular.forEach($scope.assetTypeForm.$error, function(field){
@@ -26,17 +37,19 @@ adminModule
 			}
 			else{
 				/* Starts Preloader */
-				Preloader.loading();
+				// Preloader.loading();
 				/**
 				 * Stores Single Record
 				*/
-				if(!busy){
+				if(!busy && !$scope.duplicate){
 					busy = true;
 					AssetType.update(assetTypeID, $scope.assetType)
-						.success(function(){
-							// Stops Preloader 
-							Preloader.stop();
-							busy = false;
+						.success(function(data){
+							if(!data){
+								// Stops Preloader 
+								Preloader.stop();
+								busy = false;
+							}
 						})
 						.error(function(){
 							Preloader.error()

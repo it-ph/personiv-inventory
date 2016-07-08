@@ -30,5 +30,8 @@ sharedModule
 			resetPassword: function(id){
 				return $http.get(urlBase + '-reset-password/' + id);
 			},
+			checkEmail: function(data){
+				return $http.post(urlBase + '-check-email', data);
+			},
 		};
 	}]);

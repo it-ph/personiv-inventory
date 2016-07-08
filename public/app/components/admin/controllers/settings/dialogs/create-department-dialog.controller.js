@@ -8,6 +8,18 @@ adminModule
 			$mdDialog.cancel();
 		}
 
+
+		$scope.checkDepartment = function(){
+			$scope.duplicate = false;
+			Department.checkDepartment($scope.department)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+				.error(function(){
+					Preloader.error();
+				})
+		}
+
 		$scope.submit = function(){
 			if($scope.departmentForm.$invalid){
 				angular.forEach($scope.departmentForm.$error, function(field){
@@ -18,17 +30,18 @@ adminModule
 			}
 			else{
 				/* Starts Preloader */
-				Preloader.loading();
+				// Preloader.loading();
 				/**
 				 * Stores Single Record
 				*/
-				if(!busy){
+				if(!busy && !$scope.duplicate){
 					busy = true;
 					Department.store($scope.department)
-						.success(function(){
-							// Stops Preloader 
-							Preloader.stop();
-							busy = false;
+						.success(function(data){
+							if(!data){
+								Preloader.stop();
+								busy = false;
+							}
 						})
 						.error(function(data){
 							Preloader.error();

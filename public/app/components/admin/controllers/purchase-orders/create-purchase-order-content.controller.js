@@ -16,6 +16,8 @@ adminModule
 			$state.go('main.create-purchase-order', {}, {reload:true});
 		}
 
+		$scope.toolbar.hideSearchIcon = true;
+
 		/**
 		 * Object for fab
 		 *

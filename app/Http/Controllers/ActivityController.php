@@ -13,7 +13,7 @@ class ActivityController extends Controller
 {
     public function paginate()
     {
-        return Activity::where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->with('activity_type', 'user')->paginate(50);
+        return Activity::orderBy('created_at', 'desc')->with('activity_type', 'user')->paginate(20);
     }
     /**
      * Display a listing of the resource.

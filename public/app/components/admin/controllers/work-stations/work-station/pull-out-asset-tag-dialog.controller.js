@@ -3,6 +3,8 @@ adminModule
 		var assetTagID = Preloader.get();
 		var busy = false;
 
+		$scope.assetTagStatus = {};
+
 		$scope.cancel = function(){
 			$mdDialog.cancel();
 		};
@@ -11,6 +13,7 @@ adminModule
 			.then(function(data){
 				$scope.assetTag = data.data;
 				$scope.assetTag.first_letter = data.data.asset.brand[0].toUpperCase();
+				$scope.assetTagStatus.id = data.data.id;
 				return data.data;
 			})
 			.then(function(assetTag){
@@ -40,7 +43,7 @@ adminModule
 				
 				if(!busy){
 					busy = true;
-					AssetStatus.store($scope.assetTag)
+					AssetStatus.store($scope.assetTagStatus)
 						.success(function(){
 							Preloader.stop();
 							busy = false;

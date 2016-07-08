@@ -11,6 +11,13 @@ use App\User;
 
 class UserController extends Controller
 {
+    public function checkEmail(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        return response()->json($user ? true : false);
+    }
+
     public function resetPassword($id)
     {
         if(Auth::user()->role != 'super-admin')
@@ -82,6 +89,13 @@ class UserController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed|min:8',
         ]);
+
+        $check_user = User::where('email', $request->email)->first();
+
+        if($check_user)
+        {
+            return response()->json(true);
+        }
 
         $user = new User;
 

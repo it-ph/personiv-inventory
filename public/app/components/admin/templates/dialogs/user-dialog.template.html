@@ -35,10 +35,11 @@
                 <!-- First Name -->
                 <md-input-container flex>
                     <label>Email</label>
-                    <input type="email" name="Email" required ng-model="user.email">
+                    <input type="email" name="Email" required ng-model="user.email" ng-blur="checkEmail()">
                     <div ng-messages="userForm.Email.$error" ng-if="userForm.Email.$touched">
                         <div ng-message="required">Email is required.</div>
                     </div>
+                    <div class="pattern" ng-if="duplicate">Email is already in use.</div>
                 </md-input-container>
                 <md-radio-group ng-model="user.role" flex layout="row" layout-align="space-around center">
                     <md-radio-button value="admin" class="md-primary">Admin</md-radio-button>

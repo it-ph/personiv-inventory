@@ -1,7 +1,7 @@
 <md-content>
 	<div layout-padding layout="row" layout-align="center start" ng-if="purchaseOrder.paginated.show && purchaseOrder.paginated.length" flex infinite-scroll='purchaseOrder.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="purchaseOrder.busy" infinite-scroll-parent>
 		<div flex flex-gt-lg="80" layout-margin>
-			<md-card flex ng-repeat="purchase_order in purchaseOrder.paginated | orderBy:'-created_at'">
+			<md-card flex ng-repeat="purchase_order in purchaseOrder.paginated | filter: toolbar.searchText | orderBy:'-created_at'">
 				<md-card-header>
 		          	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
 		            	<span class="md-headline white-text">{{ purchase_order.first_letter }}</span>
@@ -14,16 +14,16 @@
 		        <div class="card-image-bg" flex>
 		        	<div layout="row" layout-align="center center" class="shadow-bg">
 			        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>
-			        		<span ng-if="purchase_order.tracking_code">T.N. {{purchase_order.tracking_code}}</span>
-			        		<span ng-if="!purchase_order.tracking_code">P.O. #{{ purchase_order.id }}</span>
+			        		<span ng-if="purchase_order.tracking_code">P.O {{purchase_order.tracking_code}}</span>
+			        		<span ng-if="!purchase_order.tracking_code">N/A</span>
 		        		</h2>
 			        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>
-			        		<span ng-if="purchase_order.tracking_code">T.N. {{purchase_order.tracking_code}}</span>
-			        		<span ng-if="!purchase_order.tracking_code">P.O. #{{ purchase_order.id }}</span>
+			        		<span ng-if="purchase_order.tracking_code">P.O {{purchase_order.tracking_code}}</span>
+			        		<span ng-if="!purchase_order.tracking_code">N/A</span>
 		        		</h2>
 			        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>
-			        		<span ng-if="purchase_order.tracking_code">T.N. {{purchase_order.tracking_code}}</span>
-			        		<span ng-if="!purchase_order.tracking_code">P.O. #{{ purchase_order.id }}</span>
+			        		<span ng-if="purchase_order.tracking_code">P.O {{purchase_order.tracking_code}}</span>
+			        		<span ng-if="!purchase_order.tracking_code">N/A</span>
 		        		</h2>
 		        	</div>
 		        </div>
@@ -97,16 +97,16 @@
 		        <div class="card-image-bg" flex>
 		        	<div layout="row" layout-align="center center" class="shadow-bg">
 			        	<h2 class="md-display-4 white-text" hide-xs hide-gt-xs show-gt-lg>
-			        		<span ng-if="purchase_order.tracking_code">T.N. {{purchase_order.tracking_code}}</span>
-			        		<span ng-if="!purchase_order.tracking_code">P.O. #{{ purchase_order.id }}</span>
+			        		<span ng-if="purchase_order.tracking_code">P.O {{purchase_order.tracking_code}}</span>
+			        		<span ng-if="!purchase_order.tracking_code">N/A</span>
 		        		</h2>
 			        	<h2 class="md-display-3 white-text" hide-xs hide-gt-lg>
-			        		<span ng-if="purchase_order.tracking_code">T.N. {{purchase_order.tracking_code}}</span>
-			        		<span ng-if="!purchase_order.tracking_code">P.O. #{{ purchase_order.id }}</span>
+			        		<span ng-if="purchase_order.tracking_code">P.O {{purchase_order.tracking_code}}</span>
+			        		<span ng-if="!purchase_order.tracking_code">N/A</span>
 		        		</h2>
 			        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>
-			        		<span ng-if="purchase_order.tracking_code">T.N. {{purchase_order.tracking_code}}</span>
-			        		<span ng-if="!purchase_order.tracking_code">P.O. #{{ purchase_order.id }}</span>
+			        		<span ng-if="purchase_order.tracking_code">P.O {{purchase_order.tracking_code}}</span>
+			        		<span ng-if="!purchase_order.tracking_code">N/A</span>
 		        		</h2>
 		        	</div>
 		        </div>

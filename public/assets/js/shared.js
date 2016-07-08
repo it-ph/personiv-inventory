@@ -314,6 +314,9 @@ sharedModule
 			delete: function(id){
 				return $http.delete(urlBase + '/' + id);
 			},
+			checkAssetType: function(data){
+				return $http.post(urlBase + '-check-asset-type', data);
+			},
 		};
 	}]);
 sharedModule
@@ -394,6 +397,9 @@ sharedModule
 			},
 			delete: function(id){
 				return $http.delete(urlBase + '/' + id);
+			},
+			checkDepartment: function(data){
+				return $http.post(urlBase + '-check-department', data);
 			},
 		};
 	}]);
@@ -593,6 +599,9 @@ sharedModule
 			},
 			resetPassword: function(id){
 				return $http.get(urlBase + '-reset-password/' + id);
+			},
+			checkEmail: function(data){
+				return $http.post(urlBase + '-check-email', data);
 			},
 		};
 	}]);

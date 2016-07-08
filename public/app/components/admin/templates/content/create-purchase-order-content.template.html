@@ -15,16 +15,16 @@
 							<label>Vendor</label>
 							<md-select required name="Vendor" ng-model="purchaseOrder.vendor_id">
 								<md-option value="{{vendor.id}}" ng-repeat="vendor in vendors">
-									{{vendor.email}} - {{vendor.contact_number}}
+									{{vendor.company}} - {{vendor.contact_person}}
 								</md-option>
 							</md-select>
 							<div ng-messages="form.purchaseOrderForm.Vendor.$error" ng-if="form.purchaseOrderForm.Vendor.$touched">
 								<div ng-message="required">Contact Number is required.</div>
 							</div>
 						</md-input-container>
-						<!-- Tracking Code -->
+						<!-- Purchase Order No. -->
 						<md-input-container flex>
-							<label>Tracking Code</label>
+							<label>Purchase Order No.</label>
 							<input type="text" name="TrackingCode" ng-model="purchaseOrder.tracking_code">
 						</md-input-container>
 					</div>
@@ -38,9 +38,9 @@
 					        	<div ng-message="required">Date Purchased is required.</div>
 					        </div>
 						</div>
-						<!-- Date Arrival -->
+						<!-- Delivery Date -->
 						<div layout-padding flex>
-							<h4>Date Arrival</h4>
+							<h4>Delivery Date</h4>
 							<md-datepicker name="DateArrival" ng-model="purchaseOrder.date_arrival" md-placeholder="Date Arrival" md-min-date="purchaseOrder.date_purchased" required></md-datepicker>
 					        <div class="validation-messages" ng-messages="form.purchaseOrderForm.DateArrival.$error" ng-if="form.purchaseOrderForm.DateArrival.$touched">
 					        	<div ng-message="valid">The entered value is not a date!</div>
