@@ -33,7 +33,7 @@ adminModule
 				return;
 			}
 			else {
-				if(!bus && !$scope.duplicate)
+				if(!busy && !$scope.duplicate)
 				{
 					// Preloader.saving();
 					busy = true;
