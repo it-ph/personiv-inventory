@@ -8,7 +8,7 @@
 		<th align="center">Deployed</th>
 		<th align="center">Stocks</th>
 		<th align="center">Pulled Out</th>
-		<th align="center">Total</th>
+		<th align="center">Subtotal</th>
 	</tr>
 	@foreach($data->assets as $asset)
 		<tr>
@@ -20,6 +20,13 @@
 			<td align="center">{{ $asset->total }}</td>	
 		</tr>
 	@endforeach
+	<tr>
+		<th colspan="2" align="center">Total</th>
+		<th align="center">{{ $data->total_deployed }}</th>
+		<th align="center">{{ $data->total_stocks }}</th>
+		<th align="center">{{ $data->total_pulled_out }}</th>
+		<th align="center">{{ $data->overall }}</th>
+	</tr>
 </table>
 <br>
 <table border="1">

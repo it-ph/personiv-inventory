@@ -147,6 +147,11 @@ class InventoryReportController extends Controller
 
         Excel::create('Inventory Report as of '. Carbon::today()->toFormattedDateString(), function($excel){
             foreach ($this->data as $asset_type_key => $asset_type) {
+                $asset_type->total_deployed = 0;
+                $asset_type->total_stocks = 0;
+                $asset_type->total_pulled_out = 0;
+                $asset_type->overall = 0;
+
                 foreach ($asset_type->assets as $asset_key => $asset_value) {
                     $asset_value->deployed = 0;
                     $asset_value->pulled_out = 0;
@@ -172,9 +177,15 @@ class InventoryReportController extends Controller
                             $asset_value->pulled_out += 1;
                             $asset_asset_tag_value->status = 'Stock';
                         }
+
                     }
 
+                    $asset_type->total_deployed += $asset_value->deployed;
+                    $asset_type->total_stocks += $asset_value->stocks;
+                    $asset_type->total_pulled_out += $asset_value->pulled_out;
+
                     $asset_value->total = $asset_value->deployed + $asset_value->pulled_out + $asset_value->stocks;
+                    $asset_type->overall += $asset_value->total;
                 }
 
                 $this->asset_type = $asset_type;
