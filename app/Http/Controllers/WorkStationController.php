@@ -139,7 +139,7 @@ class WorkStationController extends Controller
     */
     public function paginate()
     {
-        return WorkStation::with('departments')->paginate(25);
+        return WorkStation::with('departments')->orderBy('name')->paginate(25);
     }
 
     /**
