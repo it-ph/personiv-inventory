@@ -28,7 +28,7 @@
 		        	<h3 class="md-headline" ng-class="asset_tag.current_status == 'Deployed' ? 'primary-text' : (asset_tag.current_status == 'Stock' ? 'orange-text' : 'red-text')">{{ asset_tag.current_status }}</h3>
 		        	<p>Work Station: {{ asset_tag.work_station.name }} <span ng-if="!asset_tag.work_station.name">N/A</span></p>
 		        	<p>Property Code: {{ asset_tag.property_code }}</p>
-		        	<p>Serial Number: {{ asset_tag.serial_number }} <span ng-if="!asset_tag.serial_number">N/A</span></p>
+		        	<p>Serial Number: {{ asset_tag.serial }} <span ng-if="!asset_tag.serial">N/A</span></p>
 		        	<p>End of Warranty: {{ asset_tag.warranty_end | date: 'EEEE, MMMM d, yyyy'}} <span ng-if="!asset_tag.warranty_end">N/A</span></p>
 		        	<p>Remarks: <span ng-if="!asset_tag.remarks">N/A</span> {{asset_tag.remarks}}</p>
 		        </md-card-content>
@@ -104,7 +104,7 @@
 		        	<h3 class="md-headline" ng-class="asset_tag.current_status == 'Deployed' ? 'primary-text' : (asset_tag.current_status == 'Stock' ? 'orange-text' : 'red-text')">{{ asset_tag.current_status }}</h3>
 		        	<p>Work Station: {{ asset_tag.work_station.name }} <span ng-if="!asset_tag.work_station.name">N/A</span></p>
 		        	<p>Property Code: {{ asset_tag.property_code }}</p>
-		        	<p>Serial Number: {{ asset_tag.serial_number }} <span ng-if="!asset_tag.serial_number">N/A</span></p>
+		        	<p>Serial Number: {{ asset_tag.serial }} <span ng-if="!asset_tag.serial">N/A</span></p>
 		        	<p>End of Warranty: {{ asset_tag.warranty_end | date: 'EEEE, MMMM d, yyyy'}} <span ng-if="!asset_tag.warranty_end">N/A</span></p>
 		        	<p>Remarks: <span ng-if="!asset_tag.remarks">N/A</span> {{asset_tag.remarks}}</p>
 		        </md-card-content>
