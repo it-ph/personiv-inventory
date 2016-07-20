@@ -460,6 +460,7 @@ adminModule
 		*/
 		$scope.toolbar = {};
 		$scope.toolbar.parentState = 'Asset';
+		$scope.toolbar.asset_type_id = assetTypeID;
 		// $scope.toolbar.childState = 'Settings';
 		$scope.toolbar.items = [];
 		$scope.toolbar.getItems = function(query){
@@ -578,7 +579,7 @@ adminModule
 				item.display = data.property_code;
 				// format
 				data.first_letter = data.asset.brand.charAt(0).toUpperCase();
-				data.warranty_end = new Date(data.warranty_end);
+				data.warranty_end = data.warranty_end ? new Date(data.warranty_end) : null;
 				data.current_status = data.status.length ? 'Pulled Out' : (data.work_station_id ? 'Deployed' : 'Stock');
 	    	}
 

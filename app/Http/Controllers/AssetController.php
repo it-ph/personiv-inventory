@@ -37,7 +37,7 @@ class AssetController extends Controller
 
     public function paginate($id)
     {
-        return $assets = Asset::where('asset_type_id', $id)->paginate(10);
+        return $assets = Asset::where('asset_type_id', $id)->orderBy('brand')->paginate(10);
     }
     /**
      * Display a listing of the resource.

@@ -28,7 +28,7 @@ class AssetTagController extends Controller
 
         $asset = Asset::where('id', $request->asset_id)->first();
 
-        return AssetTag::where('asset_type_id', $asset->asset_type_id)->orderBy('created_at', 'desc')->first();
+        return AssetTag::where('asset_type_id', $asset->asset_type_id)->orderBy('sequence', 'desc')->first();
     }
 
     public function repair($id)
@@ -48,14 +48,18 @@ class AssetTagController extends Controller
     {
         $this->validate($request, [
             'searchText' => 'required|string',
+            'asset_type_id' => 'required',
         ]);
 
-        return AssetTag::with('type', 'asset', 'purchase_order', 'status', 'work_station')->where('property_code', 'like', '%'. $request->searchText .'%')->orWhere('serial', 'like', '%'. $request->searchText .'%')->orWhere('computer_name', 'like', '%'. $request->searchText .'%')->first();
+        $this->searchText = $request->searchText;
+        $this->asset_type_id = $request->asset_type_id;
+
+        return AssetTag::with('type', 'asset', 'purchase_order', 'status', 'work_station')->where('asset_type_id', $this->asset_type_id)->orWhere(function($query){ $query->where('asset_type_id', $this->asset_type_id)->where('property_code', 'like', '%'. $this->searchText .'%'); })->orWhere(function($query){ $query->where('asset_type_id', $this->asset_type_id)->where('serial', 'like', '%'. $this->searchText .'%'); })->orWhere(function($query){ $query->where('asset_type_id', $this->asset_type_id)->where('computer_name', 'like', '%'. $this->searchText .'%'); })->get();
     }
 
     public function paginate($id)
     {
-        return AssetTag::with('type', 'asset', 'purchase_order', 'status', 'work_station')->where('asset_type_id', $id)->paginate(20);
+        return AssetTag::with('type', 'asset', 'purchase_order', 'status', 'work_station')->where('asset_type_id', $id)->orderBy('sequence')->paginate(20);
     }
     public function checkSequence(Request $request)
     {

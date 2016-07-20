@@ -26,7 +26,7 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        return Department::with('work_stations')->get();
+        return Department::with('work_stations')->orderBy('name')->get();
     }
 
     /**

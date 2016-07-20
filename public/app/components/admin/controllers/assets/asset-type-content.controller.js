@@ -9,6 +9,7 @@ adminModule
 		*/
 		$scope.toolbar = {};
 		$scope.toolbar.parentState = 'Asset';
+		$scope.toolbar.asset_type_id = assetTypeID;
 		// $scope.toolbar.childState = 'Settings';
 		$scope.toolbar.items = [];
 		$scope.toolbar.getItems = function(query){
