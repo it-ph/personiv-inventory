@@ -169,60 +169,56 @@ adminModule
 					AssetType.index()
 						.success(function(data){
 							$scope.assetTypes = data;
-						})
-						.error(function(){
-							Preloader.error();
-						})
 
-					return;
-				})
-				.then(function(){
-					PurchaseOrder.show(purchaseOrderID)
-						.success(function(data){
-							$scope.toolbar.childState = data.tracking_code ? data.tracking_code : 'N/A';
-							data.date_purchased = new Date(data.date_purchased);
-							data.date_arrival = new Date(data.date_arrival);
+							PurchaseOrder.show(purchaseOrderID)
+								.success(function(data){
+									$scope.toolbar.childState = data.tracking_code ? data.tracking_code : 'N/A';
+									data.date_purchased = new Date(data.date_purchased);
+									data.date_arrival = new Date(data.date_arrival);
 
-							// var company = $filter('filter')($scope.companies, {company:data.vendor.company});
+									// var company = $filter('filter')($scope.companies, {company:data.vendor.company});
 
-							// $scope.vendorIndex = $scope.companies.indexOf(company[0]);
+									// $scope.vendorIndex = $scope.companies.indexOf(company[0]);
 
-							// Vendor.contactPersons($scope.companies[$scope.vendorIndex].id)
-							// 	.success(function(data){
-							// 		$scope.contactPersons = data;
+									// Vendor.contactPersons($scope.companies[$scope.vendorIndex].id)
+									// 	.success(function(data){
+									// 		$scope.contactPersons = data;
 
-							// 		var contactPerson = $filter('filter')($scope.contactPersons, {contact_person:$scope.purchaseOrder.vendor.contact_person});
+									// 		var contactPerson = $filter('filter')($scope.contactPersons, {contact_person:$scope.purchaseOrder.vendor.contact_person});
 
-							// 		$scope.contactPerson = $scope.contactPersons[$scope.contactPersons.indexOf(contactPerson[0])].id;
+									// 		$scope.contactPerson = $scope.contactPersons[$scope.contactPersons.indexOf(contactPerson[0])].id;
 
-							// 		$scope.getContactNumbers($scope.contactPerson);
-							// 	})
-							// 	.error(function(){
-							// 		Preloader.error();
-							// 	})
+									// 		$scope.getContactNumbers($scope.contactPerson);
+									// 	})
+									// 	.error(function(){
+									// 		Preloader.error();
+									// 	})
 
-							$scope.purchaseOrder = data;
-							$scope.assets = data.asset_purchase_order;
+									$scope.purchaseOrder = data;
+									$scope.assets = data.asset_purchase_order;
 
-							angular.forEach($scope.assets, function(item){
-								var assetType = $filter('filter')($scope.assetTypes, {type:item.asset.type.type});
-								// console.log(assetType[0]);
-								item.assetTypeIndex = $scope.assetTypes.indexOf(assetType[0]);
+									angular.forEach($scope.assets, function(item){
+										var assetType = $filter('filter')($scope.assetTypes, {type:item.asset.type.type});
+										item.assetTypeIndex = $scope.assetTypes.indexOf(assetType[0]);
 
-								Asset.brands($scope.assetTypes[item.assetTypeIndex].id)
-									.success(function(data){
-										item.brands = data;
+										Asset.brands($scope.assetTypes[item.assetTypeIndex].id)
+											.success(function(data){
+												item.brands = data;
 
-										var brand = $filter('filter')(data, {brand:item.asset.brand});
+												var brand = $filter('filter')(data, {brand:item.asset.brand});
 
-										item.brand = item.brands[item.brands.indexOf(brand[0])].brand;
-									})
-									.error(function(){
-										Preloader.error();
-									})
-							});
+												item.brand = item.brands[item.brands.indexOf(brand[0])].brand;
+											})
+											.error(function(){
+												Preloader.error();
+											})
+									});
 
-							$scope.show = true;
+									$scope.show = true;
+								})
+								.error(function(){
+									Preloader.error();
+								})
 						})
 						.error(function(){
 							Preloader.error();

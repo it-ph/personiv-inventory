@@ -2,6 +2,7 @@ adminModule
 	.controller('assetTypeContentController', ['$scope', '$filter', '$mdDialog', '$state', '$stateParams', 'AssetType', 'Asset', 'AssetTag', 'Preloader', function($scope, $filter, $mdDialog, $state, $stateParams, AssetType, Asset, AssetTag, Preloader){
 		var assetTypeID = $stateParams.assetTypeID;
 		$scope.state = $state.current.name;
+		$scope.showSubheader =  true;
 		/**
 		  *
 		  * Object for toolbar

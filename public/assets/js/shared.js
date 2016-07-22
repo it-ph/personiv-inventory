@@ -35,6 +35,12 @@ sharedModule
 			})
 	}]);
 sharedModule
+	.controller('homePageController', ['$scope', function($scope){
+		$scope.show = function(){
+			angular.element(document.querySelector('.main-view')).removeClass('hidden-custom');
+		};
+	}]);
+sharedModule
 	.factory('Activity', ['$http', function($http){
 		var urlBase = '/activity';
 
@@ -657,12 +663,6 @@ sharedModule
 			},
 		};
 	}])
-sharedModule
-	.controller('homePageController', ['$scope', function($scope){
-		$scope.show = function(){
-			angular.element(document.querySelector('.main-view')).removeClass('hidden-custom');
-		};
-	}]);
 sharedModule
 	.service('Preloader', ['$mdDialog', '$mdToast', function($mdDialog, $mdToast){
 		var dataHolder = null;

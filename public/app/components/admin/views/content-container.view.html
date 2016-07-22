@@ -5,7 +5,7 @@
 <div layout="row" flex class="hide-overflow" id="paginate-loader">
 	<div layout="column" flex>
 		<!-- Toogle on scroll Toolbar -->
-		<md-toolbar class="white-toolbar" md-scroll-shrink>
+		<md-toolbar class="white-toolbar" md-scroll-shrink ng-if="showSubheader">
 			<!-- Subheader for Assets -->
 			<div class="md-toolbar-tools" ui-view="subheader"></div>
 		</md-toolbar>
