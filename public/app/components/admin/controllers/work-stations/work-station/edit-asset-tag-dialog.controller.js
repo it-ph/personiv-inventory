@@ -1,12 +1,11 @@
 adminModule
 	.controller('editAssetTagDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'AssetTag', 'Asset', 'AssetDetail', 'PurchaseOrder', function($scope, $stateParams, $mdDialog, Preloader, AssetTag, Asset, AssetDetail, PurchaseOrder){		
 		var assetTagID = Preloader.get();
-		$scope.hasWarranty = true;
-
 		var busy = false;
 
 		AssetTag.show(assetTagID)
 			.success(function(data){
+				$scope.hasWarranty = data.warranty_end ? true : false;
 				data.warranty_end = data.warranty_end ? new Date(data.warranty_end) : new Date();
 				data.date_received = data.date_received ? new Date(data.date_received) : new Date();
 				$scope.minDateWarranty = data.purchase_order ? new Date(data.purchase_order.date_purchased) : null;

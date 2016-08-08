@@ -105,17 +105,13 @@ class DepartmentWorkStationController extends Controller
         $deleted = false;
         
         for ($i=0; $i < count($request->all()); $i++) { 
-            $this->validate($request, [
-                $i.'.work_station_id' => 'required',
-            ]);
-
             if(!$deleted){
                 DepartmentWorkStation::where('work_station_id', $id)->delete();
 
                 $deleted = true;
             }
 
-            if($request->input($i.'.department_id')){            
+            if($request->input($i.'.department_id')){          
                 $department_work_station = new DepartmentWorkStation;
 
                 $department_work_station->work_station_id = $id;

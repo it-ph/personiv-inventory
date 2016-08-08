@@ -5,7 +5,7 @@ adminModule
 		$scope.assetTag.work_station_id = $stateParams.workStationID;
 		
 		$scope.minDate = new Date();
-		$scope.hasWarranty = true;
+		$scope.hasWarranty = false;
 
 		var busy = false;
 

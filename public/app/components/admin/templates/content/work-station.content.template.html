@@ -10,6 +10,9 @@
 			            <span class="md-title">{{ asset_tag.asset.brand }}</span>
 			            <span class="md-subhead">{{ asset_tag.asset.model }}</span>
 			      	</md-card-header-text>
+			      	<md-switch class="md-primary" ng-model="asset_tag.showDetails">
+			      		<span ng-if="!asset_tag.showDetails">Show</span><span ng-if="asset_tag.showDetails">Hide</span> details
+			      	</md-switch>
 			    </md-card-header>
 			    <div class="card-image-bg" flex>
 			    	<div layout="row" layout-align="center center" class="shadow-bg">
@@ -18,12 +21,12 @@
 			        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>{{ asset_tag.prefix }} - {{ asset_tag.sequence }}</h2>
 			    	</div>
 			    </div>
-			    <md-card-title>
+			    <md-card-title ng-if="asset_tag.showDetails">
 			      	<md-card-title-text>
 			        	<span class="md-headline">{{ asset_tag.computer_name}}</span>
 			      	</md-card-title-text>
 			    </md-card-title>
-			    <md-card-content>
+			    <md-card-content ng-if="asset_tag.showDetails">
 			    	<p>Property Code: {{ asset_tag.property_code }}</p>
 			    	<p>Serial Number: {{ asset_tag.serial_number }} <span ng-if="!asset_tag.serial_number">N/A</span></p>
 			    	<p ng-if="asset_tag.warranty_end">End of Warranty: {{ asset_tag.warranty_end | date: 'EEEE, MMMM d, yyyy'}}</p>

@@ -59,7 +59,7 @@
 				        </div>
 					</div>
 					<!-- Date Received -->
-					<div flex>
+					<div flex ng-if="hasPurchaseOrder">
 						<h4>Date Received <span class="md-caption secondary-text">(minimum date is date purchased)</span></h4>
 						<md-datepicker name="DateReceived" ng-model="assetTag.date_received" md-placeholder="Date Received" md-min-date="minDatePurchaseOrder"></md-datepicker>
 				        <div class="validation-messages" ng-messages="assetTagForm.DateReceived.$error" ng-if="assetTagForm.DateReceived.$touched">

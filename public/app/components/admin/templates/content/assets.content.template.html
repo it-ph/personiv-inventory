@@ -10,6 +10,9 @@
 			            <span class="md-title">{{ asset_tag.asset.brand }}</span>
 			            <span class="md-subhead">{{ asset_tag.asset.model }}</span>
 		          	</md-card-header-text>
+		          	<md-switch class="md-primary" ng-model="asset_tag.showDetails">
+			      		<span ng-if="!asset_tag.showDetails">Show</span><span ng-if="asset_tag.showDetails">Hide</span> details
+			      	</md-switch>
 		        </md-card-header>
 		        <div class="card-image-bg" flex>
 		        	<div layout="row" layout-align="center center" class="shadow-bg">
@@ -18,13 +21,13 @@
 			        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>{{ asset_tag.prefix }} - {{ asset_tag.sequence }}</h2>
 		        	</div>
 		        </div>
-		        <md-card-title ng-if="asset_tag.computer_name">
+		        <md-card-title ng-if="asset_tag.showDetails">
 		          	<md-card-title-text>
 		            	<span class="md-headline">{{ asset_tag.computer_name}}</span>
 		            	<!-- <span class="md-subhead">{{ asset_tag.department.name }}</span> -->
 		          	</md-card-title-text>
 		        </md-card-title>
-		        <md-card-content>
+		        <md-card-content ng-if="asset_tag.showDetails">
 		        	<h3 class="md-headline" ng-class="asset_tag.current_status == 'Deployed' ? 'primary-text' : (asset_tag.current_status == 'Stock' ? 'orange-text' : 'red-text')">{{ asset_tag.current_status }}</h3>
 		        	<p>Work Station: {{ asset_tag.work_station.name }} <span ng-if="!asset_tag.work_station.name">N/A</span></p>
 		        	<p>Property Code: {{ asset_tag.property_code }}</p>
@@ -86,6 +89,9 @@
 			            <span class="md-title">{{ asset_tag.asset.brand }}</span>
 			            <span class="md-subhead">{{ asset_tag.asset.model }}</span>
 		          	</md-card-header-text>
+		          	<md-switch class="md-primary" ng-model="asset_tag.showDetails">
+			      		<span ng-if="!asset_tag.showDetails">Show</span><span ng-if="asset_tag.showDetails">Hide</span> details
+			      	</md-switch>
 		        </md-card-header>
 		        <div class="card-image-bg" flex>
 		        	<div layout="row" layout-align="center center" class="shadow-bg">
@@ -94,13 +100,13 @@
 			        	<h2 class="md-display-2 white-text" hide-gt-xs show-xs>{{ asset_tag.prefix }} - {{ asset_tag.sequence }}</h2>
 		        	</div>
 		        </div>
-		        <md-card-title>
+		        <md-card-title ng-if="asset_tag.showDetails">
 		          	<md-card-title-text>
 		            	<span class="md-headline">{{ asset_tag.computer_name}}</span>
-		            	<span class="md-subhead">{{ asset_tag.department.name }}</span>
+		            	<!-- <span class="md-subhead">{{ asset_tag.department.name }}</span> -->
 		          	</md-card-title-text>
 		        </md-card-title>
-		        <md-card-content>
+		        <md-card-content ng-if="asset_tag.showDetails">
 		        	<h3 class="md-headline" ng-class="asset_tag.current_status == 'Deployed' ? 'primary-text' : (asset_tag.current_status == 'Stock' ? 'orange-text' : 'red-text')">{{ asset_tag.current_status }}</h3>
 		        	<p>Work Station: {{ asset_tag.work_station.name }} <span ng-if="!asset_tag.work_station.name">N/A</span></p>
 		        	<p>Property Code: {{ asset_tag.property_code }}</p>
