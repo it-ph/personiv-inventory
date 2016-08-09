@@ -94,6 +94,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('department-check-department', 'DepartmentController@checkDepartment');
 	Route::post('asset-type-check-asset-type', 'AssetTypeController@checkAssetType');
 	Route::get('department-work-station-department/{departmentID}', 'DepartmentWorkStationController@department');
+	Route::post('work-station-batch-transfer/{workStationID}', 'WorkStationController@batchTransfer');
 	
 	// Route resource store multiple
 	Route::post('asset-tag-multiple', 'AssetTagController@storeMultiple');

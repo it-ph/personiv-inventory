@@ -100,5 +100,8 @@ sharedModule
 			checkIP: function(id, data){
 				return $http.post(urlBase + '-check-ip/' + id, data);
 			},
+			batchTransfer: function(id, data){
+				return $http.post(urlBase + '-batch-transfer/' + id, data);
+			},
 		};
 	}])

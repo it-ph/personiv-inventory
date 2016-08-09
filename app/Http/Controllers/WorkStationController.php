@@ -13,9 +13,23 @@ use App\Http\Controllers\Controller;
 
 class WorkStationController extends Controller
 {
+    public function batchTransfer(Request $request, $id)
+    {
+        $this->validate($request, [
+            'work_station_id'=> 'required',
+        ]);
+
+        $workstation = Workstation::with('asset_tags')->where('id', $id)->first();
+
+        foreach ($workstation->asset_tags as $asset_tag_key => $asset_tag) {
+            $asset_tag->work_station_id = $request->work_station_id;
+            $asset_tag->save();
+        }
+    }
+
     public function others($id)
     {
-        return Workstation::with('departments')->whereNotIn('id', [$id])->get();
+        return Workstation::with('departments', 'asset_tags')->whereNotIn('id', [$id])->get();
     }
     public function checkIP(Request $request, $id)
     {

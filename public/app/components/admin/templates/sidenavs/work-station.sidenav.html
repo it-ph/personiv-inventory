@@ -11,7 +11,7 @@
 <md-content layout="column" flex>
 	<md-divider></md-divider>
 	<md-list layout="column" layout-padding>
-		<md-list-item class="md-2-line">
+		<md-list-item class="md-2-line" ng-if="workStation.ip_address">
 			<div class="md-list-item-text">
 				<h3>{{workStation.ip_address}}</h3>
 				<h4>IP Address</h4>

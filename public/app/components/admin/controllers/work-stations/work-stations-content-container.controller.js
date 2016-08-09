@@ -13,7 +13,7 @@ adminModule
 			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
 			return results;
 		}
-
+		
 		/* Refreshes the list */
 		$scope.toolbar.refresh = function(){
 			$scope.rightSidenav.department = '';

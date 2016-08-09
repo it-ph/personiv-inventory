@@ -12,9 +12,10 @@
 
 	<!-- Search Results -->
 	<div class="fade-transition" layout="column" flex ng-if="workStation.results && !workStation.paginated.show">
+		<md-subheader class="primary-text">Station Count: {{workStation.results.length}}</md-subheader>
 		<div layout-padding>
 			<md-list>
-				<md-list-item class="md-3-line" layout="row" ng-repeat="workStation in workStation.results | filter: rightSidenav.department | filter:toolbar.searchText" ng-click="show(workStation.id, workStation.departments.length)">
+				<md-list-item class="md-3-line" layout="row" ng-repeat="workStation in workStation.results | orderBy: 'name' | filter:toolbar.searchText" ng-click="show(workStation.id, workStation.departments.length)">
 					<h2 class="md-avatar md-headline" ng-class="{'red-bg':workStation.departments.length, 'blue-bg':!workStation.departments.length}" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ workStation.first_letter }}</span>
 					</h2>
@@ -35,7 +36,7 @@
 		<div layout-padding>
 			<p class="md-subhead primary-text"><span ng-if="!rightSidenav.department">All</span>{{ rightSidenav.department }}</p>
 			<md-list>
-				<md-list-item class="md-3-line" ng-click="show(workStation.id, workStation.departments.length)" layout="row" ng-repeat="workStation in workStation.paginated | orderBy:'name' | filter:toolbar.searchText | filter: rightSidenav.department">
+				<md-list-item class="md-3-line" ng-click="show(workStation.id, workStation.departments.length)" layout="row" ng-repeat="workStation in workStation.paginated | orderBy:'name' | filter:toolbar.searchText">
 					<h2 class="md-avatar md-headline" ng-class="{'red-bg':workStation.departments.length, 'blue-bg':!workStation.departments.length}" layout="row" layout-align="center center">
 						<span class="weight-200 white-text">{{ workStation.first_letter }}</span>
 					</h2>
