@@ -26,6 +26,7 @@ adminModule
 		 *
 		*/
 		$scope.showSearchBar = function(){
+			$scope.purchaseOrder.busy = true;
 			$scope.searchBar = true;
 		};
 
@@ -34,6 +35,7 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
+			$scope.purchaseOrder.busy = false;
 			$scope.searchBar = false;
 			$scope.toolbar.searchText = '';
 	    	if($scope.purchaseOrder.searched){

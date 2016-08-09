@@ -310,11 +310,11 @@ adminModule
 					AssetType.index()
 						.success(function(data){
 							// formats the data;
-							formatData(data.data);
+							formatData(data);
 
 							$scope.asset_types = data;
 
-							angular.forEach(data.data, function(item){
+							angular.forEach(data, function(item){
 								var toolbarItem = {};
 								toolbarItem.display = item.type;
 								$scope.toolbar.items.push(toolbarItem);
@@ -333,7 +333,7 @@ adminModule
 
 							$scope.users = data;
 
-							angular.forEach(data.data, function(item){
+							angular.forEach(data, function(item){
 								var toolbarItem = {};
 								toolbarItem.display = item.first_name;
 								$scope.toolbar.items.push(toolbarItem);
@@ -357,7 +357,7 @@ adminModule
 						.success(function(data){
 							formatData(data.data);
 
-							angular.forEach(data.data, function(item){
+							angular.forEach(data, function(item){
 								var toolbarItem = {};
 								toolbarItem.display = item.company;
 								$scope.toolbar.items.push(toolbarItem);

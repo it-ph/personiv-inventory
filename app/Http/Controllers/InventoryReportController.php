@@ -174,7 +174,7 @@ class InventoryReportController extends Controller
                             $asset_asset_tag_value->status = 'Deployed';
                         }
                         else if(!$asset_asset_tag_value->work_station_id){
-                            $asset_value->pulled_out += 1;
+                            $asset_value->stocks += 1;
                             $asset_asset_tag_value->status = 'Stock';
                         }
 

@@ -15,6 +15,12 @@ use App\Http\Controllers\Controller;
 
 class DepartmentWorkStationController extends Controller
 {
+    public function department($department_id)
+    {
+        $department_work_station = DepartmentWorkStation::with(['work_station' => function($query){ $query->with('departments'); }])->where('department_id', $department_id)->get();
+
+        return $department_work_station;
+    }
     public function relation($department_id, $work_station_id)
     {
         return DepartmentWorkStation::where('department_id', $department_id)->where('work_station_id', $work_station_id)->first();

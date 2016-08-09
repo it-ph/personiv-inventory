@@ -32,6 +32,9 @@
 					    <p ng-click="searchUserInput(toolbar.searchText)" ng-if="toolbar.searchAll" flex>Click to see all results for <span class="primary-text">"{{toolbar.searchText}}"</span></p>
 					</md-not-found>
 				</md-autocomplete>
+				<md-button type="submit" class="md-icon-button" ng-click="searchUserInput(toolbar.searchText)" ng-if="toolbar.searchAll">
+					<md-icon class="mdi mdi-24px mdi-magnify grey" aria-label="Search"></md-icon>
+				</md-button>
 			</form>
 		</div>
 		<!-- Icon Buttons -->

@@ -13,6 +13,7 @@ adminModule
 		$scope.toolbar.asset_type_id = assetTypeID;
 		// $scope.toolbar.childState = 'Settings';
 		$scope.toolbar.items = [];
+	    $scope.toolbar.searchAll = true;
 		$scope.toolbar.getItems = function(query){
 			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
 			return results;
@@ -46,17 +47,19 @@ adminModule
 
 		$scope.toolbar.refresh = function(){
 			/* Starts the loading */
-			$scope.status = '';
 			Preloader.loading();
+			$scope.status = '';
 			$scope.init(true);
 		}
 
 		$scope.showSearchBar = function(){
 	    	$scope.searchBar = true;
+	    	$scope.asset.busy = true;
 	    }
 
 	    $scope.hideSearchBar = function(){
 	    	$scope.searchBar = false;
+	    	$scope.asset.busy = false;
 	    	$scope.toolbar.searchText = '';
 	    	if($scope.assetTag.searched){
 	    		$scope.toolbar.refresh();
@@ -82,6 +85,31 @@ adminModule
 				    	Preloader.toastChangesSaved();
 				    	$scope.toolbar.refresh();
 				    })
+		    	}
+		    	else if(data == 'search'){
+					Preloader.loading();
+
+		    		var asset = Preloader.get();
+					$scope.assetTag.paginated.show = false;
+					$scope.assetTag.results = [];
+					$scope.status = '';
+					
+					
+					$scope.toolbar.items = [];
+		    		
+		    		AssetTag.search(asset)
+						.success(function(data){
+							angular.forEach(data, function(item){
+								pushItem(item);
+							});
+							
+							$scope.assetTag.results = data;
+							$scope.assetTag.searched = true;
+							Preloader.stop();
+						})
+						.error(function(){
+							Preloader.error();
+						});
 		    	}
 		    	else{
 		    		var confirm = $mdDialog.confirm()
@@ -136,17 +164,13 @@ adminModule
 			$scope.toolbar.items.push(item);
 	    }
 
-	    $scope.toolbar.searchAll = true;
-	    $scope.toolbar.getItems = function(query){
-	    	var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items = [];
-	    	return results;
-	    }
-
 		$scope.searchUserInput = function(){
-			$scope.asset.show = false;
-			$scope.assetTag.paginated.show = false;
 			Preloader.loading();
+			
+			$scope.status = '';
+			$scope.assetTag.paginated.show = false;
 			$scope.toolbar.items = [];
+
 			AssetTag.search($scope.toolbar)
 				.success(function(data){
 					angular.forEach(data, function(item){

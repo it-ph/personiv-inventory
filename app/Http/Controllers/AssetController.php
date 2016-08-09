@@ -110,7 +110,25 @@ class AssetController extends Controller
      */
     public function show($id)
     {
-        return Asset::where('id', $id)->with('type', 'details', 'asset_tags')->first();
+        $asset = Asset::where('id', $id)->with('type', 'details')->with(['asset_tags' => function($query){ $query->with('status'); }])->first();
+        $asset->deployed = 0;
+        $asset->pulled_out = 0;
+        $asset->stocks = 0;
+
+        foreach ($asset->asset_tags as $asset_tag_key => $asset_tag) {
+            if(count($asset_tag->status)){
+                $asset->pulled_out += 1;
+            }
+            else if($asset_tag->work_station_id)
+            {
+                $asset->deployed += 1;
+            }
+            else if(!$asset_tag->work_station_id){
+                $asset->stocks += 1;
+            }
+        }
+
+        return $asset;
     }
 
     /**

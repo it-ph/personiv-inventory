@@ -42,12 +42,12 @@
 				<md-tab ng-repeat="asset in purchaseOrder.asset_purchase_order" label="{{asset.asset.brand}} - {{asset.asset.model}} ({{asset.asset.type.type}})">
 					<md-subheader ng-if="asset.asset.asset_tags.length">Tagged</md-subheader>
 					<md-list layout="row" layout-wrap layout-padding>
-						<md-list-item flex="100" flex-gt-md="50" flex-gt-lg="30" class="md-3-line" ng-repeat="asset_tag in asset.asset.asset_tags | orderBy: 'property_code'" ng-click="">
-							<h2 class="md-avatar" ng-class="asset_tag.deleted_at ? 'red-bg' : 'primary-bg' " layout="row" layout-align="center center">
+						<md-list-item flex="100" flex-gt-md="50" flex-gt-lg="30" class="md-3-line" ng-repeat="asset_tag in asset.asset.asset_tags | filter:toolbar.searchText | orderBy: 'property_code'" ng-click="">
+							<h2 class="md-avatar" ng-class="asset_tag.current_status == 'Deployed' ? 'primary-bg' : (asset_tag.current_status == 'Stock' ? 'orange-bg' : 'red-bg')" layout="row" layout-align="center center">
 								<span class="md-headline white-text">{{asset.asset.model[0].toUpperCase()}}</span>
 							</h2>
 							<div class="md-list-item-text">
-								<h3>{{asset_tag.property_code}} <span class="md-caption secondary-text" ng-if="asset_tag.deleted_at">(Deleted)</span></h3>
+								<h3>{{asset_tag.property_code}} <span class="md-caption secondary-text">({{asset_tag.current_status}})</span></h3>
 								<h4>{{asset_tag.work_station.name}}</h4>
 								<p layout="column">
 									<div>

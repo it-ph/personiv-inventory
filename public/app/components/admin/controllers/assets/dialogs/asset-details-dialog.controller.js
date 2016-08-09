@@ -26,4 +26,8 @@ adminModule
 			$mdDialog.hide('delete');
 		};
 
+		$scope.search = function(){
+			Preloader.set($scope.asset);
+			$mdDialog.hide('search');
+		};
 	}]);

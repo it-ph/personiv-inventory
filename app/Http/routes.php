@@ -93,6 +93,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('user-check-email', 'UserController@checkEmail');
 	Route::post('department-check-department', 'DepartmentController@checkDepartment');
 	Route::post('asset-type-check-asset-type', 'AssetTypeController@checkAssetType');
+	Route::get('department-work-station-department/{departmentID}', 'DepartmentWorkStationController@department');
 	
 	// Route resource store multiple
 	Route::post('asset-tag-multiple', 'AssetTagController@storeMultiple');

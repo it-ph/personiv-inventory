@@ -46,15 +46,27 @@ class AssetTagController extends Controller
 
     public function search(Request $request)
     {
-        $this->validate($request, [
-            'searchText' => 'required|string',
-            'asset_type_id' => 'required',
-        ]);
+        if($request->searchText)
+        { 
+            $this->validate($request, [
+                'searchText' => 'required|string',
+                'asset_type_id' => 'required',
+            ]);
 
-        $this->searchText = $request->searchText;
-        $this->asset_type_id = $request->asset_type_id;
+            $this->searchText = $request->searchText;
+            $this->asset_type_id = $request->asset_type_id;
 
-        return AssetTag::with('type', 'asset', 'purchase_order', 'status', 'work_station')->where('asset_type_id', $this->asset_type_id)->orWhere(function($query){ $query->where('asset_type_id', $this->asset_type_id)->where('property_code', 'like', '%'. $this->searchText .'%'); })->orWhere(function($query){ $query->where('asset_type_id', $this->asset_type_id)->where('serial', 'like', '%'. $this->searchText .'%'); })->orWhere(function($query){ $query->where('asset_type_id', $this->asset_type_id)->where('computer_name', 'like', '%'. $this->searchText .'%'); })->get();
+            return AssetTag::with('type', 'asset', 'purchase_order', 'status', 'work_station')->where(function($query){ $query->where('asset_type_id', $this->asset_type_id)->where('property_code', 'like', '%'. $this->searchText .'%'); })->orWhere(function($query){ $query->where('asset_type_id', $this->asset_type_id)->where('serial', 'like', '%'. $this->searchText .'%'); })->orWhere(function($query){ $query->where('asset_type_id', $this->asset_type_id)->where('computer_name', 'like', '%'. $this->searchText .'%'); })->get();
+        }
+        else{
+            $this->validate($request, [
+                'id' => 'required',
+            ]);
+
+            $this->asset_id = $request->id;
+            return AssetTag::with('type', 'asset', 'purchase_order', 'status', 'work_station')->where('asset_id', $this->asset_id)->get();
+        }
+
     }
 
     public function paginate($id)

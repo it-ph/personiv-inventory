@@ -31,7 +31,7 @@
 <br>
 <table border="1">
 	<tr>
-		<th colspan="7" align="center">Asset Tags</th>
+		<th colspan="9" align="center">Asset Tags</th>
 	</tr>
 	<tr>
 		<th align="center">Brand</th>

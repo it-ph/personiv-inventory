@@ -21,5 +21,8 @@ sharedModule
 			relation: function(departmentID, workstationID){
 				return $http.get(urlBase + '-relation/' + departmentID + '/work-station/' + workstationID);
 			},
+			department: function(departmentID){
+				return $http.get(urlBase + '-department/' + departmentID);
+			},
 		};
 	}]);

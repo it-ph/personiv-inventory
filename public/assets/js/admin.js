@@ -450,242 +450,6 @@ adminModule
 		}
 	});
 adminModule
-	.controller('addEmployeeDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Department', 'Employee', function($scope, $stateParams, $mdDialog, Preloader, Department, Employee){
-		$scope.employee = {};
-		$scope.employee.department_id = $stateParams.departmentID;
-
-		Department.show($stateParams.departmentID)
-			.success(function(data){
-				$scope.department = data;
-			});
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		$scope.submit = function(){
-			/* Starts Preloader */
-			Preloader.preload();
-			/**
-			 * Stores Single Record
-			*/
-			Employee.store($scope.employee)
-				.then(function(){
-					// Stops Preloader 
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-		}
-
-	}]);
-adminModule
-	.controller('departmentContentContainerController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Employee', 'UserService', function($scope, $stateParams, $mdDialog, Preloader, Employee, UserService){
-		/**
-		 * Object for subheader
-		 *
-		*/
-		var departmentID = $stateParams.departmentID;
-
-		$scope.subheader = {};
-		$scope.subheader.state = 'departments';
-
-		/* Refreshes the list */
-		$scope.subheader.refresh = function(){
-			// start preloader
-			Preloader.preload();
-			// clear desktop
-			$scope.employee.paginated = {};
-			$scope.employee.page = 2;
-			Employee.paginateDepartment(departmentID)
-				.then(function(data){
-					$scope.employee.paginated = data.data;
-					$scope.employee.paginated.show = true;
-					// stop preload
-					Preloader.stop();
-				}, function(){
-					Preloader.error();
-				});
-		};
-
-		/**
-		 * Object for fab
-		 *
-		*/
-		$scope.fab = {};
-
-		$scope.fab.icon = 'mdi-plus';
-		$scope.fab.label = 'Add';
-		$scope.fab.show = true;
-
-		$scope.fab.action = function(){
-		    $mdDialog.show({
-		      	controller: 'addEmployeeDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/add-employee-dialog.template.html',
-		      	parent: angular.element($('body')),
-		    })
-		    .then(function(){
-		    	/* Refreshes the list */
-		    	$scope.subheader.refresh();
-		    });
-		};
-
-		/**
-		 * Object for rightSidenav
-		 *
-		*/
-		$scope.rightSidenav = {};
-		// hides right sidenav
-		$scope.rightSidenav.show = false;
-
-		/**
-		 * Object for Employee
-		 *
-		*/
-		$scope.employee = {};
-		// 2 is default so the next page to be loaded will be page 2 
-		$scope.employee.page = 2;
-		//
-
-		Employee.paginateDepartment(departmentID)
-			.then(function(data){
-				$scope.employee.paginated = data.data;
-				$scope.employee.paginated.show = true;
-
-				$scope.employee.paginateLoad = function(){
-					// kills the function if ajax is busy or pagination reaches last page
-					if($scope.employee.busy || ($scope.employee.page > $scope.employee.paginated.last_page)){
-						return;
-					}
-					/**
-					 * Executes pagination call
-					 *
-					*/
-					// sets to true to disable pagination call if still busy.
-					$scope.employee.busy = true;
-
-					// Calls the next page of pagination.
-					Employee.paginateDepartment(departmentID, $scope.employee.page)
-						.then(function(data){
-							// increment the page to set up next page for next AJAX Call
-							$scope.employee.page++;
-
-							// iterate over each data then splice it to the data array
-							angular.forEach(data.data.data, function(item, key){
-								$scope.employee.paginated.data.push(item);
-							});
-
-							// Enables again the pagination call for next call.
-							$scope.employee.busy = false;
-
-							console.log('loaded');
-						});
-				}
-			}, function(){
-				Preloader.error();
-			});
-
-		/**
-		 * Status of search bar.
-		 *
-		*/
-		$scope.searchBar = false;
-
-		/**
-		 * Reveals the search bar.
-		 *
-		*/
-		$scope.showSearchBar = function(){
-			$scope.searchBar = true;
-		};
-
-		/**
-		 * Hides the search bar.
-		 *
-		*/
-		$scope.hideSearchBar = function(){
-			$scope.employee.userInput = '';
-			$scope.searchBar = false;
-		};
-		
-		
-		$scope.searchUserInput = function(){
-			$scope.employee.paginated.show = false;
-			Preloader.preload()
-			Employee.search(departmentID, $scope.employee)
-				.success(function(data){
-					$scope.employee.results = data;
-					Preloader.stop();
-				})
-				.error(function(data){
-					Preloader.error();
-				});
-		};
-
-		$scope.show = function(id){
-			UserService.set(id);
-			$mdDialog.show({
-		      	controller: 'showEmployeeDialogController',
-			    templateUrl: '/app/components/admin/templates/dialogs/show-employee-dialog.template.html',
-		      	parent: angular.element($('body')),
-		      	clickOutsideToClose:true,
-		    });
-		};
-	}]);
-adminModule
-	.controller('departmentToolbarController', ['$scope', '$stateParams', 'Department', 'departmentService', function($scope, $stateParams, Department, departmentService){
-		/**
-		 *  Object for toolbar view.
-		 *
-		*/
-		$scope.toolbar = {};
-
-		/**
-		 * Properties and method of toolbar.
-		 *
-		*/
-
-		/**
-		 * Fetch the department data stored at deparments servce.
-		 *
-		*/
-		var index = $stateParams.departmentID - 1;
-		$scope.toolbar.parentState = 'Departments';
-
-		var departments = departmentService.get();
-		if(!departments.length){
-			Department.index()
-				.success(function(data){
-					departments = data;
-					$scope.toolbar.childState = departments[index].name;
-				})
-				.error(function(data){
-					Preload.error();
-				});
-		}
-		else{
-			$scope.toolbar.childState = departments[index].name;
-		}
-	}]);
-adminModule
-	.controller('showEmployeeDialogController', ['$scope', '$mdDialog', '$stateParams', 'UserService', 'EmployeeTag', 'Employee', function($scope, $mdDialog, $stateParams, UserService, EmployeeTag, Employee){
-		var employeeID = UserService.get();
-
-		$scope.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		Employee.show(employeeID)
-			.success(function(data){
-				$scope.employee = data;
-			});
-
-		EmployeeTag.employee(employeeID)
-			.success(function(data){
-				$scope.workstation = data;
-			});
-	}]);
-adminModule
 	.controller('assetTypeContentController', ['$scope', '$filter', '$mdDialog', '$state', '$stateParams', 'AssetType', 'Asset', 'AssetTag', 'Preloader', function($scope, $filter, $mdDialog, $state, $stateParams, AssetType, Asset, AssetTag, Preloader){
 		var assetTypeID = $stateParams.assetTypeID;
 		$scope.state = $state.current.name;
@@ -700,6 +464,7 @@ adminModule
 		$scope.toolbar.asset_type_id = assetTypeID;
 		// $scope.toolbar.childState = 'Settings';
 		$scope.toolbar.items = [];
+	    $scope.toolbar.searchAll = true;
 		$scope.toolbar.getItems = function(query){
 			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
 			return results;
@@ -733,17 +498,19 @@ adminModule
 
 		$scope.toolbar.refresh = function(){
 			/* Starts the loading */
-			$scope.status = '';
 			Preloader.loading();
+			$scope.status = '';
 			$scope.init(true);
 		}
 
 		$scope.showSearchBar = function(){
 	    	$scope.searchBar = true;
+	    	$scope.asset.busy = true;
 	    }
 
 	    $scope.hideSearchBar = function(){
 	    	$scope.searchBar = false;
+	    	$scope.asset.busy = false;
 	    	$scope.toolbar.searchText = '';
 	    	if($scope.assetTag.searched){
 	    		$scope.toolbar.refresh();
@@ -769,6 +536,31 @@ adminModule
 				    	Preloader.toastChangesSaved();
 				    	$scope.toolbar.refresh();
 				    })
+		    	}
+		    	else if(data == 'search'){
+					Preloader.loading();
+
+		    		var asset = Preloader.get();
+					$scope.assetTag.paginated.show = false;
+					$scope.assetTag.results = [];
+					$scope.status = '';
+					
+					
+					$scope.toolbar.items = [];
+		    		
+		    		AssetTag.search(asset)
+						.success(function(data){
+							angular.forEach(data, function(item){
+								pushItem(item);
+							});
+							
+							$scope.assetTag.results = data;
+							$scope.assetTag.searched = true;
+							Preloader.stop();
+						})
+						.error(function(){
+							Preloader.error();
+						});
 		    	}
 		    	else{
 		    		var confirm = $mdDialog.confirm()
@@ -823,17 +615,13 @@ adminModule
 			$scope.toolbar.items.push(item);
 	    }
 
-	    $scope.toolbar.searchAll = true;
-	    $scope.toolbar.getItems = function(query){
-	    	var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items = [];
-	    	return results;
-	    }
-
 		$scope.searchUserInput = function(){
-			$scope.asset.show = false;
-			$scope.assetTag.paginated.show = false;
 			Preloader.loading();
+			
+			$scope.status = '';
+			$scope.assetTag.paginated.show = false;
 			$scope.toolbar.items = [];
+
 			AssetTag.search($scope.toolbar)
 				.success(function(data){
 					angular.forEach(data, function(item){
@@ -1107,6 +895,242 @@ adminModule
 		}
 
 		$scope.init();
+	}]);
+adminModule
+	.controller('addEmployeeDialogController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Department', 'Employee', function($scope, $stateParams, $mdDialog, Preloader, Department, Employee){
+		$scope.employee = {};
+		$scope.employee.department_id = $stateParams.departmentID;
+
+		Department.show($stateParams.departmentID)
+			.success(function(data){
+				$scope.department = data;
+			});
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		$scope.submit = function(){
+			/* Starts Preloader */
+			Preloader.preload();
+			/**
+			 * Stores Single Record
+			*/
+			Employee.store($scope.employee)
+				.then(function(){
+					// Stops Preloader 
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		}
+
+	}]);
+adminModule
+	.controller('departmentContentContainerController', ['$scope', '$stateParams', '$mdDialog', 'Preloader', 'Employee', 'UserService', function($scope, $stateParams, $mdDialog, Preloader, Employee, UserService){
+		/**
+		 * Object for subheader
+		 *
+		*/
+		var departmentID = $stateParams.departmentID;
+
+		$scope.subheader = {};
+		$scope.subheader.state = 'departments';
+
+		/* Refreshes the list */
+		$scope.subheader.refresh = function(){
+			// start preloader
+			Preloader.preload();
+			// clear desktop
+			$scope.employee.paginated = {};
+			$scope.employee.page = 2;
+			Employee.paginateDepartment(departmentID)
+				.then(function(data){
+					$scope.employee.paginated = data.data;
+					$scope.employee.paginated.show = true;
+					// stop preload
+					Preloader.stop();
+				}, function(){
+					Preloader.error();
+				});
+		};
+
+		/**
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+
+		$scope.fab.icon = 'mdi-plus';
+		$scope.fab.label = 'Add';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+		    $mdDialog.show({
+		      	controller: 'addEmployeeDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/add-employee-dialog.template.html',
+		      	parent: angular.element($('body')),
+		    })
+		    .then(function(){
+		    	/* Refreshes the list */
+		    	$scope.subheader.refresh();
+		    });
+		};
+
+		/**
+		 * Object for rightSidenav
+		 *
+		*/
+		$scope.rightSidenav = {};
+		// hides right sidenav
+		$scope.rightSidenav.show = false;
+
+		/**
+		 * Object for Employee
+		 *
+		*/
+		$scope.employee = {};
+		// 2 is default so the next page to be loaded will be page 2 
+		$scope.employee.page = 2;
+		//
+
+		Employee.paginateDepartment(departmentID)
+			.then(function(data){
+				$scope.employee.paginated = data.data;
+				$scope.employee.paginated.show = true;
+
+				$scope.employee.paginateLoad = function(){
+					// kills the function if ajax is busy or pagination reaches last page
+					if($scope.employee.busy || ($scope.employee.page > $scope.employee.paginated.last_page)){
+						return;
+					}
+					/**
+					 * Executes pagination call
+					 *
+					*/
+					// sets to true to disable pagination call if still busy.
+					$scope.employee.busy = true;
+
+					// Calls the next page of pagination.
+					Employee.paginateDepartment(departmentID, $scope.employee.page)
+						.then(function(data){
+							// increment the page to set up next page for next AJAX Call
+							$scope.employee.page++;
+
+							// iterate over each data then splice it to the data array
+							angular.forEach(data.data.data, function(item, key){
+								$scope.employee.paginated.data.push(item);
+							});
+
+							// Enables again the pagination call for next call.
+							$scope.employee.busy = false;
+
+							console.log('loaded');
+						});
+				}
+			}, function(){
+				Preloader.error();
+			});
+
+		/**
+		 * Status of search bar.
+		 *
+		*/
+		$scope.searchBar = false;
+
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.employee.userInput = '';
+			$scope.searchBar = false;
+		};
+		
+		
+		$scope.searchUserInput = function(){
+			$scope.employee.paginated.show = false;
+			Preloader.preload()
+			Employee.search(departmentID, $scope.employee)
+				.success(function(data){
+					$scope.employee.results = data;
+					Preloader.stop();
+				})
+				.error(function(data){
+					Preloader.error();
+				});
+		};
+
+		$scope.show = function(id){
+			UserService.set(id);
+			$mdDialog.show({
+		      	controller: 'showEmployeeDialogController',
+			    templateUrl: '/app/components/admin/templates/dialogs/show-employee-dialog.template.html',
+		      	parent: angular.element($('body')),
+		      	clickOutsideToClose:true,
+		    });
+		};
+	}]);
+adminModule
+	.controller('departmentToolbarController', ['$scope', '$stateParams', 'Department', 'departmentService', function($scope, $stateParams, Department, departmentService){
+		/**
+		 *  Object for toolbar view.
+		 *
+		*/
+		$scope.toolbar = {};
+
+		/**
+		 * Properties and method of toolbar.
+		 *
+		*/
+
+		/**
+		 * Fetch the department data stored at deparments servce.
+		 *
+		*/
+		var index = $stateParams.departmentID - 1;
+		$scope.toolbar.parentState = 'Departments';
+
+		var departments = departmentService.get();
+		if(!departments.length){
+			Department.index()
+				.success(function(data){
+					departments = data;
+					$scope.toolbar.childState = departments[index].name;
+				})
+				.error(function(data){
+					Preload.error();
+				});
+		}
+		else{
+			$scope.toolbar.childState = departments[index].name;
+		}
+	}]);
+adminModule
+	.controller('showEmployeeDialogController', ['$scope', '$mdDialog', '$stateParams', 'UserService', 'EmployeeTag', 'Employee', function($scope, $mdDialog, $stateParams, UserService, EmployeeTag, Employee){
+		var employeeID = UserService.get();
+
+		$scope.cancel = function(){
+			$mdDialog.cancel();
+		}
+
+		Employee.show(employeeID)
+			.success(function(data){
+				$scope.employee = data;
+			});
+
+		EmployeeTag.employee(employeeID)
+			.success(function(data){
+				$scope.workstation = data;
+			});
 	}]);
 adminModule
 	.controller('barcodeDialogController', ['$scope', '$mdDialog', function($scope, $mdDialog){
@@ -1899,6 +1923,7 @@ adminModule
 		 *
 		*/
 		$scope.showSearchBar = function(){
+			$scope.purchaseOrder.busy = true;
 			$scope.searchBar = true;
 		};
 
@@ -1907,6 +1932,7 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
+			$scope.purchaseOrder.busy = false;
 			$scope.searchBar = false;
 			$scope.toolbar.searchText = '';
 	    	if($scope.purchaseOrder.searched){
@@ -2364,11 +2390,11 @@ adminModule
 					AssetType.index()
 						.success(function(data){
 							// formats the data;
-							formatData(data.data);
+							formatData(data);
 
 							$scope.asset_types = data;
 
-							angular.forEach(data.data, function(item){
+							angular.forEach(data, function(item){
 								var toolbarItem = {};
 								toolbarItem.display = item.type;
 								$scope.toolbar.items.push(toolbarItem);
@@ -2387,7 +2413,7 @@ adminModule
 
 							$scope.users = data;
 
-							angular.forEach(data.data, function(item){
+							angular.forEach(data, function(item){
 								var toolbarItem = {};
 								toolbarItem.display = item.first_name;
 								$scope.toolbar.items.push(toolbarItem);
@@ -2411,7 +2437,7 @@ adminModule
 						.success(function(data){
 							formatData(data.data);
 
-							angular.forEach(data.data, function(item){
+							angular.forEach(data, function(item){
 								var toolbarItem = {};
 								toolbarItem.display = item.company;
 								$scope.toolbar.items.push(toolbarItem);
@@ -2667,7 +2693,7 @@ adminModule
 
 	}]);
 adminModule
-	.controller('workStationsContentContainerController', ['$scope', '$filter', '$state', '$mdDialog', 'Preloader', 'WorkStation', 'Department', function($scope, $filter, $state, $mdDialog, Preloader, WorkStation, Department){
+	.controller('workStationsContentContainerController', ['$scope', '$filter', '$state', '$mdDialog', 'Preloader', 'WorkStation', 'Department', 'DepartmentWorkStation', function($scope, $filter, $state, $mdDialog, Preloader, WorkStation, Department, DepartmentWorkStation){
 		/**
 		  *
 		  * Object for toolbar
@@ -2695,6 +2721,7 @@ adminModule
 		 *
 		*/
 		$scope.showSearchBar = function(){
+			$scope.workStation.busy = true;
 			$scope.searchBar = true;
 		};
 
@@ -2703,6 +2730,7 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
+			$scope.workStation.busy = false;
 			$scope.searchBar = false;
 			$scope.toolbar.searchText = '';
 	    	if($scope.workStation.searched){
@@ -2791,8 +2819,22 @@ adminModule
 		// hides right sidenav
 		$scope.rightSidenav.show = true;
 
-		$scope.filterWorkStation = function(data){
-			$scope.rightSidenav.department = data;
+		$scope.filterWorkStation = function(departmentID){
+			Preloader.loading();
+			$scope.workStation.paginated.show = false;
+
+			DepartmentWorkStation.department(departmentID)
+				.success(function(data){
+					results = [];
+					angular.forEach(data, function(item){
+						pushItem(item.work_station);
+						results.push(item.work_station);
+					});
+
+					$scope.workStation.results = results;
+					Preloader.stop();
+					$scope.workStation.searched = true;
+				});
 		};
 
 		$scope.init = function(refresh){
@@ -2940,6 +2982,10 @@ adminModule
 			$mdDialog.hide('delete');
 		};
 
+		$scope.search = function(){
+			Preloader.set($scope.asset);
+			$mdDialog.hide('search');
+		};
 	}]);
 adminModule
 	.controller('createAssetDialogController', ['$scope', '$stateParams', '$mdDialog', 'Asset', 'AssetDetail', 'Preloader', function($scope, $stateParams, $mdDialog, Asset, AssetDetail, Preloader){
@@ -3230,6 +3276,15 @@ adminModule
 		  *
 		*/
 		$scope.toolbar = {};
+		$scope.toolbar.items = [];
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+	    $scope.toolbar.getItems = function(query){
+	    	var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items = [];
+	    	return results;
+	    }
 		$scope.toolbar.parentState = 'Purchase Order';
 		$scope.toolbar.childState = 'Asset Tags';
 	    $scope.toolbar.searchAll = false;
@@ -3244,6 +3299,14 @@ adminModule
 			Preloader.loading();
 			$scope.init(true);
 		}
+
+		$scope.showSearchBar = function(){
+	    	$scope.searchBar = true;
+	    }
+
+	    $scope.hideSearchBar = function(){
+	    	$scope.searchBar = false;
+	    }
 
 		/**
 		 * Object for fab
@@ -3301,6 +3364,14 @@ adminModule
 		    });
 		};
 
+		var pushItem = function(data){
+			var item = {};
+
+			item.display = data.property_code;
+
+			$scope.toolbar.items.push(item);
+		}
+
 		$scope.init = function(refresh){
 			$scope.purchaseOrder = null;
 
@@ -3321,8 +3392,11 @@ adminModule
 
 					angular.forEach(data.asset_purchase_order, function(asset_purchase_order){
 						angular.forEach(asset_purchase_order.asset.asset_tags, function(asset_tag){
+							asset_tag.current_status = asset_tag.status.length ? 'Pulled Out' : (asset_tag.work_station_id ? 'Deployed' : 'Stock');
 							asset_tag.warranty_end = asset_tag.warranty_end ? new Date(asset_tag.warranty_end) : null;
 							asset_tag.date_received = asset_tag.date_received ? new Date(asset_tag.date_received) : null;
+
+							pushItem(asset_tag);
 						});
 					});
 

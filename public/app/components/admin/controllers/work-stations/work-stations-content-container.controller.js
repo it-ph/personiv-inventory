@@ -1,5 +1,5 @@
 adminModule
-	.controller('workStationsContentContainerController', ['$scope', '$filter', '$state', '$mdDialog', 'Preloader', 'WorkStation', 'Department', function($scope, $filter, $state, $mdDialog, Preloader, WorkStation, Department){
+	.controller('workStationsContentContainerController', ['$scope', '$filter', '$state', '$mdDialog', 'Preloader', 'WorkStation', 'Department', 'DepartmentWorkStation', function($scope, $filter, $state, $mdDialog, Preloader, WorkStation, Department, DepartmentWorkStation){
 		/**
 		  *
 		  * Object for toolbar
@@ -27,6 +27,7 @@ adminModule
 		 *
 		*/
 		$scope.showSearchBar = function(){
+			$scope.workStation.busy = true;
 			$scope.searchBar = true;
 		};
 
@@ -35,6 +36,7 @@ adminModule
 		 *
 		*/
 		$scope.hideSearchBar = function(){
+			$scope.workStation.busy = false;
 			$scope.searchBar = false;
 			$scope.toolbar.searchText = '';
 	    	if($scope.workStation.searched){
@@ -123,8 +125,22 @@ adminModule
 		// hides right sidenav
 		$scope.rightSidenav.show = true;
 
-		$scope.filterWorkStation = function(data){
-			$scope.rightSidenav.department = data;
+		$scope.filterWorkStation = function(departmentID){
+			Preloader.loading();
+			$scope.workStation.paginated.show = false;
+
+			DepartmentWorkStation.department(departmentID)
+				.success(function(data){
+					results = [];
+					angular.forEach(data, function(item){
+						pushItem(item.work_station);
+						results.push(item.work_station);
+					});
+
+					$scope.workStation.results = results;
+					Preloader.stop();
+					$scope.workStation.searched = true;
+				});
 		};
 
 		$scope.init = function(refresh){

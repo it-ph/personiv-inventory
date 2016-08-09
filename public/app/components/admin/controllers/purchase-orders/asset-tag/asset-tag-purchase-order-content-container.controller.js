@@ -7,6 +7,15 @@ adminModule
 		  *
 		*/
 		$scope.toolbar = {};
+		$scope.toolbar.items = [];
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+	    $scope.toolbar.getItems = function(query){
+	    	var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items = [];
+	    	return results;
+	    }
 		$scope.toolbar.parentState = 'Purchase Order';
 		$scope.toolbar.childState = 'Asset Tags';
 	    $scope.toolbar.searchAll = false;
@@ -21,6 +30,14 @@ adminModule
 			Preloader.loading();
 			$scope.init(true);
 		}
+
+		$scope.showSearchBar = function(){
+	    	$scope.searchBar = true;
+	    }
+
+	    $scope.hideSearchBar = function(){
+	    	$scope.searchBar = false;
+	    }
 
 		/**
 		 * Object for fab
@@ -78,6 +95,14 @@ adminModule
 		    });
 		};
 
+		var pushItem = function(data){
+			var item = {};
+
+			item.display = data.property_code;
+
+			$scope.toolbar.items.push(item);
+		}
+
 		$scope.init = function(refresh){
 			$scope.purchaseOrder = null;
 
@@ -98,8 +123,11 @@ adminModule
 
 					angular.forEach(data.asset_purchase_order, function(asset_purchase_order){
 						angular.forEach(asset_purchase_order.asset.asset_tags, function(asset_tag){
+							asset_tag.current_status = asset_tag.status.length ? 'Pulled Out' : (asset_tag.work_station_id ? 'Deployed' : 'Stock');
 							asset_tag.warranty_end = asset_tag.warranty_end ? new Date(asset_tag.warranty_end) : null;
 							asset_tag.date_received = asset_tag.date_received ? new Date(asset_tag.date_received) : null;
+
+							pushItem(asset_tag);
 						});
 					});
 
