@@ -37,13 +37,15 @@ adminModule
 
 		$scope.checkIP = function(){
 			$scope.duplicate = false;
-			WorkStation.checkIP(workStationID, $scope.workStation)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-				.error(function(){
-					Preloader.error();
-				})
+			if($scope.workStation.ip_address){
+				WorkStation.checkIP(workStationID, $scope.workStation)
+					.success(function(data){
+						$scope.duplicate = data;
+					})
+					.error(function(){
+						Preloader.error();
+					})
+			}
 		}
 
 		$scope.cancel = function(){
