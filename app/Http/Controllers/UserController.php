@@ -82,6 +82,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $check_user = User::where('email', $request->email)->first();
+
+        if($check_user)
+        {
+            return response()->json(true);
+        }
+        
         $this->validate($request, [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
@@ -90,12 +97,7 @@ class UserController extends Controller
             'password' => 'required|confirmed|min:8',
         ]);
 
-        $check_user = User::where('email', $request->email)->first();
 
-        if($check_user)
-        {
-            return response()->json(true);
-        }
 
         $user = new User;
 

@@ -454,6 +454,8 @@ adminModule
 		var assetTypeID = $stateParams.assetTypeID;
 		$scope.state = $state.current.name;
 		$scope.showSubheader =  true;
+		$scope.asset = {};
+		$scope.assetTag = {};
 		/**
 		  *
 		  * Object for toolbar
@@ -506,11 +508,13 @@ adminModule
 		$scope.showSearchBar = function(){
 	    	$scope.searchBar = true;
 	    	$scope.asset.busy = true;
+	    	$scope.assetTag.busy = true;
 	    }
 
 	    $scope.hideSearchBar = function(){
 	    	$scope.searchBar = false;
 	    	$scope.asset.busy = false;
+	    	$scope.assetTag.busy = false;
 	    	$scope.toolbar.searchText = '';
 	    	if($scope.assetTag.searched){
 	    		$scope.toolbar.refresh();
@@ -555,7 +559,6 @@ adminModule
 							});
 							
 							$scope.assetTag.results = data;
-							$scope.assetTag.searched = true;
 							Preloader.stop();
 						})
 						.error(function(){
@@ -668,7 +671,14 @@ adminModule
 		      	parent: angular.element($('body')),
 		    })
 		    .then(function(){
-		    	$scope.toolbar.refresh();
+		    	Preloader.toastChangesSaved();
+		    	if($scope.assetTag.searched){
+		    		$scope.searchUserInput();
+		    	}
+		    	else{
+		    		$scope.toolbar.refresh();
+		    	}
+
 		    });
 		};
 
@@ -777,7 +787,7 @@ adminModule
 					return;
 				})
 				.then(function(){
-					$scope.asset = {};
+					// $scope.asset = {};
 					$scope.asset.paginated = [];
 					$scope.toolbar.items = [];
 					// 2 is default so the next page to be loaded will be page 2 
@@ -836,7 +846,7 @@ adminModule
 					})
 
 					// Asset Tags
-					$scope.assetTag = {};
+					// $scope.assetTag = {};
 					$scope.assetTag.paginated = [];
 					$scope.toolbar.items = [];
 					// 2 is default so the next page to be loaded will be page 2 

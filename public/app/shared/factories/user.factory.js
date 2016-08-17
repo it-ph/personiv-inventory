@@ -33,5 +33,8 @@ sharedModule
 			checkEmail: function(data){
 				return $http.post(urlBase + '-check-email', data);
 			},
+			others: function(){
+				return $http.get(urlBase + '-others');
+			},
 		};
 	}]);
