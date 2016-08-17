@@ -4,7 +4,7 @@ adminModule
 		$scope.state = $state.current.name;
 		$scope.showSubheader =  true;
 		$scope.asset = {};
-		$scope.assetTag = {};
+		$scope.assetTag = {}
 		/**
 		  *
 		  * Object for toolbar
