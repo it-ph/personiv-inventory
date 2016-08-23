@@ -103,5 +103,8 @@ sharedModule
 			batchTransfer: function(id, data){
 				return $http.post(urlBase + '-batch-transfer/' + id, data);
 			},
+			batchSwap: function(id, data){
+				return $http.post(urlBase + '-batch-swap/' + id, data);
+			},
 		};
 	}])

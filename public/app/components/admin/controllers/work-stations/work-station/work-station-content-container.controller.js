@@ -20,23 +20,6 @@ adminModule
 			return results;
 		}
 
-		$scope.toolbar.options = [
-			{
-				'label': 'Batch Transfer',
-				'icon': 'mdi-transfer',
-				action : function(){
-					Preloader.set(workStationID);
-					$mdDialog.show({
-				      	controller: 'batchTransferAssetTagDialogController',
-					    templateUrl: '/app/components/admin/templates/dialogs/batch-transfer-asset-tag-dialog.template.html',
-				      	parent: angular.element($('body')),
-				    })
-				    .then(function(){
-				    	$scope.toolbar.refresh();
-				    });
-				},
-			},
-		]
 
 		$scope.toolbar.refresh = function(){
 			Preloader.loading();
@@ -225,6 +208,41 @@ adminModule
 					})
 
 					$scope.workStation = data;
+
+					if($scope.workStation.asset_tags.length){
+						$scope.toolbar.options = [
+							{
+								'label': 'Batch Transfer',
+								'icon': 'mdi-transfer',
+								action : function(){
+									Preloader.set(workStationID);
+									$mdDialog.show({
+								      	controller: 'batchTransferAssetTagDialogController',
+									    templateUrl: '/app/components/admin/templates/dialogs/batch-transfer-asset-tag-dialog.template.html',
+								      	parent: angular.element($('body')),
+								    })
+								    .then(function(){
+								    	$scope.toolbar.refresh();
+								    });
+								},
+							},
+							{
+								'label': 'Batch Swap',
+								'icon': 'mdi-swap-horizontal',
+								action : function(){
+									Preloader.set(workStationID);
+									$mdDialog.show({
+								      	controller: 'batchSwapAssetTagDialogController',
+									    templateUrl: '/app/components/admin/templates/dialogs/batch-swap-asset-tag-dialog.template.html',
+								      	parent: angular.element($('body')),
+								    })
+								    .then(function(){
+								    	$scope.toolbar.refresh();
+								    });
+								},
+							},
+						];
+					}
 
 					if(data.asset_tags.length)
 					{

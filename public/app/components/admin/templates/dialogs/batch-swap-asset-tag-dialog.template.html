@@ -1,0 +1,105 @@
+<md-dialog layout="column" flex flex-gt-sm="50" flex-gt-lg="40"  aria-label="Program" ng-cloak>
+	<form name="assetTagForm" novalidate>
+		<md-toolbar class="white-toolbar">
+			<div class="md-toolbar-tools">
+				<h2 class="primary-text">{{ workStation.name }}</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					<md-icon class="mdi mdi-close mdi-24px grey" aria-label="cancel"></md-icon>
+				</md-button>
+			</div>
+		</md-toolbar>
+		<md-dialog-content layout="column" flex layout-padding layout-wrap>
+			<div layout="column">
+				<md-subheader class="md-no-sticky">Swap</md-subheader>
+				<div layout="row">				
+					<!-- Floor -->
+					<md-input-container flex>
+						<label>Floor</label>
+						<md-select name="Floor" ng-model="floor" required ng-change="transfer.work_station_id=null">
+							<md-option ng-repeat="floor in floors" value="{{ floor }}">
+								<span>{{ floor }}</span>
+							</md-option>
+						</md-select>
+						<div ng-messages="assetTagForm.Floor.$error" ng-if="assetTagForm.Floor.$touched">
+							<div ng-message="required">Floor is required</div>
+						</div>
+					</md-input-container>
+					<!-- Division -->
+					<md-input-container flex>
+						<label>Division</label>
+						<md-select name="Division" ng-model="division" ng-disabled="!floor" ng-change="transfer.work_station_id=null">
+							<md-option ng-repeat="division in divisions" value="{{ division }}">
+								<span>{{ division }}</span>
+							</md-option>
+						</md-select>
+						<div ng-messages="assetTagForm.Division.$error" ng-if="assetTagForm.Division.$touched">
+							<div ng-message="required">Division is required</div>
+						</div>
+					</md-input-container>
+					<!-- Type -->
+					<md-input-container flex>
+						<label>Type</label>
+						<md-select name="Type" ng-model="type" ng-disabled="!division" ng-change="transfer.work_station_id=null">
+							<md-option ng-repeat="type in types" value="{{ type }}">
+								<span>{{ type }}</span>
+							</md-option>
+						</md-select>
+						<div ng-messages="assetTagForm.Type.$error" ng-if="assetTagForm.Type.$touched">
+							<div ng-message="required">Type is required</div>
+						</div>
+					</md-input-container>
+				</div>
+				<!-- Work Station -->
+				<md-input-container>
+					<label>Work Station</label>
+					<md-select name="WorkStation" required ng-model="transfer.work_station_id" ng-disabled="!type" ng-change="getForSwap(transfer.work_station_id)">
+						<md-option ng-repeat="workStation in workStations | filter:{floor: floor} | filter:{division:division} | filter:{type:type}" value="{{ workStation.id }}" ng-if="workStation.departments.length && workStation.asset_tags.length">
+							<span>{{ workStation.name }}</span>
+						</md-option>
+					</md-select>
+					<div ng-messages="assetTagForm.WorkStation.$error" ng-if="assetTagForm.WorkStation.$touched">
+						<div ng-message="required">Work station is required.</div>						
+					</div>
+				</md-input-container>
+				<div layout="row">
+					<div flex>
+						<md-subheader>From</md-subheader>
+						<md-list flex layout="column">
+							<md-list-item class="md-3-line" ng-repeat="assetTag in workStation.asset_tags">
+								<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+									<span class="white-text">{{assetTag.first_letter}}</span>
+								</h2>
+								<div class="md-list-item-text" layout="column" flex>
+									<h3>{{assetTag.asset.brand}}</h3>
+									<h4>{{assetTag.asset.model}}</h4>
+									<p>{{assetTag.property_code}}</p>
+								</div>
+							</md-list-item>
+						</md-list>
+					</div>
+					<div flex ng-if="workStationSwap">
+						<md-subheader>To</md-subheader>
+						<md-list flex layout="column">
+							<md-list-item class="md-3-line" ng-repeat="assetTag in workStationSwap.asset_tags">
+								<h2 class="md-avatar md-headline blue-bg" layout="row" layout-align="center center">
+									<span class="white-text">{{assetTag.first_letter}}</span>
+								</h2>
+								<div class="md-list-item-text" layout="column" flex>
+									<h3>{{assetTag.asset.brand}}</h3>
+									<h4>{{assetTag.asset.model}}</h4>
+									<p>{{assetTag.property_code}}</p>
+								</div>
+							</md-list-item>
+						</md-list>
+					</div>
+				</div>
+			</div>
+		</md-dialog-content>
+	</form>
+	<div layout="row" layout-align="end center">		
+		<md-button class="md-button md-primary" aria-label="Submit" ng-click="submit()">
+			Submit
+		</md-button>
+	</div>
+</md-dialog>

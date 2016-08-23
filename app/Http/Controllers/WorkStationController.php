@@ -13,6 +13,36 @@ use App\Http\Controllers\Controller;
 
 class WorkStationController extends Controller
 {
+    public function batchSwap(Request $request, $id)
+    {
+        $this->validate($request, [
+            'work_station_id'=> 'required',
+        ]);
+
+        $workstation = Workstation::with('asset_tags')->where('id', $id)->first();
+        $swap = Workstation::with('asset_tags')->where('id', $request->work_station_id)->first();
+
+        foreach ($workstation->asset_tags as $asset_tag_key => $asset_tag) {
+            $asset_tag->work_station_id = $request->work_station_id;
+        }
+
+        foreach ($swap->asset_tags as $asset_tag_key => $asset_tag) {
+            $asset_tag->work_station_id = $id;
+        }
+
+        foreach ($workstation->asset_tags as $asset_tag_key => $asset_tag) {
+            # code...
+            $asset_tag->save();
+        }
+        
+        foreach ($swap->asset_tags as $asset_tag_key => $asset_tag) {
+            # code...
+            $asset_tag->save();
+        }
+
+
+    }
+
     public function batchTransfer(Request $request, $id)
     {
         $this->validate($request, [
