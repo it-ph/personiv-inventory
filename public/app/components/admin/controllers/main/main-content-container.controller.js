@@ -93,6 +93,23 @@ adminModule
 		}
 
 		$scope.init = function(refresh){
+			$scope.months = [
+				'January',
+				'February',
+				'March',
+				'April',
+				'May',
+				'June',
+				'July',
+				'August',
+				'September',
+				'October',
+				'November',
+				'December',
+			];
+			
+			$scope.currentMonth = $scope.months[new Date().getMonth()];
+
 			$scope.charts = [
 				// Purchase Orders
 				{
