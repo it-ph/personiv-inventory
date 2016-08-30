@@ -132,11 +132,11 @@
 			<md-list layout="column" layout-padding>
 				<md-list-item class="md-3-line fade-transition" flex ng-repeat="vendor in vendors | filter:toolbar.searchText | orderBy:'name'">
 					<div class="md-list-item-text">
-						<h3>{{vendor.company}}</h3>
+						<h3>{{vendor.company}} <span class="orange-text" ng-if="vendor.deleted_at">(Deleted)</span></h3>
 						<h4>{{vendor.contact_person}}</h4>
 						<p>{{vendor.contact_number}} - {{vendor.email}}</p>
 					</div>
-					<md-menu class="fade-transition" ng-if="user.role == 'super-admin'">
+					<md-menu class="fade-transition" ng-if="user.role == 'super-admin' && !vendor.deleted_at">
 				    	<md-button aria-label="Open menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
 					        <md-icon class="mdi mdi-24px mdi-dots-vertical grey"></md-icon>
 					        <md-tooltip>Menu</md-tooltip>
@@ -150,7 +150,7 @@
 								</md-button>
 					        </md-menu-item>
 					        <md-menu-item>
-								<md-button ng-click="deleteVendor(vendor.id)" ng-if="!vendor.purchase_orders.length">
+								<md-button ng-click="deleteVendor(vendor.id)">
 									<md-icon class="mdi mdi-24px mdi-delete grey"></md-icon>
 									Delete
 								</md-button>

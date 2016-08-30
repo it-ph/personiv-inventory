@@ -43,10 +43,10 @@ class PurchaseOrderController extends Controller
         }
 
         if($request->vendor){
-            return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->where('vendor_id', $request->vendor)->whereBetween('date_purchased', [$purchased_date_start, $purchased_date_end])->whereBetween('date_arrival', [$arrival_date_start, $arrival_date_end])->get();
+            return PurchaseOrder::with(['vendor' => function($query){$query->withTrashed();}])->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->where('vendor_id', $request->vendor)->whereBetween('date_purchased', [$purchased_date_start, $purchased_date_end])->whereBetween('date_arrival', [$arrival_date_start, $arrival_date_end])->get();
         }
         
-        return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->whereBetween('date_purchased', [$purchased_date_start, $purchased_date_end])->whereBetween('date_arrival', [$arrival_date_start, $arrival_date_end])->get();
+        return PurchaseOrder::with(['vendor' => function($query){$query->withTrashed();}])->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->whereBetween('date_purchased', [$purchased_date_start, $purchased_date_end])->whereBetween('date_arrival', [$arrival_date_start, $arrival_date_end])->get();
 
     }
 
@@ -56,12 +56,12 @@ class PurchaseOrderController extends Controller
             'searchText' => 'required|string',
         ]);
 
-        return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->where('tracking_code', $request->searchText)->get();
+        return PurchaseOrder::with(['vendor' => function($query){$query->withTrashed();}])->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->where('tracking_code', $request->searchText)->get();
     }
 
     public function paginate()
     {
-        return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->orderBy('created_at', 'desc')->paginate(20);
+        return PurchaseOrder::with(['vendor' => function($query){$query->withTrashed();}])->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->orderBy('created_at', 'desc')->paginate(20);
     }
     /**
      * Display a listing of the resource.
@@ -70,7 +70,7 @@ class PurchaseOrderController extends Controller
      */
     public function index()
     {
-        return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->orderBy('created_at', 'desc')->get();
+        return PurchaseOrder::with(['vendor' => function($query){$query->withTrashed();}])->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->orderBy('created_at', 'desc')->get();
     }
 
     /**
@@ -129,7 +129,7 @@ class PurchaseOrderController extends Controller
     {
         $this->id = $id;
         // fetch purchase order with its vendor, asset_purchase_order, asset, 
-        return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type', 'details')->with(['asset_tags' => function($query){ $query->withTrashed()->with('work_station', 'status')->where('purchase_order_id', $this->id); } ]); }]); }])->where('id', $id)->first();
+        return PurchaseOrder::with(['vendor' => function($query){$query->withTrashed();}])->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type', 'details')->with(['asset_tags' => function($query){ $query->withTrashed()->with('work_station', 'status')->where('purchase_order_id', $this->id); } ]); }]); }])->where('id', $id)->first();
     }
 
     /**

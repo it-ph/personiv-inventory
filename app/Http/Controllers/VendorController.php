@@ -36,7 +36,7 @@ class VendorController extends Controller
      */
     public function index()
     {
-        return Vendor::with('purchase_orders')->get();
+        return Vendor::with('purchase_orders')->withTrashed()->get();
     }
 
     /**
