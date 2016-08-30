@@ -1,7 +1,7 @@
 <md-content>
 	<div layout-padding layout="row" layout-align="center start" ng-if="purchaseOrder.paginated.show && purchaseOrder.paginated.length" flex infinite-scroll='purchaseOrder.paginateLoad()' infinite-scroll-distance="2" infinite-scroll-disabled="purchaseOrder.busy" infinite-scroll-parent>
-		<div flex flex-gt-lg="80" layout-margin>
-			<md-card flex ng-repeat="purchase_order in purchaseOrder.paginated | filter: toolbar.searchText | orderBy:'-created_at'">
+		<div flex layout-margin>
+			<md-card flex ng-repeat="purchase_order in purchaseOrder.paginated | filter: toolbar.searchText | filter: {vendor_id:filter.vendor} | filter: {month_purchased:filter.month_purchased} | filter: {month_arrival:filter.month_arrival} | filter: {year_purchased:filter.year_purchased} | filter: {year_arrival:filter.year_arrival}">
 				<md-card-header>
 		          	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
 		            	<span class="md-headline white-text">{{ purchase_order.first_letter }}</span>
@@ -40,7 +40,7 @@
 			            	<h3 class="md-headline">Expected Time of Arrival:</h3>
 			            	<p layout="column">
 			            		<span>{{ purchase_order.date_arrival | date: 'EEEE, MMMM d, yyyy' }}</span>
-				            	<span class="secondary-text md-caption"> will arrive around <span am-time-ago="purchase_order.date_arrival"></span></span>
+				            	<span class="secondary-text md-caption"> <span am-time-ago="purchase_order.date_arrival"></span></span>
 			            	</p>
 		            	</div>
 		          	</md-card-title-text>
@@ -48,7 +48,7 @@
 		        <md-card-content>
 		        	<h3 class="md-headline primary-text">Items</h3>
 		        	<md-list layout="row" flex layout-wrap layout-padding>
-			        	<md-list-item flex="25" class="md-3-line" ng-repeat="asset_purchase_order in purchase_order.asset_purchase_order">
+			        	<md-list-item flex="30" class="md-3-line" ng-repeat="asset_purchase_order in purchase_order.asset_purchase_order">
 			        		<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
 			        			<span class="md-headline white-text">{{ asset_purchase_order.asset.brand[0] }}</span>
 			        		</h2>
@@ -83,8 +83,8 @@
 	</div>
 	<!-- Search Results -->
 	<div layout-padding layout="row" layout-align="center start" ng-if="!purchaseOrder.paginated.show && purchaseOrder.results.length" flex>
-		<div flex flex-gt-lg="80" layout-margin>
-			<md-card flex ng-repeat="purchase_order in purchaseOrder.results | orderBy:'-created_at'">
+		<div flex layout-margin>
+			<md-card flex ng-repeat="purchase_order in purchaseOrder.results | filter: toolbar.searchText | filter: {vendor_id:filter.vendor} | filter: {month_purchased:filter.month_purchased} | filter: {month_arrival:filter.month_arrival} | filter: {year_purchased:filter.year_purchased} | filter: {year_arrival:filter.year_arrival}">
 				<md-card-header>
 		          	<md-card-avatar class="circle primary-bg" layout="row" layout-align="center center">
 		            	<span class="md-headline white-text">{{ purchase_order.first_letter }}</span>
@@ -123,7 +123,7 @@
 			            	<h3 class="md-headline">Expected Time of Arrival:</h3>
 			            	<p layout="column">
 			            		<span>{{ purchase_order.date_arrival | date: 'EEEE, MMMM d, yyyy' }}</span>
-				            	<span class="secondary-text md-caption"> will arrive around <span am-time-ago="purchase_order.date_arrival"></span></span>
+				            	<span class="secondary-text md-caption"> <span am-time-ago="purchase_order.date_arrival"></span></span>
 			            	</p>
 		            	</div>
 		          	</md-card-title-text>
@@ -131,7 +131,7 @@
 		        <md-card-content>
 		        	<h3 class="md-headline primary-text">Items</h3>
 		        	<md-list layout="row" flex layout-wrap layout-padding>
-			        	<md-list-item flex="25" class="md-3-line" ng-repeat="asset_purchase_order in purchase_order.asset_purchase_order">
+			        	<md-list-item flex="30" class="md-3-line" ng-repeat="asset_purchase_order in purchase_order.asset_purchase_order">
 			        		<h2 class="md-avatar primary-bg" layout="row" layout-align="center center">
 			        			<span class="md-headline white-text">{{ asset_purchase_order.asset.brand[0] }}</span>
 			        		</h2>

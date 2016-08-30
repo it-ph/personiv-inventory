@@ -69,6 +69,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('work-station-search', 'WorkStationController@search');
 	Route::post('asset-tag-search', 'AssetTagController@search');
 	Route::post('purchase-order-search', 'PurchaseOrderController@search');
+	Route::post('purchase-order-filter-search', 'PurchaseOrderController@filterSearch');
 	Route::get('asset-tag-repair/{assetTagID}', 'AssetTagController@repair');
 	// Route resource models
 	// Route resource others

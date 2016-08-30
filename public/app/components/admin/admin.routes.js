@@ -173,6 +173,9 @@ adminModule
 					'content@main.purchase-orders': {
 						templateUrl: '/app/components/admin/templates/content/purchase-orders.content.template.html',
 					},
+					'right-sidenav@main.purchase-orders': {
+						templateUrl : '/app/components/admin/templates/sidenavs/purchase-orders.sidenav.html',
+					},
 				},
 				onExit: ['$mdSidenav', function($mdSidenav){
 					var leftSidenav = $('[md-component-id="left"]');

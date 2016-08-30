@@ -16,7 +16,7 @@ adminModule
 	    	var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items = [];
 	    	return results;
 	    }
-		$scope.toolbar.parentState = 'Purchase Order';
+		// $scope.toolbar.parentState = 'Purchase Order';
 		$scope.toolbar.childState = 'Asset Tags';
 	    $scope.toolbar.searchAll = false;
 	    $scope.toolbar.showBack = true;
@@ -108,6 +108,8 @@ adminModule
 
 			PurchaseOrder.show(purchaseOrderID)
 				.success(function(data){
+					$scope.toolbar.parentState = data.tracking_code ? 'P.O. ' + data.tracking_code : '#' + data.id;
+
 					angular.forEach(data.asset_purchase_order, function(item){
 						item.chart = {};
 						item.chart.data = [];

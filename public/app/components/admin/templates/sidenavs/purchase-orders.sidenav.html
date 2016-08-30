@@ -1,0 +1,62 @@
+<md-toolbar class="white-toolbar"> 
+	<div class="md-toolbar-tools">
+		<h2 class="primary-text">Filters</h2>
+	</div>
+</md-toolbar>
+<md-content layout="column" layout-padding>
+	<!-- Vendors -->
+	<md-input-container flex>
+		<label>Vendors</label>
+		<md-select ng-model="filter.vendor">
+			<md-option ng-repeat="vendor in vendors" value="{{vendor.id}}">
+				{{vendor.company}}
+			</md-option>
+		</md-select>
+	</md-input-container>
+	<!-- Month Purchased -->
+	<md-input-container flex>
+		<label>Month Purchased</label>
+		<md-select ng-model="filter.month_purchased">
+			<md-option ng-repeat="month in months" value="{{month}}">
+				{{month}}
+			</md-option>
+		</md-select>
+	</md-input-container>
+	<!-- Year Purchased -->
+	<md-input-container flex>
+		<label>Year Purchased</label>
+		<md-select ng-model="filter.year_purchased">
+			<md-option ng-repeat="year in years" value="{{year}}">
+				{{year}}
+			</md-option>
+		</md-select>
+	</md-input-container>
+	<!-- Month Arrival -->
+	<md-input-container flex>
+		<label>Month Arrival</label>
+		<md-select ng-model="filter.month_arrival">
+			<md-option ng-repeat="month in months" value="{{month}}">
+				{{month}}
+			</md-option>
+		</md-select>
+	</md-input-container>
+	<!-- Year Arrival -->
+	<md-input-container flex>
+		<label>Year Arrival</label>
+		<md-select ng-model="filter.year_arrival">
+			<md-option ng-repeat="year in years" value="{{year}}">
+				{{year}}
+			</md-option>
+		</md-select>
+	</md-input-container>
+	<div layout="row" layout-align="end center">
+		<md-button class="md-fab md-mini md-primary" ng-click="searchFilter()">
+			<md-icon class="mdi mdi-magnify"></md-icon>
+			<md-tooltip>Search</md-tooltip>
+		</md-button>
+		<md-button class="md-fab md-warn md-mini" ng-click="removeFilter()">
+			<md-icon class="mdi mdi-filter-remove"></md-icon>
+			<md-tooltip>Remove Filter</md-tooltip>
+		</md-button>
+	</div>
+</md-content>

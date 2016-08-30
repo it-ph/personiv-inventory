@@ -1,5 +1,29 @@
 adminModule
-	.controller('purchaseOrdersContentContainerController', ['$scope', '$filter', '$state', '$mdDialog', 'PurchaseOrder', 'Preloader', function($scope, $filter, $state, $mdDialog, PurchaseOrder, Preloader){
+	.controller('purchaseOrdersContentContainerController', ['$scope', '$filter', '$state', '$mdDialog', 'PurchaseOrder', 'Preloader', 'Vendor', function($scope, $filter, $state, $mdDialog, PurchaseOrder, Preloader, Vendor){
+		$scope.months = [
+			'January',
+			'February',
+			'March',
+			'April',
+			'May',
+			'June',
+			'July',
+			'August',
+			'September',
+			'October',
+			'November',
+			'December',
+		];
+
+		$scope.currentMonth = $scope.months[new Date().getMonth()];
+
+		var dateCreated = 2015;
+
+		$scope.years = [];
+
+		for (var i = new Date().getFullYear(); i >= dateCreated; i--) {
+			$scope.years.push(i);
+		};
 		/**
 		  *
 		  * Object for toolbar
@@ -20,6 +44,12 @@ adminModule
 			Preloader.loading();
 			$scope.init(true);
 		};
+
+		// $scope.toolbar.hideSearchIcon = true;
+
+	    $scope.rightSidenav = {};
+
+	    $scope.rightSidenav.show = true;
 
 		/**
 		 * Reveals the search bar.
@@ -45,17 +75,28 @@ adminModule
 		};
 		
 		var pushItem = function(data){
-		    var item = {};
-			item.display = data.vendor.company;
-			item.contact_person = data.vendor.contact_person;
-			item.contact_number = data.vendor.contact_number;
+			if(data.tracking_code)
+			{
+				var item = {};
+				item.display = data.tracking_code;
+				$scope.toolbar.items.push(item);
+			}
+
+			angular.forEach(data.asset_purchase_order, function(asset_purchase_order){
+			    var item = {};
+				item.display = asset_purchase_order.asset.model;
+				item.brand = asset_purchase_order.asset.brand;
+				$scope.toolbar.items.push(item);
+			})
 			// format
 			data.first_letter = data.vendor.company.charAt(0).toUpperCase();
 			data.updated_at = new Date(data.updated_at);
 			data.date_arrival = new Date(data.date_arrival);
 			data.date_purchased = new Date(data.date_purchased);
-
-			$scope.toolbar.items.push(item);
+			data.month_arrival = $scope.months[data.date_arrival.getMonth()];
+			data.month_purchased = $scope.months[data.date_purchased.getMonth()];
+			data.year_arrival = data.date_arrival.getFullYear();
+			data.year_purchased = data.date_purchased.getFullYear();
 
 			return data;
 	    }
@@ -65,6 +106,10 @@ adminModule
 			Preloader.loading();
 			PurchaseOrder.search($scope.toolbar)
 				.success(function(data){
+					angular.forEach(data, function(item){
+						pushItem(item);
+					});
+
 					$scope.purchaseOrder.results = data;
 					Preloader.stop();
 					$scope.purchaseOrder.searched = true;
@@ -119,8 +164,32 @@ adminModule
 		$scope.fab.action = function(){
 			$scope.createPurchaseOrder();			
 		};
+		
+		$scope.removeFilter = function(){
+			$scope.filter = {};
+		};
+
+		$scope.searchFilter = function(){
+			$scope.purchaseOrder.paginated.show = false;
+			Preloader.loading();
+			PurchaseOrder.filterSearch($scope.filter)
+				.success(function(data){
+					angular.forEach(data, function(item){
+						pushItem(item);
+					});
+
+					$scope.purchaseOrder.results = data;
+					Preloader.stop();
+					$scope.purchaseOrder.searched = true;
+				})
+				.error(function(){
+					Preloader.error();
+				});
+		}
 
 		$scope.init = function(refresh){
+			$scope.filter = {};
+			
 			$scope.purchaseOrder = {};
 			// 2 is default so the next page to be loaded will be page 2 
 			$scope.purchaseOrder.page = 2;
@@ -177,6 +246,11 @@ adminModule
 				.error(function(){
 					Preloader.error();
 				});
+
+			Vendor.index()
+				.success(function(data){
+					$scope.vendors = data;
+				})
 		}
 
 		$scope.init();

@@ -14,6 +14,42 @@ use App\Http\Controllers\Controller;
 
 class PurchaseOrderController extends Controller
 {
+    public function filterSearch(Request $request)
+    {
+        if($request->month_arrival && $request->year_arrival){
+            $arrival_date_start = Carbon::parse('first day of '. $request->month_arrival . ' ' . $request->year_arrival);
+            $arrival_date_end = Carbon::parse('last day of '. $request->month_arrival . ' ' . $request->year_arrival);
+        }
+        else if($request->month_arrival && !$request->year_arrival){
+            $arrival_date_start = Carbon::parse('first day of '. $request->month_arrival);
+            $arrival_date_end = Carbon::parse('last day of '. $request->month_arrival);
+        }
+        else{
+            $arrival_date_start = Carbon::parse('first day of this month');
+            $arrival_date_end = Carbon::parse('last day of this month');
+        }
+
+        if($request->month_purchased && $request->year_purchased){
+            $purchased_date_start = Carbon::parse('first day of '. $request->month_purchased . ' ' . $request->year_purchased);
+            $purchased_date_end = Carbon::parse('last day of '. $request->month_purchased . ' ' . $request->year_purchased);
+        }
+        else if($request->month_purchased && !$request->year_purchased){
+            $purchased_date_start = Carbon::parse('first day of '. $request->month_purchased);
+            $purchased_date_end = Carbon::parse('last day of '. $request->month_purchased);
+        }
+        else{
+            $purchased_date_start = Carbon::parse('first day of this month');
+            $purchased_date_end = Carbon::parse('last day of this month');
+        }
+
+        if($request->vendor){
+            return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->where('vendor_id', $request->vendor)->whereBetween('date_purchased', [$purchased_date_start, $purchased_date_end])->whereBetween('date_arrival', [$arrival_date_start, $arrival_date_end])->get();
+        }
+        
+        return PurchaseOrder::with('vendor')->with(['asset_purchase_order' => function($query){ $query->with(['asset' => function($query){ $query->with('type'); }]); }])->whereBetween('date_purchased', [$purchased_date_start, $purchased_date_end])->whereBetween('date_arrival', [$arrival_date_start, $arrival_date_end])->get();
+
+    }
+
     public function search(Request $request)
     {
         $this->validate($request, [

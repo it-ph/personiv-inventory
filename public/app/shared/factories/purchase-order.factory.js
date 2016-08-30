@@ -24,5 +24,8 @@ sharedModule
 			search: function(data){
 				return $http.post(urlBase + '-search', data);
 			},
+			filterSearch: function(data){
+				return $http.post(urlBase + '-filter-search', data);
+			},
 		};
 	}]);
