@@ -14,7 +14,7 @@
 						<md-input-container flex>
 							<label>Vendor</label>
 							<md-select required name="Vendor" ng-model="purchaseOrder.vendor_id">
-								<md-option value="{{vendor.id}}" ng-repeat="vendor in vendors">
+								<md-option value="{{vendor.id}}" ng-repeat="vendor in vendors" ng-if="!vendor.deleted_at">
 									{{vendor.company}} - {{vendor.contact_person}}
 								</md-option>
 							</md-select>
