@@ -38,7 +38,7 @@
 		        <md-divider></md-divider>
 		    	<md-card-actions layout="row" layout-align="start center">
 			    	<md-card-icon-actions ng-if="!asset_tag.status.length">
-			            <md-button class="md-icon-button" aria-label="Edit" ng-click="editAssetTag(asset_tag.id)">
+			            <md-button class="md-icon-button" aria-label="Edit" ng-if="user.role == 'super-admin'" ng-click="editAssetTag(asset_tag.id)">
 			              	<md-icon class="mdi mdi-pencil grey"></md-icon>
 							<md-tooltip>Edit</md-tooltip>
 			            </md-button>
