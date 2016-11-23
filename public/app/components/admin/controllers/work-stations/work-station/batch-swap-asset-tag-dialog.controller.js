@@ -49,7 +49,7 @@ adminModule
 			}
 			else{
 				//  * Stores Single Record
-				Preloader.saving();
+				// Preloader.saving();
 
 				if(!busy){
 					busy = true;
