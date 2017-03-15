@@ -230,7 +230,7 @@ adminModule
 								// iterate over each data then splice it to the data array
 								angular.forEach(data.data, function(item, key){
 									pushItem(item);
-									$scope.purchaseOrder.paginated.data.push(item);
+									$scope.purchaseOrder.paginated.push(item);
 								});
 
 								// Enables again the pagination call for next call.
